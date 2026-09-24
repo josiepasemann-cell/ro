@@ -32,7 +32,7 @@ export type TabsHandle = {
 	HeaderFrame: Frame,
 	ContentFrame: Frame,
 	Selected: any,
-	GetContentFrame: (self: TabsHandle, id: string) -> Frame,
+	GetContentFrame: (self: TabsHandle, id: string) -> ScrollingFrame,
 	SelectTab: (self: TabsHandle, id: string) -> (),
 	Destroy: (self: TabsHandle) -> (),
 }
@@ -66,18 +66,29 @@ function Tabs.new(props: TabsProps): TabsHandle
 	contentFrame.Position = UDim2.fromOffset(0, 52)
 	contentFrame.Parent = wrapper
 
-	local contentFrames: { [string]: Frame } = {}
+	local contentFrames: { [string]: ScrollingFrame } = {}
 	local buttons: { [string]: any } = {}
 	local selected = Signal.new()
 	local currentTabId: string? = nil
 
 	for _, tabDef in props.Tabs do
-		local tabContent = Instance.new("Frame")
+		local tabContent = Instance.new("ScrollingFrame")
 		tabContent.Name = "Content_" .. tabDef.Id
 		tabContent.BackgroundTransparency = 1
 		tabContent.Size = UDim2.fromScale(1, 1)
+		tabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
+		tabContent.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		tabContent.ScrollBarThickness = 6
+		tabContent.ScrollBarImageColor3 = Theme.Neon.Cyan
+		tabContent.BorderSizePixel = 0
 		tabContent.Visible = false
 		tabContent.Parent = contentFrame
+
+		local tabList = Instance.new("UIListLayout")
+		tabList.SortOrder = Enum.SortOrder.LayoutOrder
+		tabList.Padding = UDim.new(0, 10)
+		tabList.Parent = tabContent
+
 		contentFrames[tabDef.Id] = tabContent
 
 		local tabButton = Button.new({

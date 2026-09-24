@@ -62,12 +62,6 @@ local function ensureInit()
 	gui.IgnoreGuiInset = true
 	gui.Parent = getPlayerGui()
 
-	local shake = Instance.new("Frame")
-	shake.Name = "ShakeHost"
-	shake.BackgroundTransparency = 1
-	shake.Size = UDim2.fromScale(1, 1)
-	shake.Parent = gui
-
 	local flash = Instance.new("Frame")
 	flash.Name = "Flash"
 	flash.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -78,7 +72,6 @@ local function ensureInit()
 
 	overlayGui = gui
 	flashFrame = flash
-	shakeHost = shake
 end
 
 -- Vollbild-Farbblitz, der schnell ausblendet (z. B. Mythic-Drop, Level-Up).
@@ -104,34 +97,44 @@ end
 
 local shakeToken = 0
 
--- Kurzes Wackeln der UI-Ebene. `intensity` in Pixeln (Design-Referenz,
--- skaliert automatisch mit, da alle UIKit-ScreenGuis Insets/Scale selbst
--- verwalten), `duration` in Sekunden.
-function ScreenFX.Shake(intensity: number?, duration: number?)
+-- Kurzer, additiver Kamera-Shake (siehe Design-Entscheidung im Kopf-
+-- kommentar). `magnitudeStuds` ist die maximale Auslenkung in Studs
+-- (klein halten, 0.1-0.3 wirkt bereits deutlich), `duration` in Sekunden.
+function ScreenFX.Shake(magnitudeStuds: number?, duration: number?)
 	if Settings.ShouldSkipFX() then
 		return
 	end
-	ensureInit()
-	local host = shakeHost :: Frame
-	local strength = intensity or 14
+
+	local strength = magnitudeStuds or 0.22
 	local totalDuration = duration or 0.35
 
 	shakeToken += 1
 	local myToken = shakeToken
 
-	task.spawn(function()
-		local elapsed = 0
-		while elapsed < totalDuration and myToken == shakeToken do
-			local falloff = 1 - (elapsed / totalDuration)
-			local offsetX = (math.random() * 2 - 1) * strength * falloff
-			local offsetY = (math.random() * 2 - 1) * strength * falloff
-			host.Position = UDim2.fromOffset(offsetX, offsetY)
-			local step = task.wait(1 / 30)
-			elapsed += step
+	local startTime = os.clock()
+	pcall(function()
+		RunService:UnbindFromRenderStep(SHAKE_BINDING_NAME)
+	end)
+	RunService:BindToRenderStep(SHAKE_BINDING_NAME, Enum.RenderPriority.Camera.Value + 1, function()
+		if myToken ~= shakeToken then
+			return
 		end
-		if myToken == shakeToken then
-			host.Position = UDim2.fromOffset(0, 0)
+		local elapsed = os.clock() - startTime
+		if elapsed >= totalDuration then
+			RunService:UnbindFromRenderStep(SHAKE_BINDING_NAME)
+			return
 		end
+		local camera = Workspace.CurrentCamera
+		if not camera then
+			return
+		end
+		local falloff = 1 - (elapsed / totalDuration)
+		local offset = Vector3.new(
+			(math.random() * 2 - 1) * strength * falloff,
+			(math.random() * 2 - 1) * strength * falloff,
+			0
+		)
+		camera.CFrame *= CFrame.new(offset)
 	end)
 end
 
@@ -139,7 +142,7 @@ end
 -- Flash + Shake gleichzeitig.
 function ScreenFX.BigMoment(color: Color3?)
 	ScreenFX.Flash({ Color = color, Duration = 0.6, MaxTransparency = 0.15 })
-	ScreenFX.Shake(18, 0.45)
+	ScreenFX.Shake(0.3, 0.45)
 end
 
 return ScreenFX
