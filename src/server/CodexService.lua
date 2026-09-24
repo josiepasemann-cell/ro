@@ -59,11 +59,12 @@
 		kann, sobald es selbst erweitert wird.
 ]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local GachaConfig = require(script.Parent:WaitForChild("GachaConfig"))
-local BreedingConfig = require(script.Parent:WaitForChild("BreedingConfig"))
+local BreedingConfig = require(ReplicatedStorage:WaitForChild("BreedingConfig"))
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 
 export type CatalogEntry = {
