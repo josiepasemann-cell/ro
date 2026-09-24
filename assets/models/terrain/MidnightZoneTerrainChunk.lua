@@ -64,7 +64,6 @@ local LANE_HALF_WIDTH = 6 -- eng: Höhlenpassage statt offener Sichtachse
 local rng = Random.new(RANDOM_SEED)
 local HALF = CHUNK_SIZE / 2
 local BASE_TOP_Y = BASE_THICKNESS / 2
-local originPos = ORIGIN.Position -- reine Translation, keine Rotation
 
 local ROCK_COLORS = {
 	Color3.fromRGB(24, 24, 28),
