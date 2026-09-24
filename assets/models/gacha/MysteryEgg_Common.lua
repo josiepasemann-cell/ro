@@ -37,7 +37,7 @@ local Workspace = game:GetService("Workspace")
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(40, 5, 0) -- Vor Ausführung anpassen für gewünschte Position
 local EGG_TIER = "Common"
-local EGG_NAME = "Mysterium-Ei (Gewöhnlich)"
+local EGG_NAME = "Mystery Egg (Common)"
 -- // ----------------------------------------------------------------------
 
 local function getOrCreateFolder(parent, name)

@@ -40,7 +40,7 @@ local Workspace = game:GetService("Workspace")
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(70, 5, 0) -- Vor Ausführung anpassen für gewünschte Position
 local EGG_TIER = "Mythic"
-local EGG_NAME = "Mysterium-Ei (Mythisch)"
+local EGG_NAME = "Mystery Egg (Mythic)"
 local SHARD_COUNT = 7
 local SPIKE_COUNT = 7
 local SATELLITE_COUNT = 3

@@ -76,12 +76,18 @@ local ProgressionConfig = {}
 
 -- // Grundwerte der XP-Kurve (siehe Herleitung im Kopfkommentar) -------------
 
-ProgressionConfig.MAX_LEVEL = 25
+-- Raised from 25: Hadal Depths (45), Master Brood Pool (45) and several
+-- stage-3 upgrades (30-45) need levels above 25. Above 25 the curve flattens
+-- to 3% per level; 1.15 compounding would put level 45 out of reach.
+-- Totals: level 25 ~12.9k XP, level 45 ~65k XP, level 50 ~84k XP.
+ProgressionConfig.MAX_LEVEL = 50
 
 local BASE_XP_STEP = 120 -- XP-Bedarf für Level 1 -> 2
 local EARLY_GROWTH = 1.08 -- Level 1-9 (GDD: "schnelle Freischaltungen alle 5-10 Min.")
 local LATE_GROWTH = 1.15 -- Level 10-24 (GDD: "Kosten x1,15 pro Stufe" ab Level 10)
+local ENDGAME_GROWTH = 1.03 -- Level 25-49
 local EARLY_LATE_BOUNDARY_LEVEL = 10 -- ab hier gilt LATE_GROWTH (GDD-Grenze "Level 1-10" vs. "Level 10-25")
+local LATE_ENDGAME_BOUNDARY_LEVEL = 25
 
 -- // XP-Belohnungen je Ereignis-Typ (GDD Abschnitt 6: "XP aus Quests, Raid-
 -- Siegen, Zuchterfolgen" + Abschnitt 9 Punkt 7). Das Tages-Quest-System
@@ -148,9 +154,23 @@ ProgressionConfig.UNLOCKS = {
 	{
 		Level = 10,
 		Id = "ZonePortal_Daemmerzone",
-		Label = "Zone Portal: Twilight Zone (coming soon)",
+		Label = "Zone Portal: Twilight Zone",
 		Type = "ZonePortal",
-		Implemented = false, -- PLATZHALTER: Zonen-/Teleport-System existiert noch nicht, siehe Kommentar oben.
+		Implemented = true,
+	},
+	{
+		Level = 25,
+		Id = "ZonePortal_MidnightZone",
+		Label = "Zone Portal: Midnight Zone + Advanced Brood Pool",
+		Type = "ZonePortal",
+		Implemented = true,
+	},
+	{
+		Level = 45,
+		Id = "ZonePortal_HadalDepths",
+		Label = "Zone Portal: Hadal Depths + Master Brood Pool",
+		Type = "ZonePortal",
+		Implemented = true,
 	},
 } :: { UnlockEntry }
 
@@ -171,7 +191,10 @@ do
 		cumulative += stepXp
 		TOTAL_XP_FOR_LEVEL[level + 1] = cumulative
 
-		local growth = if level < EARLY_LATE_BOUNDARY_LEVEL then EARLY_GROWTH else LATE_GROWTH
+		local growth = if level < EARLY_LATE_BOUNDARY_LEVEL
+			then EARLY_GROWTH
+			elseif level < LATE_ENDGAME_BOUNDARY_LEVEL then LATE_GROWTH
+			else ENDGAME_GROWTH
 		xp *= growth
 	end
 end

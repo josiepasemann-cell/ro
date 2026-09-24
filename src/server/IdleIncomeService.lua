@@ -141,6 +141,7 @@ local function computeIncomePerMinute(player: Player): number
 	-- einer physischen Position.
 	local zone = ZoneEconomyConfig.GetZoneForLevel(PlayerDataService.GetLevel(player))
 	multiplier *= ZoneEconomyConfig.GetIncomeMultiplier(zone)
+	multiplier *= PlayerDataService.GetCodexIncomeMultiplier(player)
 
 	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 	if MonetizationService.PlayerOwnsGamepass(player, "DoubleCoins") then

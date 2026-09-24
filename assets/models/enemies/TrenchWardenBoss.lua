@@ -1,9 +1,9 @@
 --[[
 	Abyssara – Deep Tide Tycoon
 	Asset-Typ: Raid-Gegner (Boss)
-	Name: TrenchWardenBoss ("Der Tiefenfürst")
+	Name: TrenchWardenBoss ("The Trench Warden")
 	Ersetzt ShadowKraken als TemplateName für RaidConfig.EnemyId "TrenchWarden"
-	(Boss). Visueller Auszahlungspunkt für das "Der Tiefenfürst"-Arena-
+	(Boss). Visueller Auszahlungspunkt für das "The Trench Warden"-Arena-
 	Landmark in MidnightZoneTerrainChunk.lua.
 	Beschreibung:
 		Turmhohe Kraken-Fürst-Silhouette, nahezu schwarzer Körper, 8 lange
@@ -153,6 +153,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("EnemyName", "Der Tiefenfürst")
+model:SetAttribute("EnemyName", "The Trench Warden")
 
 print("[Abyssara] TrenchWardenBoss created under Workspace.Assets.Enemies")
