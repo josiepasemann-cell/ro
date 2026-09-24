@@ -105,6 +105,8 @@ local openShopEvent = getOrCreateBridgeEvent("OpenShop")
 local openQuestsEvent = getOrCreateBridgeEvent("OpenQuests")
 local openLeaderboardEvent = getOrCreateBridgeEvent("OpenLeaderboard")
 local openTravelEvent = getOrCreateBridgeEvent("OpenTravel")
+local openCodexEvent = getOrCreateBridgeEvent("OpenCodex")
+local openEventEvent = getOrCreateBridgeEvent("OpenEvent")
 local questBadgeCountEvent = getOrCreateBridgeEvent("QuestBadgeCountChanged")
 
 -- // Root-ScreenGui --------------------------------------------------------------
@@ -172,7 +174,7 @@ hintLabel.Size = UDim2.new(1, 0, 0, 18)
 hintLabel.Font = Theme.Font.Body
 hintLabel.TextColor3 = Theme.Text.Muted
 hintLabel.TextScaled = true
-hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · Q Quests · L Rangliste · R Reisen · O Einstellungen"
+hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · Q Quests · L Rangliste · R Reisen · O Einstellungen · C Kodex"
 hintLabel.Visible = false
 hintLabel.Parent = bar
 local hintConstraint = Instance.new("UITextSizeConstraint")
@@ -182,7 +184,7 @@ hintConstraint.Parent = hintLabel
 
 -- // Geräteabhängiges Andocken ---------------------------------------------------
 
-local MENU_ENTRY_COUNT = 9 -- Bauen, Brutbecken, Mystery Egg, Entführt, Quests, Rangliste, Reisen, Optionen, Shop
+local MENU_ENTRY_COUNT = 11 -- Bauen, Brutbecken, Mystery Egg, Entführt, Quests, Rangliste, Reisen, Optionen, Shop, Kodex, Event
 
 local function applyBarLayout()
 	local state = Device.GetState()
@@ -339,6 +341,16 @@ end
 
 local function onShopClicked()
 	openShopEvent:Fire()
+end
+
+-- // Kodex (CodexUIController.client.lua) -----------------------------------------
+-- Öffnet das Kreaturen-Kodex-Panel (docs/content-update-1.md Abschnitt 5.2:
+-- Sammel-Raster, Zonen-Vollständigkeit, Favoriten-Auswahl für die Plot-
+-- Anzeige aus CreatureDisplayService) über die Bridge - identisches Muster
+-- zu Shop/Quests/Rangliste oben.
+
+local function onCodexClicked()
+	openCodexEvent:Fire()
 end
 
 -- // Einstellungen -------------------------------------------------------------------
@@ -525,6 +537,12 @@ local function onSettingsClicked()
 	panel:Open()
 end
 
+-- // Live-Event (EventUIController.client.lua) ---------------------------------
+
+local function onEventClicked()
+	openEventEvent:Fire()
+end
+
 -- // Leiste aufbauen -----------------------------------------------------------------
 
 local entries: { MenuEntry } = {
@@ -537,6 +555,7 @@ local entries: { MenuEntry } = {
 	{ Icon = "🧭", Text = "Reisen", OnClick = onTravelClicked },
 	{ Icon = "⚙️", Text = "Optionen", OnClick = onSettingsClicked },
 	{ Icon = "🛒", Text = "Shop", OnClick = onShopClicked },
+	{ Icon = "📖", Text = "Kodex", OnClick = onCodexClicked },
 }
 
 for index, entry in ipairs(entries) do
@@ -566,6 +585,8 @@ local inputConnection = UserInputService.InputBegan:Connect(function(input, game
 		onTravelClicked()
 	elseif input.KeyCode == Enum.KeyCode.O then
 		onSettingsClicked()
+	elseif input.KeyCode == Enum.KeyCode.C then
+		onCodexClicked()
 	end
 end)
 

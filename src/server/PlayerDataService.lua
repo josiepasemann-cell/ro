@@ -202,6 +202,55 @@ export type PlayerStats = {
 	LifetimeTideCoinsEarned: number,
 }
 
+--- Kreaturen-Kodex-Zustand (docs/content-update-1.md, Abschnitt 5): welche
+--- bis zu 6 Kreaturen-Arten der Spieler für die Plot-Anzeige (5.1) manuell
+--- ausgewählt hat, plus welche Zonen-Sammel-Belohnungen (5.2) bereits
+--- abgeholt wurden. Additive Erweiterung nach demselben Muster wie
+--- QuestState/DailyRewardState oben - reine Datenhaltung, Auswahl-/Katalog-/
+--- Validierungslogik lebt vollständig in CodexService/CreatureDisplayService.
+--- `Favorites` speichert CreatureId-Werte (Kreaturen-ART, nicht die einzelne
+--- CreatureInstance.InstanceId) in der gewünschten Anzeige-Reihenfolge -
+--- bewusste Vereinfachung (siehe CodexService-Kopfkommentar): die Plot-
+--- Anzeige zeigt je favorisierter Art die zuletzt erhaltene besessene
+--- Instanz, ein Nachverfolgen einzelner InstanceIds ist für "6 Lieblings-
+--- Kreaturenarten anzeigen" nicht nötig und würde nur zusätzliche
+--- Invalidierungsfälle schaffen (z. B. eine favorisierte Instanz, die durch
+--- einen Raid entführt wird).
+export type CodexState = {
+	Favorites: { string },
+	ClaimedZoneRewards: { [string]: boolean },
+	UnlockedTitles: { string },
+}
+
+--- Zustand des rotierenden Live-Event-Systems (docs/content-update-1.md,
+--- Abschnitt 1 + 7b). `EventId`/`SlotStart` markieren, zu welchem 12h-Slot
+--- `Balance`/`StepProgress` aktuell gehören - LiveEventService vergleicht
+--- dies bei JEDEM Zugriff gegen den aktuell laut LiveEventConfig aktiven
+--- Slot und setzt bei Abweichung beides auf 0/leer zurück (Fairness-Regel
+--- Abschnitt 1.2: Event-Währung/-Quest-Fortschritt überleben NIE einen
+--- Slot-Wechsel, auch nicht zur selben Event-Art 3 Tage später). Reine
+--- Datenhaltung, identisches Prinzip zu QuestState/CodexState oben -
+--- Reset-/Verdienst-/Kauf-/Claim-Logik lebt vollständig in
+--- LiveEventService.
+export type LiveEventCurrencyState = {
+	EventId: string?,
+	SlotStart: number?,
+	Balance: number,
+}
+
+export type LiveEventQuestState = {
+	EventId: string?,
+	SlotStart: number?,
+	StepProgress: { number }, -- Index-aligned zu LiveEventConfig.EVENTS[EventId].QuestLine.Steps
+	Claimed: boolean,
+}
+
+export type LiveEventState = {
+	Currency: LiveEventCurrencyState,
+	Quest: LiveEventQuestState,
+	OwnedEventItems: { [string]: boolean }, -- rein informativ (z. B. künftige "bereits gekauft"-Anzeige), gated nichts
+}
+
 --- Versioniertes Spieler-Datenschema. SchemaVersion erlaubt künftigen
 --- Migrationen (siehe MIGRATIONS unten), alte DataStore-Einträge sicher auf
 --- neue Strukturen zu heben, statt sie zu verwerfen.
@@ -270,6 +319,8 @@ export type PlayerData = {
 	QuestState: QuestState,
 	DailyRewardState: DailyRewardState,
 	Stats: PlayerStats,
+	CodexState: CodexState,
+	LiveEventState: LiveEventState,
 
 	OnboardingCompleted: boolean,
 
@@ -292,7 +343,18 @@ export type PlayerData = {
 -- Funktion nötig ist: die generische fillMissing()-Auffüllung unten hebt
 -- ältere Datensätze automatisch auf die neue Struktur, ohne bestehende Werte
 -- zu berühren.
-local SCHEMA_VERSION = 3
+--
+-- SCHEMA_VERSION 4: CodexState ergänzt (Kreaturen-Kodex/Plot-Anzeige-
+-- Favoriten + Zonen-Sammel-Belohnungen, docs/content-update-1.md Abschnitt
+-- 5). Erneut eine reine Top-Level-Feld-ERGÄNZUNG, keine dedizierte
+-- MIGRATIONS[3]-Funktion nötig (siehe Begründung bei Version 2/3 oben).
+--
+-- SCHEMA_VERSION 5: LiveEventState ergänzt (rotierendes Live-Event-System,
+-- docs/content-update-1.md Abschnitt 1 + 7b: Event-Währungsbilanz + deren
+-- Slot-Zugehörigkeit, Event-Quest-Linien-Fortschritt, besessene Event-Shop-
+-- Artikel). Wie bei Version 2/3/4 eine reine Top-Level-Feld-ERGÄNZUNG, keine
+-- dedizierte MIGRATIONS[4]-Funktion nötig.
+local SCHEMA_VERSION = 5
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -450,6 +512,18 @@ local function createDefaultData(userId: number): PlayerData
 
 		Stats = {
 			LifetimeTideCoinsEarned = 0,
+		},
+
+		CodexState = {
+			Favorites = {},
+			ClaimedZoneRewards = {},
+			UnlockedTitles = {},
+		},
+
+		LiveEventState = {
+			Currency = { EventId = nil, SlotStart = nil, Balance = 0 },
+			Quest = { EventId = nil, SlotStart = nil, StepProgress = {}, Claimed = false },
+			OwnedEventItems = {},
 		},
 
 		OnboardingCompleted = false,
@@ -1426,6 +1500,154 @@ end
 function PlayerDataService.GetLifetimeTideCoinsEarned(player: Player): number
 	local data = dataCache[player.UserId]
 	return data and data.Stats.LifetimeTideCoinsEarned or 0
+end
+
+-- // Kreaturen-Kodex (CodexState) -------------------------------------------
+-- Reine Datenhaltung - Katalog-Aufbau/Besitz-Auswertung/Validierung gehören
+-- zu CodexService, NICHT hier (identisches Prinzip wie Tages-Quest-System
+-- oben). Auswahl-/Wander-Logik für die Plot-Anzeige lebt in
+-- CreatureDisplayService.
+
+--- Liefert die aktuelle Favoriten-Liste (CreatureId-Werte, Anzeige-
+--- Reihenfolge) - leeres Array, falls nicht geladen oder noch nie gesetzt.
+--- Live-Referenz, siehe GetData-Hinweis oben (nicht mutieren).
+function PlayerDataService.GetCodexFavorites(player: Player): { string }
+	local data = dataCache[player.UserId]
+	return data and data.CodexState.Favorites or {}
+end
+
+--- Ersetzt die komplette Favoriten-Liste. Roh-Setter OHNE Validierung
+--- (Besitz-Prüfung, Max. 6, Duplikate) - das übernimmt vollständig
+--- CodexService.SetFavorites VOR dem Aufruf hier, identisches Prinzip zu
+--- PlayerDataService.SetQuestState (roher Ersatz, Validierung liegt beim
+--- Aufrufer-Service).
+function PlayerDataService.SetCodexFavorites(player: Player, favorites: { string }): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.CodexState.Favorites = favorites
+	return true
+end
+
+--- true, wenn die Zonen-Sammel-Belohnung für `zone` bereits abgeholt wurde.
+function PlayerDataService.IsCodexZoneRewardClaimed(player: Player, zone: string): boolean
+	local data = dataCache[player.UserId]
+	return data ~= nil and data.CodexState.ClaimedZoneRewards[zone] == true
+end
+
+--- Markiert die Zonen-Sammel-Belohnung für `zone` als abgeholt und trägt
+--- `title` (z. B. "Midnight Zone Cataloguer") in UnlockedTitles ein (nur
+--- einmal, Duplikate werden übersprungen). Gibt false zurück, falls nicht
+--- geladen ODER die Belohnung bereits abgeholt wurde (Aufrufer soll das
+--- VORHER über IsCodexZoneRewardClaimed prüfen - dieser Setter ist bewusst
+--- idempotent-sicher als letzte Verteidigungslinie gegen doppelte
+--- Gutschrift bei einer Doppel-Anfrage).
+function PlayerDataService.SetCodexZoneRewardClaimed(player: Player, zone: string, title: string): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	if data.CodexState.ClaimedZoneRewards[zone] == true then
+		return false
+	end
+	data.CodexState.ClaimedZoneRewards[zone] = true
+	if not table.find(data.CodexState.UnlockedTitles, title) then
+		table.insert(data.CodexState.UnlockedTitles, title)
+	end
+	return true
+end
+
+--- Anzahl bereits abgeholter Zonen-Sammel-Belohnungen (für den permanenten
+--- Einkommens-Bonus, siehe GetCodexIncomeMultiplier unten).
+local function countClaimedZoneRewards(player: Player): number
+	local data = dataCache[player.UserId]
+	if not data then
+		return 0
+	end
+	local count = 0
+	for _, claimed in pairs(data.CodexState.ClaimedZoneRewards) do
+		if claimed then
+			count += 1
+		end
+	end
+	return count
+end
+
+-- +2% Gebäude-Einkommen je vollständig katalogisierter Zone (docs/
+-- content-update-1.md Abschnitt 5.2: "4 Zonen vollständig katalogisiert =
+-- +8% gesamt"). Zentral hier definiert statt in CodexService, damit
+-- IdleIncomeService (nicht Teil dieses Auftrags, siehe CodexService-
+-- Kopfkommentar "Integrations-Hook") diesen Multiplikator später lesen
+-- kann, ohne CodexService requiren zu müssen (identisches Entkopplungs-
+-- prinzip wie PlayerDataService.GetIncomeMultiplier fürs Prestige-System).
+local CODEX_ZONE_INCOME_BONUS_PER_ZONE = 0.02
+
+--- Liefert den kumulierten Einkommens-Multiplikator aus abgeholten Kodex-
+--- Zonen-Belohnungen (1.0 = kein Bonus, 1.08 = alle 4 Zonen). Multipliziert
+--- sich additiv mit den anderen Multiplikatoren (Prestige, ZoneEconomy,
+--- Events) an der Stelle, wo Einkommen tatsächlich berechnet wird - dieses
+--- Modul wendet selbst NIE einen Multiplikator an, es liefert nur den Wert.
+function PlayerDataService.GetCodexIncomeMultiplier(player: Player): number
+	return 1 + (countClaimedZoneRewards(player) * CODEX_ZONE_INCOME_BONUS_PER_ZONE)
+end
+
+--- Trägt `title` in UnlockedTitles ein (nur einmal, Duplikate übersprungen) -
+--- generischer Gegenstück zu SetCodexZoneRewardClaimed's Titel-Vergabe oben,
+--- für Aufrufer, die KEINE Zonen-Sammel-Belohnung meinen (z. B.
+--- LiveEventService nach einer abgeschlossenen Event-Quest-Linie, siehe
+--- docs/content-update-1.md Abschnitt 1.3). Gibt false zurück, falls die
+--- Daten nicht geladen sind.
+function PlayerDataService.AddUnlockedTitle(player: Player, title: string): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(title) ~= "string" or title == "" then
+		return false
+	end
+	if not table.find(data.CodexState.UnlockedTitles, title) then
+		table.insert(data.CodexState.UnlockedTitles, title)
+	end
+	return true
+end
+
+-- // Live-Event-System (LiveEventState) --------------------------------------
+-- Reine Datenhaltung - Slot-Erkennung/Fairness-Reset/Verdienst-/Kauf-/
+-- Quest-Logik gehören zu LiveEventService, NICHT hier (identisches Prinzip
+-- wie QuestState/CodexState oben).
+
+--- Liefert den kompletten Live-Event-Zustand (Default-Objekt, falls nicht
+--- geladen). Live-Referenz, siehe GetData-Hinweis oben (nicht mutieren).
+function PlayerDataService.GetLiveEventState(player: Player): LiveEventState
+	local data = dataCache[player.UserId]
+	if data then
+		return data.LiveEventState
+	end
+	return { Currency = { EventId = nil, SlotStart = nil, Balance = 0 }, Quest = { EventId = nil, SlotStart = nil, StepProgress = {}, Claimed = false }, OwnedEventItems = {} }
+end
+
+--- Ersetzt den kompletten Live-Event-Zustand (z. B. nach einem erkannten
+--- Slot-Wechsel oder einer Bilanz-/Fortschrittsänderung). Roh-Setter OHNE
+--- Validierung, identisches Prinzip zu SetQuestState. Gibt false zurück,
+--- falls die Daten des Spielers nicht geladen sind.
+function PlayerDataService.SetLiveEventState(player: Player, newState: LiveEventState): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.LiveEventState = newState
+	return true
+end
+
+--- Markiert einen Event-Shop-Artikel als jemals gekauft (rein informativ,
+--- gated nichts - Wiederholungskäufe wie z. B. Dubletten-Rückkauf bleiben
+--- weiterhin über LiveEventService erlaubt). Gibt false zurück, falls die
+--- Daten nicht geladen sind.
+function PlayerDataService.AddOwnedEventItem(player: Player, itemId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(itemId) ~= "string" or itemId == "" then
+		return false
+	end
+	data.LiveEventState.OwnedEventItems[itemId] = true
+	return true
 end
 
 return PlayerDataService

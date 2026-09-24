@@ -81,6 +81,17 @@ Lighting.FogColor = Color3.fromRGB(5, 12, 18)
 Lighting.FogStart = 15
 Lighting.FogEnd = 150
 
+-- Baseline-Snapshot für das Live-Event-System (LiveEventService,
+-- docs/content-update-1.md Abschnitt 1.3): Attribute statt eines zweiten
+-- hartcodierten Zahlensatzes in einem anderen Modul, damit die "Normal-
+-- Stimmung", zu der zwischen/ohne Events zurückgetweent wird, IMMER exakt
+-- den obigen Werten entspricht, selbst wenn sie hier künftig geändert
+-- werden. LiveEventService liest diese Attribute defensiv mit Fallback.
+Lighting:SetAttribute("BaselineAmbient", Lighting.Ambient)
+Lighting:SetAttribute("BaselineOutdoorAmbient", Lighting.OutdoorAmbient)
+Lighting:SetAttribute("BaselineFogColor", Lighting.FogColor)
+Lighting:SetAttribute("BaselineFogEnd", Lighting.FogEnd)
+
 -- // 2) Post-Processing: Neon-Biolumineszenz zum Leuchten bringen --------
 local function getOrCreate(className, name, parent)
 	local existing = parent:FindFirstChild(name)
