@@ -48,7 +48,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local AssetTemplateSetup = require(script.Parent:WaitForChild("AssetTemplateSetup"))
+local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
+local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
 
 type BuildField = PlotRegistry.BuildField
 
@@ -63,6 +65,7 @@ export type PlaceFailureReason =
 	| "InsufficientFunds"
 	| "ChargeFailed"
 	| "PersistenceFailed"
+	| "BroodPoolLimitReached"
 
 export type RemoveFailureReason = "DataNotLoaded" | "InvalidPlacement" | "NotFound" | "PersistenceRemoveFailed"
 
@@ -172,6 +175,25 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 		return { Success = false, Reason = "LevelTooLow" }
 	end
 
+	-- Zweiter Brutbecken-Slot ab Level 6 (GDD Abschnitt 6): BuildingConfig
+	-- kennt nur EIN generelles UnlockLevel pro Gebäudetyp (hier: Level 1 für
+	-- BroodPool, siehe BuildingConfig-Kopfkommentar), keine "Slot-Anzahl pro
+	-- Level"-Regel. Diese zusätzliche Zählung ist daher die einzige
+	-- Durchsetzungsstelle für die Slot-Grenze (siehe ProgressionConfig.
+	-- GetMaxBroodPools) - erfordert keine Änderung an BuildingConfig selbst,
+	-- da alle anderen MVP-Gebäudetypen unlimitiert bleiben.
+	if buildingId == "BroodPool" then
+		local existingBroodPools = 0
+		for _, placement in ipairs(PlayerDataService.GetHabitatLayout(player)) do
+			if placement.BuildingId == "BroodPool" then
+				existingBroodPools += 1
+			end
+		end
+		if existingBroodPools >= ProgressionConfig.GetMaxBroodPools(playerLevel) then
+			return { Success = false, Reason = "BroodPoolLimitReached" }
+		end
+	end
+
 	local field = PlotRegistry.GetBuildField(player, fieldIndex)
 	if not field then
 		return { Success = false, Reason = "InvalidField" }
@@ -239,6 +261,10 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 		FieldIndex = fieldIndex,
 		Model = model,
 	}
+
+	-- Progression-Einhängepunkt: NACH erfolgreichem Abschluss (nicht beim
+	-- Request), siehe ProgressionService-Kopfkommentar.
+	ProgressionService.AwardXP(player, "BuildingPlaced")
 
 	return {
 		Success = true,

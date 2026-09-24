@@ -51,6 +51,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
+local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local BreedingConfig = require(ReplicatedStorage:WaitForChild("BreedingConfig"))
 
 type Rarity = BreedingConfig.Rarity
@@ -312,6 +313,10 @@ function BreedingService.RequestClaimBreeding(player: Player, placementId: any):
 		Rarity = incubation.Rarity,
 	})
 	PlayerDataService.RemoveIncubation(player, placementId)
+
+	-- Progression-Einhängepunkt: NACH erfolgreichem Abschluss (nicht beim
+	-- Request), siehe ProgressionService-Kopfkommentar.
+	ProgressionService.AwardXP(player, "BreedingCompleted")
 
 	return {
 		Success = true,

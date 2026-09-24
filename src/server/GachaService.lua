@@ -37,6 +37,7 @@ local Workspace = game:GetService("Workspace")
 local GachaConfig = require(script.Parent.GachaConfig)
 local GachaHistoryLogger = require(script.Parent.GachaHistoryLogger)
 local PlayerDataService = require(script.Parent.PlayerDataService)
+local ProgressionService = require(script.Parent.ProgressionService)
 
 type Rarity = GachaConfig.Rarity
 
@@ -268,6 +269,12 @@ function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
 		CompensationTideCoins = compensation,
 		PityForced = pityForced,
 	})
+
+	-- Progression-Einhängepunkt: NACH erfolgreichem Öffnen (nicht beim
+	-- Request), siehe ProgressionService-Kopfkommentar. Zählt unabhängig
+	-- davon, ob das Ergebnis "New" oder "Duplicate" war - das eigentliche
+	-- Ereignis ("ein Mystery Egg wurde geöffnet") ist bereits abgeschlossen.
+	ProgressionService.AwardXP(player, "MysteryEggOpened")
 
 	local result: OpenEggResult = {
 		Rarity = resolvedRarity,

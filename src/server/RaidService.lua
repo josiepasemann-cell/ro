@@ -83,6 +83,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local AssetTemplateSetup = require(script.Parent:WaitForChild("AssetTemplateSetup"))
+local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
 
@@ -269,6 +270,10 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 		local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", RaidConfig.VICTORY_REWARD_TIDE_COINS)
 		resultPayload.RewardTideCoins = RaidConfig.VICTORY_REWARD_TIDE_COINS
 		resultPayload.NewTideCoinBalance = newBalance
+
+		-- Progression-Einhängepunkt: NACH erfolgreichem Sieg (nicht beim
+		-- Raid-Start), siehe ProgressionService-Kopfkommentar.
+		ProgressionService.AwardXP(player, "RaidWon")
 
 		if rng:NextNumber() <= RaidConfig.VICTORY_ABYSSAL_SHARD_CHANCE then
 			local _, shardBalance =
@@ -543,6 +548,12 @@ local function evaluateOfflineRaids(player: Player)
 			if rng:NextNumber() <= RaidConfig.VICTORY_ABYSSAL_SHARD_CHANCE then
 				totalShards += RaidConfig.VICTORY_ABYSSAL_SHARD_AMOUNT
 			end
+
+			-- Progression-Einhängepunkt: NACH erfolgreichem (verpasstem, aber
+			-- gewonnenem) Raid, ein AwardXP je gewertetem Sieg - identische
+			-- "pro Raid"-Granularität wie die Tide-Coin-/Shard-Gutschrift
+			-- oben, siehe ProgressionService-Kopfkommentar.
+			ProgressionService.AwardXP(player, "RaidWon")
 		else
 			local abducted = PlayerDataService.AbductRandomCreature(player)
 			if abducted then
