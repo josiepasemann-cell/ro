@@ -56,7 +56,13 @@
 		ist (siehe dortiger Kommentar "Speichert nur die Rohwerte").
 ]]
 
-export type ProgressionEventSource = "BuildingPlaced" | "BreedingCompleted" | "RaidWon" | "MysteryEggOpened"
+export type ProgressionEventSource =
+	"BuildingPlaced"
+	| "BreedingCompleted"
+	| "RaidWon"
+	| "MysteryEggOpened"
+	| "QuestCompleted"
+	| "DailyLoginClaimed"
 
 export type UnlockEntry = {
 	Level: number,
@@ -86,11 +92,20 @@ local EARLY_LATE_BOUNDARY_LEVEL = 10 -- ab hier gilt LATE_GROWTH (GDD-Grenze "Le
 -- auftreten. Werte sind bewusst gestaffelt nach Aufwand/Seltenheit des
 -- jeweiligen Ereignisses (Bauen ist häufig & günstig -> wenig XP, ein
 -- Raid-Sieg ist seltener & riskanter -> viel XP).
+-- QuestCompleted/DailyLoginClaimed (Server-Features-Nachtrag, siehe
+-- docs/server-features.md): flache XP-Boni fürs Tages-Quest-/Login-
+-- Belohnungssystem (QuestService/DailyRewardService) - die eigentliche
+-- Tide-Coins-/Shard-Höhe je Quest/Streak-Tag ist NICHT hier, sondern in
+-- QuestConfig/DailyRewardConfig konfiguriert (dort variiert sie je nach
+-- Quest-Vorlage/Streak-Tag; hier bewusst nur EIN fester Bonus je
+-- Ereignis-KLASSE, analog zu den bestehenden Werten oben).
 ProgressionConfig.XP_REWARDS = {
 	BuildingPlaced = 15,
 	BreedingCompleted = 40,
 	RaidWon = 60,
 	MysteryEggOpened = 25,
+	QuestCompleted = 20,
+	DailyLoginClaimed = 10,
 } :: { [ProgressionEventSource]: number }
 
 -- // Level-Unlock-Tabelle (GDD Abschnitt 6: "Unlocks pro Level") -------------

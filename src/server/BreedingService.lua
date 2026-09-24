@@ -52,6 +52,8 @@ local Workspace = game:GetService("Workspace")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
+local HeldItemService = require(script.Parent:WaitForChild("HeldItemService"))
 local BreedingConfig = require(ReplicatedStorage:WaitForChild("BreedingConfig"))
 
 type Rarity = BreedingConfig.Rarity
@@ -163,6 +165,46 @@ local function getCreatureDisplayName(creatureId: string): string
 		end
 	end
 	return BreedingConfig.CREATURE_DISPLAY_NAME_FALLBACK[creatureId] or creatureId
+end
+
+-- // Hand-Übergabe (docs/held-items.md, Abschnitt 7 "Künftige Aufrufer") ---
+-- HeldItemConfig kennt "Creature" bereits als ItemKind - dieser Abschnitt
+-- setzt GENAU den dort skizzierten Aufruf um: nach erfolgreichem Abholen
+-- wandert die geschlüpfte Kreatur kurz sichtbar in die Hand. Legt automatisch
+-- nach HAND_OFF_AUTO_DROP_SECONDS wieder ab (Auftrag Punkt 5) - OHNE
+-- HeldItemService selbst anzufassen (nicht Teil der erlaubten Änderungen),
+-- daher als einfacher, hier lokaler task.delay-Timer umgesetzt, der defensiv
+-- prüft, ob der Spieler zwischenzeitlich bereits ein ANDERES Item aufgenommen
+-- hat (dann NICHT ablegen - HeldItem legt Vorgänger-Items beim Aufnehmen
+-- eines neuen Items ohnehin bereits selbst automatisch ab, siehe
+-- HeldItemService.HoldItem-Kopfkommentar "Hält der Spieler bereits ein
+-- anderes Item...").
+local HAND_OFF_AUTO_DROP_SECONDS = 6
+
+local function holdHatchedCreatureInHand(player: Player, creatureId: string, creatureName: string)
+	local creaturesFolder = Workspace:FindFirstChild("Assets")
+	creaturesFolder = creaturesFolder and creaturesFolder:FindFirstChild("Creatures")
+	local template = creaturesFolder and creaturesFolder:FindFirstChild(creatureId)
+	if not template or not template:IsA("Model") then
+		-- Kreaturen-Modell (noch) nicht in der Welt vorhanden (Buildscript nie
+		-- in Studio ausgeführt, siehe assets/models/README.md) - kein
+		-- Fehlerzustand fürs eigentliche Zucht-Ergebnis, einfach überspringen.
+		return
+	end
+
+	local ok, heldModel = HeldItemService.HoldItem(player, "Creature", template, {
+		DisplayName = creatureName,
+	})
+	if not ok or not heldModel then
+		return
+	end
+
+	task.delay(HAND_OFF_AUTO_DROP_SECONDS, function()
+		local held = HeldItemService.GetHeld(player)
+		if held and held.Model == heldModel then
+			HeldItemService.DropHeld(player)
+		end
+	end)
 end
 
 --- Baut den öffentlichen Status EINER Inkubation (oder eines leeren
@@ -331,15 +373,26 @@ function BreedingService.RequestClaimBreeding(player: Player, placementId: any):
 	})
 	PlayerDataService.RemoveIncubation(player, placementId)
 
+	local creatureName = getCreatureDisplayName(incubation.CreatureId)
+
 	-- Progression-Einhängepunkt: NACH erfolgreichem Abschluss (nicht beim
 	-- Request), siehe ProgressionService-Kopfkommentar.
 	ProgressionService.AwardXP(player, "BreedingCompleted")
+
+	-- GameEvents-Einhängepunkt (Auftrag Punkt 1) + Hand-Übergabe (Auftrag
+	-- Punkt 5, siehe holdHatchedCreatureInHand oben).
+	GameEvents.Fire(GameEvents.Events.BreedingCompleted, player, {
+		CreatureId = incubation.CreatureId,
+		Rarity = incubation.Rarity,
+		PlacementId = placementId,
+	})
+	holdHatchedCreatureInHand(player, incubation.CreatureId, creatureName)
 
 	return {
 		Success = true,
 		PlacementId = placementId,
 		CreatureId = incubation.CreatureId,
-		CreatureName = getCreatureDisplayName(incubation.CreatureId),
+		CreatureName = creatureName,
 		Rarity = incubation.Rarity,
 	}
 end
@@ -409,6 +462,14 @@ function BreedingService.RequestInstantComplete(player: Player, placementId: any
 	-- "sofort abgeschlossen" ist spielerisch weiterhin ein abgeschlossener
 	-- Zuchterfolg.
 	ProgressionService.AwardXP(player, "BreedingCompleted")
+
+	GameEvents.Fire(GameEvents.Events.BreedingCompleted, player, {
+		CreatureId = incubation.CreatureId,
+		Rarity = incubation.Rarity,
+		PlacementId = placementId,
+		Instant = true,
+	})
+	holdHatchedCreatureInHand(player, incubation.CreatureId, getCreatureDisplayName(incubation.CreatureId))
 
 	return true, nil
 end

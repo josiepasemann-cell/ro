@@ -84,6 +84,7 @@ local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local AssetTemplateSetup = require(script.Parent:WaitForChild("AssetTemplateSetup"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
 
@@ -301,6 +302,13 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 			resultPayload.RewardAbyssalShards = RaidConfig.VICTORY_ABYSSAL_SHARD_AMOUNT
 			resultPayload.NewAbyssalShardBalance = shardBalance
 		end
+
+		-- GameEvents-Einhängepunkt (Auftrag Punkt 1): QuestService zählt
+		-- hierüber die "Überstehe N Raids"-Tagesquest.
+		GameEvents.Fire(GameEvents.Events.RaidWon, player, {
+			WavesCleared = resultPayload.WavesCleared,
+			RewardTideCoins = tideCoinReward,
+		})
 	else
 		local abducted = PlayerDataService.AbductRandomCreature(player)
 		if abducted then
@@ -311,6 +319,10 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 				RansomCost = abducted.RansomCost,
 			}
 		end
+
+		GameEvents.Fire(GameEvents.Events.RaidLost, player, {
+			AbductedInstanceId = abducted and abducted.InstanceId or nil,
+		})
 	end
 
 	RaidRemotes.RaidResult:FireClient(player, resultPayload)
@@ -574,10 +586,19 @@ local function evaluateOfflineRaids(player: Player)
 			-- "pro Raid"-Granularität wie die Tide-Coin-/Shard-Gutschrift
 			-- oben, siehe ProgressionService-Kopfkommentar.
 			ProgressionService.AwardXP(player, "RaidWon")
+
+			-- GameEvents-Einhängepunkt (Auftrag Punkt 1), ein Fire je
+			-- gewertetem verpasstem, aber gewonnenem Raid - identische
+			-- Granularität wie oben.
+			GameEvents.Fire(GameEvents.Events.RaidWon, player, { WavesCleared = 0, Offline = true })
 		else
 			local abducted = PlayerDataService.AbductRandomCreature(player)
 			if abducted then
 				table.insert(abductedCreatures, abducted)
+				GameEvents.Fire(GameEvents.Events.RaidLost, player, {
+					AbductedInstanceId = abducted.InstanceId,
+					Offline = true,
+				})
 			else
 				-- Inventar bereits leer - weitere Entführungsversuche dieser
 				-- Offline-Auswertung würden ohnehin nichts mehr finden.

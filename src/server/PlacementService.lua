@@ -49,6 +49,7 @@ local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local AssetTemplateSetup = require(script.Parent:WaitForChild("AssetTemplateSetup"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
 
@@ -265,6 +266,14 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 	-- Progression-Einhängepunkt: NACH erfolgreichem Abschluss (nicht beim
 	-- Request), siehe ProgressionService-Kopfkommentar.
 	ProgressionService.AwardXP(player, "BuildingPlaced")
+
+	-- GameEvents-Einhängepunkt (Auftrag Punkt 1): QuestService/
+	-- LeaderboardService hören hierauf, kennen PlacementService selbst
+	-- NICHT - siehe GameEvents-Kopfkommentar.
+	GameEvents.Fire(GameEvents.Events.BuildingPlaced, player, {
+		BuildingId = buildingId,
+		PlacementId = placement.PlacementId,
+	})
 
 	return {
 		Success = true,

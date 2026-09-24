@@ -59,6 +59,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local HeldItemService = require(script.Parent:WaitForChild("HeldItemService"))
+local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local HeldItemConfig = require(ReplicatedStorage:WaitForChild("HeldItemConfig"))
 
 local PickupSpawner = {}
@@ -293,7 +294,13 @@ local function onDepositTriggered(player: Player, station: Model)
 	local ok = PlayerDataService.AddCurrency(player, "TideCoins", HeldItemConfig.Deposit.TideCoinsReward)
 	if not ok then
 		warn(("[PickupSpawner] AddCurrency für %s (GlowSpore-Abgabe) fehlgeschlagen."):format(player.Name))
+		return
 	end
+
+	-- GameEvents-Einhängepunkt (Auftrag Punkt 1): QuestService zählt hierüber
+	-- die "Liefere N Glow Spores ab"-Tagesquest - siehe GameEvents-
+	-- Kopfkommentar. NUR bei tatsächlich erfolgreicher Gutschrift gefeuert.
+	GameEvents.Fire(GameEvents.Events.SporeDelivered, player, { Amount = 1 })
 end
 
 local function attachDepositPrompt(station: Model)

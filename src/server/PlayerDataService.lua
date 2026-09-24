@@ -65,6 +65,11 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
+-- Rein server-interner Ereignis-Hub (siehe GameEvents-Kopfkommentar) - KEINE
+-- Abhängigkeiten in GameEvents selbst, daher hier gefahrlos requirebar, ohne
+-- einen zirkulären require-Zyklus zu riskieren (PlayerDataService wird
+-- praktisch von jedem anderen Server-Modul benötigt).
+local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 
 local PlayerDataService = {}
 
@@ -159,6 +164,44 @@ export type BreedingIncubation = {
 	Rarity: string,
 }
 
+--- Fortschritt EINER aktiven Tagesquest (QuestService, GDD Abschnitt 9 Punkt
+--- 11). `TemplateId` referenziert QuestConfig.QUEST_TEMPLATES - Beschreibung/
+--- Zielformel/Belohnung selbst werden bewusst NICHT hier persistiert (reine
+--- Datenhaltung, analog zu HabitatPlacement/BreedingIncubation oben), nur der
+--- an diesem Tag gewürfelte `Target`-Wert plus Fortschritt/Claim-Status.
+export type QuestProgress = {
+	TemplateId: string,
+	Target: number,
+	Progress: number,
+	Claimed: boolean,
+}
+
+--- Tages-Quest-Gesamtzustand eines Spielers. `DateKey` ("YYYY-MM-DD", UTC)
+--- markiert, für welchen Tag `Quests` aktuell gilt - QuestService vergleicht
+--- dies bei jedem Login/Ereignis gegen PlayerDataService.GetUtcDateString()
+--- und würfelt bei Abweichung ein frisches 3er-Set (siehe QuestService).
+export type QuestState = {
+	DateKey: string?,
+	Quests: { QuestProgress },
+}
+
+--- Tages-Login-Belohnung mit Streak (GDD Abschnitt 3 + Auftrag Punkt 2).
+--- `Streak` ist der zuletzt ERFOLGREICH abgeholte Tag (1..7) - der NÄCHSTE
+--- abholbare Tag wird von DailyRewardService zur Laufzeit aus `LastClaimedDate`
+--- vs. dem heutigen Datum hergeleitet (siehe dort), nicht hier gespeichert.
+export type DailyRewardState = {
+	LastClaimedDate: string?,
+	Streak: number,
+}
+
+--- Persistente Lifetime-Statistiken, unabhängig vom aktuellen Kontostand
+--- (der bei Ausgaben sinkt) - Grundlage für das "Gesamt verdiente Tide
+--- Coins"-Leaderboard (GDD Abschnitt 7). Wird ausschließlich in AddCurrency
+--- fortgeschrieben (siehe dort), niemals rückwirkend korrigiert.
+export type PlayerStats = {
+	LifetimeTideCoinsEarned: number,
+}
+
 --- Versioniertes Spieler-Datenschema. SchemaVersion erlaubt künftigen
 --- Migrationen (siehe MIGRATIONS unten), alte DataStore-Einträge sicher auf
 --- neue Strukturen zu heben, statt sie zu verwerfen.
@@ -224,6 +267,10 @@ export type PlayerData = {
 	MonetizationState: MonetizationState,
 	CosmeticState: CosmeticState,
 
+	QuestState: QuestState,
+	DailyRewardState: DailyRewardState,
+	Stats: PlayerStats,
+
 	ActiveSession: SessionLock?, -- Session-Lock-Metadaten; niemals von Gameplay-Code lesen/schreiben
 }
 
@@ -234,7 +281,16 @@ export type PlayerData = {
 -- die generische fillMissing()-Auffüllung in migrateData() deckt reine
 -- Feld-ERGÄNZUNGEN (keine Umbenennung/Aufspaltung bestehender Felder)
 -- bereits vollständig ab, siehe Kommentar dort.
-local SCHEMA_VERSION = 2
+--
+-- SCHEMA_VERSION 3: QuestState/DailyRewardState/Stats ergänzt (Tages-Quest-/
+-- Login-Belohnungs-/Leaderboard-Backend, siehe Auftrag "Server-Features für
+-- die Veröffentlichung"). Wie bei Version 2 handelt es sich ausschließlich um
+-- reine Feld-ERGÄNZUNGEN auf Top-Level - keine Umbenennung/Aufspaltung
+-- bestehender Felder -, weshalb erneut KEINE dedizierte MIGRATIONS[2]-
+-- Funktion nötig ist: die generische fillMissing()-Auffüllung unten hebt
+-- ältere Datensätze automatisch auf die neue Struktur, ohne bestehende Werte
+-- zu berühren.
+local SCHEMA_VERSION = 3
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -378,6 +434,20 @@ local function createDefaultData(userId: number): PlayerData
 		CosmeticState = {
 			OwnedCosmetics = {},
 			EquippedCosmetics = {},
+		},
+
+		QuestState = {
+			DateKey = nil,
+			Quests = {},
+		},
+
+		DailyRewardState = {
+			LastClaimedDate = nil,
+			Streak = 0,
+		},
+
+		Stats = {
+			LifetimeTideCoinsEarned = 0,
 		},
 
 		ActiveSession = nil,
@@ -772,10 +842,29 @@ function PlayerDataService.AddCurrency(player: Player, currencyType: CurrencyTyp
 		return false, data.Currencies[currencyType] or 0
 	end
 
-	local newBalance = math.max(0, (data.Currencies[currencyType] or 0) + amount)
+	local previousBalance = data.Currencies[currencyType] or 0
+	local newBalance = math.max(0, previousBalance + amount)
 	data.Currencies[currencyType] = newBalance
 
 	dataChangedBindable:Fire(player, "Currency", { CurrencyType = currencyType, NewBalance = newBalance })
+
+	-- Lifetime-Tracking + GameEvents-Hook (Auftrag Punkt 1 + 3): NUR der
+	-- tatsächlich angewendete positive Zuwachs zählt (newBalance könnte durch
+	-- das math.max(0, ...)-Klemmen unten dem tatsächlich beantragten `amount`
+	-- nicht entsprechen, z. B. bei einer Abbuchung, die den Kontostand exakt
+	-- auf 0 bringt) - ausschließlich für TideCoins (die einzige laut GDD
+	-- Abschnitt 7 fürs "Gesamt verdiente Tide Coins"-Leaderboard relevante
+	-- Währung). Läuft NACH dem bereits bestehenden DataChanged-Fire oben,
+	-- damit ein Fehler in einem (theoretischen) künftigen GameEvents-
+	-- Abonnenten niemals den HUD-Push verhindern kann.
+	local actualGain = newBalance - previousBalance
+	if currencyType == "TideCoins" and actualGain > 0 then
+		data.Stats.LifetimeTideCoinsEarned += actualGain
+		GameEvents.Fire(GameEvents.Events.CoinsEarned, player, {
+			Amount = actualGain,
+			NewLifetimeTotal = data.Stats.LifetimeTideCoinsEarned,
+		})
+	end
 
 	return true, newBalance
 end
@@ -1264,6 +1353,59 @@ function PlayerDataService.SetEquippedCosmetic(player: Player, slot: string, ite
 		data.CosmeticState.EquippedCosmetics[slot] = itemId
 	end
 	return true
+end
+
+-- // Tages-Quest-System (QuestState) --------------------------------------
+-- Reine Datenhaltung - Pool-Auswahl/Ereignis-Fortschritt/Claim-Validierung
+-- gehören zu QuestService/QuestConfig, NICHT hier (identisches Prinzip wie
+-- Habitat-Layout/Zucht/Raid oben).
+
+--- Liefert den kompletten Tages-Quest-Zustand (leeres Default-Objekt, falls
+--- nicht geladen). Live-Referenz, siehe GetData-Hinweis oben.
+function PlayerDataService.GetQuestState(player: Player): QuestState
+	local data = dataCache[player.UserId]
+	return data and data.QuestState or { DateKey = nil, Quests = {} }
+end
+
+--- Ersetzt den kompletten Tages-Quest-Zustand (z. B. nach dem Würfeln eines
+--- frischen 3er-Sets für einen neuen Tag). Gibt false zurück, falls die
+--- Daten des Spielers nicht geladen sind.
+function PlayerDataService.SetQuestState(player: Player, newState: QuestState): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.QuestState = newState
+	return true
+end
+
+-- // Tages-Login-Belohnung (DailyRewardState) -------------------------------
+
+function PlayerDataService.GetDailyRewardState(player: Player): DailyRewardState
+	local data = dataCache[player.UserId]
+	return data and data.DailyRewardState or { LastClaimedDate = nil, Streak = 0 }
+end
+
+--- Trägt einen erfolgreich abgeholten Streak-Tag ein. Gibt false zurück,
+--- falls die Daten des Spielers nicht geladen sind.
+function PlayerDataService.SetDailyRewardClaimed(player: Player, dateString: string, streakDay: number): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(dateString) ~= "string" then
+		return false
+	end
+	data.DailyRewardState.LastClaimedDate = dateString
+	data.DailyRewardState.Streak = math.clamp(math.floor(streakDay), 1, 7)
+	return true
+end
+
+-- // Lifetime-Statistiken (Stats) -------------------------------------------
+
+--- Lifetime-Summe aller jemals gutgeschriebenen (positiven) TideCoins-
+--- Zuwächse - siehe AddCurrency. Grundlage für das "Gesamt verdiente Tide
+--- Coins"-Leaderboard (LeaderboardService), NICHT der aktuelle Kontostand.
+function PlayerDataService.GetLifetimeTideCoinsEarned(player: Player): number
+	local data = dataCache[player.UserId]
+	return data and data.Stats.LifetimeTideCoinsEarned or 0
 end
 
 return PlayerDataService

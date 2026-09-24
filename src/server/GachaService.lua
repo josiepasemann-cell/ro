@@ -38,6 +38,8 @@ local GachaConfig = require(script.Parent.GachaConfig)
 local GachaHistoryLogger = require(script.Parent.GachaHistoryLogger)
 local PlayerDataService = require(script.Parent.PlayerDataService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local GameEvents = require(script.Parent.GameEvents)
+local HeldItemService = require(script.Parent.HeldItemService)
 
 type Rarity = GachaConfig.Rarity
 
@@ -174,6 +176,35 @@ end
 --- auf den nächstniedrigeren, nicht-leeren Pool zurück, falls die Rarity
 --- (aktuell nur "Mythic") noch kein zugeordnetes Kreaturen-Asset hat -
 --- siehe Hinweis in GachaConfig.CREATURE_POOL.
+-- // Hand-Übergabe (docs/held-items.md, Abschnitt 7 "Künftige Aufrufer") ---
+-- Identisches Prinzip zu BreedingService.holdHatchedCreatureInHand - siehe
+-- dortigen Kopfkommentar für die ausführliche Begründung (auto-drop nach
+-- HAND_OFF_AUTO_DROP_SECONDS, ohne HeldItemService selbst anzufassen).
+local HAND_OFF_AUTO_DROP_SECONDS = 6
+
+local function holdRolledCreatureInHand(player: Player, creatureId: string, creatureName: string)
+	local creaturesFolder = Workspace:FindFirstChild("Assets")
+	creaturesFolder = creaturesFolder and creaturesFolder:FindFirstChild("Creatures")
+	local template = creaturesFolder and creaturesFolder:FindFirstChild(creatureId)
+	if not template or not template:IsA("Model") then
+		return
+	end
+
+	local ok, heldModel = HeldItemService.HoldItem(player, "Creature", template, {
+		DisplayName = creatureName,
+	})
+	if not ok or not heldModel then
+		return
+	end
+
+	task.delay(HAND_OFF_AUTO_DROP_SECONDS, function()
+		local held = HeldItemService.GetHeld(player)
+		if held and held.Model == heldModel then
+			HeldItemService.DropHeld(player)
+		end
+	end)
+end
+
 local function pickCreatureForRarity(rarity: Rarity): (string, Rarity)
 	local order = GachaConfig.RARITY_ORDER
 	local startIndex = GachaConfig.GetRarityIndex(rarity)
@@ -223,7 +254,7 @@ end
 --- (Cooldown VOR dem Aufruf geprüft) UND OpenPurchasedEgg (siehe unten,
 --- bewusst OHNE Cooldown - eine bezahlte Robux-Transaktion darf niemals an
 --- einem reinen Anti-Spam-Timer scheitern) gemeinsam genutzt.
-local function performRoll(player: Player): OpenEggResult
+local function performRoll(player: Player, purchased: boolean): OpenEggResult
 	-- 1) Gewichteter Roll + Pity (persistent über PlayerDataService) -----------
 	local naturalRarity = rollWeightedRarity()
 	local finalRarity, pityForced, pityCounterAfter = applyPity(player, naturalRarity)
@@ -261,6 +292,17 @@ local function performRoll(player: Player): OpenEggResult
 	-- Ereignis ("ein Mystery Egg wurde geöffnet") ist bereits abgeschlossen.
 	ProgressionService.AwardXP(player, "MysteryEggOpened")
 
+	-- GameEvents-Einhängepunkt (Auftrag Punkt 1) + Hand-Übergabe (Auftrag
+	-- Punkt 5): die geschlüpfte Kreatur wandert kurz sichtbar in die Hand,
+	-- siehe holdRolledCreatureInHand oben / docs/held-items.md.
+	GameEvents.Fire(GameEvents.Events.EggOpened, player, {
+		Rarity = resolvedRarity,
+		CreatureId = creatureId,
+		ResultType = resultType,
+		Purchased = purchased,
+	})
+	holdRolledCreatureInHand(player, creatureId, creatureName)
+
 	local result: OpenEggResult = {
 		Rarity = resolvedRarity,
 		CreatureId = creatureId,
@@ -297,7 +339,7 @@ function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
 	end
 	state.lastRollAt = now
 
-	return performRoll(player), nil
+	return performRoll(player, false), nil
 end
 
 -- // EINHÄNGEPUNKT: Robux-"Mystery Egg"-Entwicklerprodukt -----------------------
@@ -314,7 +356,7 @@ function GachaService.OpenPurchasedEgg(player: Player): (OpenEggResult?, OpenEgg
 	if not PlayerDataService.IsDataLoaded(player) then
 		return nil, "DataNotLoaded"
 	end
-	return performRoll(player), nil
+	return performRoll(player, true), nil
 end
 
 Players.PlayerRemoving:Connect(GachaService.HandlePlayerRemoving)
