@@ -274,8 +274,9 @@ ShopConfig.DEFAULT_WALKSPEED = 16
 --- explizit NICHT Teil des Dateibesitzes dieses Auftrags. Der Gamepass ist
 --- hier daher bewusst nur als PLATZHALTER verdrahtet: MonetizationService
 --- erkennt den Besitz zuverlässig (PlayerOwnsGamepass("ExtraPlot")) und
---- setzt ein Attribut (siehe MonetizationService.EXTRA_PLOT_ATTRIBUTE), löst
---- aber KEINE zweite Plot-Zuweisung aus. Siehe docs/monetization-setup.md
+--- setzt das Player-Attribut "OwnsExtraPlotGamepassPlaceholder" (siehe
+--- MonetizationService.applyExtraPlotPlaceholder), löst aber KEINE zweite
+--- Plot-Zuweisung aus. Siehe docs/monetization-setup.md
 --- für den vollständigen Hinweis an die Spielbetreiberin.
 ShopConfig.EXTRA_PLOT_PLACEHOLDER = true
 
