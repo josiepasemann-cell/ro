@@ -235,6 +235,31 @@ export type BuddyState = {
 	CreatureId: string?,
 }
 
+--- Achievements/rewards/titles state (assignment: "Achievements with
+--- rewards, titles and Roblox badges"). Pure data storage, identical
+--- pattern to QuestState/CodexState above - counting/unlocking/claiming/
+--- badge-granting logic lives entirely in AchievementService, NOT here.
+--- `Counters` holds arbitrary counter keys chosen by AchievementService
+--- itself (e.g. "BuildingsPlaced", "SporesDelivered") - this module doesn't
+--- know their meaning, it's pure number storage. `Unlocked`/`Claimed` are
+--- one-time flags per achievement id (AchievementConfig.Id) - an
+--- achievement stays unlocked forever, even if the underlying progress
+--- value later changes again (e.g. an abducted creature that gets rescued).
+--- `EquippedTitle` references an entry from CodexState.UnlockedTitles
+--- (shared title pool with the existing zone-/event-reward titles, see
+--- PlayerDataService.AddUnlockedTitle) - deliberately NO separate title
+--- pool here, to avoid managing titles twice. `BackfillCompleted` prevents
+--- the one-time retroactive derivation of already-met counters (see
+--- AchievementService.runBackfill) from running again on every future
+--- login, which would otherwise overwrite genuine progress made meanwhile.
+export type AchievementState = {
+	Counters: { [string]: number },
+	Unlocked: { [string]: boolean },
+	Claimed: { [string]: boolean },
+	EquippedTitle: string?,
+	BackfillCompleted: boolean,
+}
+
 --- Zustand des rotierenden Live-Event-Systems (docs/content-update-1.md,
 --- Abschnitt 1 + 7b). `EventId`/`SlotStart` markieren, zu welchem 12h-Slot
 --- `Balance`/`StepProgress` aktuell gehören - LiveEventService vergleicht
@@ -335,6 +360,7 @@ export type PlayerData = {
 	CodexState: CodexState,
 	LiveEventState: LiveEventState,
 	BuddyState: BuddyState,
+	AchievementState: AchievementState,
 
 	OnboardingCompleted: boolean,
 
@@ -373,7 +399,12 @@ export type PlayerData = {
 -- das dem Spieler sichtbar durch die Welt folgt, siehe docs/buddy.md). Wie
 -- bei Version 2/3/4/5 eine reine Top-Level-Feld-ERGÄNZUNG, keine dedizierte
 -- MIGRATIONS[5]-Funktion nötig.
-local SCHEMA_VERSION = 6
+--
+-- SCHEMA_VERSION 7: AchievementState ergänzt (Achievements/rewards/titles/
+-- Roblox badges system, see AchievementState type comment above). Again a
+-- pure top-level field ADDITION, no dedicated MIGRATIONS[6] function
+-- needed.
+local SCHEMA_VERSION = 7
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -547,6 +578,14 @@ local function createDefaultData(userId: number): PlayerData
 
 		BuddyState = {
 			CreatureId = nil,
+		},
+
+		AchievementState = {
+			Counters = {},
+			Unlocked = {},
+			Claimed = {},
+			EquippedTitle = nil,
+			BackfillCompleted = false,
 		},
 
 		OnboardingCompleted = false,
@@ -1718,6 +1757,44 @@ function PlayerDataService.AddOwnedEventItem(player: Player, itemId: string): bo
 	end
 	data.LiveEventState.OwnedEventItems[itemId] = true
 	return true
+end
+
+-- // Achievements (AchievementState) -----------------------------------------
+-- Pure data storage - counter increments/unlock-/claim-/badge-granting logic
+-- belongs to AchievementService, NOT here (identical principle to
+-- QuestState/LiveEventState above).
+
+--- Returns the full achievement state (default object if not loaded). Live
+--- reference, see GetData note above (do not mutate without also calling
+--- SetAchievementState).
+function PlayerDataService.GetAchievementState(player: Player): AchievementState
+	local data = dataCache[player.UserId]
+	if data then
+		return data.AchievementState
+	end
+	return { Counters = {}, Unlocked = {}, Claimed = {}, EquippedTitle = nil, BackfillCompleted = false }
+end
+
+--- Replaces the full achievement state. Raw setter WITHOUT validation,
+--- identical principle to SetQuestState/SetLiveEventState. Returns false if
+--- the player's data isn't loaded.
+function PlayerDataService.SetAchievementState(player: Player, newState: AchievementState): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.AchievementState = newState
+	return true
+end
+
+--- Returns the shared title-ownership pool (zone collection rewards + live
+--- event quest lines + achievements, see AddUnlockedTitle) - AchievementService
+--- uses this to validate RequestEquipTitle requests against actually-owned
+--- titles, without maintaining a second, redundant title pool. Empty array
+--- if not loaded. Live reference.
+function PlayerDataService.GetUnlockedTitles(player: Player): { string }
+	local data = dataCache[player.UserId]
+	return data and data.CodexState.UnlockedTitles or {}
 end
 
 return PlayerDataService

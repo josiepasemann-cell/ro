@@ -70,6 +70,19 @@ export type PlaceFailureReason =
 
 export type RemoveFailureReason = "DataNotLoaded" | "InvalidPlacement" | "NotFound" | "PersistenceRemoveFailed"
 
+-- // Gebäude-Upgrade-System (Stufen 1->2->3, siehe docs/building-upgrades.md) --
+export type UpgradeFailureReason =
+	"DataNotLoaded"
+	| "InvalidPlacement"
+	| "NotFound"
+	| "UnknownBuilding"
+	| "MaxStageReached"
+	| "LevelTooLow"
+	| "IncubationActive"
+	| "InsufficientFunds"
+	| "ChargeFailed"
+	| "PersistenceFailed"
+
 export type PlaceResult = {
 	Success: boolean,
 	Reason: PlaceFailureReason?,
@@ -84,6 +97,15 @@ export type RemoveResult = {
 	PlacementId: string?,
 	RefundAmount: number?,
 	NewBalance: number?,
+}
+
+export type UpgradeResult = {
+	Success: boolean,
+	Reason: UpgradeFailureReason?,
+	PlacementId: string?,
+	NewStage: number?,
+	NewBalance: number?, -- Tide Coins
+	NewAbyssalShardBalance: number?, -- nur gesetzt, falls die Stufe Abyssal Shards gekostet hat (siehe BuildingConfig.BuildingUpgradeCost)
 }
 
 local PlacementService = {}
@@ -147,6 +169,113 @@ local function tagModel(model: Model, placementId: string, buildingId: string, f
 	-- einem Upgrade einfach mit aktualisieren - Default 1, siehe
 	-- PlayerDataService.AddHabitatPlacement.
 	model:SetAttribute("Level", level or 1)
+end
+
+-- // Gebäude-Upgrade-System: Modell-Wechsel bzw. Fail-Soft-Akzent -----------
+-- (siehe docs/building-upgrades.md + AssetTemplateSetup.GetBuildingStageTemplate-
+-- Kopfkommentar zur Fail-Soft-Design-Entscheidung).
+
+local STAGE_ACCENT_COLOR: { [number]: Color3 } = {
+	-- Farben identisch zu UIKit.Theme.Neon.Cyan/Violet (siehe docs/ui-kit.md) -
+	-- bewusst als eigene Color3-Konstanten geführt statt UIKit.Theme zu
+	-- requiren, damit dieses rein serverseitige Modul unabhängig vom
+	-- (eigentlich client-orientierten) UIKit-Paket bleibt.
+	[2] = Color3.fromRGB(0, 245, 255),
+	[3] = Color3.fromRGB(160, 70, 255),
+}
+local STAGE_ACCENT_THICKNESS: { [number]: number } = {
+	[2] = 0.35,
+	[3] = 0.55,
+}
+local STAGE_ACCENT_NAME = "StageAccentRing"
+
+--- Fail-Soft-Ersatz für ein (noch) fehlendes Stufe-2/3-Modell: ein
+--- schwebender Neon-Ring + Punktlicht um den aktuellen Modell-Pivot, Farbe/
+--- Helligkeit je Stufe gestaffelt (Stufe 3 auffälliger als Stufe 2). Rein
+--- kosmetisch, KEIN Gameplay-Effekt. Ersetzt einen bereits vorhandenen Ring
+--- (erneutes Upgrade Stufe 2 -> 3 am selben, weiterhin fehlenden Modell).
+local function applyStageAccent(model: Model, stage: number)
+	local color = STAGE_ACCENT_COLOR[stage]
+	if not color then
+		return
+	end
+
+	local existing = model:FindFirstChild(STAGE_ACCENT_NAME)
+	if existing then
+		existing:Destroy()
+	end
+
+	local pivot = model:GetPivot()
+	local ring = Instance.new("Part")
+	ring.Name = STAGE_ACCENT_NAME
+	ring.Shape = Enum.PartType.Cylinder
+	ring.Material = Enum.Material.Neon
+	ring.Color = color
+	ring.Anchored = true
+	ring.CanCollide = false
+	ring.CanQuery = false
+	ring.CanTouch = false
+	ring.Size = Vector3.new(STAGE_ACCENT_THICKNESS[stage] or 0.35, 6, 6)
+	ring.CFrame = pivot * CFrame.new(0, 0.6, 0) * CFrame.Angles(0, 0, math.rad(90))
+	ring.Parent = model
+
+	local light = Instance.new("PointLight")
+	light.Color = color
+	light.Range = 14
+	light.Brightness = stage >= 3 and 3.5 or 2.2
+	light.Parent = ring
+end
+
+--- Entfernt einen ggf. vorhandenen Fail-Soft-Akzent (z. B. weil ein
+--- inzwischen doch vorhandenes echtes Stufe-Modell verwendet wird - dessen
+--- eigener Look soll nicht zusätzlich vom Platzhalter-Ring überlagert
+--- werden).
+local function clearStageAccent(model: Model)
+	local existing = model:FindFirstChild(STAGE_ACCENT_NAME)
+	if existing then
+		existing:Destroy()
+	end
+end
+
+--- Wendet eine Ausbaustufe auf ein BEREITS im Workspace stehendes
+--- Platzierungs-Modell an: tauscht das Modell gegen die passende Stufe-2/3-
+--- Vorlage (falls vorhanden, siehe AssetTemplateSetup.GetBuildingStageTemplate),
+--- oder ergänzt andernfalls nur den Fail-Soft-Akzent auf dem UNVERÄNDERTEN
+--- Stufe-1-Modell. Position/Rotation/PlacementId/FieldIndex bleiben in
+--- jedem Fall erhalten (Pivot des alten Modells wird 1:1 auf das neue
+--- übertragen). Mutiert `meta.Model` bei einem tatsächlichen Modell-Wechsel.
+local function applyStageToModel(
+	placementId: string,
+	meta: PlacementMeta,
+	definition: BuildingConfig.BuildingDefinition,
+	targetStage: number
+)
+	local oldModel = meta.Model
+	if not oldModel or not oldModel.Parent then
+		return
+	end
+
+	local stageTemplate = AssetTemplateSetup.GetBuildingStageTemplate(meta.BuildingId, targetStage)
+	if stageTemplate then
+		local pivot = oldModel:GetPivot()
+		local parent = oldModel.Parent
+		local modelName = oldModel.Name
+		oldModel:Destroy()
+
+		local newModel = stageTemplate:Clone()
+		newModel.Name = modelName
+		newModel.Parent = parent
+		newModel:PivotTo(pivot)
+		tagModel(newModel, placementId, meta.BuildingId, meta.FieldIndex, targetStage)
+
+		meta.Model = newModel
+		return
+	end
+
+	-- Kein echtes Stufe-Modell (noch) vorhanden - Stufe-1-Modell behalten,
+	-- nur Attribute + Fail-Soft-Akzent aktualisieren (siehe Kopfkommentar).
+	tagModel(oldModel, placementId, meta.BuildingId, meta.FieldIndex, targetStage)
+	applyStageAccent(oldModel, targetStage)
 end
 
 -- // Öffentliche API ------------------------------------------------------
@@ -329,14 +458,184 @@ function PlacementService.RequestRemove(player: Player, placementId: any): Remov
 	end
 
 	local definition = BuildingConfig.Get(meta.BuildingId)
-	local refund = definition and math.floor(definition.Cost * definition.SellRefundFraction) or 0
+
+	-- Rückerstattung berücksichtigt bereits investierte Upgrade-Kosten
+	-- (Auftrag Gebäude-Upgrade-System, siehe docs/building-upgrades.md) -
+	-- NICHT nur den ursprünglichen Bau-Cost. `stage` wird vom bereits vor
+	-- der Entfernung ausgelesenen Modell-Attribut übernommen (siehe
+	-- tagModel/applyStageToModel - "Level" ist dort IMMER synchron zur
+	-- persistenten HabitatPlacement.Level), ein zusätzlicher
+	-- GetHabitatLayout-Scan ist dafür nicht nötig.
+	local stage = (meta.Model and meta.Model:GetAttribute("Level")) or 1
+	if type(stage) ~= "number" then
+		stage = 1
+	end
+
+	local investedTideCoins = 0
+	local investedAbyssalShards = 0
+	if definition then
+		investedTideCoins = definition.Cost
+		for targetStage = 2, math.min(stage, definition.MaxStage) do
+			local upgradeCost = definition.UpgradeCosts[targetStage]
+			if upgradeCost then
+				investedTideCoins += upgradeCost.TideCoins
+				investedAbyssalShards += upgradeCost.AbyssalShards or 0
+			end
+		end
+	end
+
+	local sellFraction = definition and definition.SellRefundFraction or 0
+	local refund = math.floor(investedTideCoins * sellFraction)
+	local shardRefund = math.floor(investedAbyssalShards * sellFraction)
+
 	local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", refund)
+	if shardRefund > 0 then
+		PlayerDataService.AddCurrency(player, "AbyssalShards", shardRefund)
+	end
 
 	return {
 		Success = true,
 		PlacementId = placementId,
 		RefundAmount = refund,
 		NewBalance = newBalance,
+	}
+end
+
+--- Validiert und führt eine Ausbaustufen-Anfrage (Stufe -> Stufe+1, max.
+--- BuildingConfig.BuildingDefinition.MaxStage) vollständig serverseitig aus.
+--- `placementId` ist ein unvertrauter, angeblicher Client-Wert - wird
+--- ausschließlich gegen den eigenen Pro-Spieler-Laufzeitzustand (Beweis für
+--- Eigentümerschaft, identisches Prinzip zu RequestRemove) UND das eigene,
+--- bereits persistente HabitatLayout (autoritative aktuelle Stufe) geprüft,
+--- bevor irgendetwas verändert wird.
+---
+--- DESIGN-ENTSCHEIDUNG "kein Upgrade während laufender Inkubation" (Auftrag
+--- Punkt 2 - explizit zu entscheiden/dokumentieren, siehe auch
+--- docs/building-upgrades.md): Ein BroodPool mit aktiver Inkubation
+--- (PlayerDataService.GetIncubationForPlacement) kann NICHT hochgestuft
+--- werden. Grund: Das Zucht-ERGEBNIS wurde beim Start bereits mit der
+--- ALTEN Stufe gewürfelt (siehe BreedingService.RequestStartBreeding
+--- Kopfkommentar "Roll beim Start statt beim Abholen") und liegt bereits
+--- fest in PlayerDataService.BreedingIncubation - ein Upgrade MITTEN in der
+--- Inkubation würde dem Spieler keinerlei rückwirkenden Vorteil für die
+--- bereits laufende Zucht bringen, könnte aber den Eindruck erwecken
+--- ("ich habe gerade auf Meisterstufe hochgestuft, wieso ist mein Ergebnis
+--- nicht besser?"). Ein simples, klares "erst abholen, dann upgraden"
+--- vermeidet dieses Missverständnis vollständig, ohne die Inkubation selbst
+--- anzufassen (kein Datenverlust, keine Sonderfall-Rechnung nötig).
+function PlacementService.RequestUpgrade(player: Player, placementId: any): UpgradeResult
+	if not PlayerDataService.IsDataLoaded(player) then
+		return { Success = false, Reason = "DataNotLoaded" }
+	end
+
+	if type(placementId) ~= "string" then
+		return { Success = false, Reason = "InvalidPlacement" }
+	end
+
+	local userId = player.UserId
+	local userPlacements = placementsByUser[userId]
+	local meta = userPlacements and userPlacements[placementId]
+	if not meta then
+		return { Success = false, Reason = "NotFound" }
+	end
+
+	local definition = BuildingConfig.Get(meta.BuildingId)
+	if not definition then
+		return { Success = false, Reason = "UnknownBuilding" }
+	end
+
+	-- Aktuelle Stufe AUTORITATIV aus dem persistenten HabitatLayout lesen
+	-- (nicht aus dem Modell-Attribut, das nur ein Spiegel davon ist) - der
+	-- Lookup bestätigt zugleich, dass `placementId` wirklich (noch) im
+	-- eigenen Layout existiert.
+	local currentStage: number? = nil
+	for _, placement in ipairs(PlayerDataService.GetHabitatLayout(player)) do
+		if placement.PlacementId == placementId then
+			currentStage = placement.Level
+			break
+		end
+	end
+	if not currentStage then
+		return { Success = false, Reason = "NotFound" }
+	end
+
+	if currentStage >= definition.MaxStage then
+		return { Success = false, Reason = "MaxStageReached" }
+	end
+
+	local targetStage = currentStage + 1
+	local upgradeCost = definition.UpgradeCosts[targetStage]
+	if not upgradeCost then
+		return { Success = false, Reason = "MaxStageReached" }
+	end
+
+	local playerLevel = PlayerDataService.GetLevel(player)
+	if playerLevel < upgradeCost.LevelRequirement then
+		return { Success = false, Reason = "LevelTooLow" }
+	end
+
+	if meta.BuildingId == "BroodPool" and PlayerDataService.GetIncubationForPlacement(player, placementId) then
+		return { Success = false, Reason = "IncubationActive" }
+	end
+
+	local balance = PlayerDataService.GetCurrency(player, "TideCoins")
+	if balance < upgradeCost.TideCoins then
+		return { Success = false, Reason = "InsufficientFunds" }
+	end
+
+	local shardCost = upgradeCost.AbyssalShards or 0
+	if shardCost > 0 then
+		local shardBalance = PlayerDataService.GetCurrency(player, "AbyssalShards")
+		if shardBalance < shardCost then
+			return { Success = false, Reason = "InsufficientFunds" }
+		end
+	end
+
+	local chargeOk, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", -upgradeCost.TideCoins)
+	if not chargeOk then
+		return { Success = false, Reason = "ChargeFailed" }
+	end
+
+	local newShardBalance: number? = nil
+	if shardCost > 0 then
+		local shardOk, shardBalanceAfter = PlayerDataService.AddCurrency(player, "AbyssalShards", -shardCost)
+		if not shardOk then
+			-- Rollback der bereits abgezogenen Tide Coins, siehe identisches
+			-- Muster in RequestPlace/BreedingService.RequestStartBreeding.
+			PlayerDataService.AddCurrency(player, "TideCoins", upgradeCost.TideCoins)
+			return { Success = false, Reason = "ChargeFailed" }
+		end
+		newShardBalance = shardBalanceAfter
+	end
+
+	local persisted = PlayerDataService.SetHabitatPlacementLevel(player, placementId, targetStage)
+	if not persisted then
+		-- Persistenz fehlgeschlagen (z. B. Daten zwischen Prüfung und
+		-- Schreiben entladen) - bereits abgezogene Kosten zurückerstatten.
+		PlayerDataService.AddCurrency(player, "TideCoins", upgradeCost.TideCoins)
+		if shardCost > 0 then
+			PlayerDataService.AddCurrency(player, "AbyssalShards", shardCost)
+		end
+		return { Success = false, Reason = "PersistenceFailed" }
+	end
+
+	applyStageToModel(placementId, meta, definition, targetStage)
+
+	-- GameEvents-Einhängepunkt (Auftrag Punkt 5): Achievements/Quests hören
+	-- hierüber, kennen PlacementService selbst NICHT - siehe
+	-- GameEvents-Kopfkommentar.
+	GameEvents.Fire(GameEvents.Events.BuildingUpgraded, player, {
+		BuildingId = meta.BuildingId,
+		PlacementId = placementId,
+		NewStage = targetStage,
+	})
+
+	return {
+		Success = true,
+		PlacementId = placementId,
+		NewStage = targetStage,
+		NewBalance = newBalance,
+		NewAbyssalShardBalance = newShardBalance,
 	}
 end
 
@@ -371,7 +670,21 @@ function PlacementService.RestorePlayerLayout(player: Player)
 			continue
 		end
 
-		local template = AssetTemplateSetup.GetBuildingTemplate(definition.TemplateName)
+		-- Gebäude-Upgrade-System (siehe docs/building-upgrades.md): bei
+		-- Stufe > 1 zuerst die echte Stufe-Vorlage versuchen, sonst auf das
+		-- Stufe-1-Modell zurückfallen + Fail-Soft-Akzent ergänzen (siehe
+		-- applyStageAccent) - identisches Verhalten wie beim Upgrade selbst
+		-- (applyStageToModel), nur hier "von Grund auf" statt als Wechsel.
+		local stage = placement.Level or 1
+		local template: Model? = nil
+		local usedStageTemplate = false
+		if stage > 1 then
+			template = AssetTemplateSetup.GetBuildingStageTemplate(placement.BuildingId, stage)
+			usedStageTemplate = template ~= nil
+		end
+		if not template then
+			template = AssetTemplateSetup.GetBuildingTemplate(definition.TemplateName)
+		end
 		if not template then
 			warn(
 				("[PlacementService] Vorlage '%s' fehlt - gespeicherte Platzierung %s von %s übersprungen."):format(
@@ -393,6 +706,16 @@ function PlacementService.RestorePlayerLayout(player: Player)
 
 		local resolvedFieldIndex = matchedField and matchedField.Index or -1
 		tagModel(model, placement.PlacementId, placement.BuildingId, resolvedFieldIndex, placement.Level)
+
+		if stage > 1 and not usedStageTemplate then
+			applyStageAccent(model, stage)
+		elseif stage <= 1 then
+			-- Defensiv: ein evtl. übrig gebliebener Akzent-Rest aus einem
+			-- geklonten Stufe-1-Template (sollte nie vorkommen, da Vorlagen
+			-- selbst nie einen StageAccentRing enthalten) wird hier trotzdem
+			-- konsequent entfernt.
+			clearStageAccent(model)
+		end
 
 		if matchedField then
 			occupiedFieldByUser[userId][matchedField.Index] = placement.PlacementId

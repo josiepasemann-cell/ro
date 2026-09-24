@@ -123,7 +123,13 @@ local function computeIncomePerMinute(player: Player): number
 	for _, placement in ipairs(layout) do
 		local definition = BuildingConfig.Get(placement.BuildingId)
 		if definition and definition.IncomeRate and definition.IncomeRate > 0 then
-			totalPerMinute += definition.IncomeRate * LiveEventService.GetBuildingIncomeMultiplier(placement.BuildingId)
+			-- Gebäude-Upgrade-System (siehe docs/building-upgrades.md):
+			-- HabitatPlacement.Level (1-3) skaliert die Basis-IncomeRate via
+			-- BuildingConfig.GetIncomeMultiplier - liefert 1 (neutral) für
+			-- Nicht-Produktionsgebäude/unbekannte Stufen, siehe dortige
+			-- Kopfkommentar.
+			local stageMultiplier = BuildingConfig.GetIncomeMultiplier(placement.BuildingId, placement.Level)
+			totalPerMinute += definition.IncomeRate * stageMultiplier * LiveEventService.GetBuildingIncomeMultiplier(placement.BuildingId)
 		end
 	end
 

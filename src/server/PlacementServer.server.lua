@@ -18,10 +18,11 @@
 		Server-`Script` zu machen statt eines `ModuleScript`)
 
 	Sicherheitsprinzip (kein Client-Trust):
-		RequestPlaceBuilding/RequestRemoveBuilding werden hier 1:1 an
-		PlacementService.RequestPlace/RequestRemove durchgereicht - jeder
-		einzelne Payload-Wert (BuildingId, FieldIndex, RotationY,
-		PlacementId) wird DORT vollständig neu validiert. Der einzige
+		RequestPlaceBuilding/RequestRemoveBuilding/RequestUpgradeBuilding
+		werden hier 1:1 an PlacementService.RequestPlace/RequestRemove/
+		RequestUpgrade durchgereicht - jeder einzelne Payload-Wert
+		(BuildingId, FieldIndex, RotationY, PlacementId) wird DORT
+		vollständig neu validiert. Der einzige
 		vertrauenswürdige Wert aus dem Event ist `player`, den die Roblox-
 		Engine selbst als ersten Parameter von OnServerEvent liefert (vom
 		Client nicht fälschbar).
@@ -43,6 +44,11 @@ end)
 HabitatRemotes.RequestRemoveBuilding.OnServerEvent:Connect(function(player: Player, placementId)
 	local result = PlacementService.RequestRemove(player, placementId)
 	HabitatRemotes.RemoveBuildingResult:FireClient(player, result)
+end)
+
+HabitatRemotes.RequestUpgradeBuilding.OnServerEvent:Connect(function(player: Player, placementId)
+	local result = PlacementService.RequestUpgrade(player, placementId)
+	HabitatRemotes.UpgradeBuildingResult:FireClient(player, result)
 end)
 
 local JOIN_DATA_TIMEOUT_SECONDS = 15

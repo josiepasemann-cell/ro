@@ -36,6 +36,17 @@
 			Antwort auf RequestRemoveBuilding: { Success: boolean,
 			Reason: string?, PlacementId: string?, RefundAmount: number?,
 			NewBalance: number? }.
+		RequestUpgradeBuilding (RemoteEvent, Client -> Server)
+			Payload: (placementId: string). Gebäude-Upgrade-System (siehe
+			docs/building-upgrades.md) - reine Absichtserklärung, der
+			Server (PlacementService.RequestUpgrade) validiert Stufe,
+			Level-Anforderung, laufende Inkubation (BroodPool) und
+			Kontostand komplett neu, identisches Sicherheitsprinzip wie
+			RequestPlaceBuilding.
+		UpgradeBuildingResult (RemoteEvent, Server -> Client)
+			Antwort auf RequestUpgradeBuilding: { Success: boolean,
+			Reason: string?, PlacementId: string?, NewStage: number?,
+			NewBalance: number?, NewAbyssalShardBalance: number? }.
 ]]
 
 local RunService = game:GetService("RunService")
@@ -61,11 +72,15 @@ if RunService:IsServer() then
 	HabitatRemotes.PlaceBuildingResult = getOrCreateRemoteEvent(script, "PlaceBuildingResult")
 	HabitatRemotes.RequestRemoveBuilding = getOrCreateRemoteEvent(script, "RequestRemoveBuilding")
 	HabitatRemotes.RemoveBuildingResult = getOrCreateRemoteEvent(script, "RemoveBuildingResult")
+	HabitatRemotes.RequestUpgradeBuilding = getOrCreateRemoteEvent(script, "RequestUpgradeBuilding")
+	HabitatRemotes.UpgradeBuildingResult = getOrCreateRemoteEvent(script, "UpgradeBuildingResult")
 else
 	HabitatRemotes.RequestPlaceBuilding = script:WaitForChild("RequestPlaceBuilding") :: RemoteEvent
 	HabitatRemotes.PlaceBuildingResult = script:WaitForChild("PlaceBuildingResult") :: RemoteEvent
 	HabitatRemotes.RequestRemoveBuilding = script:WaitForChild("RequestRemoveBuilding") :: RemoteEvent
 	HabitatRemotes.RemoveBuildingResult = script:WaitForChild("RemoveBuildingResult") :: RemoteEvent
+	HabitatRemotes.RequestUpgradeBuilding = script:WaitForChild("RequestUpgradeBuilding") :: RemoteEvent
+	HabitatRemotes.UpgradeBuildingResult = script:WaitForChild("UpgradeBuildingResult") :: RemoteEvent
 end
 
 return HabitatRemotes
