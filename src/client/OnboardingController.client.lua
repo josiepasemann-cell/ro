@@ -277,7 +277,7 @@ local function ensureOverlay()
 
 	skipButton = Button.new({
 		Parent = buttonRow,
-		Text = "Überspringen",
+		Text = "Skip",
 		Variant = "Ghost",
 		Size = UDim2.new(0.42, -6, 1, 0),
 		LayoutOrder = 1,
@@ -285,7 +285,7 @@ local function ensureOverlay()
 
 	nextButton = Button.new({
 		Parent = buttonRow,
-		Text = "Weiter",
+		Text = "Next",
 		Variant = "Primary",
 		Important = true,
 		Size = UDim2.new(0.58, -6, 1, 0),
@@ -454,37 +454,37 @@ type Step = {
 
 local STEPS: { Step } = {
 	{
-		Title = "Willkommen bei Abyssara! 🌊",
-		Body = "Tauche tief hinab, baue dein eigenes Riff und züchte leuchtende Kreaturen! Lass uns kurz zeigen, wie alles funktioniert.",
+		Title = "Welcome to Abyssara! 🌊",
+		Body = "Dive deep, build your own reef, and breed glowing creatures! Let's quickly show you how everything works.",
 	},
 	{
-		Title = "Reise zu deinem Riff-Plot 🧭",
-		Body = "Hier öffnest du das Reisen-Menü. Damit kommst du jederzeit sofort zu deinem eigenen Riff-Plot!",
+		Title = "Travel to your Reef Plot 🧭",
+		Body = "This opens the Travel menu. Use it to get straight to your own reef plot anytime!",
 		FindTarget = function()
-			return findButtonByLabelText("Reisen")
+			return findButtonByLabelText("Travel")
 		end,
 	},
 	{
-		Title = "Baue dein erstes Gebäude 🛠️",
-		Body = "Mit diesem Knopf startest du den Baumodus. Platziere dein erstes Gebäude auf deinem Plot, um Tide Coins zu verdienen!",
+		Title = "Build your first building 🛠️",
+		Body = "This button starts Build Mode. Place your first building on your plot to start earning Tide Coins!",
 		FindTarget = function()
-			return findButtonByLabelText("Bauen")
+			return findButtonByLabelText("Build")
 		end,
 	},
 	{
-		Title = "Glow Spores einsammeln! ✨",
-		Body = "Schau dich auf deinem Plot um: Dort leuchten Glow Spores! Sammle sie ein und bring sie zur Abgabestation für Tide Coins.",
+		Title = "Collect Glow Spores! ✨",
+		Body = "Look around your plot: Glow Spores are glowing there! Collect them and bring them to the drop-off station for Tide Coins.",
 	},
 	{
-		Title = "Brutbecken & Mystery Eggs 🥚",
-		Body = "Hier siehst du dein Brutbecken und kannst süße neue Kreaturen aus Mystery Eggs schlüpfen lassen!",
+		Title = "Brood Pool & Mystery Eggs 🥚",
+		Body = "Here you can see your Brood Pool and hatch cute new creatures from Mystery Eggs!",
 		FindTarget = function()
-			return findButtonByLabelText("Brutbecken")
+			return findButtonByLabelText("Brood Pool")
 		end,
 	},
 	{
-		Title = "Der Shop 🛒",
-		Body = "Im Shop findest du coole Kosmetik und praktische Boosts. Viel Spaß tief unten im Ozean!",
+		Title = "The Shop 🛒",
+		Body = "The shop has cool cosmetics and handy boosts. Have fun deep down in the ocean!",
 		FindTarget = function()
 			return findButtonByLabelText("Shop")
 		end,
@@ -540,7 +540,7 @@ local function showStep(index: number)
 	cardTitle.Text = step.Title
 	cardBody.Text = step.Body
 	refreshDots()
-	nextButton:SetText(if index == #STEPS then "Los geht's!" else "Weiter")
+	nextButton:SetText(if index == #STEPS then "Let's go!" else "Next")
 
 	stopTracking()
 	local target = step.FindTarget and step.FindTarget() or nil

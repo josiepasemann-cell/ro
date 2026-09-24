@@ -137,7 +137,7 @@ statusLabel.TextColor3 = Theme.Text.Primary
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.TextWrapped = true
 statusLabel.TextScaled = true
-statusLabel.Text = "Nächster Trench Raid: --:--"
+statusLabel.Text = "Next Trench Raid: --:--"
 statusLabel.Parent = statusBar
 local statusLabelConstraint = Instance.new("UITextSizeConstraint")
 statusLabelConstraint.MinTextSize = 12
@@ -166,7 +166,7 @@ local statusLayoutConnection = Device.Changed:Connect(applyStatusBarLayout)
 -- Panel-Titel statisch "Raid-Ergebnis" und Sieg/Niederlage wird stattdessen
 -- über ein eigenes, farbcodiertes Label im Content dargestellt.
 local resultPanel = Panel.new({
-	Title = "Raid-Ergebnis",
+	Title = "Raid Result",
 	Closable = true,
 	CenteredSize = UDim2.fromOffset(420, 320),
 })
@@ -222,7 +222,7 @@ local function showResultPopup(won: boolean, bodyText: string)
 		resultAutoHideThread = nil
 	end
 
-	resultTitle.Text = if won then "Raid erfolgreich abgewehrt!" else "Trench Raid verloren"
+	resultTitle.Text = if won then "Raid successfully repelled!" else "Trench Raid lost"
 	resultTitle.TextColor3 = if won then Theme.Semantic.Success else Theme.Semantic.Danger
 
 	resultBody.Text = bodyText
@@ -246,9 +246,9 @@ end
 local function buildVictoryText(result: { [string]: any }): string
 	local lines = {}
 	if result.Offline then
-		table.insert(lines, ("Während du weg warst: %d Raid(s) erfolgreich abgewehrt."):format(result.RaidsEvaluated or 1))
+		table.insert(lines, ("While you were away: %d raid(s) successfully repelled."):format(result.RaidsEvaluated or 1))
 	else
-		table.insert(lines, ("Alle %d Wellen überstanden!"):format(result.WavesCleared or 0))
+		table.insert(lines, ("Survived all %d waves!"):format(result.WavesCleared or 0))
 	end
 	if result.RewardTideCoins then
 		table.insert(lines, ("+ %d Tide Coins"):format(result.RewardTideCoins))
@@ -262,13 +262,13 @@ end
 local function buildDefeatText(result: { [string]: any }): string
 	local lines = {}
 	if result.Offline then
-		table.insert(lines, ("Während du weg warst: %d Raid(s) verloren."):format(result.RaidsEvaluated or 1))
+		table.insert(lines, ("While you were away: %d raid(s) lost."):format(result.RaidsEvaluated or 1))
 		local abductedList = result.AbductedCreatures
 		if type(abductedList) == "table" and #abductedList > 0 then
 			for _, abducted in ipairs(abductedList) do
 				table.insert(
 					lines,
-					("Entführt: %s (%s) - Lösegeld %d Tide Coins"):format(
+					("Abducted: %s (%s) - Ransom %d Tide Coins"):format(
 						abducted.CreatureId,
 						abducted.Rarity,
 						abducted.RansomCost
@@ -277,22 +277,22 @@ local function buildDefeatText(result: { [string]: any }): string
 			end
 		end
 	else
-		table.insert(lines, ("Durchbrochen nach Welle %d."):format(result.WavesCleared or 0))
+		table.insert(lines, ("Breached after wave %d."):format(result.WavesCleared or 0))
 		local abducted = result.AbductedCreature
 		if abducted then
 			table.insert(
 				lines,
-				("Entführt: %s (%s) - Lösegeld %d Tide Coins"):format(
+				("Abducted: %s (%s) - Ransom %d Tide Coins"):format(
 					abducted.CreatureId,
 					abducted.Rarity,
 					abducted.RansomCost
 				)
 			)
 		else
-			table.insert(lines, "Keine Kreatur im Inventar - keine Entführung.")
+			table.insert(lines, "No creature in inventory - no abduction.")
 		end
 	end
-	table.insert(lines, "Öffne 'Entführt' im Menü, um freizukaufen.")
+	table.insert(lines, "Open 'Abducted' in the menu to rescue them.")
 	return table.concat(lines, "\n")
 end
 
@@ -341,7 +341,7 @@ end
 -- // Entführte-Kreaturen-Panel (Freikauf gegen Lösegeld), UIKit.Panel ----------
 
 local rescuePanel = Panel.new({
-	Title = "Entführte Kreaturen",
+	Title = "Abducted Creatures",
 	Closable = true,
 	CenteredSize = UDim2.fromOffset(380, 420),
 })
@@ -369,7 +369,7 @@ rescueEmptyLabel.BackgroundTransparency = 1
 rescueEmptyLabel.Font = Theme.Font.Body
 rescueEmptyLabel.TextColor3 = Theme.Text.Muted
 rescueEmptyLabel.TextScaled = true
-rescueEmptyLabel.Text = "Aktuell keine entführten Kreaturen."
+rescueEmptyLabel.Text = "No abducted creatures right now."
 rescueEmptyLabel.LayoutOrder = 0
 rescueEmptyLabel.Parent = rescueScroll
 
@@ -378,7 +378,7 @@ local rescueRowHandles: { [string]: { Frame: Frame, Button: any } } = {}
 
 local function requestRescue(instanceId: string, button: any)
 	button:SetDisabled(true)
-	button:SetText("Wird angefragt ...")
+	button:SetText("Requesting ...")
 	RaidRemotes.RequestRescueCreature:FireServer(instanceId)
 end
 
@@ -426,12 +426,12 @@ local function rebuildRescuePanel()
 		costLabel.TextXAlignment = Enum.TextXAlignment.Left
 		costLabel.TextScaled = true
 		costLabel.TextColor3 = Theme.Text.Secondary
-		costLabel.Text = ("Lösegeld: %d Tide Coins"):format(abducted.RansomCost)
+		costLabel.Text = ("Ransom: %d Tide Coins"):format(abducted.RansomCost)
 		costLabel.Parent = row
 
 		local rescueButton = Button.new({
 			Parent = row,
-			Text = ("Freikaufen (%d Tide Coins)"):format(abducted.RansomCost),
+			Text = ("Rescue (%d Tide Coins)"):format(abducted.RansomCost),
 			Variant = "Success",
 			Size = UDim2.new(1, -16, 0, 34),
 		})
@@ -450,7 +450,7 @@ local function rebuildRescuePanel()
 		tokenLabel.TextScaled = true
 		tokenLabel.TextColor3 = Theme.Text.Muted
 		tokenLabel.TextXAlignment = Enum.TextXAlignment.Right
-		tokenLabel.Text = "Rettungs-Token (Robux) - bald verfügbar"
+		tokenLabel.Text = "Rescue Token (Robux) - coming soon"
 		tokenLabel.Parent = row
 
 		rescueRowHandles[instanceId] = { Frame = row, Button = rescueButton }
@@ -474,7 +474,7 @@ local currentWaveIsBoss = false
 local function refreshStatusBar()
 	if inRaid then
 		statusIcon.Text = if currentWaveIsBoss then "☠" else "🌊"
-		statusLabel.Text = ("Raid läuft - Welle %d/%d%s (%d Gegner)"):format(
+		statusLabel.Text = ("Raid in progress - Wave %d/%d%s (%d enemies)"):format(
 			currentWaveIndex,
 			totalWaves,
 			if currentWaveIsBoss then " (BOSS)" else "",
@@ -484,7 +484,7 @@ local function refreshStatusBar()
 	elseif nextRaidAt then
 		local remaining = nextRaidAt - os.time()
 		statusIcon.Text = "🌊"
-		statusLabel.Text = ("Nächster Raid: %s"):format(formatDuration(remaining))
+		statusLabel.Text = ("Next Raid: %s"):format(formatDuration(remaining))
 		statusBarStroke.Color = Theme.Neon.Cyan
 	end
 end
@@ -555,7 +555,7 @@ RaidRemotes.RaidResult.OnClientEvent:Connect(function(result)
 
 	if not result.Success and (singleAbducted or (type(multiAbducted) == "table" and #multiAbducted > 0)) then
 		Toast.Show({
-			Text = "Kreatur(en) entführt! Öffne 'Entführt' im Menü zum Freikaufen.",
+			Text = "Creature(s) abducted! Open 'Abducted' in the menu to rescue them.",
 			Type = "Warning",
 			Duration = 5,
 		})
@@ -569,13 +569,13 @@ RaidRemotes.RescueResult.OnClientEvent:Connect(function(result)
 	if result.Success and result.InstanceId then
 		abductedCache[result.InstanceId] = nil
 		rebuildRescuePanel()
-		Toast.Show({ Text = "Kreatur freigekauft!", Type = "Success" })
+		Toast.Show({ Text = "Creature rescued!", Type = "Success" })
 	else
-		-- Fehlschlag: Panel neu aufbauen, damit der Button wieder aktiv/
-		-- beschriftet ist (kein Sonder-Fehlertext im MVP nötig, Sync unten
-		-- holt bei Bedarf ohnehin den korrekten Serverstand nach).
+		-- Failure: rebuild the panel so the button is active/labeled again
+		-- (no special error text needed in the MVP, the sync below fetches
+		-- the correct server state again if needed).
 		rebuildRescuePanel()
-		Toast.Show({ Text = "Freikauf fehlgeschlagen.", Type = "Error" })
+		Toast.Show({ Text = "Rescue failed.", Type = "Error" })
 	end
 end)
 
@@ -586,7 +586,7 @@ task.spawn(function()
 		return RaidRemotes.GetRaidStatus:InvokeServer()
 	end)
 	if not ok or type(status) ~= "table" then
-		warn("[RaidUIController] Initialer Raid-Status-Sync fehlgeschlagen.")
+		warn("[RaidUIController] Initial raid status sync failed.")
 		return
 	end
 

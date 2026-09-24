@@ -85,29 +85,29 @@ local QUEST_GLYPH: { [string]: string } = {
 }
 
 local QUEST_REASON_MESSAGES: { [string]: string } = {
-	DataNotLoaded = "Deine Spieldaten laden noch – bitte kurz warten.",
-	UnknownQuest = "Diese Quest ist nicht mehr gültig.",
-	NotCompleted = "Diese Quest ist noch nicht abgeschlossen.",
-	AlreadyClaimed = "Belohnung wurde bereits abgeholt.",
+	DataNotLoaded = "Your game data is still loading – please wait a moment.",
+	UnknownQuest = "This quest is no longer valid.",
+	NotCompleted = "This quest is not completed yet.",
+	AlreadyClaimed = "Reward has already been claimed.",
 }
 
 local DAILY_REASON_MESSAGES: { [string]: string } = {
-	DataNotLoaded = "Deine Spieldaten laden noch – bitte kurz warten.",
-	AlreadyClaimedToday = "Heute schon abgeholt – komm morgen wieder!",
+	DataNotLoaded = "Your game data is still loading – please wait a moment.",
+	AlreadyClaimedToday = "Already claimed today – come back tomorrow!",
 }
 
 local function friendlyQuestReason(reason: string?): string
 	if not reason then
-		return "Aktion fehlgeschlagen. Bitte erneut versuchen."
+		return "Action failed. Please try again."
 	end
-	return QUEST_REASON_MESSAGES[reason] or ("Aktion fehlgeschlagen (" .. reason .. ").")
+	return QUEST_REASON_MESSAGES[reason] or ("Action failed (" .. reason .. ").")
 end
 
 local function friendlyDailyReason(reason: string?): string
 	if not reason then
-		return "Aktion fehlgeschlagen. Bitte erneut versuchen."
+		return "Action failed. Please try again."
 	end
-	return DAILY_REASON_MESSAGES[reason] or ("Aktion fehlgeschlagen (" .. reason .. ").")
+	return DAILY_REASON_MESSAGES[reason] or ("Action failed (" .. reason .. ").")
 end
 
 -- // Countdown bis 00:00 UTC (identisches Muster zu ShopUIController) ----------
@@ -244,7 +244,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 
 	local title = makeLabel({
 		Parent = host,
-		Text = "🔥 Tages-Login-Serie",
+		Text = "🔥 Daily Login Streak",
 		Size = UDim2.new(1, 0, 0, 22),
 		Font = Theme.Font.BodyBold,
 		Color = Theme.Neon.Yellow,
@@ -280,7 +280,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 
 		local dayLabel = makeLabel({
 			Parent = pill,
-			Text = "Tag " .. day,
+			Text = "Day " .. day,
 			Size = UDim2.new(1, -6, 0, 16),
 			Position = UDim2.fromOffset(3, 4),
 			Font = Theme.Font.BodyBold,
@@ -323,7 +323,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 
 	local claimButton = Button.new({
 		Parent = host,
-		Text = "Abholen",
+		Text = "Claim",
 		Variant = "Success",
 		Important = true,
 		Size = UDim2.new(1, 0, 0, 40),
@@ -338,7 +338,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 	handle.Refresh = function(_self, state: DailyRewardState?)
 		if not state then
 			claimButton:SetDisabled(true)
-			claimButton:SetText("Lädt…")
+			claimButton:SetText("Loading…")
 			return
 		end
 		for day, pill in ipairs(pills) do
@@ -359,24 +359,24 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 		end
 
 		if state.VipBonusActive then
-			vipLabel.Text = "👑 VIP-Taucher-Bonus: +50% Tide Coins heute"
+			vipLabel.Text = "👑 VIP Diver Bonus: +50% Tide Coins today"
 		else
 			vipLabel.Text = ""
 		end
 
 		if state.AlreadyClaimedToday then
 			claimButton:SetDisabled(true)
-			claimButton:SetText("Heute schon abgeholt")
+			claimButton:SetText("Already Claimed Today")
 		elseif state.CanClaim then
 			claimButton:SetDisabled(false)
-			claimButton:SetText(("Tag %d abholen: 🪙%d 💎%d"):format(
+			claimButton:SetText(("Claim Day %d: 🪙%d 💎%d"):format(
 				state.PendingStreakDay,
 				state.PreviewTideCoins,
 				state.PreviewAbyssalShards
 			))
 		else
 			claimButton:SetDisabled(true)
-			claimButton:SetText("Nicht verfügbar")
+			claimButton:SetText("Not Available")
 		end
 	end
 
@@ -397,7 +397,7 @@ local function requestDailyRewardState(): DailyRewardState?
 	if ok and type(result) == "table" then
 		return result :: DailyRewardState
 	end
-	warn("[QuestUIController] Konnte Tages-Login-Status nicht laden:", result)
+	warn("[QuestUIController] Could not load daily login status:", result)
 	return nil
 end
 
@@ -483,7 +483,7 @@ local function buildQuestCard(parent: Instance, layoutOrder: number, row: QuestR
 
 	local claimButton = Button.new({
 		Parent = card,
-		Text = "In Arbeit",
+		Text = "In Progress",
 		Variant = "Success",
 		Important = true,
 		Disabled = true,
@@ -495,7 +495,7 @@ local function buildQuestCard(parent: Instance, layoutOrder: number, row: QuestR
 	claimButton.Clicked:Connect(function()
 		QuestRemotes.RequestClaimQuestReward:FireServer(row.TemplateId)
 		claimButton:SetDisabled(true)
-		claimButton:SetText("Wird abgeholt…")
+		claimButton:SetText("Claiming…")
 	end)
 
 	local handle: QuestCardHandle = {
@@ -524,13 +524,13 @@ local function updateQuestCardVisual(templateId: string)
 
 	if row.Claimed then
 		card.ClaimButton:SetDisabled(true)
-		card.ClaimButton:SetText("Erledigt ✓")
+		card.ClaimButton:SetText("Done ✓")
 	elseif row.Completed then
 		card.ClaimButton:SetDisabled(false)
-		card.ClaimButton:SetText("Abholen!")
+		card.ClaimButton:SetText("Claim!")
 	else
 		card.ClaimButton:SetDisabled(true)
-		card.ClaimButton:SetText("In Arbeit")
+		card.ClaimButton:SetText("In Progress")
 	end
 end
 
@@ -567,7 +567,7 @@ local function startCountdown()
 	mainCountdownThread = task.spawn(function()
 		while true do
 			if mainCountdownLabel then
-				mainCountdownLabel.Text = "Neue Quests in " .. formatCountdown(secondsUntilNextUtcMidnight())
+				mainCountdownLabel.Text = "New quests in " .. formatCountdown(secondsUntilNextUtcMidnight())
 			end
 			task.wait(1)
 		end
@@ -582,7 +582,7 @@ local function buildMainPanel()
 	end
 
 	mainPanel = Panel.new({
-		Title = "Tages-Quests",
+		Title = "Daily Quests",
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(560, 640),
 		OnClose = function()
@@ -619,7 +619,7 @@ local function buildMainPanel()
 
 	mainCountdownLabel = makeLabel({
 		Parent = scroller,
-		Text = "Neue Quests in --:--:--",
+		Text = "New quests in --:--:--",
 		Size = UDim2.new(1, 0, 0, 22),
 		Font = Theme.Font.BodyBold,
 		Color = Theme.Neon.Cyan,
@@ -676,7 +676,7 @@ local function showAutoPopup()
 	end
 
 	popupPanel = Panel.new({
-		Title = "Willkommen zurück!",
+		Title = "Welcome back!",
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(480, 360),
 		OnClose = function()
@@ -686,7 +686,7 @@ local function showAutoPopup()
 
 	local intro = makeLabel({
 		Parent = popupPanel.Content,
-		Text = "Deine Tages-Belohnung wartet auf dich!",
+		Text = "Your daily reward is waiting for you!",
 		Size = UDim2.new(1, 0, 0, 26),
 		Font = Theme.Font.BodyBold,
 		Color = Theme.Text.Primary,
@@ -735,7 +735,7 @@ QuestRemotes.ClaimQuestRewardResult.OnClientEvent:Connect(function(payload: {
 			updateQuestCardVisual(payload.TemplateId)
 		end
 		Toast.Show({
-			Text = ("Quest-Belohnung erhalten: 🪙%d 💎%d ⭐%d XP"):format(
+			Text = ("Quest reward received: 🪙%d 💎%d ⭐%d XP"):format(
 				payload.RewardTideCoins or 0,
 				payload.RewardAbyssalShards or 0,
 				payload.RewardXP or 0
@@ -776,7 +776,7 @@ QuestRemotes.DailyRewardClaimed.OnClientEvent:Connect(function(payload: {
 			popupStreakWidget:Refresh(dailyState)
 		end
 		Toast.Show({
-			Text = ("Tag %d abgeholt: 🪙%d 💎%d – bis morgen!"):format(
+			Text = ("Day %d claimed: 🪙%d 💎%d – see you tomorrow!"):format(
 				payload.StreakDay or 1,
 				payload.RewardTideCoins or 0,
 				payload.RewardAbyssalShards or 0
@@ -817,7 +817,7 @@ task.spawn(function()
 			rebuildQuestCards()
 		end
 	else
-		warn("[QuestUIController] Konnte Tages-Quest-Status nicht laden:", result)
+		warn("[QuestUIController] Could not load daily quest status:", result)
 	end
 
 	dailyState = requestDailyRewardState()

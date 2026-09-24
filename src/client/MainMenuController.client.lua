@@ -176,7 +176,7 @@ hintLabel.Size = UDim2.new(1, 0, 0, 18)
 hintLabel.Font = Theme.Font.Body
 hintLabel.TextColor3 = Theme.Text.Muted
 hintLabel.TextScaled = true
-hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · Q Quests · L Rangliste · R Reisen · O Einstellungen · C Kodex · K Achievements"
+hintLabel.Text = "B Build · U Brood Pool · M Mystery Egg · N Abducted · Q Quests · L Leaderboard · R Travel · O Settings · C Codex · K Achievements"
 hintLabel.Visible = false
 hintLabel.Parent = bar
 local hintConstraint = Instance.new("UITextSizeConstraint")
@@ -186,7 +186,7 @@ hintConstraint.Parent = hintLabel
 
 -- // Geräteabhängiges Andocken ---------------------------------------------------
 
-local MENU_ENTRY_COUNT = 12 -- Bauen, Brutbecken, Mystery Egg, Entführt, Quests, Rangliste, Reisen, Optionen, Shop, Kodex, Event, Achievements
+local MENU_ENTRY_COUNT = 12 -- Build, Brood Pool, Mystery Egg, Abducted, Quests, Leaderboard, Travel, Settings, Shop, Codex, Event, Achievements
 
 local function applyBarLayout()
 	local state = Device.GetState()
@@ -380,7 +380,7 @@ local function buildSettingsPanel()
 	end
 
 	settingsPanel = Panel.new({
-		Title = "Einstellungen",
+		Title = "Settings",
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(460, 380),
 	})
@@ -395,7 +395,7 @@ local function buildSettingsPanel()
 	reducedLabel.TextColor3 = Theme.Text.Primary
 	reducedLabel.TextXAlignment = Enum.TextXAlignment.Left
 	reducedLabel.TextScaled = true
-	reducedLabel.Text = "Reduzierte Effekte (Partikel/Screen-Shake aus)"
+	reducedLabel.Text = "Reduced Effects (particles/screen shake off)"
 	reducedLabel.Position = UDim2.fromOffset(0, 0)
 	reducedLabel.Parent = content
 	local reducedLabelConstraint = Instance.new("UITextSizeConstraint")
@@ -405,7 +405,7 @@ local function buildSettingsPanel()
 
 	local reducedToggle = Button.new({
 		Parent = content,
-		Text = if Settings.GetReducedEffects() then "AN" else "AUS",
+		Text = if Settings.GetReducedEffects() then "ON" else "OFF",
 		Variant = if Settings.GetReducedEffects() then "Success" else "Ghost",
 		Size = UDim2.new(1, 0, 0, 44),
 		LayoutOrder = 1,
@@ -414,7 +414,7 @@ local function buildSettingsPanel()
 	reducedToggle.Clicked:Connect(function()
 		local newValue = not Settings.GetReducedEffects()
 		Settings.SetReducedEffects(newValue)
-		reducedToggle:SetText(if newValue then "AN" else "AUS")
+		reducedToggle:SetText(if newValue then "ON" else "OFF")
 	end)
 
 	-- // Sound-Lautstärke --------------------------------------------------------
@@ -426,7 +426,7 @@ local function buildSettingsPanel()
 	sfxLabel.TextColor3 = Theme.Text.Primary
 	sfxLabel.TextXAlignment = Enum.TextXAlignment.Left
 	sfxLabel.TextScaled = true
-	sfxLabel.Text = "Sound-Lautstärke"
+	sfxLabel.Text = "Sound Volume"
 	sfxLabel.Parent = content
 	local sfxLabelConstraint = Instance.new("UITextSizeConstraint")
 	sfxLabelConstraint.MinTextSize = 12
@@ -489,7 +489,7 @@ local function buildSettingsPanel()
 	musicLabel.TextColor3 = Theme.Text.Primary
 	musicLabel.TextXAlignment = Enum.TextXAlignment.Left
 	musicLabel.TextScaled = true
-	musicLabel.Text = "Musik-Lautstärke"
+	musicLabel.Text = "Music Volume"
 	musicLabel.Parent = content
 	local musicLabelConstraint = Instance.new("UITextSizeConstraint")
 	musicLabelConstraint.MinTextSize = 12
@@ -564,16 +564,16 @@ end
 -- // Leiste aufbauen -----------------------------------------------------------------
 
 local entries: { MenuEntry } = {
-	{ Icon = "🛠️", Text = "Bauen", OnClick = onBuildClicked },
-	{ Icon = "🥚", Text = "Brutbecken", OnClick = onBreedingClicked },
+	{ Icon = "🛠️", Text = "Build", OnClick = onBuildClicked },
+	{ Icon = "🥚", Text = "Brood Pool", OnClick = onBreedingClicked },
 	{ Icon = "🎁", Text = "Mystery Egg", OnClick = onMysteryEggClicked },
-	{ Icon = "🆘", Text = "Entführt", OnClick = onAbductedClicked },
+	{ Icon = "🆘", Text = "Abducted", OnClick = onAbductedClicked },
 	{ Icon = "📜", Text = "Quests", OnClick = onQuestsClicked, BadgeKey = "Quest" },
-	{ Icon = "🏆", Text = "Rangliste", OnClick = onLeaderboardClicked },
-	{ Icon = "🧭", Text = "Reisen", OnClick = onTravelClicked },
-	{ Icon = "⚙️", Text = "Optionen", OnClick = onSettingsClicked },
+	{ Icon = "🏆", Text = "Leaderboard", OnClick = onLeaderboardClicked },
+	{ Icon = "🧭", Text = "Travel", OnClick = onTravelClicked },
+	{ Icon = "⚙️", Text = "Settings", OnClick = onSettingsClicked },
 	{ Icon = "🛒", Text = "Shop", OnClick = onShopClicked },
-	{ Icon = "📖", Text = "Kodex", OnClick = onCodexClicked },
+	{ Icon = "📖", Text = "Codex", OnClick = onCodexClicked },
 	{ Icon = "🌊", Text = "Event", OnClick = onEventClicked },
 	{ Icon = "🏅", Text = "Achievements", OnClick = onAchievementsClicked, BadgeKey = "Achievement" },
 }

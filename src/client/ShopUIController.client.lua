@@ -124,32 +124,32 @@ local CURRENCY_GLYPH: { [string]: string } = {
 }
 
 local REASON_MESSAGES: { [string]: string } = {
-	InvalidKey = "Ungültiges Produkt. Bitte Shop neu laden.",
-	UnknownGamepass = "Dieser Gamepass ist unbekannt.",
-	UnknownProduct = "Dieses Produkt ist unbekannt.",
-	NotConfigured = "Noch nicht verfügbar – bald freigeschaltet!",
-	AlreadyOwned = "Du besitzt das bereits.",
-	PaidRandomItemsRestricted = "Der Robux-Kauf von Zufalls-Items ist in deiner Region eingeschränkt (Roblox-Richtlinie). Du kannst Mystery Eggs weiterhin gratis über das Spiel erhalten.",
-	AlreadyUsedToday = "Heute schon benutzt – morgen wieder verfügbar.",
-	MissingTarget = "Kein passendes Ziel gefunden (z. B. keine entführte Kreatur/kein laufendes Brutbecken).",
-	InvalidTarget = "Dieses Ziel gehört dir nicht oder existiert nicht mehr.",
-	StudioOnly = "Nur in Roblox Studio verfügbar.",
-	InvalidArguments = "Ungültige Anfrage.",
-	UnknownKind = "Unbekannter Kauftyp.",
-	DataNotLoaded = "Deine Spieldaten laden noch – bitte kurz warten.",
-	InvalidItem = "Ungültiger Artikel.",
-	UnknownItem = "Unbekannter Artikel.",
-	InsufficientFunds = "Nicht genug Guthaben.",
-	ChargeFailed = "Bezahlung fehlgeschlagen. Bitte erneut versuchen.",
-	PersistenceFailed = "Speichern fehlgeschlagen. Bitte erneut versuchen.",
-	NotOwned = "Du besitzt diesen Artikel noch nicht.",
+	InvalidKey = "Invalid product. Please reload the shop.",
+	UnknownGamepass = "This gamepass is unknown.",
+	UnknownProduct = "This product is unknown.",
+	NotConfigured = "Not available yet – coming soon!",
+	AlreadyOwned = "You already own that.",
+	PaidRandomItemsRestricted = "Robux purchases of random items are restricted in your region (Roblox policy). You can still get Mystery Eggs for free through the game.",
+	AlreadyUsedToday = "Already used today – available again tomorrow.",
+	MissingTarget = "No matching target found (e.g. no abducted creature/no running Brood Pool).",
+	InvalidTarget = "This target does not belong to you or no longer exists.",
+	StudioOnly = "Only available in Roblox Studio.",
+	InvalidArguments = "Invalid request.",
+	UnknownKind = "Unknown purchase type.",
+	DataNotLoaded = "Your game data is still loading – please wait a moment.",
+	InvalidItem = "Invalid item.",
+	UnknownItem = "Unknown item.",
+	InsufficientFunds = "Not enough balance.",
+	ChargeFailed = "Payment failed. Please try again.",
+	PersistenceFailed = "Saving failed. Please try again.",
+	NotOwned = "You don't own this item yet.",
 }
 
 local function friendlyReason(reason: string?): string
 	if not reason then
-		return "Aktion fehlgeschlagen. Bitte erneut versuchen."
+		return "Action failed. Please try again."
 	end
-	return REASON_MESSAGES[reason] or ("Aktion fehlgeschlagen (" .. reason .. ").")
+	return REASON_MESSAGES[reason] or ("Action failed (" .. reason .. ").")
 end
 
 -- // Formatierung ---------------------------------------------------------------
@@ -961,7 +961,7 @@ local function startCountdownLoop()
 	countdownThread = task.spawn(function()
 		while true do
 			if offerCountdownLabel then
-				offerCountdownLabel.Text = "Nächste Rotation in " .. formatCountdown(secondsUntilNextUtcMidnight())
+				offerCountdownLabel.Text = "Next rotation in " .. formatCountdown(secondsUntilNextUtcMidnight())
 			end
 			task.wait(1)
 		end
@@ -1033,11 +1033,11 @@ local function buildPanel()
 	tabsHandle = Tabs.new({
 		Parent = tabsHost,
 		Tabs = {
-			{ Id = "Offers", Label = "Angebote" },
+			{ Id = "Offers", Label = "Offers" },
 			{ Id = "Gamepasses", Label = "Gamepasses" },
-			{ Id = "DevProducts", Label = "Robux-Pakete" },
+			{ Id = "DevProducts", Label = "Robux Packs" },
 			{ Id = "MysteryEgg", Label = "Mystery Egg" },
-			{ Id = "Cosmetics", Label = "Kosmetik" },
+			{ Id = "Cosmetics", Label = "Cosmetics" },
 		},
 		DefaultTabId = "Offers",
 	})
@@ -1103,7 +1103,7 @@ local function attachShopPrompt(model: Instance)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = SHOP_PROMPT_NAME
-	prompt.ActionText = "Shop öffnen"
+	prompt.ActionText = "Open Shop"
 	prompt.ObjectText = "Abyssara Shop"
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 12

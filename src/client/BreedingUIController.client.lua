@@ -75,7 +75,7 @@ local openOverviewEvent = getOrCreateBridgeEvent("OpenBreedingOverview")
 local playerPlotsFolder = Workspace:WaitForChild("PlayerPlots")
 local plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
 if not plot then
-	warn("[BreedingUIController] Kein eigener Plot gefunden - Brutbecken-UI deaktiviert.")
+	warn("[BreedingUIController] No own plot found - Brood Pool UI disabled.")
 	return
 end
 
@@ -124,7 +124,7 @@ end
 -- // Detail-Panel (einzelnes, wiederverwendetes UIKit.Panel) -------------------
 
 local detailPanel = Panel.new({
-	Title = "Brutbecken",
+	Title = "Brood Pool",
 	Closable = true,
 	-- +80px ggü. vorher: Platz für die Stufen-/Upgrade-Sektion (siehe
 	-- upgradeInfoLabel/breedingUpgradeButton unten, Auftrag Gebäude-Upgrade-
@@ -304,7 +304,7 @@ local function refreshPanel()
 		-- dieses Brutbeckens bestimmt jetzt die Zucht-Stufe (statt fest 1) -
 		-- siehe placementLevelCache/ensureBroodPoolInteraction unten.
 		local tier = BreedingConfig.GetTier(placementLevelCache[activePlacementId] or 1)
-		infoLabel.Text = ("%s\nFütterungskosten: %d Tide Coins\nInkubationsdauer: ~%d Min.\nChancen: Gewöhnlich %.0f%% · Selten %.0f%% · Legendär %.1f%%"):format(
+		infoLabel.Text = ("%s\nFeeding cost: %d Tide Coins\nIncubation time: ~%d min.\nOdds: Common %.0f%% · Rare %.0f%% · Legendary %.1f%%"):format(
 			tier.DisplayName,
 			tier.FeedCostTideCoins,
 			tier.IncubationMinutes,
@@ -312,12 +312,12 @@ local function refreshPanel()
 			tier.RarityWeights.Rare,
 			tier.RarityWeights.Legendary
 		)
-		actionButton:SetText(("Zucht starten (%d Tide Coins)"):format(tier.FeedCostTideCoins))
+		actionButton:SetText(("Start Breeding (%d Tide Coins)"):format(tier.FeedCostTideCoins))
 		actionButton:SetDisabled(false)
 		actionButton.Instance.Visible = true
 	elseif status.State == "Incubating" then
-		infoLabel.Text = "Zucht läuft ..."
-		actionButton:SetText("Noch nicht bereit")
+		infoLabel.Text = "Breeding in progress ..."
+		actionButton:SetText("Not Ready Yet")
 		actionButton:SetDisabled(true)
 		actionButton.Instance.Visible = true
 
@@ -326,10 +326,10 @@ local function refreshPanel()
 		local remaining = status.RemainingSeconds or 0
 		local ratio = if total > 0 then math.clamp(1 - remaining / total, 0, 1) else 0
 		progressBar:SetProgress(ratio, false)
-		infoLabel.Text = ("Zucht läuft ...\nFertig in: %s"):format(formatDuration(remaining))
+		infoLabel.Text = ("Breeding in progress ...\nReady in: %s"):format(formatDuration(remaining))
 	elseif status.State == "Ready" then
-		infoLabel.Text = "Eine Kreatur ist bereit zum Schlüpfen!"
-		actionButton:SetText("Kreatur abholen")
+		infoLabel.Text = "A creature is ready to hatch!"
+		actionButton:SetText("Claim Creature")
 		actionButton:SetDisabled(false)
 		actionButton.Instance.Visible = true
 	end
@@ -358,11 +358,11 @@ actionButton.Clicked:Connect(function()
 
 	if status.State == "Empty" then
 		actionButton:SetDisabled(true)
-		infoLabel.Text = "Zucht wird angefragt ..."
+		infoLabel.Text = "Requesting breeding ..."
 		BreedingRemotes.RequestStartBreeding:FireServer(activePlacementId)
 	elseif status.State == "Ready" then
 		actionButton:SetDisabled(true)
-		infoLabel.Text = "Kreatur wird abgeholt ..."
+		infoLabel.Text = "Claiming creature ..."
 		BreedingRemotes.RequestClaimBreeding:FireServer(activePlacementId)
 	end
 end)
@@ -370,7 +370,7 @@ end)
 -- // Übersichts-Panel (alle eigenen Brutbecken) --------------------------------
 
 local overviewPanel = Panel.new({
-	Title = "Brutbecken-Übersicht",
+	Title = "Brood Pool Overview",
 	Closable = true,
 	CenteredSize = UDim2.fromOffset(420, 420),
 })
@@ -398,7 +398,7 @@ overviewEmptyLabel.Size = UDim2.new(1, 0, 0, 40)
 overviewEmptyLabel.Font = Theme.Font.Body
 overviewEmptyLabel.TextColor3 = Theme.Text.Muted
 overviewEmptyLabel.TextScaled = true
-overviewEmptyLabel.Text = "Noch kein Brutbecken gebaut. Baue eins über das Bauen-Menü."
+overviewEmptyLabel.Text = "No Brood Pool built yet. Build one via the Build menu."
 overviewEmptyLabel.LayoutOrder = 0
 overviewEmptyLabel.Parent = overviewScroll
 
@@ -406,11 +406,11 @@ local overviewRowHandles: { [string]: { Frame: Frame, Button: any } } = {}
 
 local function stateShortText(status: BroodPoolStatus): string
 	if status.State == "Empty" then
-		return "Frei - Zucht starten"
+		return "Free - Start Breeding"
 	elseif status.State == "Incubating" then
-		return "Inkubiert: " .. formatDuration(status.RemainingSeconds or 0)
+		return "Incubating: " .. formatDuration(status.RemainingSeconds or 0)
 	else
-		return "Bereit zum Abholen!"
+		return "Ready to Claim!"
 	end
 end
 
@@ -456,7 +456,7 @@ local function rebuildOverview()
 
 		local openButton = Button.new({
 			Parent = row,
-			Text = "Öffnen",
+			Text = "Open",
 			Variant = "Primary",
 			Size = UDim2.fromOffset(90, 40),
 		})
@@ -620,7 +620,7 @@ task.spawn(function()
 	if ok and type(statuses) == "table" then
 		applyStatuses(statuses)
 	else
-		warn("[BreedingUIController] Initialer Status-Sync fehlgeschlagen.")
+		warn("[BreedingUIController] Initial status sync failed.")
 	end
 end)
 
@@ -669,10 +669,10 @@ BreedingRemotes.StartBreedingResult.OnClientEvent:Connect(function(result)
 		if result.Success then
 			refreshPanel()
 		else
-			infoLabel.Text = ("Zucht-Start fehlgeschlagen: %s"):format(tostring(result.Reason or "Unbekannt"))
+			infoLabel.Text = ("Breeding start failed: %s"):format(tostring(result.Reason or "Unknown"))
 			actionButton.Instance.Visible = true
 			actionButton:SetDisabled(false)
-			Toast.Show({ Text = "Zucht-Start fehlgeschlagen.", Type = "Error" })
+			Toast.Show({ Text = "Breeding start failed.", Type = "Error" })
 		end
 	end
 end)
@@ -692,13 +692,13 @@ BreedingRemotes.ClaimBreedingResult.OnClientEvent:Connect(function(result)
 			ScreenFX.BigMoment(color)
 		end
 		Toast.Show({
-			Text = ("Geschlüpft: %s (%s)!"):format(result.CreatureName, result.Rarity),
+			Text = ("Hatched: %s (%s)!"):format(result.CreatureName, result.Rarity),
 			Type = "Success",
 			Duration = 4,
 		})
 
 		if activePlacementId == result.PlacementId then
-			infoLabel.Text = ("Geschlüpft: %s!"):format(result.CreatureName)
+			infoLabel.Text = ("Hatched: %s!"):format(result.CreatureName)
 			progressHost.Visible = false
 			rewardBadgeHost.Visible = true
 			local rarityKey = (result.Rarity :: any) :: Theme.Rarity
@@ -719,9 +719,9 @@ BreedingRemotes.ClaimBreedingResult.OnClientEvent:Connect(function(result)
 	else
 		if activePlacementId == result.PlacementId then
 			if result.Reason == "NotReadyYet" then
-				infoLabel.Text = ("Noch nicht bereit: %s"):format(formatDuration(result.RemainingSeconds or 0))
+				infoLabel.Text = ("Not ready yet: %s"):format(formatDuration(result.RemainingSeconds or 0))
 			else
-				infoLabel.Text = ("Abholen fehlgeschlagen: %s"):format(tostring(result.Reason or "Unbekannt"))
+				infoLabel.Text = ("Claim failed: %s"):format(tostring(result.Reason or "Unknown"))
 			end
 			refreshPanel()
 		end
@@ -731,8 +731,8 @@ end)
 BreedingRemotes.InstantCompleteBreedingResult.OnClientEvent:Connect(function(result)
 	if activePlacementId and result then
 		infoLabel.Text = if result.Success
-			then "Zucht sofort abgeschlossen!"
-			else "Sofort-Abschluss aktuell nicht verfügbar (folgt später)."
+			then "Breeding completed instantly!"
+			else "Instant completion is not available yet (coming later)."
 	end
 end)
 
