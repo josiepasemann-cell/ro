@@ -40,6 +40,7 @@ export type PanelHandle = {
 	Closed: any,
 	Open: (self: PanelHandle) -> (),
 	Close: (self: PanelHandle) -> (),
+	SetTitle: (self: PanelHandle, title: string) -> (),
 	Destroy: (self: PanelHandle) -> (),
 }
 
@@ -200,6 +201,10 @@ function Panel.new(props: PanelProps): PanelHandle
 		closeHandle.Clicked:Connect(function()
 			handle:Close()
 		end)
+	end
+
+	handle.SetTitle = function(_self, title: string)
+		titleLabel.Text = title
 	end
 
 	handle.Destroy = function(_self)

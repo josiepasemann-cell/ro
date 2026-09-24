@@ -13,8 +13,9 @@
 			- Entführte Kreaturen (RaidUIController)
 			- Einstellungen (Reduzierte Effekte, Sound-/Musik-Lautstärke -
 			  rein lokale Client-Einstellungen, siehe UIKit.Settings)
-			- Shop (Platzhalter - ein anderer Agent baut das Shop-Backend
-			  danach an; zeigt bis dahin nur einen Toast)
+			- Shop (öffnet ShopUIController.client.lua über die
+			  Bridge-BindableEvent "OpenShop", identisches Muster wie
+			  "OpenMysteryEgg"/"OpenBreedingOverview" unten)
 
 		Kommunikation mit den anderen Controllern läuft bewusst NICHT über
 		direkte Requires (das wären Kreis-Abhängigkeiten zwischen
@@ -61,7 +62,6 @@ local Theme = UIKit.Theme
 local Layout = UIKit.Layout
 local Button = UIKit.Button
 local Panel = UIKit.Panel
-local Toast = UIKit.Toast
 local ProgressBar = UIKit.ProgressBar
 local Settings = UIKit.Settings
 
@@ -90,6 +90,7 @@ local toggleBuildModeEvent = getOrCreateBridgeEvent("ToggleBuildMode")
 local openBreedingOverviewEvent = getOrCreateBridgeEvent("OpenBreedingOverview")
 local openMysteryEggEvent = getOrCreateBridgeEvent("OpenMysteryEgg")
 local openAbductedCreaturesEvent = getOrCreateBridgeEvent("OpenAbductedCreatures")
+local openShopEvent = getOrCreateBridgeEvent("OpenShop")
 
 -- // Root-ScreenGui --------------------------------------------------------------
 
@@ -225,14 +226,13 @@ local function onAbductedClicked()
 	openAbductedCreaturesEvent:Fire()
 end
 
--- // Shop (Platzhalter) --------------------------------------------------------------
+-- // Shop --------------------------------------------------------------------------
+-- Öffnet das vollständige Shop-Panel aus ShopUIController.client.lua über die
+-- Bridge (siehe Kopfkommentar) - dieser Controller baut keine eigene Shop-UI
+-- mehr, um Dateibesitz/Verantwortung sauber getrennt zu halten.
 
 local function onShopClicked()
-	Toast.Show({
-		Text = "Shop kommt gleich! 🛒",
-		Type = "Info",
-		Duration = 2.5,
-	})
+	openShopEvent:Fire()
 end
 
 -- // Einstellungen -------------------------------------------------------------------
