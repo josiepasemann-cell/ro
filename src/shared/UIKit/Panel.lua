@@ -57,7 +57,12 @@ function Panel.new(props: PanelProps): PanelHandle
 	screenGui.Name = props.ScreenGuiName or ("UIKitPanel_" .. props.Title:gsub("%s+", ""))
 	screenGui.ResetOnSpawn = false
 	screenGui.IgnoreGuiInset = false
-	screenGui.DisplayOrder = props.DisplayOrder or 10
+	-- Standardmäßig ÜBER der persistenten Menüleiste (MainMenuController,
+	-- DisplayOrder 20) und HUD-Elementen (HUD/HeldItem/IdleIncome, 15-18),
+	-- damit geöffnete Panels (Shop/Quest/Breeding/Rangliste/Raid/...) nicht
+	-- von der Menüleiste verdeckt werden bzw. deren Buttons durchklickbar
+	-- bleiben - siehe Code-Review-Bericht (Überlappung Menüleiste/Panels).
+	screenGui.DisplayOrder = props.DisplayOrder or 30
 	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	Device.ApplySafeArea(screenGui)
 	screenGui.Parent = getPlayerGui()
@@ -74,6 +79,13 @@ function Panel.new(props: PanelProps): PanelHandle
 	dim.BackgroundTransparency = 1
 	dim.Size = UDim2.fromScale(1, 1)
 	dim.ZIndex = 1
+	-- Aktiv setzen, damit dieses Dim-Overlay tatsächlich Klicks/Touches auf
+	-- darunterliegende Elemente (Menüleiste, Workspace-ClickDetectors an
+	-- Eiern/Gebäuden, andere HUD-Buttons) blockiert, solange das Panel
+	-- geöffnet ist - ein reines Frame mit Active=false lässt Eingaben sonst
+	-- unbemerkt durch (Modal-Leak).
+	dim.Active = true
+	dim.Selectable = false
 	dim.Parent = screenGui
 
 	local root = Instance.new("Frame")
