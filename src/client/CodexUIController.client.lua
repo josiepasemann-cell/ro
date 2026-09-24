@@ -59,6 +59,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CodexRemotes = require(ReplicatedStorage:WaitForChild("CodexRemotes"))
+local BuddyRemotes = require(ReplicatedStorage:WaitForChild("BuddyRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
@@ -170,6 +171,23 @@ local function fetchState(): CodexState?
 	return nil
 end
 
+--- Buddy-Auswahl des anfragenden Spielers (docs/buddy.md) - eigener
+--- Remote-Kanal (BuddyRemotes), NICHT Teil von CodexState, da das Buddy-
+--- System bewusst unabhängig von CodexService ist (siehe
+--- BuddyService-Kopfkommentar "Bewusst entkoppelt").
+local function fetchBuddyCreatureId(): string?
+	local ok, result = pcall(function()
+		return BuddyRemotes.GetBuddyState:InvokeServer()
+	end)
+	if ok and typeof(result) == "table" then
+		return result.CreatureId
+	end
+	if not ok then
+		warn("[CodexUIController] GetBuddyState fehlgeschlagen: " .. tostring(result))
+	end
+	return nil
+end
+
 -- // Panel-Grundgerüst (einmalig gebaut) ----------------------------------------
 
 local panel = Panel.new({
@@ -183,6 +201,8 @@ local EVENTS_TAB_ID = "Events"
 local currentTabsHandle: any = nil
 local currentFavorites: { string } = {}
 local pendingFavoriteRequest = false
+local currentBuddyCreatureId: string? = nil
+local pendingBuddyRequest = false
 
 local function destroyCurrentTabs()
 	if currentTabsHandle then
@@ -192,15 +212,18 @@ local function destroyCurrentTabs()
 end
 
 --- Baut eine einzelne Kreaturen-Karte. `owned` steuert Silhouette- vs.
---- echte Darstellung; `onFavoriteToggle` ist nil für nicht besessene
---- Karten (Favoriten sind nur für besessene Kreaturen möglich).
+--- echte Darstellung; `onFavoriteToggle`/`onBuddyToggle` sind nil für
+--- nicht besessene Karten (Favoriten/Buddy sind nur für besessene
+--- Kreaturen möglich, siehe docs/buddy.md).
 local function buildCard(
 	parent: Instance,
 	entry: CatalogEntry,
 	owned: boolean,
 	isFavorite: boolean,
+	isBuddy: boolean,
 	layoutOrder: number,
-	onFavoriteToggle: (() -> ())?
+	onFavoriteToggle: (() -> ())?,
+	onBuddyToggle: (() -> ())?
 )
 	local card = Instance.new("Frame")
 	card.Name = entry.CreatureId
@@ -241,6 +264,22 @@ local function buildCard(
 		favoriteButton.Instance.AnchorPoint = Vector2.new(1, 0)
 		favoriteButton.Instance.Position = UDim2.new(1, -4, 0, 4)
 		favoriteButton.Clicked:Connect(onFavoriteToggle)
+	end
+
+	-- // Buddy-Auswahl (docs/buddy.md) - "Set Buddy"-Button spiegelbildlich
+	-- zum Favoriten-Stern oben, damit KEIN bestehendes Karten-Layout
+	-- umgebaut werden muss. Player-visible text is English (see task
+	-- requirement) even though the rest of this panel is still German.
+	if owned and onBuddyToggle then
+		local buddyButton = Button.new({
+			Parent = iconArea,
+			Text = isBuddy and "✓ Buddy" or "Set Buddy",
+			Variant = isBuddy and "Success" or "Ghost",
+			Size = UDim2.fromOffset(isBuddy and 64 or 70, 26),
+		})
+		buddyButton.Instance.AnchorPoint = Vector2.new(0, 0)
+		buddyButton.Instance.Position = UDim2.new(0, 4, 0, 4)
+		buddyButton.Clicked:Connect(onBuddyToggle)
 	end
 
 	local nameLabel = Instance.new("TextLabel")
@@ -305,10 +344,11 @@ local function buildGridContainer(parent: Instance, layoutOrder: number): Frame
 end
 
 local requestFavoritesUpdate: (({ string }) -> ())? = nil
+local requestBuddyUpdate: ((string?) -> ())? = nil
 
 --- Baut den kompletten Panel-Inhalt (Tabs + Karten) frisch auf. Wird beim
---- Öffnen sowie nach jeder erfolgreichen Favoriten-/Belohnungs-Aktion
---- aufgerufen (siehe Kopfkommentar "Neu laden statt Live-Abo").
+--- Öffnen sowie nach jeder erfolgreichen Favoriten-/Belohnungs-/Buddy-
+--- Aktion aufgerufen (siehe Kopfkommentar "Neu laden statt Live-Abo").
 local function rebuildPanel(preferredTabId: string?)
 	local catalog = fetchCatalog()
 	local state = fetchState()
@@ -318,6 +358,7 @@ local function rebuildPanel(preferredTabId: string?)
 	end
 
 	currentFavorites = state.Favorites
+	currentBuddyCreatureId = fetchBuddyCreatureId()
 
 	destroyCurrentTabs()
 
@@ -381,6 +422,22 @@ local function rebuildPanel(preferredTabId: string?)
 			end
 			if requestFavoritesUpdate then
 				requestFavoritesUpdate(newFavorites)
+			end
+		end
+	end
+
+	--- Buddy-Auswahl (docs/buddy.md): Klick auf eine bereits als Buddy
+	--- gewählte Karte entfernt den Buddy (nil), sonst wird diese Kreatur
+	--- zum neuen Buddy (ersetzt eine evtl. vorherige Wahl - es gibt immer
+	--- höchstens EINEN Buddy, anders als bis zu 6 Favoriten).
+	local function onBuddyToggleFactory(creatureId: string): () -> ()
+		return function()
+			if pendingBuddyRequest then
+				return
+			end
+			local newBuddyCreatureId: string? = if currentBuddyCreatureId == creatureId then nil else creatureId
+			if requestBuddyUpdate then
+				requestBuddyUpdate(newBuddyCreatureId)
 			end
 		end
 	end
@@ -457,7 +514,17 @@ local function rebuildPanel(preferredTabId: string?)
 		for index, entry in ipairs(zoneEntries) do
 			local owned = state.OwnedCreatureIds[entry.CreatureId] == true
 			local isFavorite = table.find(currentFavorites, entry.CreatureId) ~= nil
-			buildCard(grid, entry, owned, isFavorite, index, owned and onFavoriteToggleFactory(entry.CreatureId) or nil)
+			local isBuddy = currentBuddyCreatureId == entry.CreatureId
+			buildCard(
+				grid,
+				entry,
+				owned,
+				isFavorite,
+				isBuddy,
+				index,
+				owned and onFavoriteToggleFactory(entry.CreatureId) or nil,
+				owned and onBuddyToggleFactory(entry.CreatureId) or nil
+			)
 		end
 	end
 
@@ -470,7 +537,17 @@ local function rebuildPanel(preferredTabId: string?)
 		for index, entry in ipairs(eventEntries) do
 			local owned = state.OwnedCreatureIds[entry.CreatureId] == true
 			local isFavorite = table.find(currentFavorites, entry.CreatureId) ~= nil
-			buildCard(grid, entry, owned, isFavorite, index, owned and onFavoriteToggleFactory(entry.CreatureId) or nil)
+			local isBuddy = currentBuddyCreatureId == entry.CreatureId
+			buildCard(
+				grid,
+				entry,
+				owned,
+				isFavorite,
+				isBuddy,
+				index,
+				owned and onFavoriteToggleFactory(entry.CreatureId) or nil,
+				owned and onBuddyToggleFactory(entry.CreatureId) or nil
+			)
 		end
 	end
 end
@@ -478,6 +555,11 @@ end
 requestFavoritesUpdate = function(newFavorites: { string })
 	pendingFavoriteRequest = true
 	CodexRemotes.RequestSetFavorites:FireServer(newFavorites)
+end
+
+requestBuddyUpdate = function(newBuddyCreatureId: string?)
+	pendingBuddyRequest = true
+	BuddyRemotes.RequestSetBuddy:FireServer(newBuddyCreatureId)
 end
 
 -- // Server-Antworten -----------------------------------------------------------
@@ -491,6 +573,27 @@ local setFavoritesConnection = CodexRemotes.SetFavoritesResult.OnClientEvent:Con
 	end
 	if panel.ScreenGui.Enabled then
 		-- Panel noch offen: Karten-Sternzustände synchron halten.
+		rebuildPanel(nil)
+	end
+end)
+
+-- Buddy-Ergebnis-Texte sind bewusst ENGLISCH (Auftrag: alle neuen
+-- spielerseitig sichtbaren Strings in Englisch, unabhängig davon, dass
+-- der Rest dieses Panels noch Deutsch ist - siehe Kopfkommentar der
+-- betroffenen Buttons oben).
+local setBuddyConnection = BuddyRemotes.SetBuddyResult.OnClientEvent:Connect(function(payload: { [string]: any })
+	pendingBuddyRequest = false
+	if payload.Success then
+		if payload.CreatureId then
+			Toast.Show({ Text = "Buddy set! It will follow you through the world.", Type = "Success", Duration = 2.5 })
+		else
+			Toast.Show({ Text = "Buddy removed.", Type = "Info", Duration = 2 })
+		end
+	else
+		Toast.Show({ Text = "Could not set buddy (" .. tostring(payload.Reason) .. ").", Type = "Error" })
+	end
+	if panel.ScreenGui.Enabled then
+		-- Panel noch offen: Karten-Buddy-Zustände synchron halten.
 		rebuildPanel(nil)
 	end
 end)
@@ -530,6 +633,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	end
 	openConnection:Disconnect()
 	setFavoritesConnection:Disconnect()
+	setBuddyConnection:Disconnect()
 	claimResultConnection:Disconnect()
 	destroyCurrentTabs()
 	panel:Destroy()

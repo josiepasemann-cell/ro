@@ -53,6 +53,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
+local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local HabitatRemotes = require(ReplicatedStorage:WaitForChild("HabitatRemotes"))
 local HUDRemotes = require(ReplicatedStorage:WaitForChild("HUDRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
@@ -62,6 +63,8 @@ local Device = UIKit.Device
 local Layout = UIKit.Layout
 local Button = UIKit.Button
 local Toast = UIKit.Toast
+local Panel = UIKit.Panel
+local ScreenFX = UIKit.ScreenFX
 
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
@@ -278,10 +281,10 @@ Theme.ApplyGradient(buildBar, { Theme.Background.Panel, Theme.Background.Deepest
 local function applyBuildBarLayout()
 	if Device.ShouldUseFullscreenPanels() then
 		buildBar.Position = UDim2.new(0.5, 0, 1, -100) -- über der MainMenuBar (siehe MainMenuController)
-		buildBar.Size = UDim2.new(1, -16, 0, 240)
+		buildBar.Size = UDim2.new(1, -16, 0, 300) -- +60px ggü. vorher: Platz für die 5. Aktions-Zeile (Upgrade-Button)
 	else
 		buildBar.Position = UDim2.new(0.5, 0, 1, -100)
-		buildBar.Size = UDim2.fromOffset(620, 200)
+		buildBar.Size = UDim2.fromOffset(620, 260) -- +60px ggü. vorher, siehe oben
 	end
 end
 applyBuildBarLayout()
@@ -359,7 +362,7 @@ local actionRowHost = Instance.new("Frame")
 actionRowHost.Name = "ActionRowHost"
 actionRowHost.BackgroundTransparency = 1
 actionRowHost.Position = UDim2.fromOffset(0, 116)
-actionRowHost.Size = UDim2.new(1, 0, 0, 116)
+actionRowHost.Size = UDim2.new(1, 0, 0, 172) -- +56px ggü. vorher: Platz für 5 statt 4 Aktions-Buttons (Upgrade ergänzt)
 actionRowHost.Parent = buildBar
 
 local actionRow = Layout.ResponsiveRow({
@@ -393,6 +396,27 @@ local function confirmSell()
 		end
 	end
 	Toast.Show({ Text = "Kein Gebäude auf diesem Feld.", Type = "Warning", Duration = 2 })
+end
+
+-- Gebäude-Upgrade-System (siehe docs/building-upgrades.md): identisches
+-- Muster zu confirmSell oben, nur mit RequestUpgradeBuilding statt
+-- RequestRemoveBuilding - der Server (PlacementService.RequestUpgrade)
+-- validiert Stufe/Level-Anforderung/Kontostand vollständig neu.
+local function confirmUpgrade()
+	if not targetField then
+		return
+	end
+	for _, child in ipairs(buildingsFolder:GetChildren()) do
+		if child:IsA("Model") and child:GetAttribute("FieldIndex") == targetField.Index then
+			local placementId = child:GetAttribute("PlacementId")
+			if type(placementId) == "string" then
+				HabitatRemotes.RequestUpgradeBuilding:FireServer(placementId)
+				infoLabel.Text = "Upgrade requested..."
+			end
+			return
+		end
+	end
+	Toast.Show({ Text = "No building on this field.", Type = "Warning", Duration = 2 })
 end
 
 local function rotatePreview()
@@ -441,6 +465,15 @@ local cancelButton = Button.new({
 	LayoutOrder = 4,
 })
 cancelButton.Clicked:Connect(exitBuildMode)
+
+local buildModeUpgradeButton = Button.new({
+	Parent = actionRow.Frame,
+	Text = "⬆ Upgrade",
+	Variant = "Primary",
+	Size = UDim2.new(0.48, 0, 0, 52),
+	LayoutOrder = 5,
+})
+buildModeUpgradeButton.Clicked:Connect(confirmUpgrade)
 
 -- // Baumodus umschalten (über MainMenuController-Bridge) ------------------------
 
@@ -592,6 +625,223 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 	)
 end)
 
+-- // Gebäude-Upgrade-Panel (klickbar auch AUSSERHALB des Baumodus) ---------------
+-- Auftrag Punkt 4: "tapping/clicking a placed building ... opens a small
+-- UIKit panel with current stage, next-stage effects, cost, and an Upgrade
+-- button". Gilt hier für ALLE Gebäudetypen AUSSER BroodPool - BroodPool hat
+-- bereits ein eigenes, Zucht-fokussiertes Klick-Panel (siehe
+-- BreedingUIController.client.lua), das den Upgrade-Button/die Stufen-
+-- Anzeige dort direkt ergänzt bekommt (kein zweiter ClickDetector auf
+-- demselben PrimaryPart, der beide Panels gleichzeitig öffnen würde).
+--
+-- WICHTIG: rein Anzeige-/Komfort-UI, identisch zum Rest dieses Skripts -
+-- die eigentliche Autorität über Kosten/Stufe/Effekt liegt beim Server
+-- (PlacementService.RequestUpgrade); dieses Panel liest BuildingConfig/
+-- RaidConfig nur zur Vorschau der NÄCHSTEN Stufe.
+
+local UPGRADE_CLICK_MAX_DISTANCE = 20
+
+local upgradePanel = Panel.new({
+	Title = "Building Upgrade",
+	Closable = true,
+	CenteredSize = UDim2.fromOffset(420, 320),
+})
+
+local upgradeInfoLabel = Instance.new("TextLabel")
+upgradeInfoLabel.Name = "Info"
+upgradeInfoLabel.BackgroundTransparency = 1
+upgradeInfoLabel.Size = UDim2.new(1, 0, 0, 220)
+upgradeInfoLabel.Font = Theme.Font.Body
+upgradeInfoLabel.TextWrapped = true
+upgradeInfoLabel.TextColor3 = Theme.Text.Secondary
+upgradeInfoLabel.TextYAlignment = Enum.TextYAlignment.Top
+upgradeInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+upgradeInfoLabel.TextScaled = true
+upgradeInfoLabel.Text = ""
+upgradeInfoLabel.Parent = upgradePanel.Content
+local upgradeInfoConstraint = Instance.new("UITextSizeConstraint")
+upgradeInfoConstraint.MinTextSize = 13
+upgradeInfoConstraint.MaxTextSize = 18
+upgradeInfoConstraint.Parent = upgradeInfoLabel
+
+local panelUpgradeButton = Button.new({
+	Parent = upgradePanel.Content,
+	Text = "Upgrade",
+	Variant = "Success",
+	Important = true,
+	Size = UDim2.new(1, 0, 0, 48),
+	LayoutOrder = 2,
+})
+panelUpgradeButton.Instance.Position = UDim2.new(0, 0, 1, -48)
+
+local activeUpgradePlacementId: string? = nil
+local activeUpgradeBuildingId: string? = nil
+local activeUpgradeStage = 1
+
+--- Formatiert die Effekt-Zeile einer Stufe (`stage`) für `buildingId`, rein
+--- lesend aus BuildingConfig/RaidConfig - identisches Datenmodell wie
+--- Server-seitig IdleIncomeService/RaidService, siehe dort.
+local function describeStageEffect(buildingId: string, definition: BuildingConfig.BuildingDefinition, stage: number): string
+	if definition.IncomeMultiplierByStage then
+		local rate = definition.IncomeRate * BuildingConfig.GetIncomeMultiplier(buildingId, stage)
+		return ("%d Tide Coins / minute"):format(math.floor(rate + 0.5))
+	end
+
+	local towerStats = RaidConfig.GetTowerStats(buildingId)
+	if towerStats then
+		local bonus = stage > 1 and definition.TowerStageBonus and definition.TowerStageBonus[stage] or nil
+		local damage = towerStats.Damage * (bonus and bonus.DamageMultiplier or 1)
+		local fireRate = towerStats.FireRate * (bonus and bonus.FireRateMultiplier or 1)
+		local range = towerStats.Range + (bonus and bonus.RangeBonus or 0)
+		local text = ("%.0f DPS · Range %.0f"):format(damage * fireRate, range)
+		if towerStats.BlockRadius then
+			local blockRadius = towerStats.BlockRadius + (bonus and bonus.BlockRadiusBonus or 0)
+			text ..= (" · Slow Radius %.0f"):format(blockRadius)
+		end
+		if towerStats.ChainCount then
+			local chainCount = towerStats.ChainCount + (bonus and bonus.ChainCountBonus or 0)
+			text ..= (" · Chains to %d"):format(chainCount)
+		end
+		return text
+	end
+
+	return "—"
+end
+
+local function refreshUpgradePanel()
+	if not activeUpgradePlacementId or not activeUpgradeBuildingId then
+		return
+	end
+	local definition = BuildingConfig.Get(activeUpgradeBuildingId)
+	if not definition then
+		return
+	end
+
+	local currentLine = ("%s — Stage %d/%d\nCurrent: %s"):format(
+		definition.DisplayName,
+		activeUpgradeStage,
+		definition.MaxStage,
+		describeStageEffect(activeUpgradeBuildingId, definition, activeUpgradeStage)
+	)
+
+	if activeUpgradeStage >= definition.MaxStage then
+		upgradeInfoLabel.Text = currentLine .. "\n\nMaximum stage reached."
+		panelUpgradeButton:SetText("Max Stage")
+		panelUpgradeButton:SetDisabled(true)
+		return
+	end
+
+	local nextStage = activeUpgradeStage + 1
+	local cost = definition.UpgradeCosts[nextStage]
+	local nextLine = ("Next: %s"):format(describeStageEffect(activeUpgradeBuildingId, definition, nextStage))
+
+	local costText = "—"
+	local buttonCostSuffix = ""
+	if cost then
+		if cost.AbyssalShards and cost.AbyssalShards > 0 then
+			costText = ("%d Tide Coins + %d Abyssal Shards (requires Level %d)"):format(
+				cost.TideCoins,
+				cost.AbyssalShards,
+				cost.LevelRequirement
+			)
+		else
+			costText = ("%d Tide Coins (requires Level %d)"):format(cost.TideCoins, cost.LevelRequirement)
+		end
+		buttonCostSuffix = (" (%d 🌊)"):format(cost.TideCoins)
+	end
+
+	upgradeInfoLabel.Text = ("%s\n\n%s\nCost: %s"):format(currentLine, nextLine, costText)
+	panelUpgradeButton:SetText("Upgrade" .. buttonCostSuffix)
+	panelUpgradeButton:SetDisabled(false)
+end
+
+local function openUpgradePanelFor(model: Model)
+	local buildingId = model:GetAttribute("BuildingId")
+	local placementId = model:GetAttribute("PlacementId")
+	if type(buildingId) ~= "string" or type(placementId) ~= "string" then
+		return
+	end
+	if buildingId == "BroodPool" then
+		return -- eigenes Panel, siehe BreedingUIController.client.lua
+	end
+
+	activeUpgradeBuildingId = buildingId
+	activeUpgradePlacementId = placementId
+	local level = model:GetAttribute("Level")
+	activeUpgradeStage = if type(level) == "number" then level else 1
+
+	refreshUpgradePanel()
+	upgradePanel:Open()
+end
+
+panelUpgradeButton.Clicked:Connect(function()
+	if not activeUpgradePlacementId then
+		return
+	end
+	panelUpgradeButton:SetDisabled(true)
+	HabitatRemotes.RequestUpgradeBuilding:FireServer(activeUpgradePlacementId)
+end)
+
+upgradePanel.Closed:Connect(function()
+	activeUpgradePlacementId = nil
+	activeUpgradeBuildingId = nil
+end)
+
+local function ensureBuildingUpgradeClickDetector(model: Model)
+	if model:GetAttribute("BuildingId") == "BroodPool" then
+		return
+	end
+	local primaryPart = model.PrimaryPart
+	if not primaryPart or primaryPart:FindFirstChildOfClass("ClickDetector") then
+		return
+	end
+
+	local clickDetector = Instance.new("ClickDetector")
+	clickDetector.MaxActivationDistance = UPGRADE_CLICK_MAX_DISTANCE
+	clickDetector.Parent = primaryPart
+
+	clickDetector.MouseClick:Connect(function(clickingPlayer)
+		if clickingPlayer ~= player then
+			return
+		end
+		openUpgradePanelFor(model)
+	end)
+end
+
+for _, child in ipairs(buildingsFolder:GetChildren()) do
+	if child:IsA("Model") then
+		ensureBuildingUpgradeClickDetector(child)
+	end
+end
+
+local buildingsUpgradeChildAddedConnection = buildingsFolder.ChildAdded:Connect(function(child)
+	if child:IsA("Model") then
+		ensureBuildingUpgradeClickDetector(child)
+	end
+end)
+
+HabitatRemotes.UpgradeBuildingResult.OnClientEvent:Connect(function(result)
+	if not result then
+		return
+	end
+
+	if result.Success then
+		infoLabel.Text = ("Upgraded! New balance: %s Tide Coins."):format(tostring(result.NewBalance))
+		Toast.Show({ Text = "Building upgraded!", Type = "Success" })
+		ScreenFX.BigMoment(if result.NewStage and result.NewStage >= 3 then Theme.Neon.Violet else Theme.Neon.Cyan)
+	else
+		infoLabel.Text = ("Upgrade failed: %s"):format(tostring(result.Reason or "Unknown"))
+		Toast.Show({ Text = "Upgrade failed.", Type = "Error" })
+	end
+
+	if activeUpgradePlacementId and result.PlacementId == activeUpgradePlacementId then
+		if result.Success and result.NewStage then
+			activeUpgradeStage = result.NewStage
+		end
+		refreshUpgradePanel()
+	end
+end)
+
 -- // Server-Ergebnisse (nur Feedback, keine Autorität) ----------------------
 HabitatRemotes.PlaceBuildingResult.OnClientEvent:Connect(function(result)
 	if result and result.Success then
@@ -624,6 +874,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	inputBeganConnection:Disconnect()
 	bridgeConnection:Disconnect()
 	buildBarDeviceConnection:Disconnect()
+	buildingsUpgradeChildAddedConnection:Disconnect()
 	unbindScale()
 	cardRow:Destroy()
 	actionRow:Destroy()
@@ -634,5 +885,8 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	buildButton:Destroy()
 	sellButton:Destroy()
 	cancelButton:Destroy()
+	buildModeUpgradeButton:Destroy()
+	panelUpgradeButton:Destroy()
+	upgradePanel:Destroy()
 	screenGui:Destroy()
 end)

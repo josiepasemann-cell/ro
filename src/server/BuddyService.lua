@@ -71,15 +71,20 @@
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local CollectionService = game:GetService("CollectionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
+local BuddyRemotes = require(ReplicatedStorage:WaitForChild("BuddyRemotes"))
 
 local BuddyService = {}
 
 -- // Konfiguration -------------------------------------------------------------
 
-BuddyService.BUDDY_TAG = "PlayerBuddy"
+-- Einzige Quelle der Wahrheit für den CollectionService-Tag-String lebt in
+-- BuddyRemotes (von Server UND Client requirebar), siehe dortigen
+-- Kopfkommentar - vermeidet ein Auseinanderlaufen der Tag-Konstante.
+local BUDDY_TAG = BuddyRemotes.BUDDY_TAG
 
 local JOIN_DATA_TIMEOUT_SECONDS = 15
 
@@ -195,7 +200,7 @@ local function spawnBuddyModel(player: Player, creatureId: string)
 	-- CodexService.GetCatalog liest), hier nur um Besitzer-Bezug ergänzt.
 	clone:SetAttribute("OwnerUserId", player.UserId)
 	clone:SetAttribute("CreatureId", creatureId)
-	CollectionService:AddTag(clone, BuddyService.BUDDY_TAG)
+	CollectionService:AddTag(clone, BUDDY_TAG)
 
 	clone:PivotTo(initialSpawnCFrame(player))
 	clone.Parent = buddyFolder

@@ -31,11 +31,19 @@
 		GetBuddyState (RemoteFunction, Client -> Server -> Client)
 			Liefert den Buddy-Zustand DES anfragenden Spielers (niemals
 			eines anderen Spielers). Payload: { CreatureId: string? }
+
+	Zusätzlich exportiert dieses Modul `BuddyRemotes.BUDDY_TAG` - die
+	`CollectionService`-Tag-Konstante, mit der BuddyService jedes
+	Buddy-Modell markiert und BuddyClient alle sichtbaren Buddy-Modelle
+	findet. EINZIGE Quelle der Wahrheit für diesen String, damit Server-
+	und Client-Seite nicht auseinanderlaufen können.
 ]]
 
 local RunService = game:GetService("RunService")
 
 local BuddyRemotes = {}
+
+BuddyRemotes.BUDDY_TAG = "PlayerBuddy"
 
 local function getOrCreateRemoteEvent(parent: Instance, name: string): RemoteEvent
 	local existing = parent:FindFirstChild(name)

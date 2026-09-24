@@ -87,6 +87,7 @@ local ProgressionService = require(script.Parent:WaitForChild("ProgressionServic
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
+local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local ZoneEconomyConfig = require(ReplicatedStorage:WaitForChild("ZoneEconomyConfig"))
 
 local RaidService = {}
@@ -209,6 +210,31 @@ local function randomSpawnPosition(center: Vector3): Vector3
 	return center + offset
 end
 
+--- Gebäude-Upgrade-System (siehe docs/building-upgrades.md): liefert eine
+--- STUFE-ANGEPASSTE Kopie von `baseStats` (RaidConfig.TowerCombatStats),
+--- ausschließlich basierend auf BuildingConfig.GetTowerStageBonus. `stage`
+--- kommt vom "Level"-Modell-Attribut - `nil`/kein Bonus liefert `baseStats`
+--- unverändert zurück (Stufe 1, oder ein Turmtyp ohne konfigurierten Bonus).
+--- Felder, die der jeweilige Turmtyp gar nicht besitzt (z. B. BlockRadius
+--- bei AnglerfishTower), bleiben `nil` (kein Bonus "erfindet" ein Feld, das
+--- RaidConfig.TOWER_STATS für diesen Turmtyp nie definiert hat).
+local function applyTowerStageBonus(buildingId: string, baseStats: RaidConfig.TowerCombatStats, stage: any): RaidConfig.TowerCombatStats
+	local numericStage = tonumber(stage) or 1
+	local bonus = BuildingConfig.GetTowerStageBonus(buildingId, numericStage)
+	if not bonus then
+		return baseStats
+	end
+
+	return {
+		Range = baseStats.Range + (bonus.RangeBonus or 0),
+		Damage = baseStats.Damage * (bonus.DamageMultiplier or 1),
+		FireRate = baseStats.FireRate * (bonus.FireRateMultiplier or 1),
+		BlockRadius = baseStats.BlockRadius and (baseStats.BlockRadius + (bonus.BlockRadiusBonus or 0)) or nil,
+		ChainCount = baseStats.ChainCount and (baseStats.ChainCount + (bonus.ChainCountBonus or 0)) or nil,
+		ChainRadius = baseStats.ChainRadius and (baseStats.ChainRadius + (bonus.ChainRadiusBonus or 0)) or nil,
+	}
+end
+
 --- Sammelt alle eigenen, aktuell im Workspace stehenden AnglerfishTower-
 --- Modelle eines Spielers als TowerRuntime (Kampfwerte aus RaidConfig,
 --- Feuerbereitschaft sofort - kein "Aufwärmen" nötig).
@@ -228,7 +254,12 @@ local function collectTowerRuntimes(player: Player): { TowerRuntime }
 					table.insert(towers, {
 						PlacementId = model:GetAttribute("PlacementId"),
 						Model = model,
-						Stats = stats,
+						-- Gebäude-Upgrade-System (siehe docs/building-upgrades.md): das
+						-- "Level"-Modell-Attribut (1-3, siehe PlacementService.tagModel)
+						-- wird hier auf die RaidConfig-Basiswerte angewendet - rein
+						-- additiv/multiplikativ, NIEMALS in RaidConfig zurückgeschrieben
+						-- (identisches Prinzip wie RaidConfig.GetScaledEnemy oben).
+						Stats = applyTowerStageBonus(buildingId, stats, model:GetAttribute("Level")),
 						LastFireTime = 0,
 					})
 				end
@@ -727,7 +758,13 @@ local function computeTowerDpsFromLayout(player: Player): number
 	for _, placement in ipairs(PlayerDataService.GetHabitatLayout(player)) do
 		local stats = RaidConfig.GetTowerStats(placement.BuildingId)
 		if stats then
-			totalDps += stats.Damage * stats.FireRate
+			-- Gebäude-Upgrade-System: dieselbe Stufe-Anpassung wie im Live-Raid
+			-- (collectTowerRuntimes), hier direkt aus placement.Level statt aus
+			-- einem Modell-Attribut (siehe computeTowerDpsFromLayout-Kopfkommentar
+			-- - läuft VOR PlacementService.RestorePlayerLayout, es gibt also noch
+			-- gar keine Workspace-Modelle).
+			local effectiveStats = applyTowerStageBonus(placement.BuildingId, stats, placement.Level)
+			totalDps += effectiveStats.Damage * effectiveStats.FireRate
 		end
 	end
 	return totalDps

@@ -38,6 +38,8 @@ local Workspace = game:GetService("Workspace")
 
 local BreedingConfig = require(ReplicatedStorage:WaitForChild("BreedingConfig"))
 local BreedingRemotes = require(ReplicatedStorage:WaitForChild("BreedingRemotes"))
+local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
+local HabitatRemotes = require(ReplicatedStorage:WaitForChild("HabitatRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
@@ -94,6 +96,13 @@ type BroodPoolStatus = {
 local statusCache: { [string]: BroodPoolStatus } = {}
 -- Billboard-Referenzen je PlacementId, für die laufende Countdown-Aktualisierung
 local billboardLabels: { [string]: TextLabel } = {}
+-- Gebäude-Upgrade-System (siehe docs/building-upgrades.md): lokaler Cache der
+-- aktuellen Ausbaustufe je PlacementId (== BreedingConfig-Zucht-Stufe für
+-- dieses BroodPool) - initial vom Modell-Attribut "Level" übernommen (siehe
+-- PlacementService.tagModel), danach über UpgradeBuildingResult aktuell
+-- gehalten (siehe unten). Rein kosmetisch, identisches Prinzip wie
+-- statusCache - keine Autorität.
+local placementLevelCache: { [string]: number } = {}
 
 -- // Farb-Hilfsfunktion (gleiches Rarity-Farbschema wie BreedingConfig/Theme) --
 local function rarityColor(rarity: string): Color3
@@ -117,7 +126,10 @@ end
 local detailPanel = Panel.new({
 	Title = "Brutbecken",
 	Closable = true,
-	CenteredSize = UDim2.fromOffset(420, 320),
+	-- +80px ggü. vorher: Platz für die Stufen-/Upgrade-Sektion (siehe
+	-- upgradeInfoLabel/breedingUpgradeButton unten, Auftrag Gebäude-Upgrade-
+	-- System).
+	CenteredSize = UDim2.fromOffset(420, 400),
 })
 
 local infoLabel = Instance.new("TextLabel")
@@ -167,6 +179,39 @@ local actionButton = Button.new({
 	LayoutOrder = 5,
 })
 actionButton.Instance.Position = UDim2.new(0, 0, 1, -48)
+
+-- // Gebäude-Upgrade-System (siehe docs/building-upgrades.md, Auftrag Punkt
+-- 4 "Breeding panel shows the pool's tier") - eigene, vom Zucht-Zustand
+-- (Empty/Incubating/Ready) unabhängige Sektion: aktuelle Stufe, nächste
+-- Stufe (Zucht-Tier-Name + Kosten), Upgrade-Button. Deaktiviert, während
+-- eine Inkubation läuft (siehe PlacementService.RequestUpgrade
+-- Kopfkommentar "kein Upgrade während laufender Inkubation" für die volle
+-- Begründung dieser Design-Entscheidung).
+local upgradeInfoLabel = Instance.new("TextLabel")
+upgradeInfoLabel.Name = "UpgradeInfo"
+upgradeInfoLabel.BackgroundTransparency = 1
+upgradeInfoLabel.Position = UDim2.new(0, 0, 0, 154)
+upgradeInfoLabel.Size = UDim2.new(1, 0, 0, 60)
+upgradeInfoLabel.Font = Theme.Font.Body
+upgradeInfoLabel.TextWrapped = true
+upgradeInfoLabel.TextColor3 = Theme.Text.Secondary
+upgradeInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+upgradeInfoLabel.TextScaled = true
+upgradeInfoLabel.Text = ""
+upgradeInfoLabel.Parent = detailPanel.Content
+local upgradeInfoConstraint = Instance.new("UITextSizeConstraint")
+upgradeInfoConstraint.MinTextSize = 11
+upgradeInfoConstraint.MaxTextSize = 15
+upgradeInfoConstraint.Parent = upgradeInfoLabel
+
+local breedingUpgradeButton = Button.new({
+	Parent = detailPanel.Content,
+	Text = "Upgrade",
+	Variant = "Primary",
+	Size = UDim2.new(1, 0, 0, 40),
+	LayoutOrder = 4,
+})
+breedingUpgradeButton.Instance.Position = UDim2.new(0, 0, 0, 218)
 
 local activePlacementId: string? = nil
 

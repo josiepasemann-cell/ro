@@ -107,7 +107,9 @@ local openLeaderboardEvent = getOrCreateBridgeEvent("OpenLeaderboard")
 local openTravelEvent = getOrCreateBridgeEvent("OpenTravel")
 local openCodexEvent = getOrCreateBridgeEvent("OpenCodex")
 local openEventEvent = getOrCreateBridgeEvent("OpenEvent")
+local openAchievementsEvent = getOrCreateBridgeEvent("OpenAchievements")
 local questBadgeCountEvent = getOrCreateBridgeEvent("QuestBadgeCountChanged")
+local achievementBadgeCountEvent = getOrCreateBridgeEvent("AchievementBadgeCountChanged")
 
 -- // Root-ScreenGui --------------------------------------------------------------
 
@@ -174,7 +176,7 @@ hintLabel.Size = UDim2.new(1, 0, 0, 18)
 hintLabel.Font = Theme.Font.Body
 hintLabel.TextColor3 = Theme.Text.Muted
 hintLabel.TextScaled = true
-hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · Q Quests · L Rangliste · R Reisen · O Einstellungen · C Kodex"
+hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · Q Quests · L Rangliste · R Reisen · O Einstellungen · C Kodex · K Achievements"
 hintLabel.Visible = false
 hintLabel.Parent = bar
 local hintConstraint = Instance.new("UITextSizeConstraint")
@@ -184,7 +186,7 @@ hintConstraint.Parent = hintLabel
 
 -- // Geräteabhängiges Andocken ---------------------------------------------------
 
-local MENU_ENTRY_COUNT = 11 -- Bauen, Brutbecken, Mystery Egg, Entführt, Quests, Rangliste, Reisen, Optionen, Shop, Kodex, Event
+local MENU_ENTRY_COUNT = 12 -- Bauen, Brutbecken, Mystery Egg, Entführt, Quests, Rangliste, Reisen, Optionen, Shop, Kodex, Event, Achievements
 
 local function applyBarLayout()
 	local state = Device.GetState()
@@ -217,12 +219,12 @@ type MenuEntry = {
 	Icon: string,
 	Text: string,
 	OnClick: () -> (),
-	HasBadge: boolean?, -- true nur beim "Quests"-Eintrag (siehe questBadgeFrame unten)
+	BadgeKey: string?, -- "Quest" | "Achievement" - siehe badgeFrames/badgeLabels unten
 }
 
 local buttonHandles: { any } = {}
-local questBadgeFrame: Frame? = nil
-local questBadgeLabel: TextLabel? = nil
+local badgeFrames: { [string]: Frame } = {}
+local badgeLabels: { [string]: TextLabel } = {}
 
 local function buildButton(entry: MenuEntry, order: number)
 	local buttonSize = if Device.IsPhone() then UDim2.fromOffset(64, 64) else UDim2.fromOffset(56, 56)
@@ -240,10 +242,11 @@ local function buildButton(entry: MenuEntry, order: number)
 	handle.Clicked:Connect(entry.OnClick)
 	table.insert(buttonHandles, handle)
 
-	if entry.HasBadge then
-		-- Kleines, grelles Zähler-Abzeichen oben rechts am Button (Quests:
-		-- offene Belohnung zum Abholen). QuestUIController meldet den
-		-- aktuellen Zähler über die Bridge "QuestBadgeCountChanged".
+	if entry.BadgeKey then
+		-- Kleines, grelles Zähler-Abzeichen oben rechts am Button (Quests/
+		-- Achievements: offene Belohnung zum Abholen). Die jeweiligen
+		-- UI-Controller melden den aktuellen Zähler über ihre eigene Bridge
+		-- ("QuestBadgeCountChanged"/"AchievementBadgeCountChanged").
 		local badge = Instance.new("Frame")
 		badge.Name = "Badge"
 		badge.AnchorPoint = Vector2.new(1, 0)
@@ -270,25 +273,32 @@ local function buildButton(entry: MenuEntry, order: number)
 		badgeConstraint.MaxTextSize = 14
 		badgeConstraint.Parent = badgeLabel
 
-		questBadgeFrame = badge
-		questBadgeLabel = badgeLabel
+		badgeFrames[entry.BadgeKey] = badge
+		badgeLabels[entry.BadgeKey] = badgeLabel
 	end
 
 	return handle
 end
 
-local function updateQuestBadge(count: number)
-	if not questBadgeFrame or not questBadgeLabel then
+local function updateBadge(key: string, count: number)
+	local frame = badgeFrames[key]
+	local label = badgeLabels[key]
+	if not frame or not label then
 		return
 	end
 	local clamped = math.clamp(count, 0, 99)
-	questBadgeFrame.Visible = clamped > 0
-	questBadgeLabel.Text = clamped > 9 and "9+" or tostring(clamped)
+	frame.Visible = clamped > 0
+	label.Text = clamped > 9 and "9+" or tostring(clamped)
 end
 
 local questBadgeConnection = questBadgeCountEvent.Event:Connect(function(count: number)
 	if type(count) == "number" then
-		updateQuestBadge(count)
+		updateBadge("Quest", count)
+	end
+end)
+local achievementBadgeConnection = achievementBadgeCountEvent.Event:Connect(function(count: number)
+	if type(count) == "number" then
+		updateBadge("Achievement", count)
 	end
 end)
 
@@ -543,6 +553,14 @@ local function onEventClicked()
 	openEventEvent:Fire()
 end
 
+-- // Achievements (AchievementUIController.client.lua) -----------------------
+-- Öffnet das Achievements-/Titel-Panel über die Bridge - identisches Muster
+-- zu Shop/Quests/Kodex/Event oben.
+
+local function onAchievementsClicked()
+	openAchievementsEvent:Fire()
+end
+
 -- // Leiste aufbauen -----------------------------------------------------------------
 
 local entries: { MenuEntry } = {
@@ -550,13 +568,14 @@ local entries: { MenuEntry } = {
 	{ Icon = "🥚", Text = "Brutbecken", OnClick = onBreedingClicked },
 	{ Icon = "🎁", Text = "Mystery Egg", OnClick = onMysteryEggClicked },
 	{ Icon = "🆘", Text = "Entführt", OnClick = onAbductedClicked },
-	{ Icon = "📜", Text = "Quests", OnClick = onQuestsClicked, HasBadge = true },
+	{ Icon = "📜", Text = "Quests", OnClick = onQuestsClicked, BadgeKey = "Quest" },
 	{ Icon = "🏆", Text = "Rangliste", OnClick = onLeaderboardClicked },
 	{ Icon = "🧭", Text = "Reisen", OnClick = onTravelClicked },
 	{ Icon = "⚙️", Text = "Optionen", OnClick = onSettingsClicked },
 	{ Icon = "🛒", Text = "Shop", OnClick = onShopClicked },
 	{ Icon = "📖", Text = "Kodex", OnClick = onCodexClicked },
 	{ Icon = "🌊", Text = "Event", OnClick = onEventClicked },
+	{ Icon = "🏅", Text = "Achievements", OnClick = onAchievementsClicked, BadgeKey = "Achievement" },
 }
 
 for index, entry in ipairs(entries) do
@@ -590,6 +609,8 @@ local inputConnection = UserInputService.InputBegan:Connect(function(input, game
 		onCodexClicked()
 	elseif input.KeyCode == Enum.KeyCode.E then
 		onEventClicked()
+	elseif input.KeyCode == Enum.KeyCode.K then
+		onAchievementsClicked()
 	end
 end)
 
@@ -615,6 +636,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	deviceForGamepadConnection:Disconnect()
 	inputConnection:Disconnect()
 	questBadgeConnection:Disconnect()
+	achievementBadgeConnection:Disconnect()
 	unbindScale()
 	for _, handle in buttonHandles do
 		handle:Destroy()
