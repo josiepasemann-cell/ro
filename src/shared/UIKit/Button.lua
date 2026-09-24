@@ -34,8 +34,7 @@
 
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
 
 local Theme = require(script.Parent:WaitForChild("Theme"))
 local Device = require(script.Parent:WaitForChild("Device"))
@@ -98,10 +97,10 @@ local function playSound(definition: { Id: string, Volume: number, PitchRange: N
 	end
 	sound.Parent = SoundService
 	sound:Play()
-	game:GetService("Debris"):AddItem(sound, 3)
+	Debris:AddItem(sound, 3)
 end
 
-local function spawnBurst(button: TextButton, originPosition: Vector2)
+local function spawnBurst(button: TextButton, originPosition: Vector2, color: Color3)
 	if Settings.ShouldSkipFX() then
 		return
 	end
@@ -117,8 +116,8 @@ local function spawnBurst(button: TextButton, originPosition: Vector2)
 		local particle = ParticlePool.Acquire(burstHost)
 		particle.Position = UDim2.fromOffset(localOrigin.X, localOrigin.Y)
 		particle.Size = UDim2.fromOffset(6, 6)
-		particle.ImageColor3 = variantColors.Primary[1]
-		particle.ImageTransparency = 0
+		particle.BackgroundColor3 = color
+		particle.BackgroundTransparency = 0
 
 		local angle = (index / particleCount) * math.pi * 2 + math.random() * 0.4
 		local distance = 26 + math.random() * 18
@@ -129,7 +128,7 @@ local function spawnBurst(button: TextButton, originPosition: Vector2)
 			TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 			{
 				Position = UDim2.fromOffset(localOrigin.X + targetOffset.X, localOrigin.Y + targetOffset.Y),
-				ImageTransparency = 1,
+				BackgroundTransparency = 1,
 				Rotation = math.random(-90, 90),
 			}
 		)
@@ -342,7 +341,7 @@ function Button.new(props: ButtonProps): ButtonHandle
 			end
 		end)
 		local origin = inputPosition or (root.AbsolutePosition + root.AbsoluteSize / 2)
-		spawnBurst(root, origin)
+		spawnBurst(root, origin, colors[1])
 		spawnRipple(root, origin)
 		playSound(SoundConfig.Click)
 	end
