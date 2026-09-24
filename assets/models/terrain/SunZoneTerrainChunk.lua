@@ -392,4 +392,4 @@ end
 model.PrimaryPart = base
 model:SetAttribute("Zone", "SunZone")
 
-print("[Abyssara] SunZoneTerrainChunk (v2) erzeugt unter Workspace.Assets.Terrain")
+print("[Abyssara] SunZoneTerrainChunk (v2) created under Workspace.Assets.Terrain")

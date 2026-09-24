@@ -106,6 +106,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Leuchtgarnele")
+model:SetAttribute("CreatureName", "Glow Shrimp")
 
-print("[Abyssara] GlowShrimp erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] GlowShrimp created under Workspace.Assets.Creatures")

@@ -652,7 +652,7 @@ function PlacementService.RestorePlayerLayout(player: Player)
 	local buildingsFolder = PlotRegistry.GetBuildingsFolder(player)
 	local plot = PlotRegistry.GetPlot(player)
 	if not buildingsFolder or not plot or not plot.PrimaryPart then
-		warn(("[PlacementService] Kein Plot für %s - Layout-Wiederherstellung übersprungen."):format(player.Name))
+		warn(("[PlacementService] No plot for %s - layout restoration skipped."):format(player.Name))
 		return
 	end
 
@@ -663,7 +663,7 @@ function PlacementService.RestorePlayerLayout(player: Player)
 		local definition = BuildingConfig.Get(placement.BuildingId)
 		if not definition then
 			warn(
-				("[PlacementService] Unbekannte BuildingId '%s' im Layout von %s übersprungen."):format(
+				("[PlacementService] Unknown BuildingId '%s' in the layout of %s skipped."):format(
 					tostring(placement.BuildingId),
 					player.Name
 				)
@@ -688,7 +688,7 @@ function PlacementService.RestorePlayerLayout(player: Player)
 		end
 		if not template then
 			warn(
-				("[PlacementService] Vorlage '%s' fehlt - gespeicherte Platzierung %s von %s übersprungen."):format(
+				("[PlacementService] Template '%s' is missing - saved placement %s by %s skipped."):format(
 					definition.TemplateName,
 					placement.PlacementId,
 					player.Name
@@ -722,7 +722,7 @@ function PlacementService.RestorePlayerLayout(player: Player)
 			occupiedFieldByUser[userId][matchedField.Index] = placement.PlacementId
 		else
 			warn(
-				("[PlacementService] Platzierung %s von %s keinem Baufeld zuordenbar (Modell trotzdem sichtbar, Feld bleibt für neue Käufe ggf. fälschlich frei)."):format(
+				("[PlacementService] Placement %s by %s could not be matched to a build field (model still visible, field may incorrectly stay free for new purchases)."):format(
 					placement.PlacementId,
 					player.Name
 				)

@@ -181,7 +181,7 @@ local function applyEnemyVisual(
 		model:ScaleTo(definition.ScaleMultiplier)
 	end)
 	if not ok then
-		warn("[RaidService] Model:ScaleTo() fehlgeschlagen (evtl. ältere Engine-Version) - Gegner bleibt unskaliert.")
+		warn("[RaidService] Model:ScaleTo() failed (possibly an older engine version) - enemy stays unscaled.")
 	end
 
 	if type(transparencyOverride) == "number" then
@@ -318,7 +318,7 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 				end
 			else
 				warn(
-					("[RaidService] Gegner-Vorlage '%s' fehlt - Spawn von '%s' übersprungen."):format(
+					("[RaidService] Enemy template '%s' is missing - spawn of '%s' skipped."):format(
 						definition.TemplateName,
 						definition.Id
 					)

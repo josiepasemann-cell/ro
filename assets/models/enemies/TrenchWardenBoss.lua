@@ -155,4 +155,4 @@ model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
 model:SetAttribute("EnemyName", "Der Tiefenfürst")
 
-print("[Abyssara] TrenchWardenBoss erzeugt unter Workspace.Assets.Enemies")
+print("[Abyssara] TrenchWardenBoss created under Workspace.Assets.Enemies")

@@ -134,4 +134,4 @@ model.PrimaryPart = hexPlatform
 model:SetAttribute("FlatToFlatSize", FLAT_TO_FLAT)
 model:SetAttribute("GridFieldCount", FIELD_COUNT)
 
-print("[Abyssara] HabitatPlotBase erzeugt unter Workspace.Assets.Terrain")
+print("[Abyssara] HabitatPlotBase created under Workspace.Assets.Terrain")

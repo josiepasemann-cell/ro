@@ -116,4 +116,4 @@ model.PrimaryPart = base
 model:SetAttribute("DecorationId", "IceSpire")
 model:SetAttribute("Event", "FrozenCurrent")
 
-print("[Abyssara] IceSpire erzeugt unter Workspace.Assets.Decorations")
+print("[Abyssara] IceSpire created under Workspace.Assets.Decorations")

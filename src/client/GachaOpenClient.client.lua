@@ -121,12 +121,12 @@ local function ensureClickDetector(eggModel: Model)
 		isOpeningEgg = true
 		local cost = eggModel:GetAttribute("EggCostTideCoins")
 		UIKit.ConfirmDialog.Show({
-			Title = "Mystery Egg öffnen?",
+			Title = "Open Mystery Egg?",
 			Message = if type(cost) == "number"
-				then ("Kostet %d Tide Coins. Die Chancen siehst du im Menü unter Mystery Egg."):format(cost)
-				else "Die Chancen siehst du im Menü unter Mystery Egg.",
-			ConfirmText = "Öffnen",
-			CancelText = "Abbrechen",
+				then ("Costs %d Tide Coins. Check the odds in the menu under Mystery Egg."):format(cost)
+				else "Check the odds in the menu under Mystery Egg.",
+			ConfirmText = "Open",
+			CancelText = "Cancel",
 			OnConfirm = function()
 				pendingEggModel = eggModel
 				GachaRemotes.RequestOpenEgg:FireServer()
@@ -237,7 +237,7 @@ local function playOpenCeremony(eggModel: Model, rarityColor: Color3)
 
 		vfxClone:Destroy()
 	else
-		warn("[GachaOpenClient] GachaEggOpenVFX-Template nicht gefunden unter Workspace.Assets.Gacha.")
+		warn("[GachaOpenClient] GachaEggOpenVFX template not found under Workspace.Assets.Gacha.")
 		task.wait(VFX_ACTIVE_TIME)
 	end
 
@@ -309,11 +309,11 @@ local function showRevealBillboard(eggModel: Model, resultPayload: { [string]: a
 	subLabel.TextScaled = true
 	local toastText: string
 	if resultPayload.ResultType == "Duplicate" then
-		subLabel.Text = ("Duplikat, +%d Tide Coins"):format(resultPayload.CompensationTideCoins)
-		toastText = ("%s (Duplikat) +%d Tide Coins"):format(resultPayload.CreatureName, resultPayload.CompensationTideCoins)
+		subLabel.Text = ("Duplicate, +%d Tide Coins"):format(resultPayload.CompensationTideCoins)
+		toastText = ("%s (Duplicate) +%d Tide Coins"):format(resultPayload.CreatureName, resultPayload.CompensationTideCoins)
 	else
 		subLabel.Text = if resultPayload.PityForced then "Pity!" else ""
-		toastText = ("Neu: %s (%s)"):format(resultPayload.CreatureName, Theme.RarityLabel[rarityKey] or resultPayload.Rarity)
+		toastText = ("New: %s (%s)"):format(resultPayload.CreatureName, Theme.RarityLabel[rarityKey] or resultPayload.Rarity)
 	end
 	subLabel.Parent = background
 
@@ -343,11 +343,11 @@ GachaRemotes.OpenEggResult.OnClientEvent:Connect(function(payload: { [string]: a
 		if payload.Failure == "OnCooldown" then
 			-- Kein UI-Fehlerdialog nötig fürs MVP - einfache Konsole-Warnung
 			-- reicht, da es sich um einen reinen Anti-Spam-Schutz handelt.
-			warn("[GachaOpenClient] Anfrage zu schnell wiederholt, bitte kurz warten.")
+			warn("[GachaOpenClient] Request repeated too fast, please wait a moment.")
 		elseif payload.Failure == "DataNotLoaded" then
-			Toast.Show({ Text = "Deine Daten laden noch, versuch es gleich nochmal.", Type = "Info", Duration = 3 })
+			Toast.Show({ Text = "Your data is still loading, try again in a moment.", Type = "Info", Duration = 3 })
 		elseif payload.Failure == "NotEnoughCoins" then
-			Toast.Show({ Text = "Nicht genug Tide Coins für ein Mystery Egg.", Type = "Error", Duration = 3 })
+			Toast.Show({ Text = "Not enough Tide Coins for a Mystery Egg.", Type = "Error", Duration = 3 })
 		end
 		return
 	end
@@ -359,7 +359,7 @@ GachaRemotes.OpenEggResult.OnClientEvent:Connect(function(payload: { [string]: a
 		task.spawn(function()
 			local ok, err = pcall(playOpenCeremony, eggModel, rarityColor)
 			if not ok then
-				warn("[GachaOpenClient] Fehler in der Öffnungs-Zeremonie:", err)
+				warn("[GachaOpenClient] Error in the opening ceremony:", err)
 			end
 			showRevealBillboard(eggModel, result)
 			isOpeningEgg = false
@@ -367,7 +367,7 @@ GachaRemotes.OpenEggResult.OnClientEvent:Connect(function(payload: { [string]: a
 	else
 		-- Ei-Modell nicht mehr vorhanden (z. B. aus der Welt entfernt) -
 		-- Ergebnis trotzdem nicht verschlucken.
-		print(("[GachaOpenClient] Ergebnis: %s (%s)"):format(result.CreatureName, result.Rarity))
+		print(("[GachaOpenClient] Result: %s (%s)"):format(result.CreatureName, result.Rarity))
 		isOpeningEgg = false
 	end
 end)
@@ -380,8 +380,8 @@ if assetsFolder then
 	if gachaFolder and gachaFolder:IsA("Folder") then
 		setupEggInteractions(gachaFolder)
 	else
-		warn("[GachaOpenClient] Workspace.Assets.Gacha nicht gefunden - wurden die Gacha-Buildscripts ausgeführt?")
+		warn("[GachaOpenClient] Workspace.Assets.Gacha not found - were the Gacha build scripts run?")
 	end
 else
-	warn("[GachaOpenClient] Workspace.Assets nicht gefunden - wurden die Asset-Buildscripts ausgeführt?")
+	warn("[GachaOpenClient] Workspace.Assets not found - were the asset build scripts run?")
 end

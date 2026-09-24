@@ -443,4 +443,4 @@ end
 model.PrimaryPart = base
 model:SetAttribute("Zone", "MidnightZone")
 
-print("[Abyssara] MidnightZoneTerrainChunk erzeugt unter Workspace.Assets.Terrain")
+print("[Abyssara] MidnightZoneTerrainChunk created under Workspace.Assets.Terrain")

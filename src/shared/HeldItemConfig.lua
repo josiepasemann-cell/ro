@@ -64,8 +64,8 @@ local HOLD_SCALE_BY_KIND: { [string]: number } = {
 
 local DISPLAY_NAME_BY_KIND: { [string]: string } = {
 	GlowSpore = "Glow Spore",
-	Egg = "Mysterium-Ei",
-	Creature = "Kreatur",
+	Egg = "Mystery Egg",
+	Creature = "Creature",
 	FrozenSpore = "Frozen Spore",
 }
 

@@ -102,6 +102,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Abgrund-Assel")
+model:SetAttribute("CreatureName", "Abyssal Isopod")
 
-print("[Abyssara] AbyssalIsopod erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] AbyssalIsopod created under Workspace.Assets.Creatures")

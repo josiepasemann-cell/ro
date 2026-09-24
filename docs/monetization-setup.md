@@ -1,172 +1,171 @@
-# Monetarisierungs-Setup – Abyssara: Deep Tide Tycoon
+# Monetization Setup – Abyssara: Deep Tide Tycoon
 
-Diese Anleitung richtet sich an die Spielbetreiberin (nicht an Entwickler:innen)
-und beschreibt Schritt für Schritt, wie die echten Robux-Produkt-IDs auf
-roblox.com angelegt und ins Projekt eingetragen werden. Der komplette
-Code funktioniert bereits VORHER (alle IDs stehen aktuell als Platzhalter
-`0` in `src/shared/ShopConfig.lua`) – Kauf-Buttons bleiben bis zum Eintragen
-der echten IDs serverseitig deaktiviert, es gibt keinen Absturz.
+This guide is aimed at the game operator (not developers) and describes,
+step by step, how to create the real Robux product IDs on roblox.com and
+enter them into the project. The full code already works BEFORE this (all
+IDs currently sit as placeholder `0` in `src/shared/ShopConfig.lua`) —
+purchase buttons stay server-side disabled until the real IDs are entered;
+there is no crash.
 
-## 1. Voraussetzungen
+## 1. Prerequisites
 
-- Das Spiel muss mindestens einmal veröffentlicht sein (auch als "Nur für
-  mich"/Privat reicht), damit auf roblox.com/create Gamepasses/Entwickler-
-  produkte für die passende **Universe/Place-ID** angelegt werden können.
-- Zugriff auf das Roblox-Konto, dem das Spiel gehört (bzw. Creator-Hub-
-  Zugriff bei einer Gruppe).
+- The game must be published at least once (a "For me"/private publish is
+  enough) so that gamepasses/developer products can be created on
+  roblox.com/create for the matching **Universe/Place ID**.
+- Access to the Roblox account that owns the game (or Creator Hub access
+  for a group).
 
-## 2. Gamepasses anlegen
+## 2. Create gamepasses
 
-Für jeden der folgenden 5 Gamepasses:
+For each of the following 5 gamepasses:
 
-1. Auf [create.roblox.com](https://create.roblox.com) → dein Spiel öffnen →
-   "Monetarisierung" → "Passes" → "Pass erstellen".
-2. Name, Beschreibung und ein Icon-Bild hochladen (siehe Tabelle unten für
-   den vorgeschlagenen Namen/Preis – Icons sind aktuell überall
-   `rbxassetid://0`-Platzhalter im Code und können frei gewählt werden,
-   idealerweise passend zum 3D-/UI-Asset-Stil des Spiels).
-3. Preis in Robux setzen (siehe Tabelle).
-4. Nach dem Speichern zeigt Roblox eine **Pass-ID** (eine Zahl) an – diese
-   in `src/shared/ShopConfig.lua` im jeweiligen Eintrag unter `Id = 0`
-   eintragen (die `0` durch die echte Zahl ersetzen).
+1. On [create.roblox.com](https://create.roblox.com) → open your game →
+   "Monetization" → "Passes" → "Create a Pass".
+2. Upload a name, description, and icon image (see the table below for the
+   suggested name/price — icons are currently `rbxassetid://0` placeholders
+   everywhere in the code and can be chosen freely, ideally matching the
+   game's 3D/UI asset style).
+3. Set the price in Robux (see table).
+4. After saving, Roblox shows a **Pass ID** (a number) — enter it in
+   `src/shared/ShopConfig.lua` in the matching entry under `Id = 0`
+   (replace the `0` with the real number).
 
-| ShopConfig-Key | Name | Preis (Robux) | GDD-Effekt |
+| ShopConfig key | Name | Price (Robux) | GDD effect |
 |---|---|---|---|
-| `AutoCollector` | Auto-Collector | 149 | Verlängertes Offline-Einkommens-Cap (siehe Abweichung unten) |
-| `DoubleCoins` | 2x Tide Coins | 349 | Dauerhaft doppelte Tide Coins (Idle + Raid-Belohnung) |
-| `ExtraPlot` | Extra Habitat-Plot | 199 | **Nur Platzhalter, siehe Abweichung unten** |
-| `VIPDiver` | VIP-Taucher | 449 | Tägliche Bonus-Truhe, 1,5x Zucht-Geschwindigkeit, Chat-Tag |
-| `TrenchRunner` | Trench Runner | 99 | +Bewegungstempo (WalkSpeed) |
+| `AutoCollector` | Auto-Collector | 149 | Extended offline income cap (see deviation below) |
+| `DoubleCoins` | 2x Tide Coins | 349 | Permanent double Tide Coins (idle income + raid rewards) |
+| `ExtraPlot` | Extra Habitat Plot | 199 | **Placeholder only, see deviation below** |
+| `VIPDiver` | VIP Diver | 449 | Daily bonus chest, 1.5x breeding speed, chat tag |
+| `TrenchRunner` | Trench Runner | 99 | +Movement speed (WalkSpeed) |
 
-## 3. Entwicklerprodukte anlegen
+## 3. Create developer products
 
-Für jedes der folgenden 6 Entwicklerprodukte:
+For each of the following 6 developer products:
 
-1. "Monetarisierung" → "Entwicklerprodukte" → "Neues Entwicklerprodukt".
-2. Name, Beschreibung, Preis (siehe Tabelle) und Icon festlegen.
-3. Die vom Roblox-Assistenten angezeigte **Produkt-ID** in
-   `src/shared/ShopConfig.lua` beim jeweiligen Eintrag eintragen (`Id = 0`
-   ersetzen).
+1. "Monetization" → "Developer Products" → "New Developer Product".
+2. Set name, description, price (see table), and icon.
+3. Enter the **Product ID** shown by the Roblox assistant in
+   `src/shared/ShopConfig.lua` for the matching entry (replace `Id = 0`).
 
-| ShopConfig-Key | Name | Preis (Robux) | Hinweis |
+| ShopConfig key | Name | Price (Robux) | Note |
 |---|---|---|---|
-| `Coins500` | 500 Tide Coins | 79 | Direktwährung |
-| `Coins3000` | 3.000 Tide Coins | 399 | Direktwährung (Bulk-Rabatt) |
-| `RescueToken` | Rettungs-Token | 49 | Entführte Kreatur sofort zurückholen |
-| `MysteryEgg` | Mystery Egg | 89 | **Gacha – siehe Compliance-Hinweis unten** |
-| `RaidSkip` | Raid-Skip | 59 | Aktuellen Raid sofort gewinnen (1x/Tag) |
-| `InstantBreeding` | Zucht sofort abschließen | 39 (Vorschlag) | **Nicht im GDD, siehe Abweichung unten** |
+| `Coins500` | 500 Tide Coins | 79 | Direct currency |
+| `Coins3000` | 3,000 Tide Coins | 399 | Direct currency (bulk discount) |
+| `RescueToken` | Rescue Token | 49 | Instantly recover an abducted creature |
+| `MysteryEgg` | Mystery Egg | 89 | **Gacha – see compliance note below** |
+| `RaidSkip` | Raid Skip | 59 | Instantly win the current raid (1x/day) |
+| `InstantBreeding` | Instant Breeding Complete | 39 (suggested) | **Not in the GDD, see deviation below** |
 
-Nach dem Eintragen aller IDs: `default.project.json`/Rojo-Sync bzw. Studio-
-Publish erneut ausführen, damit `ShopConfig.lua` mit den echten Werten
-live geht.
+After entering all IDs: run `default.project.json`/Rojo sync or Studio
+publish again so `ShopConfig.lua` goes live with the real values.
 
-## 4. Wichtiger Compliance-Hinweis: Mystery Egg ("Paid Random Items")
+## 4. Important compliance note: Mystery Egg ("Paid Random Items")
 
-Roblox verlangt für Zufalls-Items gegen Echtgeld ("Paid Random Items"):
+Roblox requires the following for paid random items ("Paid Random Items"):
 
-- **Die Drop-Chancen müssen vor dem Kauf sichtbar sein.** Das ist bereits
-  umgesetzt: `ShopService.GetCatalog` liefert für das `MysteryEgg`-Produkt
-  ein `Odds`-Feld mit den exakt gleichen Wahrscheinlichkeiten wie beim
-  Gratis-Gacha-Weg (`GachaService.GetOddsTable`).
-- **In manchen Ländern (z. B. Belgien, Niederlande) ist der Robux-Kauf von
-  Zufalls-Items rechtlich eingeschränkt.** Der Code prüft das automatisch
-  über `PolicyService:GetPolicyInfoForPlayerAsync` (`ArePaidRandomItemsRestricted`)
-  und sperrt den Kauf-Button für betroffene Spieler (`DisabledReason =
-  "PaidRandomItemsRestricted"` im Katalog). Hier ist **keine weitere
-  Aktion** von dir nötig – das läuft vollautomatisch.
-- Falls Roblox künftig zusätzliche Alterskennzeichnungs- oder
-  Store-Vorgaben für dieses Produkt einführt, bitte in den Entwicklerprodukt-
-  Einstellungen auf roblox.com prüfen/aktivieren.
+- **Drop chances must be visible before purchase.** This is already
+  implemented: `ShopService.GetCatalog` returns an `Odds` field for the
+  `MysteryEgg` product with the exact same probabilities as the free gacha
+  path (`GachaService.GetOddsTable`).
+- **In some countries (e.g. Belgium, the Netherlands), Robux purchases of
+  random items are legally restricted.** The code checks this
+  automatically via `PolicyService:GetPolicyInfoForPlayerAsync`
+  (`ArePaidRandomItemsRestricted`) and locks the purchase button for
+  affected players (`DisabledReason = "PaidRandomItemsRestricted"` in the
+  catalog). **No further action** is needed from you here — this runs
+  fully automatically.
+- If Roblox introduces additional age-rating or storefront requirements
+  for this product in the future, please check/enable them in the
+  developer product settings on roblox.com.
 
-## 5. Was du NICHT tun musst
+## 5. What you do NOT need to do
 
-- **Kein Robux-Handel zwischen Spielern:** Es gibt im Code keinen Pfad, über
-  den Spieler sich gegenseitig Robux/Gamepässe/Entwicklerprodukte zusenden
-  können (GDD Abschnitt 7 – das Trading-System handelt ausschließlich
-  Kreaturen, keine Robux-Werte).
-- **Kein Item-für-Item-Robux-Produkt je Kosmetik-Artikel:** siehe Abweichung
-  unten.
+- **No Robux trading between players:** there is no path in the code that
+  lets players send each other Robux/gamepasses/developer products (GDD
+  Section 7 — the trading system only trades creatures, no Robux values).
+- **No item-for-item Robux product per cosmetic item:** see the deviation
+  below.
 
-## 6. Abweichungen vom GDD (Abschnitt 5) – bitte lesen
+## 6. Deviations from the GDD (Section 5) – please read
 
-### 6.1 Kosmetik-Shop läuft über Tide Coins/Abyssal Shards, nicht über Robux
+### 6.1 The cosmetic shop runs on Tide Coins/Abyssal Shards, not Robux
 
-Das GDD beschreibt den rotierenden Kosmetik-Shop mit Einzelpreisen von
-25–150 Robux pro Artikel. Für **jeden einzelnen** virtuellen Kosmetik-Artikel
-wäre dafür ein **eigenes** Entwicklerprodukt auf roblox.com nötig – bei
-mehreren Dutzend geplanten Deko-/Farbvarianten ein sehr hoher manueller
-Einrichtungsaufwand, und IDs kann kein Code-Agent selbst erzeugen. Der
-Kosmetik-Shop (`src/shared/ShopConfig.lua`, `COSMETIC_ITEMS`) verwendet
-deshalb die bereits vorhandenen Soft-Währungen (Tide Coins/Abyssal Shards).
+The GDD describes the rotating cosmetic shop with individual prices of
+25–150 Robux per item. This would require a **separate** developer product
+on roblox.com for **every single** virtual cosmetic item — with several
+dozen planned decoration/color variants, that's a very high manual setup
+effort, and no code agent can create IDs on its own. The cosmetic shop
+(`src/shared/ShopConfig.lua`, `COSMETIC_ITEMS`) therefore uses the soft
+currencies already in place (Tide Coins/Abyssal Shards).
 
-**Falls du später doch einzelne Artikel als echte Robux-Käufe anbieten
-möchtest:** Lege für den gewünschten Artikel ein Entwicklerprodukt an (wie
-in Abschnitt 3 oben), vergib ihm einen neuen `ShopConfig.DevProductKey`
-(analog zu den bestehenden Einträgen, `EffectKey` z. B. `"GrantCosmetic"`)
-und ergänze in `MonetizationService.applyDevProductEffect` einen Fall, der
-`PlayerDataService.AddOwnedCosmetic` aufruft. Der komplette Idempotenz-/
-Fallback-Mechanismus greift dann automatisch mit.
+**If you later want to offer individual items as real Robux purchases
+after all:** create a developer product for the desired item (as in
+Section 3 above), assign it a new `ShopConfig.DevProductKey` (analogous to
+the existing entries, `EffectKey` e.g. `"GrantCosmetic"`), and add a case
+in `MonetizationService.applyDevProductEffect` that calls
+`PlayerDataService.AddOwnedCosmetic`. The full idempotency/fallback
+mechanism then applies automatically.
 
-### 6.2 Auto-Collector-Gamepass: anderer Effekt als im GDD-Wortlaut
+### 6.2 Auto-Collector gamepass: different effect than the GDD wording
 
-Laut GDD "automatisches Einsammeln der Glow Spores ohne Klicken". Das
-bereits bestehende Idle-Einkommen-System (`IdleIncomeService`) schreibt
-Einkommen aber **immer schon automatisch** gut – es gibt gar keine
-Klick-/Sammel-Aktion, die dieser Pass abschaffen könnte. Damit der Pass
-trotzdem einen echten, spürbaren Effekt hat, verlängert er stattdessen das
-Offline-Einkommens-Zeitfenster von 4 auf 8 Stunden
-(`ShopConfig.AUTO_COLLECTOR_OFFLINE_CAP_SECONDS`). Passt inhaltlich zum
-Pass-Namen ("dein Habitat sammelt auch ein, wenn du länger weg bist").
+Per the GDD: "automatically collects Glow Spores without clicking." The
+existing idle income system (`IdleIncomeService`) already credits income
+**automatically at all times** — there is no click/collect action for this
+pass to remove. So the pass still has a real, noticeable effect, it
+instead extends the offline income window from 4 to 8 hours
+(`ShopConfig.AUTO_COLLECTOR_OFFLINE_CAP_SECONDS`). This fits the pass name
+thematically ("your habitat keeps collecting even while you're away
+longer").
 
-### 6.3 Extra-Habitat-Plot-Gamepass: nur Platzhalter, kein Gameplay-Effekt
+### 6.3 Extra Habitat Plot gamepass: placeholder only, no gameplay effect
 
-`PlotRegistry` (bestehendes Modul, nicht Teil dieses Auftrags) verwaltet
-aktuell **genau ein** Plot je Spieler. Ein zweites, unabhängiges Plot
-bräuchte eine größere strukturelle Erweiterung (zweiter Welt-Slot, zweites
-Baufelder-Set, Anpassungen in `PlacementService`/`RaidService`, die aktuell
-überall "ein Plot pro Spieler" annehmen). Der Gamepass wird zuverlässig
-erkannt (`MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot")`,
-Attribut `OwnsExtraPlotGamepassPlaceholder` am Player), löst aber bewusst
-**keine** zweite Plot-Zuweisung aus – kein Absturz, einfach noch kein
-Effekt. Sollte künftig ein Mehrfach-Plot-System gebaut werden, ist die
-Besitzprüfung bereits fertig integrierbar.
+`PlotRegistry` (an existing module, not part of this task) currently
+manages **exactly one** plot per player. A second, independent plot would
+need a larger structural expansion (second world slot, second build-field
+set, changes in `PlacementService`/`RaidService`, which currently assume
+"one plot per player" everywhere). The gamepass is reliably detected
+(`MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot")`, attribute
+`OwnsExtraPlotGamepassPlaceholder` on the Player), but deliberately does
+**not** trigger a second plot assignment — no crash, just no effect yet.
+If a multi-plot system is built in the future, the ownership check is
+already ready to integrate.
 
-### 6.4 "Zucht sofort abschließen" ist eine Ergänzung zum GDD
+### 6.4 "Instant Breeding Complete" is an addition to the GDD
 
-Dieses Entwicklerprodukt steht nicht wörtlich in der GDD-Tabelle
-(Abschnitt 5), wurde aber explizit für dieses Backend gefordert und war
-bereits als Platzhalter-Funktionssignatur in `BreedingService.
-RequestInstantComplete` vorbereitet (siehe Kommentar dort:
-"für Brutbecken ist ein analoges Produkt plausibel"). Der vorgeschlagene
-Preis (39 Robux) ist ein Platzhalter – bitte vor Live-Schaltung selbst
-final festlegen (Schritt 3 oben).
+This developer product is not literally in the GDD table (Section 5), but
+was explicitly requested for this backend and was already prepared as a
+placeholder function signature in `BreedingService.
+RequestInstantComplete` (see the comment there: "an analogous product is
+plausible for the Brood Pool"). The suggested price (39 Robux) is a
+placeholder — please finalize it yourself before going live (Step 3
+above).
 
-## 7. Studio-Testmodus (kein Robux nötig)
+## 7. Studio test mode (no Robux needed)
 
-Solange keine echten Produkt-IDs eingetragen sind (oder auch danach, zum
-schnellen Testen), kann in Roblox Studio (NICHT im Live-Spiel – das ist
-serverseitig hart über `RunService:IsStudio()` abgesichert) ein Kauf über
-`ShopRemotes.RequestSimulateStudioPurchase` simuliert werden (`kind =
-"Gamepass"|"DevProduct"`, `key` = z. B. `"VIPDiver"`). Das löst denselben
-Effekt-Code wie ein echter Kauf aus, ohne MarketplaceService/Robux zu
-kontaktieren. Ein UI-Agent kann darauf z. B. einen "Studio: Testkauf"-Button
-im Shop-Panel aufbauen, der nur sichtbar ist, wenn `RunService:IsStudio()`
-auf dem Client `true` liefert (zusätzlich zur serverseitigen Absicherung).
+As long as no real product IDs are entered (or even afterward, for quick
+testing), a purchase can be simulated in Roblox Studio (NOT in the live
+game — this is hard-enforced server-side via `RunService:IsStudio()`) via
+`ShopRemotes.RequestSimulateStudioPurchase` (`kind =
+"Gamepass"|"DevProduct"`, `key` = e.g. `"VIPDiver"`). This triggers the
+same effect code as a real purchase, without contacting
+MarketplaceService/Robux. A UI agent can, for example, build a "Studio:
+Test Purchase" button in the shop panel on top of this, visible only when
+`RunService:IsStudio()` returns `true` on the client (in addition to the
+server-side safeguard).
 
-## 8. Remote-API für den UI-Agenten (Kurzreferenz)
+## 8. Remote API for the UI agent (quick reference)
 
-Alle Kanäle liegen unter `ReplicatedStorage.ShopRemotes`
-(`src/shared/ShopRemotes.lua`) – die ausführliche Payload-Dokumentation
-steht direkt im Kopfkommentar dieser Datei.
+All channels live under `ReplicatedStorage.ShopRemotes`
+(`src/shared/ShopRemotes.lua`) — the detailed payload documentation is in
+the header comment of that file.
 
-- `GetShopCatalog` (RemoteFunction) – kompletter Katalog-Snapshot.
+- `GetShopCatalog` (RemoteFunction) – full catalog snapshot.
 - `RequestPromptGamepassPurchase(gamepassKey)` (RemoteEvent).
 - `RequestPromptDevProductPurchase(productKey, targetId?)` (RemoteEvent).
-- `PurchasePromptRejected` (RemoteEvent, Server → Client) – Ablehnungsgrund
-  VOR dem eigentlichen Roblox-Kaufdialog.
+- `PurchasePromptRejected` (RemoteEvent, Server → Client) – rejection
+  reason BEFORE the actual Roblox purchase dialog.
 - `RequestPurchaseCosmetic(itemId)` / `RequestEquipCosmetic(itemId)`
   (RemoteFunctions).
-- `RequestSimulateStudioPurchase(kind, key)` (RemoteEvent, nur Studio).
-- `ShopStateChanged` (RemoteEvent, Server → Client) – automatischer
-  Katalog-Push nach jeder Zustandsänderung.
+- `RequestSimulateStudioPurchase(kind, key)` (RemoteEvent, Studio only).
+- `ShopStateChanged` (RemoteEvent, Server → Client) – automatic catalog
+  push after every state change.

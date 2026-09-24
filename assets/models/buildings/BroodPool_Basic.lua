@@ -130,4 +130,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "BroodPool")
 model:SetAttribute("Stage", 1)
 
-print("[Abyssara] BroodPool_Basic erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] BroodPool_Basic created under Workspace.Assets.Buildings")

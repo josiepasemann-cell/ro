@@ -97,15 +97,15 @@ local BreedingConfig = {}
 BreedingConfig.RARITY_ORDER = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" } :: { Rarity }
 
 BreedingConfig.RARITY_DEFINITIONS = {
-	Common = { DisplayLabel = "Gewöhnlich", Color = Color3.fromRGB(215, 250, 245) },
-	Uncommon = { DisplayLabel = "Ungewöhnlich", Color = Color3.fromRGB(120, 235, 205) },
-	Rare = { DisplayLabel = "Selten", Color = Color3.fromRGB(70, 210, 235) },
-	Epic = { DisplayLabel = "Episch", Color = Color3.fromRGB(170, 90, 255) },
-	Legendary = { DisplayLabel = "Legendär", Color = Color3.fromRGB(150, 70, 255) },
+	Common = { DisplayLabel = "Common", Color = Color3.fromRGB(215, 250, 245) },
+	Uncommon = { DisplayLabel = "Uncommon", Color = Color3.fromRGB(120, 235, 205) },
+	Rare = { DisplayLabel = "Rare", Color = Color3.fromRGB(70, 210, 235) },
+	Epic = { DisplayLabel = "Epic", Color = Color3.fromRGB(170, 90, 255) },
+	Legendary = { DisplayLabel = "Legendary", Color = Color3.fromRGB(150, 70, 255) },
 	-- Farbe identisch zu GachaConfig.DROP_TABLE.Mythic.Color (siehe
 	-- Content-Update-Dokument, Abschnitt 5.2: Codex-Karten müssen dieselbe
 	-- Rarity-Farbkonvention wie GachaOddsPanel.lua verwenden).
-	Mythic = { DisplayLabel = "Mythisch", Color = Color3.fromRGB(135, 60, 255) },
+	Mythic = { DisplayLabel = "Mythic", Color = Color3.fromRGB(135, 60, 255) },
 } :: { [Rarity]: RarityDefinition }
 
 -- // Kreaturen-Pool je Rarity (Model-Namen identisch zu GachaConfig.
@@ -179,22 +179,22 @@ end
 -- // Anzeigenamen-Fallback je Kreatur (identisch zu GachaConfig.
 -- CREATURE_DISPLAY_NAME_FALLBACK) --------------------------------------------
 BreedingConfig.CREATURE_DISPLAY_NAME_FALLBACK = {
-	GlowJelly = "Glühqualle",
-	GlowShrimp = "Leuchtgarnele",
-	GlowRay = "Leuchtrochen",
-	Anglerfish = "Anglerfisch",
-	BioluminescentEel = "Biolumineszenz-Aal",
-	CrystalKraken = "Kristallkrake",
+	GlowJelly = "Glow Jelly",
+	GlowShrimp = "Glow Shrimp",
+	GlowRay = "Glow Ray",
+	Anglerfish = "Anglerfish",
+	BioluminescentEel = "Bioluminescent Eel",
+	CrystalKraken = "Crystal Kraken",
 	-- Content Update 1, Abschnitt 2.1 (MidnightZone):
-	LanternWraith = "Laternengeist",
-	ObsidianCrab = "Obsidiankrabbe",
-	MagmaSquid = "Magmakalmar",
-	VoidHammerhead = "Leerenhammerhai",
+	LanternWraith = "Lantern Wraith",
+	ObsidianCrab = "Obsidian Crab",
+	MagmaSquid = "Magma Squid",
+	VoidHammerhead = "Void Hammerhead",
 	-- Content Update 1, Abschnitt 2.2 (HadalDepths):
-	TrenchWisp = "Grabenwisp",
-	AbyssalIsopod = "Abgrund-Assel",
-	GhostFinTuna = "Geisterflossen-Thun",
-	CrystalLeviathan = "Kristall-Leviathan",
+	TrenchWisp = "Trench Wisp",
+	AbyssalIsopod = "Abyssal Isopod",
+	GhostFinTuna = "Ghost Fin Tuna",
+	CrystalLeviathan = "Crystal Leviathan",
 } :: { [string]: string }
 
 -- // Zucht-Stufen ---------------------------------------------------------
@@ -204,7 +204,7 @@ BreedingConfig.CREATURE_DISPLAY_NAME_FALLBACK = {
 BreedingConfig.TIERS = {
 	[1] = {
 		Level = 1,
-		DisplayName = "Brutbecken (Basisstufe)",
+		DisplayName = "Brood Pool (Basic)",
 		IncubationMinutes = 8, -- kurz: einzige aktuell tatsächlich baubare Stufe (BroodPool_Basic), Kern-Loop-freundlich
 		FeedCostTideCoins = 100,
 		RarityWeights = { Common = 70, Uncommon = 21, Rare = 7, Epic = 1.7, Legendary = 0.3 },
@@ -213,7 +213,7 @@ BreedingConfig.TIERS = {
 		-- Content Update 1, Abschnitt 6: erste Stufe, die eine
 		-- MidnightZone-Kreatur würfeln kann (siehe GetCreaturePool).
 		Level = 2,
-		DisplayName = "Brutbecken (Fortgeschritten)",
+		DisplayName = "Brood Pool (Advanced)",
 		IncubationMinutes = 20,
 		FeedCostTideCoins = 280,
 		RarityWeights = { Common = 48, Uncommon = 30, Rare = 16, Epic = 5, Legendary = 1 },
@@ -226,7 +226,7 @@ BreedingConfig.TIERS = {
 		-- nur diesen einen Eintrag) - "kleine Chance auf denselben
 		-- Top-Tier-Reward wie der Gacha-Pfad", siehe Kopfkommentar.
 		Level = 3,
-		DisplayName = "Brutbecken (Meisterstufe)",
+		DisplayName = "Brood Pool (Master)",
 		IncubationMinutes = 45,
 		FeedCostTideCoins = 650,
 		RarityWeights = { Common = 30, Uncommon = 32, Rare = 25, Epic = 10, Legendary = 2.5, Mythic = 0.5 },
@@ -266,7 +266,7 @@ function BreedingConfig.GetRarityIndex(rarity: Rarity): number
 			return index
 		end
 	end
-	error(("[BreedingConfig] Unbekannte Rarity: %s"):format(tostring(rarity)))
+	error(("[BreedingConfig] Unknown rarity: %s"):format(tostring(rarity)))
 end
 
 return BreedingConfig

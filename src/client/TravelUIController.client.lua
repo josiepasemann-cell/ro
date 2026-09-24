@@ -80,34 +80,34 @@ type ZoneMeta = {
 }
 
 local ZONES: { ZoneMeta } = {
-	{ Id = "SunZone", Label = "Sonnenzone", Glyph = "☀️", RequiredLevel = 1, ComingSoon = false, Color = Theme.Neon.Yellow },
-	{ Id = "TwilightZone", Label = "Dämmerzone", Glyph = "🌅", RequiredLevel = 10, ComingSoon = false, Color = Theme.Neon.Orange },
-	{ Id = "MidnightZone", Label = "Mitternachtszone", Glyph = "🌑", RequiredLevel = 25, ComingSoon = true, Color = Theme.Neon.Violet },
-	{ Id = "HadalDepths", Label = "Hadaltiefe", Glyph = "🕳️", RequiredLevel = 45, ComingSoon = true, Color = Theme.Neon.Magenta },
+	{ Id = "SunZone", Label = "Sun Zone", Glyph = "☀️", RequiredLevel = 1, ComingSoon = false, Color = Theme.Neon.Yellow },
+	{ Id = "TwilightZone", Label = "Twilight Zone", Glyph = "🌅", RequiredLevel = 10, ComingSoon = false, Color = Theme.Neon.Orange },
+	{ Id = "MidnightZone", Label = "Midnight Zone", Glyph = "🌑", RequiredLevel = 25, ComingSoon = true, Color = Theme.Neon.Violet },
+	{ Id = "HadalDepths", Label = "Hadal Depths", Glyph = "🕳️", RequiredLevel = 45, ComingSoon = true, Color = Theme.Neon.Magenta },
 }
 
 local REASON_MESSAGES: { [string]: string } = {
-	OnCooldown = "Reise noch im Abklingen – gleich nochmal versuchen.",
-	NoPlot = "Dir wurde noch kein Riff-Plot zugewiesen.",
-	UnknownZone = "Diese Zone ist unbekannt.",
-	LevelTooLow = "Dafür brauchst du ein höheres Level.",
-	ZoneComingSoon = "Diese Zone öffnet bald ihre Tore – bleib dran!",
-	NoCharacter = "Charakter nicht bereit – bitte kurz warten.",
-	NoHub = "Der Hub konnte gerade nicht gefunden werden.",
+	OnCooldown = "Travel still on cooldown - try again in a moment.",
+	NoPlot = "You have not been assigned a reef plot yet.",
+	UnknownZone = "This zone is unknown.",
+	LevelTooLow = "You need a higher level for that.",
+	ZoneComingSoon = "This zone opens its gates soon - stay tuned!",
+	NoCharacter = "Character not ready - please wait a moment.",
+	NoHub = "The hub could not be found right now.",
 }
 
 local function friendlyReason(payload: { Reason: string?, RequiredLevel: number?, CurrentLevel: number? }): string
 	local reason = payload.Reason
 	if not reason then
-		return "Reise fehlgeschlagen. Bitte erneut versuchen."
+		return "Travel failed. Please try again."
 	end
 	if reason == "LevelTooLow" and payload.RequiredLevel then
-		return ("Dafür brauchst du Level %d (du bist Level %d)."):format(
+		return ("You need level %d for that (you are level %d)."):format(
 			payload.RequiredLevel,
 			payload.CurrentLevel or 0
 		)
 	end
-	return REASON_MESSAGES[reason] or ("Reise fehlgeschlagen (" .. reason .. ").")
+	return REASON_MESSAGES[reason] or ("Travel failed (" .. reason .. ").")
 end
 
 -- // Kleine Label-Fabrik -----------------------------------------------------------
@@ -264,7 +264,7 @@ local function buildDestinationCard(parent: Instance, layoutOrder: number, label
 
 	local travelButton = Button.new({
 		Parent = card,
-		Text = "Reisen",
+		Text = "Travel",
 		Variant = "Primary",
 		Important = true,
 		Size = UDim2.fromOffset(140, 44),
@@ -321,7 +321,7 @@ local function buildZoneCard(parent: Instance, layoutOrder: number, zone: ZoneMe
 
 	local requirementLabel = makeLabel({
 		Parent = card,
-		Text = "Erfordert Level " .. zone.RequiredLevel,
+		Text = "Requires Level " .. zone.RequiredLevel,
 		Size = UDim2.new(1, -220, 0, 20),
 		Position = UDim2.fromOffset(66, 54),
 		Color = Theme.Text.Secondary,
@@ -331,7 +331,7 @@ local function buildZoneCard(parent: Instance, layoutOrder: number, zone: ZoneMe
 
 	local travelButton = Button.new({
 		Parent = card,
-		Text = "Reisen",
+		Text = "Travel",
 		Variant = "Primary",
 		Size = UDim2.fromOffset(120, 44),
 	})
@@ -343,13 +343,13 @@ local function buildZoneCard(parent: Instance, layoutOrder: number, zone: ZoneMe
 
 	local function refreshStatus()
 		if zone.ComingSoon then
-			statusLabel.Text = "🔒 Bald verfügbar"
+			statusLabel.Text = "🔒 Coming soon"
 			statusLabel.TextColor3 = Theme.Semantic.Warning
 		elseif currentLevel < zone.RequiredLevel then
-			statusLabel.Text = "🔒 Level " .. zone.RequiredLevel .. " benötigt"
+			statusLabel.Text = "🔒 Requires level " .. zone.RequiredLevel
 			statusLabel.TextColor3 = Theme.Semantic.Danger
 		else
-			statusLabel.Text = "✅ Freigeschaltet"
+			statusLabel.Text = "✅ Unlocked"
 			statusLabel.TextColor3 = Theme.Neon.ToxicGreen
 		end
 	end
@@ -365,7 +365,7 @@ local function buildPanel()
 	end
 
 	panelHandle = Panel.new({
-		Title = "Reisen",
+		Title = "Travel",
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(620, 680),
 	})
@@ -386,17 +386,17 @@ local function buildPanel()
 	list.Padding = UDim.new(0, 10)
 	list.Parent = scroller
 
-	buildDestinationCard(scroller, 1, "Tidal Market (Hub)", "🏝️", "Zurück zum zentralen Marktplatz.", Theme.Neon.Cyan, function()
+	buildDestinationCard(scroller, 1, "Tidal Market (Hub)", "🏝️", "Back to the central market.", Theme.Neon.Cyan, function()
 		TravelRemotes.RequestTravelToHub:FireServer()
 	end)
 
-	buildDestinationCard(scroller, 2, "Mein Riff-Plot", "🪸", "Direkt zu deinem eigenen Habitat.", Theme.Neon.ToxicGreen, function()
+	buildDestinationCard(scroller, 2, "My Reef Plot", "🪸", "Straight to your own habitat.", Theme.Neon.ToxicGreen, function()
 		TravelRemotes.RequestTravelToPlot:FireServer()
 	end)
 
 	local sectionLabel = makeLabel({
 		Parent = scroller,
-		Text = "Zonenportale",
+		Text = "Zone Portals",
 		Size = UDim2.new(1, 0, 0, 26),
 		Font = Theme.Font.Header,
 		Color = Theme.Text.Primary,
@@ -426,7 +426,7 @@ TravelRemotes.TravelResult.OnClientEvent:Connect(function(payload: {
 })
 	if payload.Success then
 		playTravelFade()
-		Toast.Show({ Text = "Angekommen!", Type = "Success", Duration = 2.5 })
+		Toast.Show({ Text = "Arrived!", Type = "Success", Duration = 2.5 })
 	else
 		Toast.Show({ Text = friendlyReason(payload), Type = "Warning", Duration = 4 })
 	end

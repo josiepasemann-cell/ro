@@ -127,6 +127,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Biolumineszenz-Aal")
+model:SetAttribute("CreatureName", "Bioluminescent Eel")
 
-print("[Abyssara] BioluminescentEel erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] BioluminescentEel created under Workspace.Assets.Creatures")

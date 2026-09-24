@@ -133,6 +133,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Kristallkrake")
+model:SetAttribute("CreatureName", "Crystal Kraken")
 
-print("[Abyssara] CrystalKraken erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] CrystalKraken created under Workspace.Assets.Creatures")

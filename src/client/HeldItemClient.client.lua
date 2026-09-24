@@ -115,7 +115,7 @@ labelConstraint.Parent = label
 local function setHudVisible(visible: boolean, displayName: string?)
 	screenGui.Enabled = visible
 	if visible then
-		label.Text = ("Hältst: %s   (G zum Ablegen)"):format(displayName or "Item")
+		label.Text = ("Holding: %s   (G to drop)"):format(displayName or "Item")
 	end
 end
 
@@ -134,7 +134,7 @@ local function bindDropAction()
 	-- auf Mobile-Geräten einblenden - kein separater Mobile-Sondercode nötig
 	-- (siehe Auftrag: "funktioniert auf Handy, PC, Konsole gleich gut").
 	ContextActionService:BindAction(DROP_ACTION_NAME, onDropAction, true, Enum.KeyCode.G, Enum.KeyCode.ButtonX)
-	ContextActionService:SetTitle(DROP_ACTION_NAME, "Ablegen")
+	ContextActionService:SetTitle(DROP_ACTION_NAME, "Drop")
 end
 
 local function unbindDropAction()
@@ -225,4 +225,4 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	screenGui:Destroy()
 end)
 
-print("[Abyssara] HeldItemClient bereit.")
+print("[Abyssara] HeldItemClient ready.")

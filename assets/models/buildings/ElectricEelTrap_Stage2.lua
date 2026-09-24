@@ -202,4 +202,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "ElectricEelTrap")
 model:SetAttribute("Stage", 2)
 
-print("[Abyssara] ElectricEelTrap_Stage2 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] ElectricEelTrap_Stage2 created under Workspace.Assets.Buildings")

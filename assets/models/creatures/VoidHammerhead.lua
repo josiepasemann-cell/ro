@@ -127,6 +127,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Leerenhammerhai")
+model:SetAttribute("CreatureName", "Void Hammerhead")
 
-print("[Abyssara] VoidHammerhead erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] VoidHammerhead created under Workspace.Assets.Creatures")

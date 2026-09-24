@@ -76,14 +76,14 @@ function ConfirmDialog.Show(props: ConfirmDialogProps)
 
 	local cancelButton = Button.new({
 		Parent = row.Frame,
-		Text = props.CancelText or "Abbrechen",
+		Text = props.CancelText or "Cancel",
 		Variant = "Ghost",
 		Size = UDim2.new(0.48, 0, 0, 48),
 	})
 
 	local confirmButton = Button.new({
 		Parent = row.Frame,
-		Text = props.ConfirmText or "Bestätigen",
+		Text = props.ConfirmText or "Confirm",
 		Variant = if props.Danger then "Danger" else "Success",
 		Important = true,
 		Size = UDim2.new(0.48, 0, 0, 48),

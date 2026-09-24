@@ -137,4 +137,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "FilterPlant")
 model:SetAttribute("Stage", 2)
 
-print("[Abyssara] FilterPlant_Stage2 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] FilterPlant_Stage2 created under Workspace.Assets.Buildings")

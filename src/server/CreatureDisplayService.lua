@@ -250,7 +250,7 @@ local function spawnSlot(display: PlotDisplay, instance: CreatureInstance): Disp
 		if not warnedMissingTemplate[instance.CreatureId] then
 			warnedMissingTemplate[instance.CreatureId] = true
 			warn(
-				("[CreatureDisplayService] Kein Workspace.Assets.Creatures-Modell für '%s' - Plot-Anzeige übersprungen, bis das Buildscript in Studio ausgeführt wurde."):format(
+				("[CreatureDisplayService] No Workspace.Assets.Creatures model for '%s' - plot display skipped until the buildscript has been run in Studio."):format(
 					instance.CreatureId
 				)
 			)

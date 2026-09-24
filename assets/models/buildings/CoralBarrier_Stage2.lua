@@ -133,7 +133,7 @@ if ringUnionOk and coralRing then
 	coralRing.CanCollide = false
 	coralRing.Parent = model
 else
-	warn("[Abyssara] CoralBarrier_Stage2: CoralRing-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelspitzen.")
+	warn("[Abyssara] CoralBarrier_Stage2: CoralRing-CSG union failed, using unwelded individual spikes.")
 	for _, spike in ipairs(spikeParts) do
 		spike.Anchored = true
 		spike.CanCollide = false
@@ -165,7 +165,7 @@ if innerRingOk and innerRing then
 	innerRing.CanCollide = false
 	innerRing.Parent = model
 else
-	warn("[Abyssara] CoralBarrier_Stage2: InnerRing-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelspitzen.")
+	warn("[Abyssara] CoralBarrier_Stage2: InnerRing-CSG union failed, using unwelded individual spikes.")
 	for _, spike in ipairs(innerSpikeParts) do
 		spike.Anchored = true
 		spike.CanCollide = false
@@ -211,4 +211,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "CoralBarrier")
 model:SetAttribute("Stage", 2)
 
-print("[Abyssara] CoralBarrier_Stage2 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] CoralBarrier_Stage2 created under Workspace.Assets.Buildings")

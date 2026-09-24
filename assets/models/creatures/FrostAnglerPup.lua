@@ -144,4 +144,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Frost Angler Pup")
 
-print("[Abyssara] FrostAnglerPup erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] FrostAnglerPup created under Workspace.Assets.Creatures")

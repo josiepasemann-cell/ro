@@ -488,7 +488,7 @@ local function withRetry(description: string, fn: () -> any): (boolean, any)
 			task.wait(backoff + jitter)
 		end
 	end
-	warn(("[PlayerDataService] %s endgültig fehlgeschlagen nach %d Versuchen: %s"):format(description, DATASTORE_RETRY_ATTEMPTS, tostring(lastErr)))
+	warn(("[PlayerDataService] %s failed permanently after %d attempts: %s"):format(description, DATASTORE_RETRY_ATTEMPTS, tostring(lastErr)))
 	return false, nil
 end
 
@@ -772,12 +772,12 @@ local function onPlayerAdded(player: Player)
 			signal:Fire(false)
 		end
 
-		warn(("[PlayerDataService] Laden für %s (UserId %d) fehlgeschlagen: %s"):format(player.Name, userId, tostring(failureReason)))
+		warn(("[PlayerDataService] Load for %s (UserId %d) failed: %s"):format(player.Name, userId, tostring(failureReason)))
 
 		if stillHere then
 			local message = if failureReason == "SessionLocked"
-				then "Deine Daten werden noch auf einem anderen Server verarbeitet. Bitte versuche es in ein paar Sekunden erneut."
-				else "Deine Spielerdaten konnten nicht geladen werden. Bitte versuche es erneut."
+				then "Your data is still being processed on another server. Please try again in a few seconds."
+				else "Your player data could not be loaded. Please try again."
 			player:Kick(message)
 		end
 		return
@@ -805,7 +805,7 @@ local function onPlayerAdded(player: Player)
 		signal:Fire(true)
 	end
 
-	print(("[PlayerDataService] Daten für %s (UserId %d) geladen (Level %d, %d Tide Coins)."):format(
+	print(("[PlayerDataService] Data for %s (UserId %d) loaded (level %d, %d Tide Coins)."):format(
 		player.Name,
 		userId,
 		data.Level,
@@ -969,7 +969,7 @@ function PlayerDataService.AddCurrency(player: Player, currencyType: CurrencyTyp
 	local data = dataCache[userId]
 
 	if not data then
-		warn(("[PlayerDataService] AddCurrency für UserId %d ohne geladene Daten aufgerufen."):format(userId))
+		warn(("[PlayerDataService] AddCurrency called for UserId %d without loaded data."):format(userId))
 		return false, 0
 	end
 
@@ -1037,7 +1037,7 @@ function PlayerDataService.AddCreatureToInventory(
 ): CreatureInstance?
 	local data = dataCache[player.UserId]
 	if not data then
-		warn(("[PlayerDataService] AddCreatureToInventory für UserId %d ohne geladene Daten aufgerufen."):format(player.UserId))
+		warn(("[PlayerDataService] AddCreatureToInventory called for UserId %d without loaded data."):format(player.UserId))
 		return nil
 	end
 

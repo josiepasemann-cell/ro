@@ -144,4 +144,4 @@ model.PrimaryPart = base
 model:SetAttribute("DecorationId", "VenomDrip")
 model:SetAttribute("Event", "ToxicTide")
 
-print("[Abyssara] VenomDrip erzeugt unter Workspace.Assets.Decorations")
+print("[Abyssara] VenomDrip created under Workspace.Assets.Decorations")

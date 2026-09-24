@@ -127,6 +127,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Leuchtrochen")
+model:SetAttribute("CreatureName", "Glow Ray")
 
-print("[Abyssara] GlowRay erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] GlowRay created under Workspace.Assets.Creatures")

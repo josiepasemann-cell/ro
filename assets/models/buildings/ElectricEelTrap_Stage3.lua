@@ -137,7 +137,7 @@ if crownOk and crownArc then
 	crownArc.CanCollide = false
 	crownArc.Parent = model
 else
-	warn("[Abyssara] ElectricEelTrap_Stage3: CrownArc-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelspitzen.")
+	warn("[Abyssara] ElectricEelTrap_Stage3: CrownArc-CSG union failed, using unwelded individual spikes.")
 	for _, spike in ipairs(crownSpikes) do
 		spike.Anchored = true
 		spike.CanCollide = false
@@ -246,4 +246,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "ElectricEelTrap")
 model:SetAttribute("Stage", 3)
 
-print("[Abyssara] ElectricEelTrap_Stage3 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] ElectricEelTrap_Stage3 created under Workspace.Assets.Buildings")

@@ -260,7 +260,7 @@ local function loadCategory(category: CategoryId, forceRefresh: boolean)
 	end
 	local status = statusLabels[category]
 	if status then
-		status.Text = "Lädt Rangliste…"
+		status.Text = "Loading leaderboard..."
 		status.Visible = true
 	end
 
@@ -271,10 +271,10 @@ local function loadCategory(category: CategoryId, forceRefresh: boolean)
 
 		if not ok or type(result) ~= "table" or type(result.Entries) ~= "table" then
 			if status then
-				status.Text = "Rangliste noch nicht verfügbar – bitte später erneut versuchen."
+				status.Text = "Leaderboard not available yet - please try again later."
 				status.Visible = true
 			end
-			Toast.Show({ Text = "Rangliste konnte nicht geladen werden.", Type = "Warning", Duration = 3 })
+			Toast.Show({ Text = "Leaderboard could not be loaded.", Type = "Warning", Duration = 3 })
 			return
 		end
 
@@ -288,7 +288,7 @@ local function loadCategory(category: CategoryId, forceRefresh: boolean)
 		local entries = result.Entries :: { LeaderboardEntry }
 		if #entries == 0 then
 			if status then
-				status.Text = "Noch keine Einträge – sei der/die Erste!"
+				status.Text = "No entries yet - be the first!"
 				status.Visible = true
 			end
 			return
@@ -311,7 +311,7 @@ local function loadCategory(category: CategoryId, forceRefresh: boolean)
 		if not foundSelf then
 			local hint = makeLabel({
 				Parent = host,
-				Text = "Du bist noch nicht in den Top 50 dieser Kategorie – weiter sammeln!",
+				Text = "You are not in the Top 50 of this category yet - keep collecting!",
 				Size = UDim2.new(1, 0, 0, 28),
 				Color = Theme.Text.Muted,
 				MinSize = 10,
@@ -328,7 +328,7 @@ local function buildPanel()
 	end
 
 	panelHandle = Panel.new({
-		Title = "Rangliste",
+		Title = "Leaderboard",
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(680, 700),
 	})
@@ -338,7 +338,7 @@ local function buildPanel()
 		Tabs = {
 			{ Id = "Level", Label = CATEGORY_GLYPH.Level .. " Level" },
 			{ Id = "TideCoins", Label = CATEGORY_GLYPH.TideCoins .. " Tide Coins" },
-			{ Id = "RarestCollection", Label = CATEGORY_GLYPH.RarestCollection .. " Sammlung" },
+			{ Id = "RarestCollection", Label = CATEGORY_GLYPH.RarestCollection .. " Collection" },
 		},
 		DefaultTabId = "Level",
 	})
@@ -360,7 +360,7 @@ local function buildPanel()
 
 		local status = makeLabel({
 			Parent = content,
-			Text = "Lädt Rangliste…",
+			Text = "Loading leaderboard...",
 			Size = UDim2.new(1, 0, 0, 30),
 			Color = Theme.Text.Muted,
 			MinSize = 11,

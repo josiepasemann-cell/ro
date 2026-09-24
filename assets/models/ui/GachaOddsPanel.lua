@@ -56,12 +56,12 @@ local StarterGui = game:GetService("StarterGui")
 -- Platzhalter-Prozentwerte (Layout-Test, Summe = 100 %). KEINE echte
 -- Drop-Tabelle – wird vom Code-Agenten später an GachaService gebunden.
 local RARITY_ROWS = {
-	{ tier = "Common", label = "Gewöhnlich", percent = "45.0%", color = Color3.fromRGB(215, 250, 245) },
-	{ tier = "Uncommon", label = "Ungewöhnlich", percent = "27.0%", color = Color3.fromRGB(120, 235, 205) },
-	{ tier = "Rare", label = "Selten", percent = "16.0%", color = Color3.fromRGB(70, 210, 235) },
-	{ tier = "Epic", label = "Episch", percent = "8.0%", color = Color3.fromRGB(170, 90, 255) },
-	{ tier = "Legendary", label = "Legendär", percent = "3.5%", color = Color3.fromRGB(150, 70, 255) },
-	{ tier = "Mythic", label = "Mythisch", percent = "0.5%", color = Color3.fromRGB(135, 60, 255) },
+	{ tier = "Common", label = "Common", percent = "45.0%", color = Color3.fromRGB(215, 250, 245) },
+	{ tier = "Uncommon", label = "Uncommon", percent = "27.0%", color = Color3.fromRGB(120, 235, 205) },
+	{ tier = "Rare", label = "Rare", percent = "16.0%", color = Color3.fromRGB(70, 210, 235) },
+	{ tier = "Epic", label = "Epic", percent = "8.0%", color = Color3.fromRGB(170, 90, 255) },
+	{ tier = "Legendary", label = "Legendary", percent = "3.5%", color = Color3.fromRGB(150, 70, 255) },
+	{ tier = "Mythic", label = "Mythic", percent = "0.5%", color = Color3.fromRGB(135, 60, 255) },
 }
 -- // ----------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ local titleLabel = newInstance("TextLabel", {
 	Name = "TitleLabel",
 	Size = UDim2.new(1, 0, 0, 40),
 	BackgroundTransparency = 1,
-	Text = "Mystery Egg – Drop-Chancen",
+	Text = "Mystery Egg – Drop Chances",
 	TextColor3 = Color3.fromRGB(200, 245, 255),
 	Font = Enum.Font.GothamBold,
 	TextScaled = true,
@@ -140,7 +140,7 @@ local subtitleLabel = newInstance("TextLabel", {
 	Position = UDim2.new(0, 0, 0, 40),
 	Size = UDim2.new(1, 0, 0, 22),
 	BackgroundTransparency = 1,
-	Text = "Offengelegte Wahrscheinlichkeiten pro Öffnung (Platzhalter)",
+	Text = "Disclosed odds per opening (placeholder)",
 	TextColor3 = Color3.fromRGB(140, 190, 205),
 	Font = Enum.Font.Gotham,
 	TextScaled = true,
@@ -230,7 +230,7 @@ local footerLabel = newInstance("TextLabel", {
 	Position = UDim2.new(0, 0, 1, -56),
 	Size = UDim2.new(1, 0, 0, 30),
 	BackgroundTransparency = 1,
-	Text = "Chancen gelten pro einzelner Ei-Öffnung. Kein Kauf-Zwang.",
+	Text = "Odds apply per individual egg opening. No purchase necessary.",
 	TextColor3 = Color3.fromRGB(120, 150, 165),
 	Font = Enum.Font.Gotham,
 	TextScaled = true,
@@ -247,7 +247,7 @@ local closeButton = newInstance("TextButton", {
 	Size = UDim2.new(1, 0, 0, 40),
 	BackgroundColor3 = Color3.fromRGB(90, 220, 255),
 	BorderSizePixel = 0,
-	Text = "Schließen",
+	Text = "Close",
 	TextColor3 = Color3.fromRGB(10, 20, 28),
 	Font = Enum.Font.GothamBold,
 	TextScaled = true,
@@ -256,4 +256,4 @@ local closeButton = newInstance("TextButton", {
 }, panel)
 newInstance("UICorner", { CornerRadius = UDim.new(0, 10) }, closeButton)
 
-print("[Abyssara] GachaOddsPanel erzeugt unter game.StarterGui.GachaOddsUI (rein visuelles Layout, ohne Funktions-Logik)")
+print("[Abyssara] GachaOddsPanel created under game.StarterGui.GachaOddsUI (visual layout only, no functional logic)")

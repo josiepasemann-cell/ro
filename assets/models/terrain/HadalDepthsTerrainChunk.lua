@@ -307,4 +307,4 @@ end
 model.PrimaryPart = base
 model:SetAttribute("Zone", "HadalDepths")
 
-print("[Abyssara] HadalDepthsTerrainChunk erzeugt unter Workspace.Assets.Terrain")
+print("[Abyssara] HadalDepthsTerrainChunk created under Workspace.Assets.Terrain")

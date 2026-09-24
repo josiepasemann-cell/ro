@@ -560,28 +560,28 @@ end
 local PORTAL_DEFS = {
 	{
 		Zone = "SunZone",
-		DisplayName = "Sonnenzone",
+		DisplayName = "Sun Zone",
 		RequiredLevel = 1,
 		Angle = math.rad(0),
 		Color = NEON.NeonOrange,
 	},
 	{
 		Zone = "TwilightZone",
-		DisplayName = "Dämmerzone",
+		DisplayName = "Twilight Zone",
 		RequiredLevel = 10,
 		Angle = math.rad(90),
 		Color = NEON.Cyan,
 	},
 	{
 		Zone = "MidnightZone",
-		DisplayName = "Mitternachtszone",
+		DisplayName = "Midnight Zone",
 		RequiredLevel = 25,
 		Angle = math.rad(180),
 		Color = NEON.Magenta,
 	},
 	{
 		Zone = "HadalDepths",
-		DisplayName = "Hadal-Tiefe",
+		DisplayName = "Hadal Depths",
 		RequiredLevel = 45,
 		Angle = math.rad(270),
 		Color = NEON.Violet,
@@ -795,4 +795,4 @@ end
 model.PrimaryPart = base
 model:SetAttribute("HubName", "TidalMarket")
 
-print("[Abyssara] TidalMarketHub erzeugt unter Workspace.Assets.Hub (ORIGIN = " .. tostring(ORIGIN.Position) .. ")")
+print("[Abyssara] TidalMarketHub created under Workspace.Assets.Hub (ORIGIN = " .. tostring(ORIGIN.Position) .. ")")

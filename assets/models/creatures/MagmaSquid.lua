@@ -114,6 +114,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Magmakalmar")
+model:SetAttribute("CreatureName", "Magma Squid")
 
-print("[Abyssara] MagmaSquid erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] MagmaSquid created under Workspace.Assets.Creatures")

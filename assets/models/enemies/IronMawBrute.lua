@@ -135,7 +135,7 @@ if armorUnionOk and armorPlate then
 	armorPlate.CanCollide = false
 	armorPlate.Parent = model
 else
-	warn("[Abyssara] IronMawBrute: ArmorPlate-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelplatten.")
+	warn("[Abyssara] IronMawBrute: ArmorPlate-CSG union failed, using unwelded individual plates.")
 	for _, plate in ipairs(armorParts) do
 		plate.Parent = model
 	end
@@ -162,4 +162,4 @@ model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
 model:SetAttribute("EnemyName", "Eisenmaul-Brute")
 
-print("[Abyssara] IronMawBrute erzeugt unter Workspace.Assets.Enemies")
+print("[Abyssara] IronMawBrute created under Workspace.Assets.Enemies")

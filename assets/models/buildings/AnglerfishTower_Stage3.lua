@@ -124,7 +124,7 @@ if crownOk and crownSpikeCluster then
 	crownSpikeCluster.CanCollide = false
 	crownSpikeCluster.Parent = model
 else
-	warn("[Abyssara] AnglerfishTower_Stage3: CrownSpikeCluster-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelspitzen.")
+	warn("[Abyssara] AnglerfishTower_Stage3: CrownSpikeCluster-CSG union failed, using unwelded individual spikes.")
 	for _, spike in ipairs(crownSpikes) do
 		spike.Anchored = true
 		spike.CanCollide = false
@@ -187,4 +187,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "AnglerfishTower")
 model:SetAttribute("Stage", 3)
 
-print("[Abyssara] AnglerfishTower_Stage3 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] AnglerfishTower_Stage3 created under Workspace.Assets.Buildings")

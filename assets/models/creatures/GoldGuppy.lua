@@ -125,4 +125,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Gold Guppy")
 
-print("[Abyssara] GoldGuppy erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] GoldGuppy created under Workspace.Assets.Creatures")

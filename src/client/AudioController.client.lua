@@ -82,7 +82,7 @@ local function startIfPlayable(sound: Sound)
 			sound:Play()
 		end)
 		if not ok then
-			warn(("[AudioController] Konnte %s nicht abspielen (ungültige SoundId?)."):format(sound.Name))
+			warn(("[AudioController] Could not play %s (invalid SoundId?)."):format(sound.Name))
 		end
 	end
 end

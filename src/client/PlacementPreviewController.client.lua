@@ -374,11 +374,11 @@ actionRow.Frame.Size = UDim2.fromScale(1, 1)
 
 local function confirmPlacement()
 	if not targetField then
-		infoLabel.Text = "Kein Baufeld anvisiert."
+		infoLabel.Text = "No build field targeted."
 		return
 	end
 	HabitatRemotes.RequestPlaceBuilding:FireServer(selectedBuildingId(), targetField.Index, rotationY)
-	infoLabel.Text = "Platzierung angefragt ..."
+	infoLabel.Text = "Placement requested ..."
 end
 
 local function confirmSell()
@@ -390,12 +390,12 @@ local function confirmSell()
 			local placementId = child:GetAttribute("PlacementId")
 			if type(placementId) == "string" then
 				HabitatRemotes.RequestRemoveBuilding:FireServer(placementId)
-				infoLabel.Text = "Verkauf angefragt ..."
+				infoLabel.Text = "Sale requested ..."
 			end
 			return
 		end
 	end
-	Toast.Show({ Text = "Kein Gebäude auf diesem Feld.", Type = "Warning", Duration = 2 })
+	Toast.Show({ Text = "No building on this field.", Type = "Warning", Duration = 2 })
 end
 
 -- Gebäude-Upgrade-System (siehe docs/building-upgrades.md): identisches
@@ -431,7 +431,7 @@ end
 
 local rotateButton = Button.new({
 	Parent = actionRow.Frame,
-	Text = "↻ Drehen",
+	Text = "↻ Rotate",
 	Variant = "Secondary",
 	Size = UDim2.new(0.48, 0, 0, 52),
 	LayoutOrder = 1,
@@ -440,7 +440,7 @@ rotateButton.Clicked:Connect(rotatePreview)
 
 local buildButton = Button.new({
 	Parent = actionRow.Frame,
-	Text = "✓ Bauen",
+	Text = "✓ Build",
 	Variant = "Success",
 	Important = true,
 	Size = UDim2.new(0.48, 0, 0, 52),
@@ -450,7 +450,7 @@ buildButton.Clicked:Connect(confirmPlacement)
 
 local sellButton = Button.new({
 	Parent = actionRow.Frame,
-	Text = "🗑 Verkaufen",
+	Text = "🗑 Sell",
 	Variant = "Danger",
 	Size = UDim2.new(0.48, 0, 0, 52),
 	LayoutOrder = 3,
@@ -459,7 +459,7 @@ sellButton.Clicked:Connect(confirmSell)
 
 local cancelButton = Button.new({
 	Parent = actionRow.Frame,
-	Text = "✕ Fertig",
+	Text = "✕ Done",
 	Variant = "Ghost",
 	Size = UDim2.new(0.48, 0, 0, 52),
 	LayoutOrder = 4,
@@ -573,7 +573,7 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 
 	if not previewVisible then
 		destroyPreview()
-		infoLabel.Text = "Vorschau ausgeblendet (Esc erneut: Baumodus verlassen)."
+		infoLabel.Text = "Preview hidden (press Esc again to leave build mode)."
 		return
 	end
 
@@ -590,13 +590,13 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 	end
 
 	if not preview or not definition then
-		infoLabel.Text = "Gebäude-Vorlage noch nicht bereit ..."
+		infoLabel.Text = "Building template not ready yet ..."
 		return
 	end
 
 	if definition.UnlockLevel > playerLevel then
 		preview.Parent = nil
-		infoLabel.Text = ("%s benötigt Level %d (du bist Level %d)."):format(
+		infoLabel.Text = ("%s requires level %d (you are level %d)."):format(
 			definition.DisplayName,
 			definition.UnlockLevel,
 			playerLevel
@@ -606,7 +606,7 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 
 	if not targetField then
 		preview.Parent = nil
-		infoLabel.Text = ("%s (%d Tide Coins) - kein Baufeld anvisiert."):format(definition.DisplayName, definition.Cost)
+		infoLabel.Text = ("%s (%d Tide Coins) - no build field targeted."):format(definition.DisplayName, definition.Cost)
 		return
 	end
 
@@ -617,11 +617,11 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 	local occupied = isFieldLocallyOccupied(targetField.Index)
 	paintPreview(preview, not occupied)
 
-	infoLabel.Text = ("%s - %d Tide Coins | Feld %d %s"):format(
+	infoLabel.Text = ("%s - %d Tide Coins | Field %d %s"):format(
 		definition.DisplayName,
 		definition.Cost,
 		targetField.Index,
-		if occupied then "(belegt)" else "(frei)"
+		if occupied then "(occupied)" else "(free)"
 	)
 end)
 
@@ -845,21 +845,21 @@ end)
 -- // Server-Ergebnisse (nur Feedback, keine Autorität) ----------------------
 HabitatRemotes.PlaceBuildingResult.OnClientEvent:Connect(function(result)
 	if result and result.Success then
-		infoLabel.Text = ("Gebaut! Neuer Kontostand: %s Tide Coins."):format(tostring(result.NewBalance))
-		Toast.Show({ Text = "Gebäude platziert!", Type = "Success" })
+		infoLabel.Text = ("Built! New balance: %s Tide Coins."):format(tostring(result.NewBalance))
+		Toast.Show({ Text = "Building placed!", Type = "Success" })
 	else
-		infoLabel.Text = ("Bau fehlgeschlagen: %s"):format(tostring(result and result.Reason or "Unbekannt"))
-		Toast.Show({ Text = "Bau fehlgeschlagen.", Type = "Error" })
+		infoLabel.Text = ("Build failed: %s"):format(tostring(result and result.Reason or "Unknown"))
+		Toast.Show({ Text = "Build failed.", Type = "Error" })
 	end
 end)
 
 HabitatRemotes.RemoveBuildingResult.OnClientEvent:Connect(function(result)
 	if result and result.Success then
-		infoLabel.Text = ("Verkauft! Rückerstattung: %s Tide Coins."):format(tostring(result.RefundAmount))
-		Toast.Show({ Text = "Gebäude verkauft.", Type = "Info" })
+		infoLabel.Text = ("Sold! Refund: %s Tide Coins."):format(tostring(result.RefundAmount))
+		Toast.Show({ Text = "Building sold.", Type = "Info" })
 	else
-		infoLabel.Text = ("Verkauf fehlgeschlagen: %s"):format(tostring(result and result.Reason or "Unbekannt"))
-		Toast.Show({ Text = "Verkauf fehlgeschlagen.", Type = "Error" })
+		infoLabel.Text = ("Sale failed: %s"):format(tostring(result and result.Reason or "Unknown"))
+		Toast.Show({ Text = "Sale failed.", Type = "Error" })
 	end
 end)
 

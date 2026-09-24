@@ -149,7 +149,7 @@ end
 local function pickCreatureForRarity(rarity: Rarity, tierLevel: number): string
 	local pool = BreedingConfig.GetCreaturePool(rarity, tierLevel)
 	if not pool or #pool == 0 then
-		error(("[BreedingService] Kein Zucht-Kreaturen-Pool für Rarity '%s' (Tier %d) vorhanden."):format(rarity, tierLevel))
+		error(("[BreedingService] No breeding creature pool for rarity '%s' (tier %d)."):format(rarity, tierLevel))
 	end
 	return pool[rng:NextInteger(1, #pool)]
 end

@@ -153,4 +153,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "GlowBuoyStation")
 model:SetAttribute("Stage", 2)
 
-print("[Abyssara] GlowBuoyStation_Stage2 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] GlowBuoyStation_Stage2 created under Workspace.Assets.Buildings")

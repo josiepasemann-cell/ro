@@ -278,7 +278,7 @@ local function getDecorationTemplate(name: string): Model?
 		if not warnedMissingDecoration[name] then
 			warnedMissingDecoration[name] = true
 			warn(
-				("[LiveEventService] Deko-Modell '%s' fehlt unter Workspace.Assets.Decorations - bitte assets/models/decorations/%s.lua einmal in Studio ausführen (siehe assets/models/README.md)."):format(
+				("[LiveEventService] Decoration model '%s' is missing under Workspace.Assets.Decorations - please run assets/models/decorations/%s.lua once in Studio (see assets/models/README.md)."):format(
 					name,
 					name
 				)
@@ -613,7 +613,7 @@ local function switchToEvent(newEventId: string, instant: boolean, broadcast: bo
 		-- Funktion), aber defensiv: auf Baseline zurückfallen statt mit
 		-- nil-Referenzen weiterzurechnen.
 		applyLighting(getBaselineLightingProfile(), instant)
-		warn(("[LiveEventService] Unbekannte Event-Id '%s' - falle auf Baseline-Lighting zurück."):format(newEventId))
+		warn(("[LiveEventService] Unknown event id '%s' - falling back to baseline lighting."):format(newEventId))
 		return
 	end
 

@@ -196,7 +196,7 @@ if collarOk and upperCollarRing then
 	upperCollarRing.CanCollide = false
 	upperCollarRing.Parent = model
 else
-	warn("[Abyssara] BroodPool_Stage3: UpperCollarRing-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelstreben.")
+	warn("[Abyssara] BroodPool_Stage3: UpperCollarRing-CSG union failed, using unwelded individual struts.")
 	for _, bar in ipairs(collarBars) do
 		bar.Anchored = true
 		bar.CanCollide = false
@@ -228,7 +228,7 @@ if crownOk and crownSpireCluster then
 	crownSpireCluster.CanCollide = false
 	crownSpireCluster.Parent = model
 else
-	warn("[Abyssara] BroodPool_Stage3: CrownSpireCluster-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelspitzen.")
+	warn("[Abyssara] BroodPool_Stage3: CrownSpireCluster-CSG union failed, using unwelded individual spikes.")
 	for _, spike in ipairs(crownSpikes) do
 		spike.Anchored = true
 		spike.CanCollide = false
@@ -260,4 +260,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "BroodPool")
 model:SetAttribute("Stage", 3)
 
-print("[Abyssara] BroodPool_Stage3 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] BroodPool_Stage3 created under Workspace.Assets.Buildings")

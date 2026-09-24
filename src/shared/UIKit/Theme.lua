@@ -72,12 +72,12 @@ Theme.Rarity = {
 Theme.RarityOrder = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" } :: { Rarity }
 
 Theme.RarityLabel = {
-	Common = "Gewöhnlich",
-	Uncommon = "Ungewöhnlich",
-	Rare = "Selten",
-	Epic = "Episch",
-	Legendary = "Legendär",
-	Mythic = "Mythisch",
+	Common = "Common",
+	Uncommon = "Uncommon",
+	Rare = "Rare",
+	Epic = "Epic",
+	Legendary = "Legendary",
+	Mythic = "Mythic",
 } :: { [Rarity]: string }
 
 -- // Schriften -------------------------------------------------------------

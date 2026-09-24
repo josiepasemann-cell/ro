@@ -142,7 +142,7 @@ local function promoteToTemplate(sourceFolder: Instance?, name: string, destFold
 	if not source or not source:IsA("Model") then
 		if not destFolder:FindFirstChild(name) then
 			warn(
-				("[AssetTemplateSetup] '%s' fehlt unter Workspace.Assets - bitte das passende Buildscript unter assets/models/**/%s.lua einmal in Studio ausführen (siehe assets/models/README.md)."):format(
+				("[AssetTemplateSetup] '%s' is missing under Workspace.Assets - please run the matching buildscript under assets/models/**/%s.lua once in Studio (see assets/models/README.md)."):format(
 					name,
 					name
 				)
@@ -162,7 +162,7 @@ local function promoteToTemplate(sourceFolder: Instance?, name: string, destFold
 
 	source:Destroy()
 
-	print(("[AssetTemplateSetup] Template '%s' bereit unter %s."):format(name, destFolder:GetFullName()))
+	print(("[AssetTemplateSetup] Template '%s' ready under %s."):format(name, destFolder:GetFullName()))
 end
 
 --- Wie promoteToTemplate, aber OHNE Warnung, falls `name` weder im
@@ -188,7 +188,7 @@ local function promoteOptionalToTemplate(sourceFolder: Instance?, name: string, 
 
 	source:Destroy()
 
-	print(("[AssetTemplateSetup] Stufe-Template '%s' bereit unter %s."):format(name, destFolder:GetFullName()))
+	print(("[AssetTemplateSetup] Stage template '%s' ready under %s."):format(name, destFolder:GetFullName()))
 end
 
 for _, name in ipairs(TERRAIN_TEMPLATE_NAMES) do
@@ -230,7 +230,7 @@ local function warnFallbackOnce(kind: string, templateName: string, fallbackName
 	end
 	warnedMissingTemplate[key] = true
 	warn(
-		("[AssetTemplateSetup] %s-Vorlage '%s' fehlt - weiche auf Fallback '%s' aus (siehe assets/models/README.md, betroffenes Buildscript einmal in Studio ausführen, um den echten Look zu bekommen)."):format(
+		("[AssetTemplateSetup] %s template '%s' is missing - falling back to '%s' (see assets/models/README.md, run the matching buildscript once in Studio to get the real look)."):format(
 			kind,
 			templateName,
 			fallbackName
@@ -255,7 +255,7 @@ function AssetTemplateSetup.GetBuildingTemplate(templateName: string): Model?
 	if templateName ~= BUILDING_TEMPLATE_FALLBACK_NAME then
 		local fallback = buildingTemplatesFolder:FindFirstChild(BUILDING_TEMPLATE_FALLBACK_NAME)
 		if fallback and fallback:IsA("Model") then
-			warnFallbackOnce("Gebäude", templateName, BUILDING_TEMPLATE_FALLBACK_NAME)
+			warnFallbackOnce("Building", templateName, BUILDING_TEMPLATE_FALLBACK_NAME)
 			return fallback
 		end
 	end
@@ -297,7 +297,7 @@ function AssetTemplateSetup.GetEnemyTemplate(templateName: string): Model?
 	if templateName ~= ENEMY_TEMPLATE_FALLBACK_NAME then
 		local fallback = enemyTemplatesFolder:FindFirstChild(ENEMY_TEMPLATE_FALLBACK_NAME)
 		if fallback and fallback:IsA("Model") then
-			warnFallbackOnce("Gegner", templateName, ENEMY_TEMPLATE_FALLBACK_NAME)
+			warnFallbackOnce("Enemy", templateName, ENEMY_TEMPLATE_FALLBACK_NAME)
 			return fallback
 		end
 	end

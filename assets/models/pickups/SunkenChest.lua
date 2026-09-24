@@ -140,4 +140,4 @@ model.PrimaryPart = body
 model:SetAttribute("PickupKind", "SunkenChest")
 model:SetAttribute("Event", "TreasureTide")
 
-print("[Abyssara] SunkenChest erzeugt unter Workspace.Assets.Pickups")
+print("[Abyssara] SunkenChest created under Workspace.Assets.Pickups")

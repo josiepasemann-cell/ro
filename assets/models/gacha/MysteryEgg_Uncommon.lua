@@ -108,4 +108,4 @@ model.PrimaryPart = shell
 model:SetAttribute("EggTier", EGG_TIER)
 model:SetAttribute("EggName", EGG_NAME)
 
-print("[Abyssara] MysteryEgg_Uncommon erzeugt unter Workspace.Assets.Gacha")
+print("[Abyssara] MysteryEgg_Uncommon created under Workspace.Assets.Gacha")

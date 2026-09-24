@@ -215,7 +215,7 @@ local function pickCreatureForRarity(rarity: Rarity): (string, Rarity)
 		if pool and #pool > 0 then
 			if candidateRarity ~= rarity then
 				warn(
-					("[GachaService] Kein Kreaturen-Asset für Rarity '%s' vorhanden, weiche auf Pool von '%s' aus."):format(
+					("[GachaService] No creature asset for rarity '%s', falling back to the pool of '%s'."):format(
 						rarity,
 						candidateRarity
 					)
@@ -226,7 +226,7 @@ local function pickCreatureForRarity(rarity: Rarity): (string, Rarity)
 		end
 	end
 
-	error("[GachaService] Kein Kreaturen-Pool verfügbar - GachaConfig.CREATURE_POOL ist vollständig leer.")
+	error("[GachaService] No creature pool available - GachaConfig.CREATURE_POOL is completely empty.")
 end
 
 -- // Öffentliche API ----------------------------------------------------------

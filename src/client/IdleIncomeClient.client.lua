@@ -121,7 +121,7 @@ end)
 -- // Offline-Progress-Zusammenfassung beim Login (UIKit.Panel) ---------------
 
 local offlinePanel = Panel.new({
-	Title = "Während du weg warst ...",
+	Title = "While you were away ...",
 	Closable = true,
 	CenteredSize = UDim2.fromOffset(440, 240),
 })
@@ -159,7 +159,7 @@ detailConstraint.Parent = detailLabel
 
 local thanksButton = Button.new({
 	Parent = offlinePanel.Content,
-	Text = "Danke!",
+	Text = "Thanks!",
 	Variant = "Primary",
 	Important = true,
 	Size = UDim2.new(1, 0, 0, 48),
@@ -195,8 +195,8 @@ IdleIncomeRemotes.OfflineProgressSummary.OnClientEvent:Connect(function(payload)
 		return ("+%s Tide Coins"):format(CountUp.DefaultFormat(value))
 	end)
 	detailLabel.Text = if wasCapped
-		then ("Abwesenheit: %s (auf max. 4h gedeckelt)"):format(formatDuration(cappedSeconds))
-		else ("Abwesenheit: %s"):format(formatDuration(cappedSeconds))
+		then ("Time away: %s (capped at max. 4h)"):format(formatDuration(cappedSeconds))
+		else ("Time away: %s"):format(formatDuration(cappedSeconds))
 
 	offlinePanel:Open()
 	ScreenFX.Flash({ Color = Theme.Neon.Cyan, Duration = 0.4, MaxTransparency = 0.35 })

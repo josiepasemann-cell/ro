@@ -144,4 +144,4 @@ model.PrimaryPart = base
 model:SetAttribute("DecorationId", "JackOCoral")
 model:SetAttribute("Event", "SpookyTide")
 
-print("[Abyssara] JackOCoral erzeugt unter Workspace.Assets.Decorations")
+print("[Abyssara] JackOCoral created under Workspace.Assets.Decorations")

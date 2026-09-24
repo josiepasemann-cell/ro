@@ -117,4 +117,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Ember Slug")
 
-print("[Abyssara] EmberSlug erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] EmberSlug created under Workspace.Assets.Creatures")

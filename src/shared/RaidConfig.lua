@@ -87,7 +87,7 @@ local RaidConfig = {}
 local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 	Drifter = {
 		Id = "Drifter",
-		DisplayName = "Trench-Drifter",
+		DisplayName = "Trench Drifter",
 		MaxHP = 40,
 		MoveSpeed = 6,
 		ContactDamage = 1,
@@ -99,7 +99,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 	},
 	Swarmer = {
 		Id = "Swarmer",
-		DisplayName = "Trench-Schwärmer",
+		DisplayName = "Trench Swarmer",
 		MaxHP = 25,
 		MoveSpeed = 9,
 		ContactDamage = 1,
@@ -111,7 +111,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 	},
 	Brute = {
 		Id = "Brute",
-		DisplayName = "Trench-Brute",
+		DisplayName = "Trench Brute",
 		MaxHP = 90,
 		MoveSpeed = 4.5,
 		ContactDamage = 1,
@@ -123,7 +123,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 	},
 	TrenchWarden = {
 		Id = "TrenchWarden",
-		DisplayName = "Trench-Wächter (Boss)",
+		DisplayName = "Trench Warden (Boss)",
 		MaxHP = 500,
 		MoveSpeed = 3.5,
 		ContactDamage = 1,

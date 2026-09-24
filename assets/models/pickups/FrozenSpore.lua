@@ -209,4 +209,4 @@ model:SetAttribute("PickupKind", "FrozenSpore")
 model:SetAttribute("Event", "FrozenCurrent")
 model:SetAttribute("ThawStates", "IcyShellState,CrackedState,OpenState")
 
-print("[Abyssara] FrozenSpore erzeugt unter Workspace.Assets.Pickups")
+print("[Abyssara] FrozenSpore created under Workspace.Assets.Pickups")

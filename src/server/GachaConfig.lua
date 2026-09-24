@@ -60,12 +60,12 @@ GachaConfig.RARITY_ORDER = { "Common", "Uncommon", "Rare", "Epic", "Legendary", 
 -- anzeigt, was auch tatsächlich gerollt wird. Werte hier sind die einzige
 -- Stelle, die für Balancing-Änderungen angepasst werden muss.
 GachaConfig.DROP_TABLE = {
-	Common = { Weight = 45.0, DisplayLabel = "Gewöhnlich", Color = Color3.fromRGB(215, 250, 245) },
-	Uncommon = { Weight = 27.0, DisplayLabel = "Ungewöhnlich", Color = Color3.fromRGB(120, 235, 205) },
-	Rare = { Weight = 16.0, DisplayLabel = "Selten", Color = Color3.fromRGB(70, 210, 235) },
-	Epic = { Weight = 8.0, DisplayLabel = "Episch", Color = Color3.fromRGB(170, 90, 255) },
-	Legendary = { Weight = 3.5, DisplayLabel = "Legendär", Color = Color3.fromRGB(150, 70, 255) },
-	Mythic = { Weight = 0.5, DisplayLabel = "Mythisch", Color = Color3.fromRGB(135, 60, 255) },
+	Common = { Weight = 45.0, DisplayLabel = "Common", Color = Color3.fromRGB(215, 250, 245) },
+	Uncommon = { Weight = 27.0, DisplayLabel = "Uncommon", Color = Color3.fromRGB(120, 235, 205) },
+	Rare = { Weight = 16.0, DisplayLabel = "Rare", Color = Color3.fromRGB(70, 210, 235) },
+	Epic = { Weight = 8.0, DisplayLabel = "Epic", Color = Color3.fromRGB(170, 90, 255) },
+	Legendary = { Weight = 3.5, DisplayLabel = "Legendary", Color = Color3.fromRGB(150, 70, 255) },
+	Mythic = { Weight = 0.5, DisplayLabel = "Mythic", Color = Color3.fromRGB(135, 60, 255) },
 } :: { [Rarity]: RarityDefinition }
 
 -- // Kreaturen-Pool je Rarity ---------------------------------------------
@@ -92,13 +92,13 @@ GachaConfig.CREATURE_POOL = {
 -- der Welt existiert (z. B. auf einem Test-/Server-Start ohne vorher
 -- ausgeführte Buildscripts).
 GachaConfig.CREATURE_DISPLAY_NAME_FALLBACK = {
-	GlowJelly = "Glühqualle",
-	GlowShrimp = "Leuchtgarnele",
-	GlowRay = "Leuchtrochen",
-	Anglerfish = "Anglerfisch",
-	BioluminescentEel = "Biolumineszenz-Aal",
-	CrystalKraken = "Kristallkrake",
-	CrystalLeviathan = "Kristall-Leviathan",
+	GlowJelly = "Glow Jelly",
+	GlowShrimp = "Glow Shrimp",
+	GlowRay = "Glow Ray",
+	Anglerfish = "Anglerfish",
+	BioluminescentEel = "Bioluminescent Eel",
+	CrystalKraken = "Crystal Kraken",
+	CrystalLeviathan = "Crystal Leviathan",
 } :: { [string]: string }
 
 -- // Pity-Mechanik ---------------------------------------------------------
@@ -146,7 +146,7 @@ function GachaConfig.GetRarityIndex(rarity: Rarity): number
 			return index
 		end
 	end
-	error(("[GachaConfig] Unbekannte Rarity: %s"):format(tostring(rarity)))
+	error(("[GachaConfig] Unknown rarity: %s"):format(tostring(rarity)))
 end
 
 --- true, wenn `rarity` mindestens so hochwertig ist wie `minRarity`.

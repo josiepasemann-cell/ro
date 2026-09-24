@@ -184,4 +184,4 @@ rarityBeam.Parent = effectCore
 
 model.PrimaryPart = effectCore
 
-print("[Abyssara] GachaEggOpenVFX erzeugt unter Workspace.Assets.Gacha (alle Emitter/Beam/Light: Enabled = false)")
+print("[Abyssara] GachaEggOpenVFX created under Workspace.Assets.Gacha (all Emitter/Beam/Light: Enabled = false)")

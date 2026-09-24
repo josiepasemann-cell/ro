@@ -100,6 +100,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Grabenwisp")
+model:SetAttribute("CreatureName", "Trench Wisp")
 
-print("[Abyssara] TrenchWisp erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] TrenchWisp created under Workspace.Assets.Creatures")

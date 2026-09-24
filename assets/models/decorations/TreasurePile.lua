@@ -142,4 +142,4 @@ model.PrimaryPart = base
 model:SetAttribute("DecorationId", "TreasurePile")
 model:SetAttribute("Event", "TreasureTide")
 
-print("[Abyssara] TreasurePile erzeugt unter Workspace.Assets.Decorations")
+print("[Abyssara] TreasurePile created under Workspace.Assets.Decorations")

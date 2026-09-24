@@ -190,7 +190,7 @@ if collarOk and upperCollarRing then
 	upperCollarRing.CanCollide = false
 	upperCollarRing.Parent = model
 else
-	warn("[Abyssara] BroodPool_Stage2: UpperCollarRing-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelstreben.")
+	warn("[Abyssara] BroodPool_Stage2: UpperCollarRing-CSG union failed, using unwelded individual struts.")
 	for _, bar in ipairs(collarBars) do
 		bar.Anchored = true
 		bar.CanCollide = false
@@ -202,4 +202,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "BroodPool")
 model:SetAttribute("Stage", 2)
 
-print("[Abyssara] BroodPool_Stage2 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] BroodPool_Stage2 created under Workspace.Assets.Buildings")

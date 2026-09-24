@@ -176,4 +176,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Treasure Turtle")
 
-print("[Abyssara] TreasureTurtle erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] TreasureTurtle created under Workspace.Assets.Creatures")

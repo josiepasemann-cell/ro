@@ -225,7 +225,7 @@ function HeldItemService.HoldItem(player: Player, itemKind: string, templateOrMo
 			instance:ScaleTo(holdScale)
 		end)
 		if not scaleOk then
-			warn(("[HeldItemService] ScaleTo(%.2f) für '%s' fehlgeschlagen - Item bleibt unskaliert."):format(holdScale, itemKind))
+			warn(("[HeldItemService] ScaleTo(%.2f) for '%s' failed - item stays unscaled."):format(holdScale, itemKind))
 		end
 	end
 

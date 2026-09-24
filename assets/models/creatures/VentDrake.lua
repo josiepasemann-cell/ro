@@ -169,4 +169,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Vent Drake")
 
-print("[Abyssara] VentDrake erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] VentDrake created under Workspace.Assets.Creatures")

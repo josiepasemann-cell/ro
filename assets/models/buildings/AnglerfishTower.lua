@@ -126,4 +126,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "AnglerfishTower")
 model:SetAttribute("Stage", 1)
 
-print("[Abyssara] AnglerfishTower erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] AnglerfishTower created under Workspace.Assets.Buildings")

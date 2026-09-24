@@ -138,4 +138,4 @@ model.PrimaryPart = base
 model:SetAttribute("DecorationId", "CoralGardenSet")
 model:SetAttribute("Event", "BioluminescentBloom")
 
-print("[Abyssara] CoralGardenSet erzeugt unter Workspace.Assets.Decorations")
+print("[Abyssara] CoralGardenSet created under Workspace.Assets.Decorations")

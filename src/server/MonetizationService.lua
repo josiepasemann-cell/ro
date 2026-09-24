@@ -207,7 +207,7 @@ local function warmupPlayerGamepassCache(player: Player)
 			end)
 			cache[key] = ok and owns == true
 			if not ok then
-				warn(("[MonetizationService] Gamepass-Besitzprüfung für %s (%s) fehlgeschlagen - gilt vorerst als nicht besessen."):format(player.Name, key))
+				warn(("[MonetizationService] Gamepass ownership check for %s (%s) failed - treated as not owned for now."):format(player.Name, key))
 			end
 		else
 			cache[key] = false
@@ -249,7 +249,7 @@ local function fetchPolicyInfo(player: Player)
 	if ok and info then
 		policyCache[player.UserId] = { ArePaidRandomItemsRestricted = info.ArePaidRandomItemsRestricted == true }
 	else
-		warn(("[MonetizationService] PolicyService-Abfrage für %s fehlgeschlagen - Mystery-Egg-Robux-Kauf bleibt sicherheitshalber gesperrt."):format(player.Name))
+		warn(("[MonetizationService] PolicyService lookup for %s failed - Mystery Egg Robux purchase stays blocked as a precaution."):format(player.Name))
 	end
 end
 
@@ -516,7 +516,7 @@ local function applyDevProductEffect(player: Player, definition: DevProductDefin
 		return false, reason == "DataNotLoaded"
 	end
 
-	warn(("[MonetizationService] Unbekannter EffectKey '%s' für Produkt '%s'."):format(definition.EffectKey, definition.Key))
+	warn(("[MonetizationService] Unknown EffectKey '%s' for product '%s'."):format(definition.EffectKey, definition.Key))
 	return false, false
 end
 
@@ -543,7 +543,7 @@ local function processReceipt(receiptInfo: { [string]: any }): Enum.ProductPurch
 
 	local definition = ShopConfig.FindDevProductById(receiptInfo.ProductId)
 	if not definition then
-		warn(("[MonetizationService] Unbekannte ProductId %d in ProcessReceipt (PurchaseId %s) - ShopConfig vermutlich noch nicht mit der echten Id befüllt."):format(
+		warn(("[MonetizationService] Unknown ProductId %d in ProcessReceipt (PurchaseId %s) - ShopConfig probably not yet filled in with the real id."):format(
 			receiptInfo.ProductId,
 			tostring(receiptInfo.PurchaseId)
 		))
@@ -560,7 +560,7 @@ local function processReceipt(receiptInfo: { [string]: any }): Enum.ProductPurch
 		-- Inhaltlicher (nicht-technischer) Fehlschlag: Fallback-Kompensation
 		-- statt unbegrenzter Retries, siehe Kopfkommentar.
 		PlayerDataService.AddCurrency(player, "TideCoins", definition.FallbackCompensationTideCoins)
-		warn(("[MonetizationService] Fallback-Kompensation (%d Tide Coins) für %s, Produkt '%s' (PurchaseId %s) gewährt - Effekt inhaltlich nicht mehr anwendbar."):format(
+		warn(("[MonetizationService] Fallback compensation (%d Tide Coins) granted to %s, product '%s' (PurchaseId %s) - effect no longer meaningfully applicable."):format(
 			definition.FallbackCompensationTideCoins,
 			player.Name,
 			definition.Key,

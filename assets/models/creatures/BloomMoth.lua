@@ -139,4 +139,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Bloom Moth")
 
-print("[Abyssara] BloomMoth erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] BloomMoth created under Workspace.Assets.Creatures")

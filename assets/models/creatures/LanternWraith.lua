@@ -135,6 +135,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Laternengeist")
+model:SetAttribute("CreatureName", "Lantern Wraith")
 
-print("[Abyssara] LanternWraith erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] LanternWraith created under Workspace.Assets.Creatures")

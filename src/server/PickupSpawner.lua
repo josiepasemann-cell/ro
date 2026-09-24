@@ -94,7 +94,7 @@ local function promotePickupTemplate(name: string)
 	if not source or not source:IsA("Model") then
 		if not pickupTemplatesFolder:FindFirstChild(name) then
 			warn(
-				("[PickupSpawner] '%s' fehlt unter Workspace.Assets.Pickups - bitte assets/models/pickups/%s.lua einmal in Studio ausführen (siehe assets/models/README.md)."):format(
+				("[PickupSpawner] '%s' is missing under Workspace.Assets.Pickups - please run assets/models/pickups/%s.lua once in Studio (see assets/models/README.md)."):format(
 					name,
 					name
 				)
@@ -473,7 +473,7 @@ local function onDepositTriggered(player: Player, station: Model)
 	local reward = math.floor(HeldItemConfig.Deposit.TideCoinsReward * valueMultiplier + 0.5)
 	local ok = PlayerDataService.AddCurrency(player, "TideCoins", reward)
 	if not ok then
-		warn(("[PickupSpawner] AddCurrency für %s (Sporen-Abgabe) fehlgeschlagen."):format(player.Name))
+		warn(("[PickupSpawner] AddCurrency for %s (spore deposit) failed."):format(player.Name))
 		return
 	end
 

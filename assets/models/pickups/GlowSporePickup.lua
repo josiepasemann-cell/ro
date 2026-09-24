@@ -125,4 +125,4 @@ glowLight.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("PickupKind", "GlowSpore")
 
-print("[Abyssara] GlowSporePickup erzeugt unter Workspace.Assets.Pickups")
+print("[Abyssara] GlowSporePickup created under Workspace.Assets.Pickups")

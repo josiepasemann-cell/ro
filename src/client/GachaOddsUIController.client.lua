@@ -78,7 +78,7 @@ end
 -- // Panel per UIKit bauen (einmalig, danach wiederverwendet) ------------------
 
 local panel = Panel.new({
-	Title = "Mystery Egg – Drop-Chancen",
+	Title = "Mystery Egg - Drop Odds",
 	Closable = true,
 	CenteredSize = UDim2.fromOffset(460, 480),
 })
@@ -91,7 +91,7 @@ subtitle.Font = Theme.Font.Body
 subtitle.TextColor3 = Theme.Text.Secondary
 subtitle.TextXAlignment = Enum.TextXAlignment.Left
 subtitle.TextScaled = true
-subtitle.Text = "Offengelegte Wahrscheinlichkeiten pro Öffnung"
+subtitle.Text = "Revealed probabilities per opening"
 subtitle.Parent = panel.Content
 local subtitleConstraint = Instance.new("UITextSizeConstraint")
 subtitleConstraint.MinTextSize = 12
@@ -124,7 +124,7 @@ footerNote.Font = Theme.Font.Body
 footerNote.TextColor3 = Theme.Text.Muted
 footerNote.TextWrapped = true
 footerNote.TextScaled = true
-footerNote.Text = "Chancen gelten pro einzelner Ei-Öffnung. Kein Kaufzwang."
+footerNote.Text = "Odds apply per individual egg opening. No purchase necessary."
 footerNote.Parent = panel.Content
 local footerConstraint = Instance.new("UITextSizeConstraint")
 footerConstraint.MinTextSize = 10
@@ -148,7 +148,7 @@ local function refreshOddsFromServer()
 	end)
 
 	if not ok or type(oddsRows) ~= "table" then
-		warn("[GachaOddsUIController] Konnte Odds-Tabelle nicht vom Server laden:", oddsRows)
+		warn("[GachaOddsUIController] Could not load odds table from server:", oddsRows)
 		return
 	end
 

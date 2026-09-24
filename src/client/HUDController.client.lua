@@ -327,7 +327,7 @@ end
 local function showLevelUpBanner(newLevel: number, unlocks: { { Label: string, Implemented: boolean } })
 	clearUnlockLabels()
 
-	bannerTitle.Text = ("Level Up! Jetzt Level %d"):format(newLevel)
+	bannerTitle.Text = ("Level Up! Now Level %d"):format(newLevel)
 
 	if #unlocks == 0 then
 		local line = Instance.new("TextLabel")
@@ -338,7 +338,7 @@ local function showLevelUpBanner(newLevel: number, unlocks: { { Label: string, I
 		line.TextScaled = true
 		line.TextColor3 = Theme.Text.Primary
 		line.LayoutOrder = 2
-		line.Text = "Weiter so!"
+		line.Text = "Keep it up!"
 		line.Parent = banner
 	else
 		for index, unlock in ipairs(unlocks) do
@@ -390,7 +390,7 @@ task.spawn(function()
 	if ok and type(initialState) == "table" then
 		applyPartialState(initialState)
 	else
-		warn("[HUDController] Initialer HUD-Sync fehlgeschlagen.")
+		warn("[HUDController] Initial HUD sync failed.")
 		refreshDisplay()
 	end
 end)

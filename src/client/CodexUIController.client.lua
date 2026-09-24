@@ -156,7 +156,7 @@ local function fetchCatalog(): Catalog?
 	if ok then
 		return result :: Catalog
 	end
-	warn("[CodexUIController] GetCodexCatalog fehlgeschlagen: " .. tostring(result))
+	warn("[CodexUIController] GetCodexCatalog failed: " .. tostring(result))
 	return nil
 end
 
@@ -167,7 +167,7 @@ local function fetchState(): CodexState?
 	if ok then
 		return result :: CodexState
 	end
-	warn("[CodexUIController] GetCodexState fehlgeschlagen: " .. tostring(result))
+	warn("[CodexUIController] GetCodexState failed: " .. tostring(result))
 	return nil
 end
 
@@ -183,7 +183,7 @@ local function fetchBuddyCreatureId(): string?
 		return result.CreatureId
 	end
 	if not ok then
-		warn("[CodexUIController] GetBuddyState fehlgeschlagen: " .. tostring(result))
+		warn("[CodexUIController] GetBuddyState failed: " .. tostring(result))
 	end
 	return nil
 end
@@ -191,7 +191,7 @@ end
 -- // Panel-Grundgerüst (einmalig gebaut) ----------------------------------------
 
 local panel = Panel.new({
-	Title = "Kreaturen-Kodex",
+	Title = "Creature Codex",
 	Closable = true,
 	CenteredSize = UDim2.fromOffset(780, 580),
 })
@@ -353,7 +353,7 @@ local function rebuildPanel(preferredTabId: string?)
 	local catalog = fetchCatalog()
 	local state = fetchState()
 	if not catalog or not state then
-		Toast.Show({ Text = "Kodex konnte nicht geladen werden.", Type = "Error" })
+		Toast.Show({ Text = "Codex could not be loaded.", Type = "Error" })
 		return
 	end
 
@@ -412,7 +412,7 @@ local function rebuildPanel(preferredTabId: string?)
 				end
 			else
 				if #currentFavorites >= 6 then
-					Toast.Show({ Text = "Maximal 6 Favoriten - erst einen entfernen.", Type = "Warning" })
+					Toast.Show({ Text = "Maximum of 6 favorites - remove one first.", Type = "Warning" })
 					return
 				end
 				for _, id in ipairs(currentFavorites) do
@@ -488,9 +488,9 @@ local function rebuildPanel(preferredTabId: string?)
 			local claimButton = Button.new({
 				Parent = header,
 				Text = if completion.RewardClaimed
-					then "✓ Abgeholt"
-					elseif completion.RewardClaimable then "Belohnung abholen"
-					else "Unvollständig",
+					then "✓ Claimed"
+					elseif completion.RewardClaimable then "Claim Reward"
+					else "Incomplete",
 				Variant = if completion.RewardClaimed then "Ghost" elseif completion.RewardClaimable then "Success" else "Ghost",
 				Size = UDim2.fromOffset(140, 44),
 				Disabled = not completion.RewardClaimable,
@@ -500,7 +500,7 @@ local function rebuildPanel(preferredTabId: string?)
 			if completion.RewardClaimable then
 				claimButton.Clicked:Connect(function()
 					claimButton:SetDisabled(true)
-					claimButton:SetText("Wird abgeholt ...")
+					claimButton:SetText("Claiming ...")
 					CodexRemotes.RequestClaimZoneReward:FireServer(zoneId)
 				end)
 			end
@@ -567,9 +567,9 @@ end
 local setFavoritesConnection = CodexRemotes.SetFavoritesResult.OnClientEvent:Connect(function(payload: { [string]: any })
 	pendingFavoriteRequest = false
 	if payload.Success then
-		Toast.Show({ Text = "Favoriten aktualisiert - Plot-Anzeige folgt in Kürze.", Type = "Success", Duration = 2.5 })
+		Toast.Show({ Text = "Favorites updated - plot display coming soon.", Type = "Success", Duration = 2.5 })
 	else
-		Toast.Show({ Text = "Favoriten konnten nicht gesetzt werden (" .. tostring(payload.Reason) .. ").", Type = "Error" })
+		Toast.Show({ Text = "Could not set favorites (" .. tostring(payload.Reason) .. ").", Type = "Error" })
 	end
 	if panel.ScreenGui.Enabled then
 		-- Panel noch offen: Karten-Sternzustände synchron halten.
@@ -601,7 +601,7 @@ end)
 local claimResultConnection = CodexRemotes.ClaimZoneRewardResult.OnClientEvent:Connect(function(payload: { [string]: any })
 	if payload.Success then
 		Toast.Show({
-			Text = ("%s abgeholt: +%d Tide Coins, Titel \"%s\"!"):format(
+			Text = ("%s claimed: +%d Tide Coins, title \"%s\"!"):format(
 				humanizeId(tostring(payload.Zone)),
 				payload.RewardTideCoins or 0,
 				tostring(payload.RewardTitle)
@@ -611,7 +611,7 @@ local claimResultConnection = CodexRemotes.ClaimZoneRewardResult.OnClientEvent:C
 		})
 		ScreenFX.BigMoment(Theme.Neon.ToxicGreen)
 	else
-		Toast.Show({ Text = "Belohnung konnte nicht abgeholt werden (" .. tostring(payload.Reason) .. ").", Type = "Error" })
+		Toast.Show({ Text = "Reward could not be claimed (" .. tostring(payload.Reason) .. ").", Type = "Error" })
 	end
 	if panel.ScreenGui.Enabled then
 		rebuildPanel(payload.Zone)

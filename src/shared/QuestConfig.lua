@@ -53,7 +53,7 @@ QuestConfig.QUEST_TEMPLATES = {
 	{
 		Id = "DeliverSpores",
 		EventName = "SporeDelivered",
-		DescriptionFormat = "Liefere %d Glow Spores an einer Lichtboje ab",
+		DescriptionFormat = "Deliver %d Glow Spores to a Glow Buoy Station",
 		TargetMin = 5,
 		TargetMax = 12,
 		RewardTideCoins = 80,
@@ -62,7 +62,7 @@ QuestConfig.QUEST_TEMPLATES = {
 	{
 		Id = "CompleteBreeding",
 		EventName = "BreedingCompleted",
-		DescriptionFormat = "Schließe %d Zucht(en) im Brutbecken ab",
+		DescriptionFormat = "Complete %d breeding(s) in the Brood Pool",
 		TargetMin = 1,
 		TargetMax = 2,
 		RewardTideCoins = 150,
@@ -71,7 +71,7 @@ QuestConfig.QUEST_TEMPLATES = {
 	{
 		Id = "WinRaid",
 		EventName = "RaidWon",
-		DescriptionFormat = "Überstehe %d Trench Raid(s) erfolgreich",
+		DescriptionFormat = "Successfully survive %d Trench Raid(s)",
 		TargetMin = 1,
 		TargetMax = 1,
 		RewardTideCoins = 200,
@@ -80,7 +80,7 @@ QuestConfig.QUEST_TEMPLATES = {
 	{
 		Id = "PlaceBuilding",
 		EventName = "BuildingPlaced",
-		DescriptionFormat = "Platziere %d Gebäude auf deinem Habitat",
+		DescriptionFormat = "Place %d building(s) on your habitat",
 		TargetMin = 1,
 		TargetMax = 3,
 		RewardTideCoins = 60,

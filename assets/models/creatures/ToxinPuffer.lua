@@ -135,4 +135,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Toxin Puffer")
 
-print("[Abyssara] ToxinPuffer erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] ToxinPuffer created under Workspace.Assets.Creatures")

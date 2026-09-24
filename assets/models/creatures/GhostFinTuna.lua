@@ -134,6 +134,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("CreatureName", "Geisterflossen-Thun")
+model:SetAttribute("CreatureName", "Ghost Fin Tuna")
 
-print("[Abyssara] GhostFinTuna erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] GhostFinTuna created under Workspace.Assets.Creatures")

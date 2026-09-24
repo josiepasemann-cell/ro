@@ -103,7 +103,7 @@ local function friendlyReason(map: { [string]: string }, reason: string?): strin
 	if not reason then
 		return "Action failed. Please try again."
 	end
-	return map[reason] or ("Aktion fehlgeschlagen (" .. reason .. ").")
+	return map[reason] or ("Action failed (" .. reason .. ").")
 end
 
 -- // Countdown --------------------------------------------------------------
@@ -552,7 +552,7 @@ local function buildMainPanel()
 	end
 
 	mainPanel = Panel.new({
-		Title = "Live-Event",
+		Title = "Live Event",
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(560, 620),
 	})
@@ -760,7 +760,7 @@ task.spawn(function()
 		applyState(result :: EventStateRow, false)
 		hasReceivedFirstState = true
 	else
-		warn("[EventUIController] Konnte Event-Status nicht laden:", result)
+		warn("[EventUIController] Could not load event status:", result)
 	end
 end)
 

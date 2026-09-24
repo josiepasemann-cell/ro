@@ -137,4 +137,4 @@ model.PrimaryPart = base
 model:SetAttribute("DecorationId", "MagmaVent")
 model:SetAttribute("Event", "VolcanicVent")
 
-print("[Abyssara] MagmaVent erzeugt unter Workspace.Assets.Decorations")
+print("[Abyssara] MagmaVent created under Workspace.Assets.Decorations")

@@ -42,7 +42,7 @@ end
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local panel = UIKit.Panel.new({
-	Title = "UIKit Demo – Abyssara",
+	Title = "UIKit Demo - Abyssara",
 	CenteredSize = UDim2.fromOffset(680, 520),
 })
 
@@ -52,7 +52,7 @@ local tabs = UIKit.Tabs.new({
 		{ Id = "Buttons", Label = "Buttons" },
 		{ Id = "Widgets", Label = "Widgets" },
 		{ Id = "Rarity", Label = "Rarity" },
-		{ Id = "FX", Label = "Screen-FX" },
+		{ Id = "FX", Label = "Screen FX" },
 	},
 	DefaultTabId = "Buttons",
 })
@@ -66,31 +66,31 @@ do
 	for index, variant in variants do
 		local button = UIKit.Button.new({
 			Parent = content,
-			Text = variant .. "-Button",
+			Text = variant .. " Button",
 			Variant = variant :: any,
 			LayoutOrder = index,
 			Size = UDim2.new(1, 0, 0, 48),
 		})
 		button.Clicked:Connect(function()
-			UIKit.Toast.Show({ Text = variant .. "-Button geklickt!", Type = "Info" })
+			UIKit.Toast.Show({ Text = variant .. " Button clicked!", Type = "Info" })
 		end)
 	end
 
 	local importantButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Kaufen (Idle-Pulsieren)",
+		Text = "Buy (Idle Pulse)",
 		Variant = "Success",
 		Important = true,
 		LayoutOrder = 10,
 		Size = UDim2.new(1, 0, 0, 52),
 	})
 	importantButton.Clicked:Connect(function()
-		UIKit.Toast.Show({ Text = "Kauf bestätigt!", Type = "Success" })
+		UIKit.Toast.Show({ Text = "Purchase confirmed!", Type = "Success" })
 	end)
 
 	local disabledButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Deaktivierter Button",
+		Text = "Disabled Button",
 		Variant = "Primary",
 		Disabled = true,
 		LayoutOrder = 11,
@@ -100,23 +100,23 @@ do
 
 	local confirmButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Bestätigungsdialog öffnen",
+		Text = "Open Confirmation Dialog",
 		Variant = "Danger",
 		LayoutOrder = 12,
 		Size = UDim2.new(1, 0, 0, 48),
 	})
 	confirmButton.Clicked:Connect(function()
 		UIKit.ConfirmDialog.Show({
-			Title = "Wirklich verkaufen?",
-			Message = "Diese Kreatur wird für immer aus deinem Inventar entfernt. Fortfahren?",
+			Title = "Really sell?",
+			Message = "This creature will be permanently removed from your inventory. Continue?",
 			Danger = true,
-			ConfirmText = "Verkaufen",
-			CancelText = "Abbrechen",
+			ConfirmText = "Sell",
+			CancelText = "Cancel",
 			OnConfirm = function()
-				UIKit.Toast.Show({ Text = "Verkauft!", Type = "Warning" })
+				UIKit.Toast.Show({ Text = "Sold!", Type = "Warning" })
 			end,
 			OnCancel = function()
-				UIKit.Toast.Show({ Text = "Abgebrochen.", Type = "Info" })
+				UIKit.Toast.Show({ Text = "Cancelled.", Type = "Info" })
 			end,
 		})
 	end)
@@ -150,7 +150,7 @@ do
 
 	local progressButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Fortschritt zufällig ändern",
+		Text = "Randomize Progress",
 		Variant = "Secondary",
 		LayoutOrder = 3,
 		Size = UDim2.new(1, 0, 0, 44),
@@ -161,7 +161,7 @@ do
 
 	local toastButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Toast anzeigen",
+		Text = "Show Toast",
 		Variant = "Primary",
 		LayoutOrder = 4,
 		Size = UDim2.new(1, 0, 0, 44),
@@ -171,7 +171,7 @@ do
 	toastButton.Clicked:Connect(function()
 		toastIndex = (toastIndex % #toastTypes) + 1
 		local toastType = toastTypes[toastIndex]
-		UIKit.Toast.Show({ Text = "Beispiel-Toast (" .. toastType .. ")", Type = toastType :: any })
+		UIKit.Toast.Show({ Text = "Example toast (" .. toastType .. ")", Type = toastType :: any })
 	end)
 end
 
@@ -195,7 +195,7 @@ do
 
 	local flashButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Flash (Level-Up)",
+		Text = "Flash (Level Up)",
 		Variant = "Success",
 		LayoutOrder = 1,
 		Size = UDim2.new(1, 0, 0, 48),
@@ -206,7 +206,7 @@ do
 
 	local bigMomentButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Großer Moment (Mythic-Drop)",
+		Text = "Big Moment (Mythic Drop)",
 		Variant = "Danger",
 		Important = true,
 		LayoutOrder = 2,
@@ -214,12 +214,12 @@ do
 	})
 	bigMomentButton.Clicked:Connect(function()
 		UIKit.ScreenFX.BigMoment(UIKit.Theme.Rarity.Mythic)
-		UIKit.Toast.Show({ Text = "Mythisches Wesen erhalten!", Type = "Success", Duration = 4 })
+		UIKit.Toast.Show({ Text = "Mythic creature obtained!", Type = "Success", Duration = 4 })
 	end)
 
 	local reducedFxButton = UIKit.Button.new({
 		Parent = content,
-		Text = "Reduzierte Effekte umschalten",
+		Text = "Toggle Reduced Effects",
 		Variant = "Ghost",
 		LayoutOrder = 3,
 		Size = UDim2.new(1, 0, 0, 44),
@@ -228,7 +228,7 @@ do
 		local newValue = not UIKit.Settings.GetReducedEffects()
 		UIKit.Settings.SetReducedEffects(newValue)
 		UIKit.Toast.Show({
-			Text = "Reduzierte Effekte: " .. (newValue and "AN" or "AUS"),
+			Text = "Reduced effects: " .. (newValue and "ON" or "OFF"),
 			Type = "Info",
 		})
 	end)
@@ -246,7 +246,7 @@ do
 	local function updateDeviceInfo()
 		local state = UIKit.Device.GetState()
 		deviceInfoLabel.Text = string.format(
-			"Gerät: %s | Scale: %.2f | Touch: %s | Keyboard: %s | Gamepad: %s",
+			"Device: %s | Scale: %.2f | Touch: %s | Keyboard: %s | Gamepad: %s",
 			state.Class,
 			state.Scale,
 			tostring(state.HasTouch),

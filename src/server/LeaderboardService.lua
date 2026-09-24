@@ -123,7 +123,7 @@ local function withRetry(description: string, fn: () -> any): (boolean, any)
 			task.wait(STORE_RETRY_BASE_DELAY_SECONDS * attempt)
 		end
 	end
-	warn(("[LeaderboardService] %s endgültig fehlgeschlagen: %s"):format(description, tostring(lastErr)))
+	warn(("[LeaderboardService] %s failed permanently: %s"):format(description, tostring(lastErr)))
 	return false, nil
 end
 
@@ -189,7 +189,7 @@ local function writeScoreIfChanged(player: Player, category: Category, score: nu
 	end
 
 	local ok = withRetry(
-		("Write %s für UserId %d"):format(category, userId),
+		("Write %s for UserId %d"):format(category, userId),
 		function()
 			orderedStores[category]:SetAsync(tostring(userId), score)
 			return true
@@ -249,7 +249,7 @@ local function readCategoryTop(category: Category)
 		return (pages :: DataStorePages):GetCurrentPage()
 	end)
 	if not okPage then
-		warn(("[LeaderboardService] GetCurrentPage() für %s fehlgeschlagen."):format(category))
+		warn(("[LeaderboardService] GetCurrentPage() for %s failed."):format(category))
 		return
 	end
 
@@ -283,9 +283,9 @@ end
 -- // Hub-SurfaceGui-Befüllung (LeaderboardBoard/DisplayPanel) -----------------
 
 local CATEGORY_LABELS: { [Category]: string } = {
-	Level = "Höchstes Level",
-	TideCoins = "Gesamt verdiente Tide Coins",
-	RarestCollection = "Seltenste Sammlung",
+	Level = "Highest Level",
+	TideCoins = "Total Tide Coins Earned",
+	RarestCollection = "Rarest Collection",
 }
 
 local function findLeaderboardDisplayPanel(): BasePart?
@@ -329,7 +329,7 @@ local function buildBoardGui(panel: BasePart): (ScreenGui | SurfaceGui, TextLabe
 	title.Font = Enum.Font.GothamBold
 	title.TextScaled = true
 	title.TextColor3 = Color3.fromRGB(210, 245, 255)
-	title.Text = "Rangliste"
+	title.Text = "Leaderboard"
 	title.Parent = gui
 
 	local list = Instance.new("Frame")
@@ -347,7 +347,7 @@ local function buildBoardGui(panel: BasePart): (ScreenGui | SurfaceGui, TextLabe
 end
 
 local function renderBoard(title: TextLabel, list: Frame, category: Category)
-	title.Text = ("Rangliste: %s"):format(CATEGORY_LABELS[category])
+	title.Text = ("Leaderboard: %s"):format(CATEGORY_LABELS[category])
 
 	list:ClearAllChildren()
 	local layout = Instance.new("UIListLayout")
@@ -362,7 +362,7 @@ local function renderBoard(title: TextLabel, list: Frame, category: Category)
 		placeholder.Font = Enum.Font.Gotham
 		placeholder.TextScaled = true
 		placeholder.TextColor3 = Color3.fromRGB(180, 200, 210)
-		placeholder.Text = "Noch keine Daten..."
+		placeholder.Text = "No data yet..."
 		placeholder.Parent = list
 		return
 	end
@@ -397,9 +397,9 @@ local function runBoardLoop()
 
 	if not panel then
 		warn(
-			"[LeaderboardService] Workspace...Hub.TidalMarketHub.LeaderboardBoard.DisplayPanel nicht gefunden - "
-				.. "Welt-Anzeigepanel wird übersprungen (siehe assets/models/hub/TidalMarketHub.lua, muss einmal "
-				.. "in Studio ausgeführt worden sein)."
+			"[LeaderboardService] Workspace...Hub.TidalMarketHub.LeaderboardBoard.DisplayPanel not found - "
+				.. "world display panel skipped (see assets/models/hub/TidalMarketHub.lua, must have been run "
+				.. "once in Studio)."
 		)
 		return
 	end

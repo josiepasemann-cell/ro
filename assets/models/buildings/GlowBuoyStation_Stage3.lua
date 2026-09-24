@@ -194,7 +194,7 @@ if crownOk and crownRing then
 	crownRing.CanCollide = false
 	crownRing.Parent = model
 else
-	warn("[Abyssara] GlowBuoyStation_Stage3: CrownRing-CSG-Union fehlgeschlagen, verwende ungeschweißte Einzelspitzen.")
+	warn("[Abyssara] GlowBuoyStation_Stage3: CrownRing-CSG union failed, using unwelded individual spikes.")
 	for _, spike in ipairs(crownSpikes) do
 		spike.Anchored = true
 		spike.CanCollide = false
@@ -206,4 +206,4 @@ model.PrimaryPart = base
 model:SetAttribute("BuildingType", "GlowBuoyStation")
 model:SetAttribute("Stage", 3)
 
-print("[Abyssara] GlowBuoyStation_Stage3 erzeugt unter Workspace.Assets.Buildings")
+print("[Abyssara] GlowBuoyStation_Stage3 created under Workspace.Assets.Buildings")

@@ -118,4 +118,4 @@ model:SetAttribute("Zone", ZONE)
 model:SetAttribute("Event", EVENT)
 model:SetAttribute("CreatureName", "Phantom Jelly")
 
-print("[Abyssara] PhantomJelly erzeugt unter Workspace.Assets.Creatures")
+print("[Abyssara] PhantomJelly created under Workspace.Assets.Creatures")

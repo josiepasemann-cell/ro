@@ -170,7 +170,7 @@ local function spawnBuddyModel(player: Player, creatureId: string)
 		if not warnedMissingTemplate[creatureId] then
 			warnedMissingTemplate[creatureId] = true
 			warn(
-				("[BuddyService] Kein Workspace.Assets.Creatures-Modell für '%s' - Buddy-Anzeige übersprungen, bis das Buildscript in Studio ausgeführt wurde."):format(
+				("[BuddyService] No Workspace.Assets.Creatures model for '%s' - buddy display skipped until the buildscript has been run in Studio."):format(
 					creatureId
 				)
 			)
@@ -353,6 +353,6 @@ end
 
 task.spawn(runSafetyResyncLoop)
 
-print("[Abyssara] BuddyService bereit (Buddy-Modell-Lebenszyklus aktiv, Bewegung läuft client-seitig).")
+print("[Abyssara] BuddyService ready (buddy model lifecycle active, movement runs client-side).")
 
 return BuddyService

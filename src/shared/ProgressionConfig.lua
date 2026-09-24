@@ -127,28 +127,28 @@ ProgressionConfig.UNLOCKS = {
 	{
 		Level = 3,
 		Id = "FilterPlant",
-		Label = "Neues Baumodul: Filteranlage",
+		Label = "New building module: Filter Plant",
 		Type = "Building",
 		Implemented = true,
 	},
 	{
 		Level = 6,
 		Id = "BroodPoolSecondSlot",
-		Label = "Zweiter Brutbecken-Slot",
+		Label = "Second Brood Pool slot",
 		Type = "BroodPoolSlot",
 		Implemented = true,
 	},
 	{
 		Level = 8,
 		Id = "AnglerfishTower",
-		Label = "Erster Verteidigungsturm: Anglerfisch-Turm",
+		Label = "First defense tower: Anglerfish Tower",
 		Type = "Tower",
 		Implemented = true,
 	},
 	{
 		Level = 10,
 		Id = "ZonePortal_Daemmerzone",
-		Label = "Zonenportal: Dämmerzone (folgt)",
+		Label = "Zone Portal: Twilight Zone (coming soon)",
 		Type = "ZonePortal",
 		Implemented = false, -- PLATZHALTER: Zonen-/Teleport-System existiert noch nicht, siehe Kommentar oben.
 	},
