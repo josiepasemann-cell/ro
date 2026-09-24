@@ -42,6 +42,42 @@ Flächen. Chunk-Größe wurde dafür von 50 auf 90-120 Studs erhöht.
 | `CoralBarrier.lua` | Verteidigungsturm: Korallen-Barriere (Flächen-Slow/Tank) | Ø7-Stud-Sockel wie AnglerfishTower, CSG-verschweißter Korallenspitzen-Ring, Neon-türkisener Puls-Kern `SlowPulseCore` (LureOrb-Äquivalent) + `MuzzlePoint`-Attachment |
 | `ElectricEelTrap.lua` | Verteidigungsturm: Elektroaal-Falle (Ketten-Schaden) | Ø7-Stud-Sockel wie AnglerfishTower, aufgerollter Aal-Körper um Felsanker, Angriffs-Ursprung `EelHead` + `MuzzlePoint`-Attachment, sichtbarer `ChargeCore`-Part (+ `ChargeLight`) für spätere Ladezustand-Anzeige |
 
+### `buildings/` – Upgrade-Stufen 2/3 (Content Update, Upgrade-System)
+Je Basisgebäude 2 weitere Buildscripts für Stufe 2 und 3, vom Upgrade-System
+(Code-Agent) per Modell-Austausch verwendet. **Namenskonvention:** Datei-
+und Modellname sind `<BuildingId>_Stage2` / `<BuildingId>_Stage3` (die
+`BuildingId` aus `BuildingConfig.lua`, NICHT der `TemplateName` der
+Stufe-1-Vorlage - z. B. `BroodPool_Stage2`/`BroodPool_Stage3` statt
+`BroodPool_Basic_Stage2`, da das Upgrade-System laut Auftrag exakt nach
+`"<BuildingId>_Stage2"`/`"_Stage3"` sucht). Jede Stufe hat **identisches
+`Base`-Fundament** (Größe/Form/Offset) zur Stufe-1-Vorlage für Grid-
+Kompatibilität, unveränderte Pflicht-Part-/Attachment-Namen (`LureOrb`,
+`SlowPulseCore`, `EelHead`, `MuzzlePoint`, `ChargeCore` bleibt DIREKTES
+Kind des Models, `StatusLight`, `EggSlot1`-`EggSlot3`), Attribute
+`BuildingType` (unverändert) und `Stage` (`2`/`3`). Platzierung zum
+Testen: Stufe 2 bei `z = -140`, Stufe 3 bei `z = -160`, je 15 Studs
+Abstand auf der X-Achse in der Reihenfolge BroodPool/GlowBuoyStation/
+FilterPlant/AnglerfishTower/CoralBarrier/ElectricEelTrap. Stufe 2 fügt
+mehr Struktur + Glow hinzu, Stufe 3 ist die prachtvolle Finalstufe
+(CSG-verschweißte Kronen/Ringe, zusätzliche Glow-Elemente, dezente
+Partikel-Akzente mit niedriger Rate), PartCount bei Stufe 3 bewusst
+höchstens etwa doppelt so hoch wie Stufe 1.
+
+| Datei | Asset | Beschreibung |
+|---|---|---|
+| `BroodPool_Stage2.lua` | Brutbecken (Stufe 2/3) | Höherer CSG-Becken-Ring, Neon-Rand-Ring, 4 Pfeiler-Glow-Streifen, CSG-verschweißter `UpperCollarRing` |
+| `BroodPool_Stage3.lua` | Brutbecken (Stufe 3/3) | Alle Stufe-2-Elemente, zusätzlich CSG-Dornenkrone `CrownSpireCluster`, freischwebender `CrownCore` mit `PointLight`, `BubbleEmitter` (Rate 4) |
+| `GlowBuoyStation_Stage2.lua` | Lichtboje (Stufe 2/3) | Höherer Mast, 2. Strebenring `UpperCollarStrut1-4`, größerer `MainOrb`, 4 statt 3 `OrbitOrb`, `MastGlowStrip` |
+| `GlowBuoyStation_Stage3.lua` | Lichtboje (Stufe 3/3) | Noch höherer Mast, CSG-verschweißte `CrownRing` um `MainOrb` (+ `PointLight`), 6 `OrbitOrb`, `SparkleEmitter` (Rate 5) |
+| `FilterPlant_Stage2.lua` | Filteranlage (Stufe 2/3) | 3. Nebentank, 3. Rohr, `PipeGlowStripe`-Neon-Akzente, 2. `StatusLight2` (Original `StatusLight` bleibt) |
+| `FilterPlant_Stage3.lua` | Filteranlage (Stufe 3/3) | Alle Stufe-2-Elemente, `ExhaustStack` mit CSG-`StackGlowRing`, 3. `StatusLight3`, `SteamEmitter` (Rate 4) |
+| `AnglerfishTower_Stage2.lua` | Verteidigungsturm: Anglerfisch-Turm (Stufe 2/3) | 4 statt 3 Turmsegmente, 4 `SpineFin`-Akzente, größerer/hellerer `LureOrb` (+ `PointLight`) |
+| `AnglerfishTower_Stage3.lua` | Verteidigungsturm: Anglerfisch-Turm (Stufe 3/3) | Alle Stufe-2-Elemente, CSG-`CrownSpikeCluster` am Turmkopf, 4-teilige Illicium-Rute, `SparkleEmitter` (Rate 5) |
+| `CoralBarrier_Stage2.lua` | Verteidigungsturm: Korallen-Barriere (Stufe 2/3) | Größerer Sockel, CSG-`BaseGlowRing`, CSG-`InnerRing` aus kurzen Spitzen, größerer `SlowPulseCore` (+ `PointLight`) |
+| `CoralBarrier_Stage3.lua` | Verteidigungsturm: Korallen-Barriere (Stufe 3/3) | Alle Stufe-2-Elemente, CSG-`CrownSpikeCluster` über dem Kern, 2 `PulseOrbit`-Akzente, `PulseEmitter` (Rate 4) |
+| `ElectricEelTrap_Stage2.lua` | Verteidigungsturm: Elektroaal-Falle (Stufe 2/3) | 8 statt 6 Körpersegmente, CSG-`AnchorGlowRing`, größerer `ChargeCore` (+ `PointLight`) |
+| `ElectricEelTrap_Stage3.lua` | Verteidigungsturm: Elektroaal-Falle (Stufe 3/3) | 10 Körpersegmente, CSG-`CrownArc` am Felsanker-Fuß, größerer `ChargeCore`, `ChargeSparkEmitter` (Rate 4) |
+
 ### `creatures/` – Kreaturen (MVP-Set, 6 Modelle)
 | Datei | Asset | Rarity (Platzhalter) | Zone |
 |---|---|---|---|
