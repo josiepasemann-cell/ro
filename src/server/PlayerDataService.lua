@@ -62,6 +62,9 @@
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 
 local PlayerDataService = {}
 
@@ -83,6 +86,24 @@ export type HabitatPlacement = {
 	RotationY: number, -- Grad um die Y-Achse (Snap-Rotation eines künftigen Placement-Systems)
 	Level: number, -- Ausbaustufe des Gebäudes (Upgrade-Logik folgt mit dem Bausystem)
 	PlacedAt: number,
+}
+
+--- Eine entführte Kreaturen-Instanz (GDD Abschnitt 3: "Fehlgeschlagene
+--- Verteidigung = eine zufällige Kreatur wird 'entführt' ... Soft-Loss statt
+--- Hard-Loss"). WICHTIG: eine entführte Kreatur wird NICHT aus
+--- CreatureInventory gelöscht, sondern hierher VERSCHOBEN (siehe
+--- PlayerDataService.AbductRandomCreature) - sie bleibt also vollständig
+--- erhalten und wandert bei erfolgreicher Rettung 1:1 zurück ins Inventar
+--- (PlayerDataService.RescueAbductedCreature). RansomCost wird beim
+--- Entführen einmalig berechnet (RaidConfig.GetRansomCost) und mitpersistiert,
+--- damit ein späteres Ändern der RaidConfig-Preistabelle laufende
+--- Entführungen nicht rückwirkend verteuert/verbilligt.
+export type AbductedCreature = {
+	InstanceId: string,
+	CreatureId: string,
+	Rarity: string,
+	AbductedAt: number, -- os.time()
+	RansomCost: number, -- Tide Coins, zum Zeitpunkt der Entführung eingefroren
 }
 
 export type SessionLock = {
@@ -143,6 +164,18 @@ export type PlayerData = {
 		-- damit ein Serverneustart/Reconnect keinen Fortschritt kostet -
 		-- siehe BreedingIncubation-Typ oben.
 		Incubations: { BreedingIncubation },
+	},
+
+	RaidState: {
+		-- Minimale Erweiterung für das Trench-Raid-System (GDD Abschnitt 9,
+		-- Punkt 5), analog zu BreedingState oben: EIN absoluter os.time()-
+		-- Zeitstempel für den nächsten fälligen Raid (statt eines
+		-- In-Memory-Countdowns, damit Serverneustart/Reconnect keinen
+		-- Fortschritt kosten UND Offline-Raids beim nächsten Login korrekt
+		-- ausgewertet werden können - siehe RaidService), plus die Liste
+		-- aktuell entführter Kreaturen (siehe AbductedCreature-Typ oben).
+		NextRaidAt: number,
+		AbductedCreatures: { AbductedCreature },
 	},
 
 	Timestamps: {
@@ -260,6 +293,14 @@ local function createDefaultData(userId: number): PlayerData
 
 		BreedingState = {
 			Incubations = {},
+		},
+
+		RaidState = {
+			-- Neuer Spieler: erster Raid frühestens nach einem vollen
+			-- Intervall ab Erstellung (kein sofortiger Raid direkt beim
+			-- allerersten Tutorial-Einstieg).
+			NextRaidAt = now + RaidConfig.RAID_INTERVAL_SECONDS,
+			AbductedCreatures = {},
 		},
 
 		Timestamps = {
@@ -925,6 +966,104 @@ function PlayerDataService.SetLastIncomeAt(player: Player, timestamp: number): b
 	end
 	data.Timestamps.LastIncomeAt = timestamp
 	return true
+end
+
+-- // Trench-Raid-System (RaidState) -----------------------------------------
+-- Minimale Erweiterung für das Trench-Raid-System (GDD Abschnitt 9, Punkt 5):
+-- reine Timestamp-/Entführungs-Datenhaltung, analog zum Idle-Einkommen-
+-- Abschnitt oben. Wellen-/Kampf-/Offline-Auswertungslogik lebt vollständig in
+-- RaidService, NICHT hier.
+
+--- os.time(), zu dem der nächste Trench Raid für diesen Spieler fällig ist.
+--- Fällt für ungeladene Daten auf `os.time() + RaidConfig.RAID_INTERVAL_SECONDS`
+--- zurück (kein sofort fälliger Raid als Fehlerzustand).
+function PlayerDataService.GetNextRaidAt(player: Player): number
+	local data = dataCache[player.UserId]
+	if data then
+		return data.RaidState.NextRaidAt
+	end
+	return os.time() + RaidConfig.RAID_INTERVAL_SECONDS
+end
+
+--- Setzt den Zeitstempel des nächsten fälligen Raids. Gibt false zurück,
+--- falls die Daten des Spielers nicht geladen sind.
+function PlayerDataService.SetNextRaidAt(player: Player, timestamp: number): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(timestamp) ~= "number" then
+		return false
+	end
+	data.RaidState.NextRaidAt = timestamp
+	return true
+end
+
+--- Liefert alle aktuell entführten Kreaturen eines Spielers (leere Liste,
+--- falls nicht geladen).
+function PlayerDataService.GetAbductedCreatures(player: Player): { AbductedCreature }
+	local data = dataCache[player.UserId]
+	return data and data.RaidState.AbductedCreatures or {}
+end
+
+--- Entführt EINE zufällige Kreatur aus dem Inventar des Spielers (verlorener
+--- Trench Raid, siehe RaidService.finishRaid): VERSCHIEBT sie (löscht NICHT!)
+--- von CreatureInventory nach RaidState.AbductedCreatures. Das Lösegeld wird
+--- HIER anhand der Rarity der tatsächlich getroffenen Kreatur berechnet
+--- (RaidConfig.GetRansomCost) und dauerhaft eingefroren, damit ein späteres
+--- Ändern der RaidConfig-Preistabelle laufende Entführungen nicht rückwirkend
+--- verteuert/verbilligt. Gibt die neue AbductedCreature-Instanz zurück, oder
+--- nil, falls die Daten nicht geladen sind ODER das Inventar leer ist (kein
+--- Ziel zum Entführen vorhanden - RaidService behandelt das als "Niederlage
+--- ohne Entführung", kein Fehlerzustand).
+function PlayerDataService.AbductRandomCreature(player: Player): AbductedCreature?
+	local data = dataCache[player.UserId]
+	if not data then
+		return nil
+	end
+
+	local inventory = data.CreatureInventory
+	if #inventory == 0 then
+		return nil
+	end
+
+	local index = rng:NextInteger(1, #inventory)
+	local creature = table.remove(inventory, index) :: CreatureInstance
+
+	local abducted: AbductedCreature = {
+		InstanceId = creature.InstanceId,
+		CreatureId = creature.CreatureId,
+		Rarity = creature.Rarity,
+		AbductedAt = os.time(),
+		RansomCost = RaidConfig.GetRansomCost(creature.Rarity),
+	}
+
+	table.insert(data.RaidState.AbductedCreatures, abducted)
+	return abducted
+end
+
+--- Holt eine entführte Kreatur (`instanceId`) zurück ins CreatureInventory
+--- (erfolgreiche Rettung gegen Lösegeld - die Lösegeld-Abbuchung selbst
+--- übernimmt RaidService VOR diesem Aufruf über AddCurrency). Gibt true bei
+--- Erfolg zurück, false falls die Daten nicht geladen sind oder keine
+--- entführte Kreatur mit dieser InstanceId existiert.
+function PlayerDataService.RescueAbductedCreature(player: Player, instanceId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+
+	local abductedList = data.RaidState.AbductedCreatures
+	for index, abducted in ipairs(abductedList) do
+		if abducted.InstanceId == instanceId then
+			table.remove(abductedList, index)
+			table.insert(data.CreatureInventory, {
+				InstanceId = abducted.InstanceId,
+				CreatureId = abducted.CreatureId,
+				Rarity = abducted.Rarity,
+				AcquiredAt = abducted.AbductedAt, -- ursprüngliches Erwerbsdatum ist nicht mehr rekonstruierbar; Entführungszeitpunkt als plausibler Ersatz
+			})
+			return true
+		end
+	end
+	return false
 end
 
 return PlayerDataService

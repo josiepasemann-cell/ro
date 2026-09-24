@@ -23,10 +23,15 @@
 		bzw. sobald es zum ersten Mal requiret wird:
 			1) Sucht die vom 3D-Artist-Agent einmalig in Studio ausgeführten
 			   Buildscript-Ergebnisse unter Workspace.Assets.Terrain /
-			   Workspace.Assets.Buildings (siehe README, Abschnitt "Wie man
-			   die Skripte in Roblox Studio ausführt").
+			   Workspace.Assets.Buildings / Workspace.Assets.Enemies (siehe
+			   README, Abschnitt "Wie man die Skripte in Roblox Studio
+			   ausführt"). Enemies wurde für das Trench-Raid-System
+			   (RaidService) ergänzt - identisches Prinzip wie Terrain/
+			   Buildings, siehe RaidConfig-Kopfkommentar zur bewussten
+			   MVP-Vereinfachung "ein Gegnermodell (ShadowKraken) für alle
+			   Gegnertypen, unterschieden über RaidConfig-Daten".
 			2) Klont jedes gefundene Modell nach
-			   ReplicatedStorage.AssetTemplates.<Terrain|Buildings>.<Name>
+			   ReplicatedStorage.AssetTemplates.<Terrain|Buildings|Enemies>.<Name>
 			   (idempotent - ein vorhandenes Template wird ersetzt, falls
 			   der Artist ein Buildscript erneut/aktualisiert ausgeführt
 			   hat).
@@ -65,6 +70,10 @@ local Workspace = game:GetService("Workspace")
 
 local TERRAIN_TEMPLATE_NAMES = { "HabitatPlotBase" }
 local BUILDING_TEMPLATE_NAMES = { "BroodPool_Basic", "GlowBuoyStation", "FilterPlant", "AnglerfishTower" }
+-- Trench-Raid-System (RaidService): aktuell nur EIN Gegnermodell (siehe
+-- RaidConfig-Kopfkommentar zur bewussten MVP-Vereinfachung), das für alle
+-- Gegnertypen + Boss wiederverwendet wird.
+local ENEMY_TEMPLATE_NAMES = { "ShadowKraken" }
 
 local function getOrCreateFolder(parent: Instance, name: string): Folder
 	local folder = parent:FindFirstChild(name)
@@ -82,10 +91,12 @@ end
 local templatesRoot = getOrCreateFolder(ReplicatedStorage, "AssetTemplates")
 local terrainTemplatesFolder = getOrCreateFolder(templatesRoot, "Terrain")
 local buildingTemplatesFolder = getOrCreateFolder(templatesRoot, "Buildings")
+local enemyTemplatesFolder = getOrCreateFolder(templatesRoot, "Enemies")
 
 local assetsFolder = Workspace:FindFirstChild("Assets")
 local workspaceTerrainFolder: Instance? = assetsFolder and assetsFolder:FindFirstChild("Terrain")
 local workspaceBuildingsFolder: Instance? = assetsFolder and assetsFolder:FindFirstChild("Buildings")
+local workspaceEnemiesFolder: Instance? = assetsFolder and assetsFolder:FindFirstChild("Enemies")
 
 --- Klont `name` aus `sourceFolder` (Workspace-Buildscript-Ergebnis) nach
 --- `destFolder` (ReplicatedStorage-Template) und entfernt danach das
@@ -129,6 +140,10 @@ for _, name in ipairs(BUILDING_TEMPLATE_NAMES) do
 	promoteToTemplate(workspaceBuildingsFolder, name, buildingTemplatesFolder)
 end
 
+for _, name in ipairs(ENEMY_TEMPLATE_NAMES) do
+	promoteToTemplate(workspaceEnemiesFolder, name, enemyTemplatesFolder)
+end
+
 local AssetTemplateSetup = {}
 
 --- Liefert die Plot-Basis-Vorlage, oder nil, falls das HabitatPlotBase-
@@ -145,6 +160,16 @@ end
 --- (siehe BuildingConfig.TemplateName je Gebäude).
 function AssetTemplateSetup.GetBuildingTemplate(templateName: string): Model?
 	local model = buildingTemplatesFolder:FindFirstChild(templateName)
+	if model and model:IsA("Model") then
+		return model
+	end
+	return nil
+end
+
+--- Liefert die Raid-Gegner-Vorlage für `templateName` (siehe
+--- RaidConfig.EnemyDefinition.TemplateName, aktuell immer "ShadowKraken").
+function AssetTemplateSetup.GetEnemyTemplate(templateName: string): Model?
+	local model = enemyTemplatesFolder:FindFirstChild(templateName)
 	if model and model:IsA("Model") then
 		return model
 	end
