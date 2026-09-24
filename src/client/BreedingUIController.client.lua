@@ -220,6 +220,66 @@ local function closePanel()
 	detailPanel:Close()
 end
 
+--- Aktualisiert die Stufen-/Upgrade-Sektion (siehe upgradeInfoLabel/
+--- breedingUpgradeButton oben) für das aktuell geöffnete Brutbecken -
+--- unabhängig vom Zucht-Zustand (Empty/Incubating/Ready), daher eine
+--- eigene Funktion statt Teil des state-spezifischen if/elseif in
+--- refreshPanel unten.
+local function refreshUpgradeSection()
+	if not activePlacementId then
+		return
+	end
+
+	local definition = BuildingConfig.Get("BroodPool")
+	if not definition then
+		return
+	end
+
+	local stage = placementLevelCache[activePlacementId] or 1
+	local status = statusCache[activePlacementId]
+	local incubating = status ~= nil and status.State ~= "Empty"
+
+	if stage >= definition.MaxStage then
+		upgradeInfoLabel.Text = ("Stage %d/%d (Master) — maximum stage reached."):format(stage, definition.MaxStage)
+		breedingUpgradeButton:SetText("Max Stage")
+		breedingUpgradeButton:SetDisabled(true)
+		return
+	end
+
+	local nextStage = stage + 1
+	local cost = definition.UpgradeCosts[nextStage]
+	local nextTier = BreedingConfig.GetTier(nextStage)
+
+	local costText = "—"
+	if cost then
+		if cost.AbyssalShards and cost.AbyssalShards > 0 then
+			costText = ("%d Tide Coins + %d Abyssal Shards"):format(cost.TideCoins, cost.AbyssalShards)
+		else
+			costText = ("%d Tide Coins"):format(cost.TideCoins)
+		end
+	end
+
+	local suffix = if incubating then "\n(finish the current incubation first)" else ""
+	upgradeInfoLabel.Text = ("Stage %d/%d — Next: %s (requires Level %d)\nCost: %s%s"):format(
+		stage,
+		definition.MaxStage,
+		nextTier.DisplayName,
+		cost and cost.LevelRequirement or 0,
+		costText,
+		suffix
+	)
+	breedingUpgradeButton:SetText(if cost then ("Upgrade (%d 🌊)"):format(cost.TideCoins) else "Upgrade")
+	breedingUpgradeButton:SetDisabled(incubating)
+end
+
+breedingUpgradeButton.Clicked:Connect(function()
+	if not activePlacementId then
+		return
+	end
+	breedingUpgradeButton:SetDisabled(true)
+	HabitatRemotes.RequestUpgradeBuilding:FireServer(activePlacementId)
+end)
+
 -- // Panel-Inhalt anhand des aktuellen Status aufbauen ------------------------
 
 local function refreshPanel()
@@ -240,7 +300,10 @@ local function refreshPanel()
 	end
 
 	if status.State == "Empty" then
-		local tier = BreedingConfig.GetTier(1) -- MVP: nur BroodPool_Basic (Level 1) baubar
+		-- Gebäude-Upgrade-System: die tatsächliche, aktuelle Ausbaustufe
+		-- dieses Brutbeckens bestimmt jetzt die Zucht-Stufe (statt fest 1) -
+		-- siehe placementLevelCache/ensureBroodPoolInteraction unten.
+		local tier = BreedingConfig.GetTier(placementLevelCache[activePlacementId] or 1)
 		infoLabel.Text = ("%s\nFütterungskosten: %d Tide Coins\nInkubationsdauer: ~%d Min.\nChancen: Gewöhnlich %.0f%% · Selten %.0f%% · Legendär %.1f%%"):format(
 			tier.DisplayName,
 			tier.FeedCostTideCoins,
@@ -270,6 +333,8 @@ local function refreshPanel()
 		actionButton:SetDisabled(false)
 		actionButton.Instance.Visible = true
 	end
+
+	refreshUpgradeSection()
 end
 
 local function openPanelFor(placementId: string)
@@ -458,6 +523,24 @@ local function ensureBroodPoolInteraction(model: Model)
 				return
 			end
 			openPanelFor(placementId)
+		end)
+
+		-- Gebäude-Upgrade-System: Ausbaustufe initial vom Modell-Attribut
+		-- übernehmen + auf künftige Änderungen reagieren (ein Upgrade tauscht
+		-- entweder DIESES Modell-Attribut live aus - Fail-Soft-Akzent-Pfad,
+		-- siehe PlacementService.applyStageToModel - oder ersetzt das Modell
+		-- komplett, was hier über buildingsFolder.ChildAdded erneut
+		-- ensureBroodPoolInteraction für die NEUE Instanz auslöst). An den
+		-- ClickDetector-Erstellungs-Guard gekoppelt, damit diese Verbindung
+		-- pro Modell-Instanz nur einmal entsteht.
+		local level = model:GetAttribute("Level")
+		placementLevelCache[placementId] = if type(level) == "number" then level else 1
+		model:GetAttributeChangedSignal("Level"):Connect(function()
+			local newLevel = model:GetAttribute("Level")
+			placementLevelCache[placementId] = if type(newLevel) == "number" then newLevel else 1
+			if activePlacementId == placementId then
+				refreshUpgradeSection()
+			end
 		end)
 	end
 
@@ -650,6 +733,31 @@ BreedingRemotes.InstantCompleteBreedingResult.OnClientEvent:Connect(function(res
 		infoLabel.Text = if result.Success
 			then "Zucht sofort abgeschlossen!"
 			else "Sofort-Abschluss aktuell nicht verfügbar (folgt später)."
+	end
+end)
+
+-- Gebäude-Upgrade-System: hält placementLevelCache aktuell und aktualisiert
+-- die Stufen-Sektion des offenen Panels, falls es gerade dieses Brutbecken
+-- zeigt. Erfolgs-Toast/BigMoment-FX kommen bereits generisch für JEDES
+-- Gebäude aus PlacementPreviewController.client.lua (Auftrag Punkt 4) -
+-- hier bewusst KEIN zweiter Toast, um Doppel-Feedback bei einem BroodPool-
+-- Upgrade zu vermeiden. `statusCache[result.PlacementId] == nil` filtert
+-- zuverlässig Upgrade-Ergebnisse anderer Gebäudetypen heraus (dieses
+-- Skript kennt nur BroodPool-PlacementIds).
+HabitatRemotes.UpgradeBuildingResult.OnClientEvent:Connect(function(result)
+	if not result or type(result.PlacementId) ~= "string" then
+		return
+	end
+	if not statusCache[result.PlacementId] then
+		return
+	end
+
+	if result.Success and type(result.NewStage) == "number" then
+		placementLevelCache[result.PlacementId] = result.NewStage
+	end
+
+	if activePlacementId == result.PlacementId then
+		refreshUpgradeSection()
 	end
 end)
 
