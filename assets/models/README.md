@@ -79,6 +79,35 @@ Flächen. Chunk-Größe wurde dafür von 50 auf 90-120 Studs erhöht.
 |---|---|---|
 | `ShadowKraken.lua` | Schattenkrake (Platzhalter-Raid-Gegner) | Größerer, bedrohlicher Kraken mit 8 Tentakeln, rote Glow-Augen, `EnemyTier`-Attribut |
 
+### `decorations/` – Event-Kosmetik-Dekorationen (Content Update 1, Abschnitt 1.3/7a)
+Rein kosmetische, auf einem Spieler-Baufeld platzierbare Deko-Objekte, je
+Event-Shop kaufbar. `PrimaryPart` = `"Base"`, Footprint klein genug für EIN
+`BuildField` (siehe `HabitatPlotBase.lua`, `FIELD_MARKER_DIAMETER = 15`),
+Attribute `DecorationId` und `Event`. Abgelegt unter
+`Workspace.Assets.Decorations`.
+
+| Datei | Asset | `DecorationId` | Event |
+|---|---|---|---|
+| `VenomDrip.lua` | Venom Drip (tropfende Giftkristallspitze) | `VenomDrip` | ToxicTide |
+| `JackOCoral.lua` | Jack-o-Coral (geschnitzter Glow-Korallenkopf, CSG-Union) | `JackOCoral` | SpookyTide |
+| `CoralGardenSet.lua` | Coral Garden Set (3 Mini-Cluster `Cluster1`-`Cluster3` auf 1 Sockel) | `CoralGardenSet` | BioluminescentBloom |
+| `IceSpire.lua` | Ice Spire (5-teiliges, transluzentes Eiskristallcluster) | `IceSpire` | FrozenCurrent |
+| `MagmaVent.lua` | Magma Vent (Glow-Riss + aktiver Ember-`ParticleEmitter`) | `MagmaVent` | VolcanicVent |
+| `TreasurePile.lua` | Treasure Pile (Münzhaufen + halboffene Truhe) | `TreasurePile` | TreasureTide |
+
+### `pickups/` – Aufhebbare Welt-Pickups
+`PrimaryPart` = `"Body"`, `Attachment "PulseAttachment"` an `Body`,
+`model:SetAttribute("PickupKind", ...)`. `PickupSpawner.lua` klont die
+Vorlagen aus `ReplicatedStorage.AssetTemplates.Pickups` (siehe
+Kopfkommentar in `GlowSporePickup.lua`). Abgelegt unter
+`Workspace.Assets.Pickups`.
+
+| Datei | Asset | `PickupKind` | Event | Besonderheit |
+|---|---|---|---|---|
+| `GlowSporePickup.lua` | Glow Spore (Basis-Ressource) | `GlowSpore` | – | Kugel-Body + Glashülle + 3 `GlimmerSpeck`-Anker |
+| `SunkenChest.lua` | Sunken Chest (Gold-Recolor von GlowSporePickup) | `SunkenChest` | TreasureTide | Attribut `Event = "TreasureTide"`, Truhen-Form statt Kugel |
+| `FrozenSpore.lua` | Frozen Spore (3-Zustands-Auftau-Pickup) | `FrozenSpore` | FrozenCurrent | 3 Zustands-Modelle `IcyShellState`/`CrackedState`/`OpenState` unter dem Model, per Transparency togglebar; Reihenfolge in Attribut `ThawStates = "IcyShellState,CrackedState,OpenState"` |
+
 ### `gacha/` – Mystery Egg Gacha (Erweiterungskonzept 1.7, Compliance-konform)
 Reine Geometrie-/Effekt-Rig-Assets für das im GDD/Erweiterungskonzept
 beschriebene Gacha-System. **Enthalten keinerlei Zufalls-Roll-, Pity- oder
