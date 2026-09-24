@@ -60,7 +60,8 @@ local function pickRandomTemplates(count: number): { QuestConfig.QuestTemplate }
 	local n = math.min(count, #pool)
 	for _ = 1, n do
 		local index = rng:NextInteger(1, #pool)
-		table.insert(picked, table.remove(pool, index))
+		local template = table.remove(pool, index) :: QuestConfig.QuestTemplate
+		table.insert(picked, template)
 	end
 	return picked
 end

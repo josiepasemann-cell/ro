@@ -136,6 +136,19 @@ function DailyRewardService.RequestClaim(player: Player): { [string]: any }
 		return { Success = false, Reason = "AlreadyClaimedToday" }
 	end
 
+	-- Sofort SYNCHRON (vor jedem potenziell nachgebenden/"yield"-fähigen
+	-- Aufruf, z. B. dem Gamepass-Besitz-Check unten, der bei einem
+	-- Cache-Miss `MarketplaceService:UserOwnsGamePassAsync` aufruft und
+	-- damit den aufrufenden Coroutine yielden kann) als abgeholt markieren -
+	-- verhindert einen Doppel-Claim, falls der Client RequestClaimDailyReward
+	-- (RemoteEvent, kein Ack) während dieses Yields ein zweites Mal feuert:
+	-- der zweite Aufruf sieht dann bereits LastClaimedDate == today.
+	local today = PlayerDataService.GetUtcDateString()
+	local marked = PlayerDataService.SetDailyRewardClaimed(player, today, pendingDay)
+	if not marked then
+		return { Success = false, Reason = "DataNotLoaded" }
+	end
+
 	local reward = DailyRewardConfig.GetReward(pendingDay)
 
 	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
@@ -144,9 +157,6 @@ function DailyRewardService.RequestClaim(player: Player): { [string]: any }
 	if vipActive then
 		tideCoinsAmount = math.floor(tideCoinsAmount * DailyRewardConfig.VIP_BONUS_TIDE_COINS_MULTIPLIER + 0.5)
 	end
-
-	local today = PlayerDataService.GetUtcDateString()
-	PlayerDataService.SetDailyRewardClaimed(player, today, pendingDay)
 
 	local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", tideCoinsAmount)
 	if reward.AbyssalShards > 0 then

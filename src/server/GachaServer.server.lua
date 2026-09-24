@@ -22,7 +22,6 @@
 		serverseitig bestimmt.
 ]]
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GachaService = require(script.Parent:WaitForChild("GachaService"))
