@@ -50,6 +50,30 @@ Flächen. Chunk-Größe wurde dafür von 50 auf 90-120 Studs erhöht.
 | `BioluminescentEel.lua` | Biolumineszenz-Aal | Epic | TwilightZone |
 | `CrystalKraken.lua` | Kristallkrake | Legendary | TwilightZone |
 
+### `creatures/` – Event-exklusive Kreaturen (Content Update 1, Abschnitt 2.3)
+| Datei | Asset | Rarity (Platzhalter) | Event |
+|---|---|---|---|
+| `ToxinPuffer.lua` | Toxin Puffer | Rare | ToxicTide |
+| `PhantomJelly.lua` | Phantom Jelly | Epic | SpookyTide |
+| `BloomMoth.lua` | Bloom Moth | Uncommon | BioluminescentBloom |
+| `FrostAnglerPup.lua` | Frost Angler Pup | Rare | FrozenCurrent |
+| `EmberSlug.lua` | Ember Slug | Uncommon | VolcanicVent |
+| `VentDrake.lua` | Vent Drake | Legendary | VolcanicVent |
+| `GoldGuppy.lua` | Gold Guppy | Rare | TreasureTide |
+| `TreasureTurtle.lua` | Treasure Turtle | Epic | TreasureTide |
+
+### `creatures/` – Zone-3/4-Kreaturen (Content Update 1, 8 Modelle)
+| Datei | Asset | Rarity (Platzhalter) | Zone |
+|---|---|---|---|
+| `LanternWraith.lua` | Laternengeist | Rare | MidnightZone |
+| `ObsidianCrab.lua` | Obsidiankrabbe | Uncommon | MidnightZone |
+| `MagmaSquid.lua` | Magmakalmar | Epic | MidnightZone |
+| `VoidHammerhead.lua` | Leerenhammerhai | Legendary | MidnightZone |
+| `TrenchWisp.lua` | Grabenwisp | Uncommon | HadalDepths |
+| `AbyssalIsopod.lua` | Abgrund-Assel | Rare | HadalDepths |
+| `GhostFinTuna.lua` | Geisterflossen-Thun | Epic | HadalDepths |
+| `CrystalLeviathan.lua` | Kristall-Leviathan | Mythic | HadalDepths |
+
 ### `enemies/` – Raid-Gegner
 | Datei | Asset | Beschreibung |
 |---|---|---|
