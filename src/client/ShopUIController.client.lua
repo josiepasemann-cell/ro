@@ -413,7 +413,7 @@ local function requestCatalog()
 			currentCatalog = result :: ShopCatalog
 			refreshAllTabsFromCatalog()
 		else
-			warn("[ShopUIController] Konnte Shop-Katalog nicht laden:", result)
+			warn("[ShopUIController] Could not load shop catalog:", result)
 		end
 	end)
 end
@@ -444,11 +444,11 @@ local function requestCosmeticPurchase(itemId: string, itemName: string)
 			return ShopRemotes.RequestPurchaseCosmetic:InvokeServer(itemId)
 		end)
 		if not ok or type(result) ~= "table" then
-			Toast.Show({ Text = "Kauf fehlgeschlagen. Bitte erneut versuchen.", Type = "Error", Duration = 3 })
+			Toast.Show({ Text = "Purchase failed. Please try again.", Type = "Error", Duration = 3 })
 			return
 		end
 		if result.Success then
-			celebratePurchase(itemName .. " gekauft!", Theme.Neon.ToxicGreen)
+			celebratePurchase(itemName .. " purchased!", Theme.Neon.ToxicGreen)
 			requestCatalog()
 		else
 			Toast.Show({ Text = friendlyReason(result.Reason), Type = "Warning", Duration = 3.5 })
@@ -462,11 +462,11 @@ local function requestCosmeticEquip(itemId: string, itemName: string)
 			return ShopRemotes.RequestEquipCosmetic:InvokeServer(itemId)
 		end)
 		if not ok or type(result) ~= "table" then
-			Toast.Show({ Text = "Ausrüsten fehlgeschlagen. Bitte erneut versuchen.", Type = "Error", Duration = 3 })
+			Toast.Show({ Text = "Equip failed. Please try again.", Type = "Error", Duration = 3 })
 			return
 		end
 		if result.Success then
-			Toast.Show({ Text = itemName .. " ausgerüstet!", Type = "Success", Duration = 2.5 })
+			Toast.Show({ Text = itemName .. " equipped!", Type = "Success", Duration = 2.5 })
 			requestCatalog()
 		else
 			Toast.Show({ Text = friendlyReason(result.Reason), Type = "Warning", Duration = 3.5 })
@@ -482,9 +482,9 @@ local function buildGamepassCard(parent: Instance, layoutOrder: number, row: { [
 	makeNeonIcon(card, glyph, Theme.Neon.Cyan, Theme.Neon.Violet)
 
 	if row.Owned then
-		makeBanner(card, "Besitzt", Theme.Neon.ToxicGreen)
+		makeBanner(card, "Owned", Theme.Neon.ToxicGreen)
 	elseif POPULAR_KEYS[row.Key] then
-		makeBanner(card, "Beliebt", Theme.Neon.Orange)
+		makeBanner(card, "Popular", Theme.Neon.Orange)
 	end
 
 	makeLabel({
@@ -519,7 +519,7 @@ local function buildGamepassCard(parent: Instance, layoutOrder: number, row: { [
 		MaxSize = 20,
 	})
 
-	local buyLabel = if row.Owned then "Besitzt" elseif not row.Purchasable then "Bald verfügbar" else "Kaufen"
+	local buyLabel = if row.Owned then "Owned" elseif not row.Purchasable then "Coming soon" else "Buy"
 	local buyButton = Button.new({
 		Parent = card,
 		Text = buyLabel,
@@ -538,7 +538,7 @@ local function buildGamepassCard(parent: Instance, layoutOrder: number, row: { [
 	if RunService:IsStudio() then
 		studioButton = Button.new({
 			Parent = card,
-			Text = "Studio: Testkauf",
+			Text = "Studio: Test Purchase",
 			Variant = "Ghost",
 			Disabled = row.Owned,
 			Size = UDim2.new(1, -16, 0, 30),
@@ -569,9 +569,9 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 	makeNeonIcon(card, glyph, Theme.Neon.Magenta, Theme.Neon.Violet)
 
 	if BEST_VALUE_KEYS[row.Key] then
-		makeBanner(card, "Bester Wert", Theme.Neon.ToxicGreen)
+		makeBanner(card, "Best Value", Theme.Neon.ToxicGreen)
 	elseif POPULAR_KEYS[row.Key] then
-		makeBanner(card, "Beliebt", Theme.Neon.Orange)
+		makeBanner(card, "Popular", Theme.Neon.Orange)
 	end
 
 	makeLabel({
@@ -618,7 +618,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 	if row.DisabledReason and row.DisabledReason ~= "" then
 		noteText = friendlyReason(row.DisabledReason)
 	elseif row.RequiresTarget then
-		noteText = "Wirkt auf dein zuletzt ausgewähltes Ziel (z. B. entführte Kreatur/Brutbecken)."
+		noteText = "Affects your last selected target (e.g. abducted creature/Brood Pool)."
 	end
 	local disabledNoteHeight = 0
 	if noteText then
@@ -640,7 +640,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 		buttonY = 168
 	end
 
-	local buyLabel = if not row.Purchasable then "Bald verfügbar" else "Kaufen"
+	local buyLabel = if not row.Purchasable then "Coming soon" else "Buy"
 	local buyButton = Button.new({
 		Parent = card,
 		Text = buyLabel,
@@ -662,7 +662,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 	if showOddsButton then
 		local oddsButton = Button.new({
 			Parent = card,
-			Text = "Chancen ansehen",
+			Text = "View Odds",
 			Variant = "Secondary",
 			Size = UDim2.new(1, -16, 0, 30),
 			LayoutOrder = nextOrder,
@@ -679,7 +679,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 	if RunService:IsStudio() then
 		local studioButton = Button.new({
 			Parent = card,
-			Text = "Studio: Testkauf",
+			Text = "Studio: Test Purchase",
 			Variant = "Ghost",
 			Size = UDim2.new(1, -16, 0, 28),
 			LayoutOrder = nextOrder,
@@ -712,9 +712,9 @@ local function buildCosmeticCard(parent: Instance, layoutOrder: number, row: { [
 	makeNeonIcon(card, glyph, swatchColor, Theme.Neon.Violet)
 
 	if row.Equipped then
-		makeBanner(card, "Ausgerüstet", Theme.Neon.Cyan)
+		makeBanner(card, "Equipped", Theme.Neon.Cyan)
 	elseif row.Owned then
-		makeBanner(card, "Besitzt", Theme.Neon.ToxicGreen)
+		makeBanner(card, "Owned", Theme.Neon.ToxicGreen)
 	end
 
 	makeLabel({
@@ -754,7 +754,7 @@ local function buildCosmeticCard(parent: Instance, layoutOrder: number, row: { [
 	if row.Equipped then
 		primaryButton = Button.new({
 			Parent = card,
-			Text = "Ausgerüstet",
+			Text = "Equipped",
 			Variant = "Ghost",
 			Disabled = true,
 			Size = UDim2.new(1, -16, 0, 40),
@@ -763,7 +763,7 @@ local function buildCosmeticCard(parent: Instance, layoutOrder: number, row: { [
 	elseif row.Owned then
 		primaryButton = Button.new({
 			Parent = card,
-			Text = "Ausrüsten",
+			Text = "Equip",
 			Variant = "Success",
 			Important = true,
 			Size = UDim2.new(1, -16, 0, 40),
@@ -775,7 +775,7 @@ local function buildCosmeticCard(parent: Instance, layoutOrder: number, row: { [
 	else
 		primaryButton = Button.new({
 			Parent = card,
-			Text = "Kaufen",
+			Text = "Buy",
 			Variant = "Primary",
 			Important = true,
 			Size = UDim2.new(1, -16, 0, 40),
@@ -805,7 +805,7 @@ local function ensureGrids()
 		local offersContent = tabsHandle:GetContentFrame("Offers")
 		offerCountdownLabel = makeLabel({
 			Parent = offersContent,
-			Text = "Nächste Rotation in --:--:--",
+			Text = "Next rotation in --:--:--",
 			Size = UDim2.new(1, 0, 0, 26),
 			Font = Theme.Font.BodyBold,
 			Color = Theme.Neon.Cyan,
@@ -850,7 +850,7 @@ local function rebuildOffersTab(catalog: ShopCatalog)
 	if order == 1 then
 		local emptyLabel = makeLabel({
 			Parent = offerGrid.Frame,
-			Text = "Heute keine Angebote – schau morgen wieder vorbei!",
+			Text = "No offers today – check back tomorrow!",
 			Size = UDim2.new(1, 0, 0, 30),
 			Color = Theme.Text.Muted,
 			MinSize = 12,
