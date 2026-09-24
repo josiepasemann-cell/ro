@@ -165,8 +165,9 @@ local function tagModel(model: Model, placementId: string, buildingId: string, f
 	-- "Level" ergänzt für das Zucht-/Ei-System (BreedingUIController liest
 	-- dies, um clientseitig ohne Extra-Roundtrip die richtige
 	-- BreedingConfig-Stufe anzuzeigen, z. B. Fütterungskosten VOR dem
-	-- Start). Ein künftiges Gebäude-Upgrade-System würde diesen Wert bei
-	-- einem Upgrade einfach mit aktualisieren - Default 1, siehe
+	-- Start) UND für das Gebäude-Upgrade-System (siehe
+	-- docs/building-upgrades.md) - applyStageToModel aktualisiert diesen
+	-- Wert bei jedem erfolgreichen Upgrade mit. Default 1, siehe
 	-- PlayerDataService.AddHabitatPlacement.
 	model:SetAttribute("Level", level or 1)
 end
