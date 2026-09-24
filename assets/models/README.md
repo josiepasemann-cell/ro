@@ -3,6 +3,11 @@
 Diese Buildscripts erzeugen die 3D-Geometrie für den MVP-Scope (Sonnenzone +
 Dämmerzone) von **Abyssara – Deep Tide Tycoon**, gemäß Abschnitt 8 und
 Abschnitt 10 des Game Design Documents (`/home/user/ro/docs/game-design-doc.md`).
+Die Terrain-Chunks für alle 4 Zonen (inkl. der für Phase 2/3 vorgesehenen
+Mitternachtszone und Hadal-Tiefe, siehe `/home/user/ro/docs/expansion-concepts.md`
+Abschnitt 1.1 / 2.8) wurden deutlich ausgebaut – Details, Recherchequellen und
+die Design-Prinzipien dahinter stehen in
+`/home/user/ro/docs/terrain-design-notes.md`.
 
 Es handelt sich ausschließlich um **reine Geometrie-Erzeugung** (Luau,
 `Instance.new`/`CFrame`/CSG-Union-Operationen). Es ist **keine Gameplay-Logik**
@@ -12,11 +17,20 @@ diese kommt bewusst erst in einem späteren Schritt durch den Code-Agenten.
 ## Asset-Übersicht
 
 ### `terrain/` – Umgebung
+Alle 4 Zonen-Chunks folgen seit dem Terrain-Ausbau (siehe
+`/home/user/ro/docs/terrain-design-notes.md`) einem wiederkehrenden
+Kompositionsmuster: eine freigehaltene Sichtachse/Gasse von der Hub-seitigen
+Kante zu einer markanten Landmark am gegenüberliegenden Zonen-Ende, mit
+Höhenvariation und CSG (`UnionAsync`/`SubtractAsync`) statt reiner flacher
+Flächen. Chunk-Größe wurde dafür von 50 auf 90-120 Studs erhöht.
+
 | Datei | Asset | Beschreibung |
 |---|---|---|
 | `HabitatPlotBase.lua` | Modulare Habitat-Plot-Basis | Sechseckige Plattform (~60 Studs flat-to-flat), CSG-Sechseck, 6 sichtbar markierte Baufelder (Neon-Sektorlinien + Slot-Marker) |
-| `SunZoneTerrainChunk.lua` | Meeresboden-Terrain Sonnenzone | Heller, sandiger Low-Poly-Boden mit Dünen, hellen Steinen, Korallen-Akzenten |
-| `TwilightZoneTerrainChunk.lua` | Meeresboden-Terrain Dämmerzone | Dunkler, felsiger Low-Poly-Boden mit Gesteinsbrocken und Kelp-Bündeln (Glow-Spitzen) |
+| `SunZoneTerrainChunk.lua` | Meeresboden-Terrain Sonnenzone | Heller, sandiger Low-Poly-Boden (100 Studs) mit CSG-Mulde, 2 Dünenhügeln, Felsbogen-Landmark "Sonnentor" (CSG-Union) und gestrandetem Schiffswrack als zweitem Landmark |
+| `TwilightZoneTerrainChunk.lua` | Meeresboden-Terrain Dämmerzone | Dunkler, felsiger Low-Poly-Boden (100 Studs) mit CSG-Felsspalte, 2 CSG-Felsnadeln und einem prozedural gebogenen Kelp-Torbogen-Landmark |
+| `MidnightZoneTerrainChunk.lua` | Höhlen-/Lavaspalten-Terrain Mitternachtszone (neu, Phase 2) | Dunkles Basalt-Höhlensystem (110 Studs): enge Einstiegspassage -> offene Kaverne mit Stalagmiten/Stalaktiten und leuchtenden Lavaspalten/-pools (Neon + PointLight) -> Arena-Eingang-Landmark "Der Tiefenfürst" (CSG-Höhlentor + Lava-Felsnadeln) |
+| `HadalDepthsTerrainChunk.lua` | Abgrund-/Kristall-Terrain Hadal-Tiefe (neu, Phase 3) | Begehbares Plateau (120 Studs Footprint, 78 Studs Tiefe) endet an einer schroffen, bodenlosen Abgrund-Kante; Kristallfelder (WedgePart-Splitter, Neon-Quartett) mit Skalen-Crescendo zu einem monumentalen CSG-Kristallspitzen-Landmark und freischwebender Aussichtsplattform |
 
 ### `buildings/` – Gebäude (je Basisstufe)
 | Datei | Asset | Beschreibung |
@@ -123,7 +137,8 @@ Jedes Skript hat oben einen Konfigurationsblock (`ORIGIN`, ggf. `RARITY`,
 - **Weitere Attribute:**
   - Gebäude: `BuildingType` (String) und `Stage` (Number, aktuell immer `1`
     für die Basisstufe) als Platzhalter für spätere Upgrade-Logik.
-  - Terrain-Chunks: `Zone` (`"SunZone"` / `"TwilightZone"`).
+  - Terrain-Chunks: `Zone` (`"SunZone"` / `"TwilightZone"` / `"MidnightZone"` /
+    `"HadalDepths"`).
   - Raid-Gegner: `EnemyTier` (Platzhalter, aktuell `"Elite"`) und `Zone`.
 
 - **Sonstige benannte Hooks:**
@@ -194,7 +209,12 @@ Jedes Skript hat oben einen Konfigurationsblock (`ORIGIN`, ggf. `RARITY`,
   für Gebäude/Terrain, `Sand` für die Sonnenzone.
 - CSG (`UnionAsync`/`SubtractAsync`/`IntersectAsync`) wird gezielt für
   einfache Formen eingesetzt (z. B. Sechseck-Plattform, Becken-Ring,
-  Rochenkörper), um PartCount niedrig zu halten.
+  Rochenkörper), um PartCount niedrig zu halten. In den Terrain-Chunks
+  (siehe `/home/user/ro/docs/terrain-design-notes.md`) kommt dieselbe
+  Technik für Landmarks zum Einsatz: `SubtractAsync` für in den Boden
+  eingesenkte Mulden/Spalten/Höhlentore (NegateOperation-Ergebnisse),
+  `UnionAsync` für Felsbögen/-nadeln/Stalagmiten/Kristallcluster aus
+  mehreren überlappenden Parts.
 - Alle Modell-Skripte legen ihre Modelle unter `game.Workspace.Assets.<Kategorie>`
   ab (`Terrain`, `Buildings`, `Creatures`, `Enemies`, `Gacha`), damit sie
   leicht auffindbar und vom Code-Agenten programmatisch ansprechbar sind.
