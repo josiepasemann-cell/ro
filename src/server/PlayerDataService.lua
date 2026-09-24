@@ -121,6 +121,11 @@ export type PlayerData = {
 		CreatedAt: number,
 		LastLoginAt: number,
 		LastSavedAt: number,
+		LastIncomeAt: number, -- os.time() der letzten Idle-Einkommen-Gutschrift (Online-Tick ODER Offline-
+		                       -- Progress-Berechnung, siehe IdleIncomeService). Getrennt von LastLoginAt/
+		                       -- LastSavedAt, damit Online-Tick-Loop und Offline-Progress-Berechnung sich
+		                       -- nicht überschneiden/doppelt auszahlen können (siehe PlayerDataService.
+		                       -- Get/SetLastIncomeAt unten und IdleIncomeService.lua für die Erklärung).
 	},
 
 	ActiveSession: SessionLock?, -- Session-Lock-Metadaten; niemals von Gameplay-Code lesen/schreiben
@@ -229,6 +234,7 @@ local function createDefaultData(userId: number): PlayerData
 			CreatedAt = now,
 			LastLoginAt = now,
 			LastSavedAt = 0,
+			LastIncomeAt = now, -- neuer Spieler: keine rückwirkende Offline-Gutschrift ab "jetzt"
 		},
 
 		ActiveSession = nil,
@@ -782,6 +788,35 @@ end
 function PlayerDataService.GetIncomeMultiplier(player: Player): number
 	local data = dataCache[player.UserId]
 	return data and data.Prestige.IncomeMultiplier or 1.0
+end
+
+-- // Idle-Einkommen (Timestamp-Tracking) -------------------------------------
+-- Minimale Erweiterung für das Idle-Einkommen-/Produktionssystem (GDD
+-- Abschnitt 9, Punkt 3): reine Timestamp-Verwaltung, damit IdleIncomeService
+-- Online-Tick-Gutschriften und die Offline-Progress-Berechnung beim Login
+-- anhand EINES gemeinsamen Zeitstempels sauber voneinander abgrenzen kann,
+-- statt sich zu überschneiden/doppelt auszuzahlen. Die eigentliche
+-- Produktionsberechnung (welches Gebäude wie viel produziert) lebt bewusst
+-- NICHT hier, sondern vollständig in IdleIncomeService/BuildingConfig.
+
+--- os.time() der letzten Idle-Einkommen-Gutschrift dieses Spielers (Online-
+--- Tick ODER Offline-Progress). Fällt für ungeladene Daten auf `os.time()`
+--- zurück (kein rückwirkendes Einkommen, statt eines Fehlerzustands).
+function PlayerDataService.GetLastIncomeAt(player: Player): number
+	local data = dataCache[player.UserId]
+	return data and data.Timestamps.LastIncomeAt or os.time()
+end
+
+--- Setzt den Zeitstempel der letzten Idle-Einkommen-Gutschrift. Gibt false
+--- zurück, falls die Daten des Spielers nicht geladen sind (Aufrufer sollte
+--- in diesem Fall keine Gutschrift vorgenommen haben).
+function PlayerDataService.SetLastIncomeAt(player: Player, timestamp: number): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(timestamp) ~= "number" then
+		return false
+	end
+	data.Timestamps.LastIncomeAt = timestamp
+	return true
 end
 
 return PlayerDataService

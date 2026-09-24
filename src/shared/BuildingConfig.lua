@@ -36,6 +36,31 @@
 		SellRefundFraction (50 %) ist ebenfalls ein plausibler Platzhalter
 		ohne GDD-Vorgabe: verhindert Kauf/Verkauf als Geld-Exploit, gibt
 		aber einen spürbaren Teil der Investition zurück.
+
+	Produktionsraten (IncomeRate, ergänzt für das Idle-Einkommen-/
+	Produktionssystem, GDD Abschnitt 3 "Minute-zu-Minute" + Abschnitt 9
+	Punkt 3):
+		Nur Gebäude, deren Rolle laut GDD Abschnitt 8 tatsächlich
+		"Ressourcen-Produktionsgebäude" ist, produzieren passiv Tide
+		Coins - GlowBuoyStation ("Sammelt passiv Glow Spores für
+		Tide-Coin-Einkommen") und FilterPlant ("Ressourcen-
+		Produktionsgebäude, veredelt Rohertrag"). BroodPool (Zucht-
+		Timer-Gebäude, eigenes künftiges System, GDD Abschnitt 9 Punkt 4)
+		und AnglerfishTower (reiner Verteidigungsturm für Trench Raids,
+		GDD Abschnitt 9 Punkt 5) haben bewusst IncomeRate = 0 - sie
+		gehören zu anderen Systemen statt zum Idle-Einkommen.
+
+		Amortisationszeit (Cost / IncomeRate) ist bewusst gestaffelt, damit
+		das günstigere Gebäude sich schneller amortisiert, aber absolut
+		weniger produziert (spielerisch sinnvolle Kurve statt linearer
+		Skalierung):
+			- GlowBuoyStation: 150 Cost / 15 Coins/Min ≈ 10 Min. Amortisation.
+			- FilterPlant: 450 Cost / 30 Coins/Min ≈ 15 Min. Amortisation,
+			  aber doppelt so hoher Ertrag/Minute wie die Lichtboje - passt
+			  zur höheren UnlockLevel-Stufe (3) und dem GDD-Bild eines
+			  "veredelnden" Fortgeschrittenen-Produktionsgebäudes.
+		IdleIncomeService (Server) ist die einzige Stelle, die IncomeRate
+		tatsächlich in Tide-Coin-Gutschriften umsetzt.
 ]]
 
 export type BuildingId = "BroodPool" | "GlowBuoyStation" | "FilterPlant" | "AnglerfishTower"
@@ -49,6 +74,7 @@ export type BuildingDefinition = {
 	GridFieldCount: number, -- benötigte Baufelder auf der Habitat-Plot-Basis (MVP: immer 1)
 	UnlockLevel: number,
 	TemplateName: string, -- Name unter ReplicatedStorage.AssetTemplates.Buildings (siehe AssetTemplateSetup)
+	IncomeRate: number, -- Tide Coins / Minute passives Idle-Einkommen; 0 = kein Produktionsgebäude
 }
 
 local BuildingConfig = {}
@@ -63,6 +89,7 @@ local DEFINITIONS: { [string]: BuildingDefinition } = {
 		GridFieldCount = 1,
 		UnlockLevel = 1,
 		TemplateName = "GlowBuoyStation",
+		IncomeRate = 15,
 	},
 	BroodPool = {
 		Id = "BroodPool",
@@ -73,6 +100,7 @@ local DEFINITIONS: { [string]: BuildingDefinition } = {
 		GridFieldCount = 1,
 		UnlockLevel = 1,
 		TemplateName = "BroodPool_Basic",
+		IncomeRate = 0, -- kein Idle-Einkommen, siehe künftiges Zucht-/Ei-System (GDD Abschnitt 9 Punkt 4)
 	},
 	FilterPlant = {
 		Id = "FilterPlant",
@@ -83,6 +111,7 @@ local DEFINITIONS: { [string]: BuildingDefinition } = {
 		GridFieldCount = 1,
 		UnlockLevel = 3,
 		TemplateName = "FilterPlant",
+		IncomeRate = 30,
 	},
 	AnglerfishTower = {
 		Id = "AnglerfishTower",
@@ -93,6 +122,7 @@ local DEFINITIONS: { [string]: BuildingDefinition } = {
 		GridFieldCount = 1,
 		UnlockLevel = 8,
 		TemplateName = "AnglerfishTower",
+		IncomeRate = 0, -- kein Idle-Einkommen, reiner Verteidigungsturm (GDD Abschnitt 9 Punkt 5)
 	},
 }
 
