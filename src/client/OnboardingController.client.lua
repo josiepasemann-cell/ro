@@ -25,18 +25,10 @@
 		erscheint stattdessen nur das Erklär-Kärtchen mit einem "schau dich
 		um"-Hinweis, das ist bewusst dokumentiert, kein Bug.
 
-		NEU-SPIELER-ERKENNUNG (pragmatisch, siehe Auftrag): Es gibt aktuell
-		KEIN persistentes `PlayerDataService`-Feld wie "OnboardingSeen"
-		(außerhalb der erlaubten Dateien für diesen Auftrag nicht anlegbar -
-		siehe Zusammenfassung/Server-Bug-Hinweis an den nächsten Agenten).
-		Heuristik hier: `HUDRemotes.GetHUDState` liefert `Level`/`XP` - ein
-		Spieler mit `Level <= 1` UND `XP <= 0` gilt als neu. Das kann in
-		seltenen Fällen falsch-positiv sein (z. B. ein Spieler, der exakt bei
-		0 XP auf Level 1 relogged, ohne wirklich neu zu sein) - das
-		Tutorial ist aber jederzeit sofort überspringbar, der Schaden eines
-		Fehlalarms ist also gering. Läuft nur EINMAL pro Server-Session
-		(LocalScript-Ausführung), kein wiederholtes Zeigen innerhalb
-		derselben Sitzung.
+		NEU-SPIELER-ERKENNUNG: `HUDRemotes.GetHUDState` liefert das
+		persistente Feld `OnboardingCompleted` aus PlayerDataService. Beim
+		Abschließen ODER Überspringen meldet der Client
+		`MarkOnboardingCompleted`, danach erscheint das Tutorial nie wieder.
 
 		Wartet zunächst kurz auf `QuestUIController`s Bridge-Event
 		"DailyRewardPopupClosed" (mit Timeout), damit sich das automatische
@@ -95,9 +87,11 @@ local function isLikelyNewPlayer(): boolean
 	if not ok or type(hudState) ~= "table" then
 		return false
 	end
-	local level = (hudState.Level :: number?) or 1
-	local xp = (hudState.XP :: number?) or 0
-	return level <= 1 and xp <= 0
+	return hudState.OnboardingCompleted == false
+end
+
+local function markOnboardingCompleted()
+	HUDRemotes.MarkOnboardingCompleted:FireServer()
 end
 
 -- // Ziel-Finder: sucht Menüleisten-Buttons anhand ihres sichtbaren Texts ------------
@@ -573,6 +567,7 @@ end
 local function advanceStep()
 	if currentStepIndex >= #STEPS then
 		ScreenFX.BigMoment(Theme.Neon.ToxicGreen)
+		markOnboardingCompleted()
 		teardown()
 		return
 	end
@@ -580,6 +575,7 @@ local function advanceStep()
 end
 
 local function skipOnboarding()
+	markOnboardingCompleted()
 	teardown()
 end
 

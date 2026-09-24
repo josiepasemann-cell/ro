@@ -22,7 +22,8 @@
 			des anfragenden Spielers für den initialen Sync beim Join/UI-
 			Aufbau: { TideCoins: number, AbyssalShards: number, Level: number,
 			XP: number, XPIntoLevel: number, XPToNextLevel: number,
-			IncomePerMinute: number, MaxLevel: number }. Danach hält
+			IncomePerMinute: number, MaxLevel: number,
+			OnboardingCompleted: boolean }. Danach hält
 			HUDStateChanged den Client aktuell - kein Polling nötig.
 		HUDStateChanged (RemoteEvent, Server -> Client)
 			Server-Push bei JEDER Änderung eines HUD-relevanten Werts
@@ -36,6 +37,9 @@
 			ProgressionService.AwardXP): { NewLevel: number, Unlocks:
 			{ { Label: string, Implemented: boolean } } } - für das kurze
 			Level-Up-Banner mit freigeschalteten Dingen.
+		MarkOnboardingCompleted (RemoteEvent, Client -> Server)
+			Payload: keine. Merkt dauerhaft, dass der Spieler das Tutorial
+			beendet oder übersprungen hat. Kann nur auf true setzen.
 ]]
 
 local RunService = game:GetService("RunService")
@@ -74,10 +78,12 @@ if RunService:IsServer() then
 	HUDRemotes.GetHUDState = getOrCreateRemoteFunction(script, "GetHUDState")
 	HUDRemotes.HUDStateChanged = getOrCreateRemoteEvent(script, "HUDStateChanged")
 	HUDRemotes.LevelUp = getOrCreateRemoteEvent(script, "LevelUp")
+	HUDRemotes.MarkOnboardingCompleted = getOrCreateRemoteEvent(script, "MarkOnboardingCompleted")
 else
 	HUDRemotes.GetHUDState = script:WaitForChild("GetHUDState") :: RemoteFunction
 	HUDRemotes.HUDStateChanged = script:WaitForChild("HUDStateChanged") :: RemoteEvent
 	HUDRemotes.LevelUp = script:WaitForChild("LevelUp") :: RemoteEvent
+	HUDRemotes.MarkOnboardingCompleted = script:WaitForChild("MarkOnboardingCompleted") :: RemoteEvent
 end
 
 return HUDRemotes

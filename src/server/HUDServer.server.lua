@@ -59,8 +59,13 @@ local function buildFullState(player: Player)
 		XPToNextLevel = progress.XPToNextLevel,
 		IncomePerMinute = IdleIncomeService.GetIncomePerMinute(player),
 		MaxLevel = ProgressionConfig.MAX_LEVEL,
+		OnboardingCompleted = PlayerDataService.GetOnboardingCompleted(player),
 	}
 end
+
+HUDRemotes.MarkOnboardingCompleted.OnServerEvent:Connect(function(player: Player)
+	PlayerDataService.SetOnboardingCompleted(player)
+end)
 
 HUDRemotes.GetHUDState.OnServerInvoke = function(player: Player)
 	if not PlayerDataService.IsDataLoaded(player) then

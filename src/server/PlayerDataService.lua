@@ -271,6 +271,8 @@ export type PlayerData = {
 	DailyRewardState: DailyRewardState,
 	Stats: PlayerStats,
 
+	OnboardingCompleted: boolean,
+
 	ActiveSession: SessionLock?, -- Session-Lock-Metadaten; niemals von Gameplay-Code lesen/schreiben
 }
 
@@ -449,6 +451,8 @@ local function createDefaultData(userId: number): PlayerData
 		Stats = {
 			LifetimeTideCoinsEarned = 0,
 		},
+
+		OnboardingCompleted = false,
 
 		ActiveSession = nil,
 	}
@@ -1395,6 +1399,22 @@ function PlayerDataService.SetDailyRewardClaimed(player: Player, dateString: str
 	end
 	data.DailyRewardState.LastClaimedDate = dateString
 	data.DailyRewardState.Streak = math.clamp(math.floor(streakDay), 1, 7)
+	return true
+end
+
+-- // Tutorial (OnboardingCompleted) -----------------------------------------
+
+function PlayerDataService.GetOnboardingCompleted(player: Player): boolean
+	local data = dataCache[player.UserId]
+	return data ~= nil and data.OnboardingCompleted == true
+end
+
+function PlayerDataService.SetOnboardingCompleted(player: Player): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.OnboardingCompleted = true
 	return true
 end
 
