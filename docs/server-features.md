@@ -1,123 +1,121 @@
-# Server-Features für die Veröffentlichung – Abyssara – Deep Tide Tycoon
+# Server Features for Release – Abyssara – Deep Tide Tycoon
 
-Stand: 2026-09-24. Bezug: `docs/game-design-doc.md` Abschnitt 3, 6, 7, 9
-(Punkte 10, 11), 10; `docs/held-items.md`; `assets/models/README.md`
-Abschnitt "hub".
+As of: 2026-09-24. Reference: `docs/game-design-doc.md` Sections 3, 6, 7, 9
+(points 10, 11), 10; `docs/held-items.md`; `assets/models/README.md`
+section "hub".
 
-Dieses Dokument beschreibt die vier neuen Server-Systeme (Tages-Quests +
-Tages-Login-Belohnung, Ranglisten, Reisen/Teleports) sowie den zentralen
-Ereignis-Hub, der sie mit den bereits bestehenden Gameplay-Services
-verbindet. Für den nachfolgenden UI-Agenten: **alle Remotes unten sind
-fertig verdrahtet und serverseitig validiert** - es muss ausschließlich
-Client-UI darauf aufgesetzt werden, keine weitere Server-Logik.
+This document describes the four new server systems (daily quests + daily
+login reward, leaderboards, travel/teleports) and the central event hub
+that connects them to the already-existing gameplay services. For the
+following UI agent: **all remotes below are fully wired and server-side
+validated** - only client UI needs to be built on top, no further server
+logic.
 
-## 1. Neue Dateien
+## 1. New files
 
-| Datei | Rolle |
+| File | Role |
 |---|---|
-| `src/server/GameEvents.lua` | Zentraler, rein server-interner Ereignis-Hub (BindableEvent-Registry) |
-| `src/shared/QuestConfig.lua` | Tages-Quest-Vorlagen-Pool |
-| `src/shared/DailyRewardConfig.lua` | 7-Tage-Streak-Belohnungstabelle |
-| `src/shared/QuestRemotes.lua` | Remotes für Tages-Quests UND Tages-Login-Belohnung (gebündelt) |
-| `src/shared/LeaderboardRemotes.lua` | Remote für Ranglisten-Abfrage |
-| `src/shared/TravelRemotes.lua` | Remotes für Hub/Plot/Zonen-Teleport |
-| `src/server/QuestService.lua` + `QuestServer.server.lua` | Tages-Quest-Logik + Bootstrap |
-| `src/server/DailyRewardService.lua` + `DailyRewardServer.server.lua` | Login-Streak-Logik + Bootstrap |
-| `src/server/LeaderboardService.lua` + `LeaderboardServer.server.lua` | Ranglisten-Logik (OrderedDataStore) + Bootstrap |
-| `src/server/TravelService.lua` + `TravelServer.server.lua` | Teleport-Logik (ProximityPrompts + Remotes) + Bootstrap |
+| `src/server/GameEvents.lua` | Central, purely server-internal event hub (BindableEvent registry) |
+| `src/shared/QuestConfig.lua` | Daily quest template pool |
+| `src/shared/DailyRewardConfig.lua` | 7-day streak reward table |
+| `src/shared/QuestRemotes.lua` | Remotes for daily quests AND daily login reward (bundled) |
+| `src/shared/LeaderboardRemotes.lua` | Remote for leaderboard queries |
+| `src/shared/TravelRemotes.lua` | Remotes for hub/plot/zone teleport |
+| `src/server/QuestService.lua` + `QuestServer.server.lua` | Daily quest logic + bootstrap |
+| `src/server/DailyRewardService.lua` + `DailyRewardServer.server.lua` | Login streak logic + bootstrap |
+| `src/server/LeaderboardService.lua` + `LeaderboardServer.server.lua` | Leaderboard logic (OrderedDataStore) + bootstrap |
+| `src/server/TravelService.lua` + `TravelServer.server.lua` | Teleport logic (ProximityPrompts + remotes) + bootstrap |
 
-Rojo-Mapping: unverändert, `default.project.json` bindet `src/server` bzw.
-`src/shared` bereits vollständig/flach ein - keine Änderung nötig.
+Rojo mapping: unchanged, `default.project.json` already includes `src/server`
+and `src/shared` fully/flat - no changes needed.
 
-## 2. Zentraler Ereignis-Hub (`GameEvents`)
+## 2. Central event hub (`GameEvents`)
 
-Statt Quest-/Leaderboard-Aufrufe in jeden Service zu streuen, feuern die
-bestehenden Services an ihren bereits vorhandenen Erfolgsstellen (dieselben
-Stellen, an denen heute schon `ProgressionService.AwardXP` aufgerufen wird)
-genau ein `GameEvents.Fire(eventName, player, payload)`:
+Instead of scattering quest/leaderboard calls across every service, the
+existing services fire exactly one `GameEvents.Fire(eventName, player,
+payload)` at their existing success points (the same points where
+`ProgressionService.AwardXP` is already called today):
 
-| Ereignis | Feuernde Stelle | Payload |
+| Event | Firing location | Payload |
 |---|---|---|
 | `BuildingPlaced` | `PlacementService.RequestPlace` | `{ BuildingId, PlacementId }` |
 | `BreedingCompleted` | `BreedingService.RequestClaimBreeding` / `RequestInstantComplete` | `{ CreatureId, Rarity, PlacementId, Instant? }` |
 | `RaidWon` | `RaidService.finishRaid` (live) + `evaluateOfflineRaids` (offline) | `{ WavesCleared, RewardTideCoins?, Offline? }` |
 | `RaidLost` | `RaidService.finishRaid` + `evaluateOfflineRaids` | `{ AbductedInstanceId?, Offline? }` |
-| `EggOpened` | `GachaService.performRoll` (Gratis- und Robux-Pfad) | `{ Rarity, CreatureId, ResultType, Purchased }` |
+| `EggOpened` | `GachaService.performRoll` (free and Robux path) | `{ Rarity, CreatureId, ResultType, Purchased }` |
 | `SporeDelivered` | `PickupSpawner.onDepositTriggered` | `{ Amount }` |
-| `CoinsEarned` | `PlayerDataService.AddCurrency` (zentral, nur TideCoins, nur positiver Zuwachs) | `{ Amount, NewLifetimeTotal }` |
+| `CoinsEarned` | `PlayerDataService.AddCurrency` (central, TideCoins only, positive gains only) | `{ Amount, NewLifetimeTotal }` |
 
-`QuestService` und `LeaderboardService` sind die einzigen aktuellen
-Abonnenten - keine zirkulären `require`s (GameEvents selbst hat keine
-Abhängigkeiten).
+`QuestService` and `LeaderboardService` are the only current subscribers -
+no circular `require`s (GameEvents itself has no dependencies).
 
-## 3. Remote-API für den UI-Agenten
+## 3. Remote API for the UI agent
 
-### 3.1 Tages-Quests (`ReplicatedStorage.QuestRemotes`)
+### 3.1 Daily quests (`ReplicatedStorage.QuestRemotes`)
 
-- `GetQuestState` (RemoteFunction, keine Payload) →
+- `GetQuestState` (RemoteFunction, no payload) →
   `{ DateKey, Quests: { { TemplateId, Description, Target, Progress, Completed, Claimed, RewardTideCoins, RewardAbyssalShards, RewardXP } } }`
-- `QuestProgressUpdated` (Server→Client Push) →
+- `QuestProgressUpdated` (Server→Client push) →
   `{ TemplateId, Progress, Target, Completed }`
-- `RequestClaimQuestReward` (Client→Server) → Payload `templateId: string`
+- `RequestClaimQuestReward` (Client→Server) → payload `templateId: string`
 - `ClaimQuestRewardResult` (Server→Client) →
   `{ Success, Reason?, TemplateId?, RewardTideCoins?, RewardAbyssalShards?, RewardXP?, NewTideCoinBalance? }`
   (`Reason`: `DataNotLoaded` | `UnknownQuest` | `NotCompleted` | `AlreadyClaimed`)
 
-Täglich 3 zufällige Quest-Vorlagen aus einem 4er-Pool (Sporen abgeben,
-Zucht abschließen, Raid gewinnen, Gebäude bauen), Reset um 00:00 UTC.
+3 random quest templates from a pool of 4 daily (deliver spores, complete
+breeding, win a raid, build a building), reset at 00:00 UTC.
 
-### 3.2 Tages-Login-Belohnung (ebenfalls `QuestRemotes`)
+### 3.2 Daily login reward (also `QuestRemotes`)
 
 - `GetDailyRewardState` (RemoteFunction) →
   `{ CanClaim, PendingStreakDay, PreviewTideCoins, PreviewAbyssalShards, VipBonusActive, AlreadyClaimedToday }`
-- `RequestClaimDailyReward` (Client→Server, keine Payload)
+- `RequestClaimDailyReward` (Client→Server, no payload)
 - `DailyRewardClaimed` (Server→Client) →
   `{ Success, Reason?, StreakDay?, RewardTideCoins?, RewardAbyssalShards?, NewTideCoinBalance? }`
   (`Reason`: `DataNotLoaded` | `AlreadyClaimedToday`)
 
-Streak 1–7 steigend, bricht bei verpasstem Tag (zyklisch wieder ab 1).
-VIP-Taucher-Gamepass gibt `+50%` auf die TideCoins-Auszahlung DIESES
-Systems (`DailyRewardConfig.VIP_BONUS_TIDE_COINS_MULTIPLIER`) - **komplett
-unabhängig** von der bereits bestehenden `MonetizationService`-VIP-Truhe
-(`Get/SetLastVipChestClaimedDate`), die unverändert weiterläuft. Keine
-Datendopplung.
+Streak 1-7 increasing, resets (cyclically back to 1) on a missed day. The
+VIP Diver gamepass gives `+50%` on this system's TideCoins payout
+(`DailyRewardConfig.VIP_BONUS_TIDE_COINS_MULTIPLIER`) - **completely
+independent** of the already-existing `MonetizationService` VIP chest
+(`Get/SetLastVipChestClaimedDate`), which keeps running unchanged. No data
+duplication.
 
-### 3.3 Ranglisten (`ReplicatedStorage.LeaderboardRemotes`)
+### 3.3 Leaderboards (`ReplicatedStorage.LeaderboardRemotes`)
 
-- `GetLeaderboard` (RemoteFunction) → Payload `category: "Level" | "TideCoins" | "RarestCollection"`
+- `GetLeaderboard` (RemoteFunction) → payload `category: "Level" | "TideCoins" | "RarestCollection"`
   → `{ Category, Entries: { { Rank, UserId, Name, Score } }, UpdatedAt } | nil`
 
-Kategorien: `Level` (MVP-Proxy für "Tiefste Zone", siehe Begründung im
-Kopfkommentar von `LeaderboardService.lua` - ein echtes Zonen-Tiefen-Feld
-existiert im MVP noch nicht), `TideCoins` (Lifetime-Summe, NICHT aktueller
-Kontostand), `RarestCollection` (Summe der Rarity-Indizes über das
-Kreaturen-Inventar). Zusätzlich befüllt der Server direkt eine
-`SurfaceGui` am Hub-Objekt `LeaderboardBoard/DisplayPanel` (zyklisch alle
-10s zwischen den 3 Kategorien wechselnd) - dafür ist kein Client-Code
-nötig.
+Categories: `Level` (MVP proxy for "Deepest Zone", see the reasoning in the
+header comment of `LeaderboardService.lua` - a real zone-depth field
+doesn't exist in the MVP yet), `TideCoins` (lifetime total, NOT current
+balance), `RarestCollection` (sum of rarity indices across the creature
+inventory). The server also directly populates a `SurfaceGui` on the hub
+object `LeaderboardBoard/DisplayPanel` (cycling between the 3 categories
+every 10s) - no client code needed for that.
 
-### 3.4 Reisen/Teleports (`ReplicatedStorage.TravelRemotes`)
+### 3.4 Travel/teleports (`ReplicatedStorage.TravelRemotes`)
 
-- `RequestTravelToPlot` / `RequestTravelToHub` (Client→Server, keine Payload)
-- `RequestTravelToZone` (Client→Server) → Payload `zoneId: "SunZone" | "TwilightZone" | "MidnightZone" | "HadalDepths"`
+- `RequestTravelToPlot` / `RequestTravelToHub` (Client→Server, no payload)
+- `RequestTravelToZone` (Client→Server) → payload `zoneId: "SunZone" | "TwilightZone" | "MidnightZone" | "HadalDepths"`
 - `TravelResult` (Server→Client) →
   `{ Success, Reason?, Destination?, RequiredLevel?, CurrentLevel? }`
   (`Reason`: `OnCooldown` | `NoPlot` | `UnknownZone` | `LevelTooLow` | `ZoneComingSoon` | `NoCharacter` | `NoHub`)
 
-Dieselbe Logik ist zusätzlich bereits über `ProximityPrompt`s am Hub nutzbar
-(kein UI-Code nötig): `PlotGate` → eigener Plot, `Portal_<Zone>` → jeweilige
-Zone (prüft `RequiredLevel`-Attribut serverseitig). Die Remotes sind für ein
-optionales Schnellreise-UI-Panel gedacht. `SunZone`/`TwilightZone` sind im
-MVP tatsächlich begehbar; `MidnightZone`/`HadalDepths` antworten aktuell mit
-`Reason = "ZoneComingSoon"`, bis ihre Terrain-Chunks in der Welt platziert
-sind (Assets existieren bereits, siehe `assets/models/README.md`).
+The same logic is also already usable via `ProximityPrompt`s at the hub (no
+UI code needed): `PlotGate` → your own plot, `Portal_<Zone>` → the
+respective zone (checks the `RequiredLevel` attribute server-side). The
+remotes are meant for an optional fast-travel UI panel. `SunZone`/
+`TwilightZone` are actually walkable in the MVP; `MidnightZone`/
+`HadalDepths` currently respond with `Reason = "ZoneComingSoon"` until
+their terrain chunks are placed in the world (the assets already exist, see
+`assets/models/README.md`).
 
-## 4. Schema-Änderungen (`PlayerDataService`, SchemaVersion 2 → 3)
+## 4. Schema changes (`PlayerDataService`, SchemaVersion 2 → 3)
 
-Rein additive Felder, keine Umbenennung/Aufspaltung - die bestehende
-`fillMissing()`-Migration hebt alte Datensätze automatisch an, keine
-dedizierte `MIGRATIONS[2]`-Funktion nötig (identisches Muster wie Version
-1 → 2):
+Purely additive fields, no renaming/splitting - the existing
+`fillMissing()` migration automatically upgrades old records, no dedicated
+`MIGRATIONS[2]` function needed (identical pattern to version 1 → 2):
 
 ```lua
 QuestState: { DateKey: string?, Quests: { { TemplateId, Target, Progress, Claimed } } }
@@ -125,62 +123,62 @@ DailyRewardState: { LastClaimedDate: string?, Streak: number }
 Stats: { LifetimeTideCoinsEarned: number }
 ```
 
-Neue `PlayerDataService`-API: `Get/SetQuestState`, `GetDailyRewardState`,
+New `PlayerDataService` API: `Get/SetQuestState`, `GetDailyRewardState`,
 `SetDailyRewardClaimed`, `GetLifetimeTideCoinsEarned`.
-`AddCurrency` schreibt `Stats.LifetimeTideCoinsEarned` bei jedem positiven
-TideCoins-Zuwachs fort und feuert `GameEvents.CoinsEarned`.
+`AddCurrency` writes `Stats.LifetimeTideCoinsEarned` forward on every
+positive TideCoins gain and fires `GameEvents.CoinsEarned`.
 
-**Zusätzliche minimale Änderung außerhalb der expliziten Dateiliste:**
-`src/shared/ProgressionConfig.lua` bekam zwei neue, rein additive
-`XP_REWARDS`-Einträge (`QuestCompleted = 20`, `DailyLoginClaimed = 10`) plus
-die entsprechende Typ-Erweiterung - notwendig, damit `QuestService`/
-`DailyRewardService` weiterhin ausschließlich über
-`ProgressionService.AwardXP` (die einzige Quelle der Wahrheit für XP)
-gehen, statt eine zweite XP-Vergabe-Logik zu erfinden.
+**Additional minimal change outside the explicit file list:**
+`src/shared/ProgressionConfig.lua` got two new, purely additive
+`XP_REWARDS` entries (`QuestCompleted = 20`, `DailyLoginClaimed = 10`) plus
+the matching type extension - necessary so that `QuestService`/
+`DailyRewardService` keep going exclusively through
+`ProgressionService.AwardXP` (the single source of truth for XP), instead
+of inventing a second XP-granting logic.
 
-## 5. Hand-Übergabe (`docs/held-items.md`, Abschnitt 7)
+## 5. Hand-off (`docs/held-items.md`, Section 7)
 
-`GachaService.performRoll` und `BreedingService.RequestClaimBreeding` /
-`RequestInstantComplete` rufen jetzt `HeldItemService.HoldItem(player,
-"Creature", <Live-Kreaturen-Modell aus Workspace.Assets.Creatures>, {
-DisplayName = ... })` auf. Automatisches Ablegen nach 6 Sekunden über einen
-lokalen `task.delay` (mit Prüfung, ob der Spieler zwischenzeitlich bereits
-ein anderes Item hält, um kein bereits neues Item versehentlich abzulegen) -
-`HeldItemService.lua` selbst wurde dafür NICHT verändert (nicht Teil der
-erlaubten Änderungen). Kein doppeltes Inventar-Buchen: `AddCreatureToInventory`
-lief bereits vorher, der Hand-Übergabe-Aufruf bucht nichts erneut, er
-verschiebt nur eine geklonte Anzeige-Instanz.
+`GachaService.performRoll` and `BreedingService.RequestClaimBreeding` /
+`RequestInstantComplete` now call `HeldItemService.HoldItem(player,
+"Creature", <live creature model from Workspace.Assets.Creatures>, {
+DisplayName = ... })`. Auto-drop after 6 seconds via a local `task.delay`
+(with a check for whether the player is already holding a different item in
+the meantime, so it doesn't accidentally drop an already-new item) -
+`HeldItemService.lua` itself was NOT changed for this (not part of the
+allowed changes). No double inventory bookkeeping: `AddCreatureToInventory`
+already ran before this, the hand-off call doesn't book anything again, it
+only moves a cloned display instance.
 
-Der "gekauftes Egg wandert in die Hand"-Teilaspekt aus Punkt 5 ist bewusst
-NICHT separat umgesetzt: `GachaService.OpenPurchasedEgg` löst intern
-denselben `performRoll`-Pfad wie das Gratis-Öffnen aus (kein separater
-"Kauf, dann später öffnen"-Zwischenschritt existiert im aktuellen Gacha-
-Flow) - die geschlüpfte Kreatur wandert nach BEIDEN Wegen identisch in die
-Hand.
+The "purchased egg moves into the hand" sub-aspect of point 5 is
+deliberately NOT implemented separately: `GachaService.OpenPurchasedEgg`
+internally triggers the same `performRoll` path as the free opening (no
+separate "buy, then open later" intermediate step exists in the current
+gacha flow) - the hatched creature moves into the hand identically via
+either path.
 
-## 6. Robustheit
+## 6. Robustness
 
-Alle neuen DataStore-Zugriffe (`LeaderboardService`) laufen in `pcall` mit
-Retry+Backoff (`withRetry`, analog zu `PlayerDataService`). Kein
-`while true do wait() end` ohne `task.wait`. `PlayerRemoving`-Aufräumen in
-allen vier neuen Services (Cooldown-/Dirty-Flag-Tabellen). Ranglisten-
-Schreiben ist gedrosselt (Dirty-Flag + 90s-Intervall + Stagger zwischen
-einzelnen `SetAsync`-Aufrufen), Lesen läuft nur alle 5 Minuten und cached
-serverseitig - kein Live-Read pro Client-Anfrage.
+All new DataStore access (`LeaderboardService`) runs in `pcall` with
+retry+backoff (`withRetry`, analogous to `PlayerDataService`). No
+`while true do wait() end` without `task.wait`. `PlayerRemoving` cleanup in
+all four new services (cooldown/dirty-flag tables). Leaderboard writes are
+throttled (dirty flag + 90s interval + stagger between individual
+`SetAsync` calls), reads run only every 5 minutes and are cached
+server-side - no live read per client request.
 
-## 7. Offene Punkte
+## 7. Open items
 
-- `LeaderboardService`-Kategorie "Level" ist ein dokumentierter MVP-Proxy
-  für "Tiefste Zone" - sobald ein echtes Zonen-Tiefen-Feld existiert, muss
-  nur `computeScores().Level` ersetzt werden.
-- `TravelService` teleportiert nach `MidnightZone`/`HadalDepths` erst,
-  sobald deren Terrain-Chunks tatsächlich in der Welt platziert sind
-  (aktuell `"ZoneComingSoon"`).
-- Kein dediziertes UI für Quests/Tages-Belohnung/Ranglisten/Reisen - alle
-  Remotes sind bereit, das Panel-UI folgt im nächsten Schritt durch den
-  UI-Agenten.
-- Der VIP-Bonus in `DailyRewardService` und die bestehende VIP-Truhe in
-  `MonetizationService` sind bewusst zwei getrennte, additive Boni (siehe
-  Abschnitt 3.2) - falls das Game-Design das als "zu viel VIP" empfindet,
-  wäre eine spätere Konsolidierung ein reiner Balancing-Eingriff, kein
-  Architektur-Umbau.
+- The `LeaderboardService` category "Level" is a documented MVP proxy for
+  "Deepest Zone" - once a real zone-depth field exists, only
+  `computeScores().Level` needs to be replaced.
+- `TravelService` only teleports to `MidnightZone`/`HadalDepths` once their
+  terrain chunks are actually placed in the world (currently
+  `"ZoneComingSoon"`).
+- No dedicated UI for quests/daily reward/leaderboards/travel yet - all
+  remotes are ready, the panel UI follows in the next step via the UI
+  agent.
+- The VIP bonus in `DailyRewardService` and the existing VIP chest in
+  `MonetizationService` are deliberately two separate, additive bonuses
+  (see Section 3.2) - if the game design considers this "too much VIP", a
+  later consolidation would be a pure balancing change, not an
+  architecture rework.

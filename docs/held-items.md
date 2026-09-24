@@ -1,87 +1,88 @@
-# Items in der Hand – Abyssara – Deep Tide Tycoon
+# Held Items – Abyssara – Deep Tide Tycoon
 
-Stand: 2026-09-24. Bezug: `docs/game-design-doc.md` Abschnitt 3 ("Glow Spores
-einsammeln"), Abschnitt 8 (Gacha-Eier/Kreaturen-Modelle).
+As of: 2026-09-24. Reference: `docs/game-design-doc.md` Section 3 ("collecting
+Glow Spores"), Section 8 (gacha eggs/creature models).
 
-Dieses Dokument beschreibt das server-autoritative "Items in der Hand"-System
-und - besonders wichtig für andere, bereits laufende Agenten-Arbeiten - **wo
-genau `GachaService`/`BreedingService`/`PlacementService` später andocken
-sollen**, ohne dass deren Dateien für dieses Feature selbst angefasst wurden.
+This document describes the server-authoritative "held item" system and —
+especially important for other, already-running agent work — **exactly
+where `GachaService`/`BreedingService`/`PlacementService` should hook in
+later**, without their files having been touched for this feature itself.
 
-## 1. Beteiligte Dateien
+## 1. Files involved
 
-| Datei | Rolle |
+| File | Role |
 |---|---|
-| `src/shared/HeldItemConfig.lua` | Zentrale Stellschrauben: Trageposen, Halte-Skalierung/-Versatz je Item-Art, Pickup-/Abgabe-Tuning |
+| `src/shared/HeldItemConfig.lua` | Central tunables: carry poses, hold scale/offset per item kind, pickup/deposit tuning |
 | `src/shared/HeldItemRemotes.lua` | `RequestDropHeld` (Client→Server), `HeldItemChanged` (Server→Client) |
-| `src/server/HeldItemService.lua` | Autoritative Kern-API: `HoldItem`/`DropHeld`/`GetHeld`/`ConsumeHeld` |
-| `src/server/PickupSpawner.lua` | Glow-Spore-Weltpickups je Plot, GlowBuoyStation-Abgabe, Aufräumen bei Drop |
-| `src/server/HeldItemServer.server.lua` | Bootstrap/Verdrahtung (Remotes, Join/Leave) |
-| `src/client/HeldItemClient.client.lua` | Minimales HUD, "Ablegen"-Aktion (G/Touch/Gamepad), Glow-Effekt |
-| `assets/models/pickups/GlowSporePickup.lua` | Buildscript für das Glow-Spore-Weltmodell |
+| `src/server/HeldItemService.lua` | Authoritative core API: `HoldItem`/`DropHeld`/`GetHeld`/`ConsumeHeld` |
+| `src/server/PickupSpawner.lua` | Glow Spore world pickups per plot, GlowBuoyStation deposit, cleanup on drop |
+| `src/server/HeldItemServer.server.lua` | Bootstrap/wiring (remotes, join/leave) |
+| `src/client/HeldItemClient.client.lua` | Minimal HUD, "Drop" action (G/touch/gamepad), glow effect |
+| `assets/models/pickups/GlowSporePickup.lua` | Buildscript for the Glow Spore world model |
 
-## 2. Öffentliche Server-API (`HeldItemService`)
+## 2. Public server API (`HeldItemService`)
 
 ```lua
 local HeldItemService = require(ServerScriptService.HeldItemService)
 
--- Bringt ein Item sichtbar in die rechte Hand von `player`. Hält der
--- Spieler bereits etwas, wird das zuerst automatisch abgelegt (DropHeld).
+-- Visibly brings an item into `player`'s right hand. If the player is
+-- already holding something, it's automatically dropped first (DropHeld).
 local success, instance = HeldItemService.HoldItem(player, itemKind, templateOrModel, {
-    CarryPose = nil,       -- optional Override, sonst HeldItemConfig.GetCarryPose(itemKind)
-    DisplayName = nil,     -- optional Override, sonst HeldItemConfig.GetDisplayName(itemKind)
-    HoldScale = nil,       -- optional Override, sonst HeldItemConfig.GetHoldScale(itemKind)
-    GripOffset = nil,      -- optional CFrame-Override, sonst HeldItemConfig.GetGripOffset(itemKind)
-    Reparent = false,      -- true = `templateOrModel` DIREKT verschieben statt zu klonen
-    DestroyOnDrop = false, -- true = DropHeld zerstört das Item statt es als Welt-Pickup abzulegen
+    CarryPose = nil,       -- optional override, otherwise HeldItemConfig.GetCarryPose(itemKind)
+    DisplayName = nil,     -- optional override, otherwise HeldItemConfig.GetDisplayName(itemKind)
+    HoldScale = nil,       -- optional override, otherwise HeldItemConfig.GetHoldScale(itemKind)
+    GripOffset = nil,      -- optional CFrame override, otherwise HeldItemConfig.GetGripOffset(itemKind)
+    Reparent = false,      -- true = move `templateOrModel` DIRECTLY instead of cloning it
+    DestroyOnDrop = false, -- true = DropHeld destroys the item instead of dropping it as a world pickup
 })
 
--- Legt das aktuell gehaltene Item ab (Spieler-Aktion oder Aufräumen).
--- Standard: Item wird vor dem Charakter in die Welt gelegt, `ItemDropped`
--- feuert (siehe unten).
+-- Drops the currently held item (player action or cleanup).
+-- Default: the item is placed in the world in front of the character,
+-- `ItemDropped` fires (see below).
 HeldItemService.DropHeld(player)
 
--- Schreibgeschützte Momentaufnahme: { ItemKind, Model, DisplayName, CarryPose } | nil
+-- Read-only snapshot: { ItemKind, Model, DisplayName, CarryPose } | nil
 HeldItemService.GetHeld(player)
 
--- Entfernt das gehaltene Item OHNE Welt-Drop (kein ItemDropped-Event) -
--- für "Verbrauchen" bei einer Abgabe/Turn-in-Aktion. Gibt (itemKind, model)
--- zurück - der AUFRUFER ist danach für `model` verantwortlich (i. d. R.
--- `model:Destroy()`, NACHDEM die Belohnung gewährt wurde).
+-- Removes the held item WITHOUT a world drop (no ItemDropped event) -
+-- for "consuming" it on a deposit/turn-in action. Returns (itemKind, model)
+-- - the CALLER is then responsible for `model` (usually
+-- `model:Destroy()`, AFTER the reward has been granted).
 local itemKind, model = HeldItemService.ConsumeHeld(player)
 
--- BindableEvent-Signal: (player, model, itemKind, dropWorldCFrame).
--- Feuert NUR bei DropHeld (nicht bei ConsumeHeld). PickupSpawner
--- abonniert dies bereits für "GlowSpore".
+-- BindableEvent signal: (player, model, itemKind, dropWorldCFrame).
+-- Fires ONLY on DropHeld (not on ConsumeHeld). PickupSpawner already
+-- subscribes to this for "GlowSpore".
 HeldItemService.ItemDropped:Connect(function(player, model, itemKind, dropCFrame) ... end)
 ```
 
-Item-Identität in beiden Fällen (Klonen vs. `Reparent = true`):
+Item identity in both cases (cloning vs. `Reparent = true`):
 
-- **Klonen (Default):** `templateOrModel` bleibt unangetastet (z. B. eine
-  Vorlage aus `ReplicatedStorage.AssetTemplates.*` oder einem Gacha-/
-  Zucht-Ergebnis-Modell) - `HoldItem` klont sie, das Original ist danach
-  weiterhin für weitere Rolls/Spieler wiederverwendbar.
-- **Reparent = true:** `templateOrModel` ist eine bereits existierende,
-  einmalige Instanz (z. B. ein Welt-Pickup wie bei `PickupSpawner`), die
-  direkt in die Hand wandert statt dupliziert zu werden.
+- **Cloning (default):** `templateOrModel` stays untouched (e.g. a template
+  from `ReplicatedStorage.AssetTemplates.*` or a gacha/breeding result
+  model) - `HoldItem` clones it, the original stays reusable for further
+  rolls/players afterward.
+- **Reparent = true:** `templateOrModel` is an already-existing, one-off
+  instance (e.g. a world pickup like in `PickupSpawner`), which moves
+  directly into the hand instead of being duplicated.
 
-## 3. `CarryPose`-Attribut (Animations-Kontrakt)
+## 3. `CarryPose` attribute (animation contract)
 
-`HeldItemService` setzt bei jedem `HoldItem`/`DropHeld`/`ConsumeHeld`:
+`HeldItemService` sets this on every `HoldItem`/`DropHeld`/`ConsumeHeld`:
 
 ```lua
 character:SetAttribute("CarryPose", "OneHand" | "TwoHand" | nil)
 ```
 
-Das prozedurale Animationssystem
-(`src/shared/CharacterAnimation/ProceduralAnimator.lua`) liest dieses
-Attribut bereits selbst aus (`self.Character:GetAttribute("CarryPose")`) und
-posiert die Arme entsprechend über `PoseLibrary.CarryOneHand()` /
-`PoseLibrary.CarryTwoHand()`. Dieses System muss dafür nichts weiter tun -
-reiner Attribut-Contract, keine direkte Kopplung zwischen den Modulen.
+The procedural animation system
+(`src/shared/CharacterAnimation/ProceduralAnimator.lua`) already reads this
+attribute itself (`self.Character:GetAttribute("CarryPose")`) and poses the
+arms accordingly via `PoseLibrary.CarryOneHand()` /
+`PoseLibrary.CarryTwoHand()`. This system doesn't need to do anything
+further for that - a pure attribute contract, no direct coupling between
+the modules.
 
-Default-Zuordnung (`HeldItemConfig`, per `opts.CarryPose` überschreibbar):
+Default mapping (`HeldItemConfig`, overridable via `opts.CarryPose`):
 
 | ItemKind | CarryPose |
 |---|---|
@@ -89,122 +90,120 @@ Default-Zuordnung (`HeldItemConfig`, per `opts.CarryPose` überschreibbar):
 | `Egg` | `TwoHand` |
 | `Creature` | `TwoHand` |
 
-## 4. Anbringung am Charakter (technisch)
+## 4. Attachment to the character (technical)
 
-- Griffpunkt: `Attachment "RightGripAttachment"` auf `RightHand` (R15) bzw.
-  `Right Arm` (R6-Fallback) - wird verwendet, falls vorhanden (Standard-
-  Roblox-Rigs bringen das für Tool-Equip meist bereits mit), sonst
-  automatisch angelegt.
-- Verbindung: `RigidConstraint` zwischen `RightGripAttachment` (Hand) und
-  einem neu angelegten `Attachment "ItemGripAttachment"` auf dem
-  `PrimaryPart` des gehaltenen Items (Offset aus `HeldItemConfig.GetGripOffset`).
-- Größe: `Model:ScaleTo(HeldItemConfig.GetHoldScale(itemKind))` - Skalierung
-  passiert VOR dem Anbringen des `ItemGripAttachment`, die konfigurierten
-  Offsets gelten also für die bereits skalierte Halte-Größe.
-- Physik: alle `BasePart`s des Items werden `CanCollide = false`,
-  `Massless = true`, `Anchored = false` gesetzt - beeinflusst weder die
-  Spielerbewegung noch kollidiert es mit anderen Spielern/der Welt.
-- `PrimaryPart`-Erkennung: nutzt `Model.PrimaryPart`, falls gesetzt, sonst
-  Fallback über die Namenskonvention aus `assets/models/README.md`
-  (`"Body"` bei Kreaturen, `"Shell"` bei Gacha-Eiern, `"Base"` bei
-  Gebäuden/Pickups).
+- Grip point: `Attachment "RightGripAttachment"` on `RightHand` (R15) or
+  `Right Arm` (R6 fallback) - used if present (standard Roblox rigs mostly
+  already come with this for tool equip), otherwise created automatically.
+- Connection: `RigidConstraint` between `RightGripAttachment` (hand) and a
+  newly created `Attachment "ItemGripAttachment"` on the `PrimaryPart` of
+  the held item (offset from `HeldItemConfig.GetGripOffset`).
+- Size: `Model:ScaleTo(HeldItemConfig.GetHoldScale(itemKind))` - scaling
+  happens BEFORE attaching the `ItemGripAttachment`, so the configured
+  offsets apply to the already-scaled hold size.
+- Physics: all `BasePart`s of the item are set to `CanCollide = false`,
+  `Massless = true`, `Anchored = false` - it affects neither player
+  movement nor collides with other players/the world.
+- `PrimaryPart` detection: uses `Model.PrimaryPart` if set, otherwise falls
+  back to the naming convention from `assets/models/README.md`
+  (`"Body"` for creatures, `"Shell"` for gacha eggs, `"Base"` for
+  buildings/pickups).
 
-## 5. Glow-Spore-Weltpickups (`PickupSpawner`)
+## 5. Glow Spore world pickups (`PickupSpawner`)
 
-- Spawnt periodisch (`HeldItemConfig.Pickup.SpawnCheckIntervalSeconds`,
-  Default 20s) bis zu `HeldItemConfig.Pickup.MaxPerPlot` (Default 3)
-  Glow-Spore-Pickups zufällig verteilt auf der Habitat-Plot-Basis jedes
-  Spielers (Performance: harte Obergrenze pro Plot, kein globales Cap
-  nötig, da pro-Spieler begrenzt).
-- Jedes Pickup trägt `ProximityPrompt "PickupPrompt"` (`HoldDuration` kurz,
-  `RequiresLineOfSight = false`) - funktioniert identisch auf PC (Taste),
-  Mobile (automatischer Touch-Button) und Konsole (Gamepad-Button), ohne
-  plattformspezifischen Code.
-- Server validiert bei Auslösung sowohl **Besitz** (`OwnerUserId`-Attribut
-  muss dem auslösenden Spieler entsprechen - nur eigene Sporen) als auch
-  **Distanz** (zusätzliche Server-Messung zur HumanoidRootPart, unabhängig
-  von `ProximityPrompt.MaxActivationDistance`).
-- Aufgehoben wird die Spore über `HeldItemService.HoldItem(player,
+- Periodically spawns (`HeldItemConfig.Pickup.SpawnCheckIntervalSeconds`,
+  default 20s) up to `HeldItemConfig.Pickup.MaxPerPlot` (default 3) Glow
+  Spore pickups, randomly distributed on each player's Habitat Plot base
+  (performance: a hard per-plot cap, no global cap needed since it's
+  bounded per player).
+- Every pickup carries a `ProximityPrompt "PickupPrompt"` (`HoldDuration`
+  short, `RequiresLineOfSight = false`) - works identically on PC (key),
+  mobile (automatic touch button), and console (gamepad button), with no
+  platform-specific code.
+- The server validates both **ownership** (the `OwnerUserId` attribute must
+  match the triggering player - only your own spores) and **distance**
+  (an additional server-side measurement to the HumanoidRootPart,
+  independent of `ProximityPrompt.MaxActivationDistance`) on trigger.
+- The spore is picked up via `HeldItemService.HoldItem(player,
   "GlowSpore", pickupModel, { Reparent = true })`.
-- Fallenlassen (`DropHeld`, z. B. "G"-Taste): `PickupSpawner` abonniert
-  `HeldItemService.ItemDropped` und registriert das Item automatisch wieder
-  als Welt-Pickup mit neuem `ProximityPrompt` auf dem Plot des Spielers.
+- Dropping it (`DropHeld`, e.g. the "G" key): `PickupSpawner` subscribes to
+  `HeldItemService.ItemDropped` and automatically re-registers the item as
+  a world pickup with a new `ProximityPrompt` on the player's plot.
 
-## 6. GlowBuoyStation-Abgabe (Bonus-Tide-Coins)
+## 6. GlowBuoyStation deposit (bonus Tide Coins)
 
-- `PickupSpawner` beobachtet die platzierten Gebäude jedes Spielers
-  (`PlotRegistry.GetBuildingsFolder`, KEIN Eingriff in `PlacementService`)
-  und bringt an jeder Instanz mit `GetAttribute("BuildingId") ==
-  "GlowBuoyStation"` ein `ProximityPrompt "DepositPrompt"` an.
-- Auslösen mit gehaltener `GlowSpore` im Gepäck: Server validiert erneut
-  Distanz, ruft `HeldItemService.ConsumeHeld(player)`, zerstört das
-  konsumierte Modell und gewährt
+- `PickupSpawner` watches each player's placed buildings
+  (`PlotRegistry.GetBuildingsFolder`, NO changes to `PlacementService`) and
+  attaches a `ProximityPrompt "DepositPrompt"` to every instance with
+  `GetAttribute("BuildingId") == "GlowBuoyStation"`.
+- Triggering it while holding a `GlowSpore`: the server re-validates
+  distance, calls `HeldItemService.ConsumeHeld(player)`, destroys the
+  consumed model, and grants
   `PlayerDataService.AddCurrency(player, "TideCoins",
-  HeldItemConfig.Deposit.TideCoinsReward)` (Default 25).
-- `PlayerDataService` wird dabei ausschließlich über seine bestehende,
-  öffentliche API gelesen/aufgerufen - die Datei selbst wurde nicht
-  verändert.
+  HeldItemConfig.Deposit.TideCoinsReward)` (default 25).
+- `PlayerDataService` is read/called exclusively through its existing,
+  public API here - the file itself was not modified.
 
-## 7. Künftige Aufrufer (für die parallel arbeitenden Agenten)
+## 7. Future callers (for the agents working in parallel)
 
-Dieses System stellt bewusst eine generische API bereit. Die folgenden
-Anknüpfpunkte sind vorbereitet (`HeldItemConfig` kennt bereits `Egg` und
-`Creature` als `ItemKind`), aber **nicht selbst implementiert**, da die
-zugehörigen Dateien laut Auftrag nicht angefasst werden dürfen:
+This system deliberately provides a generic API. The following hook points
+are prepared (`HeldItemConfig` already knows `Egg` and `Creature` as
+`ItemKind`), but **not implemented themselves**, since the corresponding
+files must not be touched per the task brief:
 
-- **`GachaService.OpenEgg`** (`src/server/GachaService.lua`): Nachdem ein
-  Mystery-Egg gewürfelt wurde und der Spieler es "aufnimmt"/anzeigt, könnte
-  dort ergänzt werden:
+- **`GachaService.OpenEgg`** (`src/server/GachaService.lua`): after a
+  Mystery Egg has been rolled and the player "picks up"/views it, this
+  could be added there:
   ```lua
   local HeldItemService = require(ServerScriptService.HeldItemService)
-  local eggTemplate = -- passende Vorlage aus ReplicatedStorage.AssetTemplates
+  local eggTemplate = -- matching template from ReplicatedStorage.AssetTemplates
   HeldItemService.HoldItem(player, "Egg", eggTemplate)
   ```
-  Hinweis: Die Mystery-Egg-Modelle (`assets/models/gacha/MysteryEgg_*.lua`)
-  sind laut `assets/models/README.md` aktuell noch reine
-  Buildscript-Ergebnisse ohne ReplicatedStorage-Vorlagen-Promotion (wie
-  `AssetTemplateSetup` es für Terrain/Buildings/Enemies macht) - eine
-  analoge Promotion für `gacha/` wäre die Voraussetzung, bevor
-  `GachaService` ein wiederverwendbares Vorlagen-Modell referenzieren kann.
+  Note: per `assets/models/README.md`, the Mystery Egg models
+  (`assets/models/gacha/MysteryEgg_*.lua`) are currently still pure
+  buildscript outputs without ReplicatedStorage template promotion (the way
+  `AssetTemplateSetup` does it for Terrain/Buildings/Enemies) - an
+  analogous promotion for `gacha/` would be the prerequisite before
+  `GachaService` can reference a reusable template model.
 - **`BreedingService.RequestClaimBreeding`**
-  (`src/server/BreedingService.lua`): Nach erfolgreichem Abholen einer
-  fertig geschlüpften Kreatur (`CreatureId`/`Rarity` bereits bekannt, siehe
-  `BreedingIncubation`-Typ in `PlayerDataService`):
+  (`src/server/BreedingService.lua`): after successfully claiming a
+  fully hatched creature (`CreatureId`/`Rarity` already known, see the
+  `BreedingIncubation` type in `PlayerDataService`):
   ```lua
   local HeldItemService = require(ServerScriptService.HeldItemService)
-  local creatureTemplate = -- passende Kreaturen-Vorlage (siehe assets/models/creatures/*.lua)
+  local creatureTemplate = -- matching creature template (see assets/models/creatures/*.lua)
   HeldItemService.HoldItem(player, "Creature", creatureTemplate, {
       DisplayName = creatureData.CreatureName,
   })
   ```
-- **`PlacementService`** benötigt keine Anbindung - Gebäude werden nicht
-  "gehalten", sondern direkt platziert.
+- **`PlacementService`** needs no hookup - buildings aren't "held", they're
+  placed directly.
 
-In allen Fällen gilt: `HoldItem` klont die übergebene Vorlage automatisch
-(kein `Reparent`), das Original bleibt unangetastet und wiederverwendbar für
-weitere Spieler/Rolls.
+In all cases: `HoldItem` automatically clones the given template (no
+`Reparent`), the original stays untouched and reusable for further
+players/rolls.
 
-## 8. Client-Feedback (`HeldItemClient`)
+## 8. Client feedback (`HeldItemClient`)
 
-- Minimales, isoliertes HUD (kein Abhängigkeit vom parallel entstehenden
-  `src/shared/UIKit`) zeigt `"Hältst: <Name> (G zum Ablegen)"`, sobald
-  `HeldItemRemotes.HeldItemChanged` `Holding = true` meldet.
-- "Ablegen"-Aktion über `ContextActionService:BindAction(..., true,
-  Enum.KeyCode.G, Enum.KeyCode.ButtonX)` - der dritte Parameter
-  (`createTouchButton = true`) erzeugt automatisch einen Touch-Button auf
-  Mobile-Geräten, kein zusätzlicher Code nötig.
-- Glow-Effekt (`PointLight` + `ParticleEmitter`) wird über den
-  `CollectionService`-Tag `"HeldItem"` an JEDEM sichtbar gehaltenen Item
-  angebracht (auch bei anderen Spielern), unabhängig vom HUD/der
-  Ablegen-Aktion (die nur für den lokalen Spieler gelten).
+- A minimal, isolated HUD (no dependency on the parallel-in-progress
+  `src/shared/UIKit`) shows `"Holding: <Name> (G to drop)"` as soon as
+  `HeldItemRemotes.HeldItemChanged` reports `Holding = true`.
+- "Drop" action via `ContextActionService:BindAction(..., true,
+  Enum.KeyCode.G, Enum.KeyCode.ButtonX)` - the third parameter
+  (`createTouchButton = true`) automatically creates a touch button on
+  mobile devices, no extra code needed.
+- A glow effect (`PointLight` + `ParticleEmitter`) is attached via the
+  `CollectionService` tag `"HeldItem"` to EVERY visibly held item (including
+  other players'), independent of the HUD/drop action (which only apply to
+  the local player).
 
-## 9. Sicherheit (kein Client-Trust)
+## 9. Security (no client trust)
 
-- `HeldItemService` ist reine server-interne API (kein `RemoteFunction`
-  für den Client) - der Client kann ausschließlich `RequestDropHeld` für
-  seinen EIGENEN Charakter auslösen.
-- `PickupSpawner` validiert bei jeder `ProximityPrompt.Triggered`-Auslösung
-  erneut Besitz (`OwnerUserId`) und Distanz server-seitig, unabhängig von
-  den clientseitig sichtbaren Prompt-Parametern.
-- Alle Währungsgutschriften laufen ausschließlich über die bestehende,
-  geprüfte `PlayerDataService.AddCurrency`-API.
+- `HeldItemService` is a purely server-internal API (no `RemoteFunction`
+  for the client) - the client can only trigger `RequestDropHeld` for its
+  OWN character.
+- `PickupSpawner` re-validates ownership (`OwnerUserId`) and distance
+  server-side on every `ProximityPrompt.Triggered` trigger, independent of
+  the client-visible prompt parameters.
+- All currency grants run exclusively through the existing, vetted
+  `PlayerDataService.AddCurrency` API.

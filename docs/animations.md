@@ -1,150 +1,148 @@
-# Charakter-Animationen – Abyssara: Deep Tide Tycoon
+# Character Animations – Abyssara: Deep Tide Tycoon
 
-Dieses Dokument beschreibt das Animationssystem für Spielercharaktere:
-Gehen, Rennen, Springen/Fallen/Landen, Idle sowie Trage-Posen.
+This document describes the animation system for player characters:
+walking, running, jumping/falling/landing, idle, and carry poses.
 
-## Warum prozedural statt hochgeladener Animationen?
+## Why procedural instead of uploaded animations?
 
-Klassische Roblox-Animationen benötigen eine im Studio **hochgeladene**
-Animation-Asset-ID. Aus reinem Code heraus lässt sich keine live nutzbare
-Animation-ID erzeugen – `KeyframeSequenceProvider:RegisterKeyframeSequence`
-liefert nur eine temporäre ID, die im veröffentlichten Spiel **nicht**
-funktioniert. Deshalb nutzt dieses System standardmäßig **prozedurale
-Animation**: Jeder Client setzt pro Frame direkt die `Motor6D.C0`-Werte der
-Gelenke jedes sichtbaren Charakters, basierend auf replizierten Daten
-(Humanoid-Zustand, Geschwindigkeit, Position). `Motor6D.Transform`/`C0`
-repliziert nicht übers Netzwerk – daher animiert **jeder Client selbst jeden
-Charakter, den er sieht** (inkl. sich selbst). Das Ergebnis sieht für alle
-Spieler nahezu identisch aus, da es auf denselben replizierten
-Bewegungsdaten basiert.
+Classic Roblox animations need an animation asset ID **uploaded** in
+Studio. Pure code cannot generate a live-usable animation ID —
+`KeyframeSequenceProvider:RegisterKeyframeSequence` only returns a temporary
+ID that does **not** work in a published game. That's why this system uses
+**procedural animation** by default: each client sets the `Motor6D.C0`
+values of every visible character's joints directly, per frame, based on
+replicated data (Humanoid state, velocity, position). `Motor6D.Transform`/
+`C0` doesn't replicate over the network — so **every client animates every
+character it sees itself** (including itself). The result looks nearly
+identical for all players, since it's based on the same replicated movement
+data.
 
-## Dateien
+## Files
 
 - `src/shared/CharacterAnimation/` → `ReplicatedStorage.CharacterAnimation`
-  - `AnimationConfig.lua` – alle Stellschrauben (Geschwindigkeiten, Amplituden,
-    LOD-Distanzen, FX, Override-Tabelle)
-  - `Spring.lua` – generische kritisch gedämpfte Feder für weiches Blending
-  - `PoseLibrary.lua` – reine Pose-Funktionen (Idle, Locomotion, Jump/Fall/Land, Carry)
-  - `RigJoints.lua` – findet Motor6Ds für R15 (voll) und R6 (vereinfacht)
-  - `ProceduralAnimator.lua` – eine Instanz pro Charakter, wendet Posen pro Frame an
-  - `EffectsPool.lua` – gepoolte Staub-Partikel für Schritte/Landungen
+  - `AnimationConfig.lua` – all the tunables (speeds, amplitudes,
+    LOD distances, FX, override table)
+  - `Spring.lua` – generic critically-damped spring for smooth blending
+  - `PoseLibrary.lua` – pure pose functions (idle, locomotion, jump/fall/land, carry)
+  - `RigJoints.lua` – finds Motor6Ds for R15 (full) and R6 (simplified)
+  - `ProceduralAnimator.lua` – one instance per character, applies poses per frame
+  - `EffectsPool.lua` – pooled dust particles for footsteps/landings
 - `src/client/CharacterAnimator.client.lua` → `StarterPlayer.StarterPlayerScripts`
-  Orchestriert Animator-Instanzen, LOD, Sprint-Eingabe (Tastatur/Touch/Gamepad)
+  Orchestrates animator instances, LOD, sprint input (keyboard/touch/gamepad)
 - `src/server/CharacterSetup.server.lua` → `ServerScriptService`
-  Erzwingt R15, entfernt das Standard-`Animate`-Script, validiert Sprint
-  serverseitig (WalkSpeed wird **nur** vom Server gesetzt)
+  Enforces R15, removes the default `Animate` script, validates sprint
+  server-side (WalkSpeed is set **only** by the server)
 
-## Eigene, echte Animationen einbinden (optional)
+## Adding your own real animations (optional)
 
-Falls die Nutzerin später handgemachte oder gekaufte Animationen statt der
-prozeduralen Bewegung nutzen möchte:
+If you later want to use hand-made or purchased animations instead of the
+procedural movement:
 
-1. Animation im **Roblox Animation Editor** (Studio: Avatar → Animation
-   Editor) am R15-Rig erstellen oder eine gekaufte/Marketplace-Animation
-   verwenden.
-2. Im Editor auf **Publish** klicken → Roblox vergibt eine echte,
-   dauerhafte Asset-ID (Format `123456789`).
-3. In `src/shared/CharacterAnimation/AnimationConfig.lua` bei
-   `AnimationOverrides` den passenden Slot eintragen, z.B.:
+1. Create the animation in the **Roblox Animation Editor** (Studio: Avatar →
+   Animation Editor) on the R15 rig, or use a purchased/marketplace
+   animation.
+2. Click **Publish** in the editor → Roblox assigns a real, permanent asset
+   ID (format `123456789`).
+3. In `src/shared/CharacterAnimation/AnimationConfig.lua`, enter it in the
+   matching slot under `AnimationOverrides`, e.g.:
 
    ```lua
    AnimationConfig.AnimationOverrides = {
        Idle = "rbxassetid://123456789",
        Walk = "rbxassetid://234567890",
-       Run = "",   -- leer = weiterhin prozedural
+       Run = "",   -- empty = stays procedural
        Jump = "",
        Fall = "",
        Land = "",
    }
    ```
 
-4. Speichern, Rojo-Sync/Play testen. Für jeden gesetzten Slot lädt
-   `ProceduralAnimator` automatisch einen `AnimationTrack` über
-   `Animator:LoadAnimation()` und spielt ihn im passenden Zustand ab; die
-   prozedurale Pose für genau diesen Slot wird deaktiviert. Nicht gesetzte
-   Slots bleiben prozedural.
+4. Save, test via Rojo sync/Play. For every slot that's set,
+   `ProceduralAnimator` automatically loads an `AnimationTrack` via
+   `Animator:LoadAnimation()` and plays it in the matching state; the
+   procedural pose for exactly that slot is disabled. Unset slots stay
+   procedural.
 
-**Hinweis/Grenze:** Wenn nur einzelne Slots überschrieben werden (z.B. nur
-`Walk`), kann es an Übergängen zu anderen (noch prozeduralen) Zuständen zu
-leicht sichtbaren Sprüngen kommen, da beide Systeme dieselben Gelenke
-ansteuern. Für ein einheitliches Bild empfiehlt es sich, entweder **alle**
-sechs Slots zu überschreiben oder **keinen**.
+**Note/limitation:** if only individual slots are overridden (e.g. only
+`Walk`), transitions to other (still procedural) states can show slightly
+visible jumps, since both systems drive the same joints. For a consistent
+look, it's recommended to override either **all** six slots or **none**.
 
-## Rig-Unterstützung
+## Rig support
 
-- **R15 (Hauptziel):** volle Animation mit Schulter/Ellbogen/Handgelenk und
-  Hüfte/Knie/Fußgelenk – natürlicher Beinschwung, Armpendel, Hüftrotation.
-- **R6:** vereinfachte Version (nur Schulter/Hüfte, da R6 keine
-  Ellbogen/Knie-Gelenke besitzt). `CharacterSetup.server.lua` ruft
-  `Players:SetDefaultRigType(Enum.HumanoidRigType.R15)` auf, um neu
-  geladene Avatare nach Möglichkeit auf R15 zu zwingen. Schlägt das fehl
-  (z.B. API in der genutzten Studio-Version nicht vorhanden), erkennt
-  `RigJoints.lua` automatisch R6 und der Client nutzt die vereinfachte
-  Version – kein Absturz, nur weniger Detail.
+- **R15 (main target):** full animation with shoulder/elbow/wrist and
+  hip/knee/ankle — natural leg swing, arm swing, hip rotation.
+- **R6:** simplified version (shoulder/hip only, since R6 has no
+  elbow/knee joints). `CharacterSetup.server.lua` calls
+  `Players:SetDefaultRigType(Enum.HumanoidRigType.R15)` to force newly
+  loaded avatars to R15 where possible. If that fails (e.g. the API isn't
+  available in the Studio version in use), `RigJoints.lua` automatically
+  detects R6 and the client uses the simplified version — no crash, just
+  less detail.
 
-## Sprint-Eingabe
+## Sprint input
 
-- **PC:** Linke/Rechte Umschalttaste (Shift) halten
-- **Mobile:** automatisch erzeugter Touch-Button (über
+- **PC:** hold left/right Shift
+- **Mobile:** automatically generated touch button (via
   `ContextActionService:BindAction(..., true, ...)`)
-- **Gamepad:** L3 (linker Stick-Klick)
+- **Gamepad:** L3 (left stick click)
 
-Der Client sendet nur ein **Boolean** (`true`/`false`) über `SprintRemote`.
-Die tatsächliche `WalkSpeed` wird ausschließlich serverseitig in
-`CharacterSetup.server.lua` gesetzt und auf `34` gedeckelt – der Client kann
-keine beliebige Geschwindigkeit erzwingen. Zusätzlich gibt es eine
-Anfrage-Drosselung (Cooldown), um Remote-Spam zu verhindern.
+The client only sends a **boolean** (`true`/`false`) over `SprintRemote`.
+The actual `WalkSpeed` is set exclusively server-side in
+`CharacterSetup.server.lua` and capped at `34` — the client cannot force an
+arbitrary speed. There is also request throttling (cooldown) to prevent
+remote spam.
 
-## Trage-Posen (CarryPose)
+## Carry poses (CarryPose)
 
-Ein externes Halte-/Inventarsystem kann das Charakter-Attribut `CarryPose`
-setzen:
+An external holding/inventory system can set the character attribute
+`CarryPose`:
 
-- `"OneHand"` – rechter Arm hält ein Item vor dem Körper
-- `"TwoHand"` – beide Arme halten ein Item vor dem Körper
-- `nil` / nicht gesetzt – normale Armanimation
+- `"OneHand"` – right arm holds an item in front of the body
+- `"TwoHand"` – both arms hold an item in front of the body
+- `nil` / not set – normal arm animation
 
 ```lua
 character:SetAttribute("CarryPose", "OneHand")
 ```
 
-Die Beine animieren in jedem Fall normal weiter (Gehen/Rennen/Springen);
-nur die Arme werden weich (über eine Feder, kein hartes Umschalten) auf die
-Trage-Pose geblendet.
+The legs keep animating normally in every case (walking/running/jumping);
+only the arms blend smoothly (via a spring, no hard switch) into the carry
+pose.
 
-## Unterwasser-Flair
+## Underwater flair
 
-`AnimationConfig.UnderwaterFlairEnabled` (Standard: `true`) fügt Idle und
-Bewegung ein dezentes Schweben sowie einen leichten "Drag"-Faktor
-(`UnderwaterDragFactor`) hinzu, passend zum Deep-Tide-Setting. Auf `false`
-setzen, um komplett "trockene" Standardbewegung zu erhalten.
+`AnimationConfig.UnderwaterFlairEnabled` (default: `true`) adds a subtle
+float to idle and movement, plus a slight "drag" factor
+(`UnderwaterDragFactor`), matching the Deep Tide setting. Set it to `false`
+to get completely "dry" standard movement.
 
-## Performance-Maßnahmen
+## Performance measures
 
-- **Distanz-LOD** (`CharacterAnimator.client.lua`, alle 0,25s neu berechnet):
-  - `Full` (≤ 45 Studs zur Kamera): alle Gelenke, volle Detailtiefe, FX aktiv
-  - `Reduced` (≤ 110 Studs): nur Hauptgelenke (Schulter/Hüfte/Wirbelsäule/
-    Kopf), Ellbogen/Knie/Handgelenk/Fußgelenk werden übersprungen, keine FX
-  - `Off` (weiter entfernt): keine Motor6D-Updates (Charakter bleibt in
-    letzter Pose stehen, kostet praktisch nichts)
-- **Phasenkopplung an zurückgelegte Distanz statt feste Frequenz** –
-  verhindert Moonwalk/Rutschen unabhängig von Framerate-Schwankungen.
-- **Gepooltes FX-System** (`EffectsPool.lua`): feste Anzahl (`FXPoolSize`,
-  Standard 28) wiederverwendeter Partikel-Emitter statt `Instance.new` pro
-  Effekt – wichtig für Mobile.
-- **Physiksynchrones `RunService.PreSimulation`** statt `RenderStepped`,
-  damit Motor6D-Updates konsistent vor der nächsten Simulation/Renderframe
-  angewendet werden, ohne den Standard-Animator zu blockieren.
-- Alle Verbindungen (`Connections`) werden bei Charakter-Entfernung/Respawn
-  sauber getrennt (`cleanupCharacter` in `CharacterAnimator.client.lua`,
-  `ProceduralAnimator:Destroy()`), um Speicher-/Verbindungs-Leaks zu
-  vermeiden.
+- **Distance LOD** (`CharacterAnimator.client.lua`, recalculated every
+  0.25s):
+  - `Full` (≤ 45 studs from camera): all joints, full level of detail, FX active
+  - `Reduced` (≤ 110 studs): only main joints (shoulder/hip/spine/
+    head), elbow/knee/wrist/ankle are skipped, no FX
+  - `Off` (further away): no Motor6D updates (character stays in its
+    last pose, costs practically nothing)
+- **Phase locked to distance traveled instead of a fixed frequency** —
+  prevents moonwalking/sliding regardless of framerate fluctuations.
+- **Pooled FX system** (`EffectsPool.lua`): a fixed number (`FXPoolSize`,
+  default 28) of reused particle emitters instead of `Instance.new` per
+  effect — important for mobile.
+- **Physics-synced `RunService.PreSimulation`** instead of `RenderStepped`,
+  so Motor6D updates are applied consistently before the next
+  simulation/render frame, without blocking the default Animator.
+- All connections (`Connections`) are cleanly disconnected on character
+  removal/respawn (`cleanupCharacter` in `CharacterAnimator.client.lua`,
+  `ProceduralAnimator:Destroy()`), to avoid memory/connection leaks.
 
-## Platzhalter, die die Nutzerin ggf. anpassen möchte
+## Placeholders you may want to customize
 
-- `EffectsPool.lua`: `emitter.Texture` nutzt aktuell eine eingebaute
-  Roblox-Partikeltextur (`rbxasset://textures/particles/smoke_main.dds`)
-  als generischen Sand-/Staub-Look. Für einen individuelleren Look kann
-  hier eine eigene hochgeladene Textur-ID eingetragen werden.
-- `AnimationConfig.AnimationOverrides`: siehe Abschnitt "Eigene, echte
-  Animationen einbinden" oben.
+- `EffectsPool.lua`: `emitter.Texture` currently uses a built-in Roblox
+  particle texture (`rbxasset://textures/particles/smoke_main.dds`) as a
+  generic sand/dust look. For a more custom look, you can enter your own
+  uploaded texture ID here.
+- `AnimationConfig.AnimationOverrides`: see the "Adding your own real
+  animations" section above.

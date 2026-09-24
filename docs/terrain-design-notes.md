@@ -1,169 +1,167 @@
-# Terrain-Design-Notizen: **Abyssara – Deep Tide Tycoon**
+# Terrain Design Notes: **Abyssara – Deep Tide Tycoon**
 
-*Stand: 2026-09-24 · Ergänzung zu `game-design-doc.md` (Abschnitt 8) und
-`expansion-concepts.md` (Abschnitt 1.1, 2.8) · Grundlage für die
-Buildscripts unter `/home/user/ro/assets/models/terrain/`*
+*As of: 2026-09-24 · Companion to `game-design-doc.md` (Section 8) and
+`expansion-concepts.md` (Section 1.1, 2.8) · Basis for the buildscripts
+under `/home/user/ro/assets/models/terrain/`*
 
 ---
 
-## 0. Zweck
+## 0. Purpose
 
-Die ursprünglichen Terrain-Chunks für Sonnen- und Dämmerzone waren im
-Wesentlichen flache Grundflächen mit ein paar verstreuten Deko-Objekten
-("Dünen", "Boulder", "Kelp"). Dieses Dokument fasst die Recherche zusammen,
-die vor dem Ausbau aller vier Zonen-Terrains durchgeführt wurde, und
-beschreibt, wie jedes der resultierenden Prinzipien konkret in den vier
-Buildscripts umgesetzt wurde.
+The original terrain chunks for the Sun and Twilight Zones were
+essentially flat base surfaces with a few scattered decoration objects
+("dunes", "boulders", "kelp"). This document summarizes the research done
+before expanding all four zone terrains, and describes how each of the
+resulting principles was concretely implemented in the four buildscripts.
 
-## 1. Recherche: Kernprinzipien fesselnden 3D-Terrains
+## 1. Research: core principles of compelling 3D terrain
 
-Recherchequellen (Auswahl, vollständige Liste am Dokumentende):
+Research sources (selection, full list at the end of the document):
 Roblox Developer Forum ("Map Design Guidelines", "Large-Scale Roblox
 Terrain", "Tips for Beautiful Terrain"), Sandboxr ("Best Practices for Game
-Map Layout"), Analysen zu Subnautica/Abzù-Leveldesign, sowie
-Roblox-Performance-Threads zu Terrain vs. Parts.
+Map Layout"), analyses of Subnautica/Abzù level design, as well as Roblox
+performance threads on terrain vs. parts.
 
-### 1. Verticality / Höhenrhythmus
-Höhenunterschiede erzeugen Blickpunkte, Deckung, Orientierungspunkte und
-einen emotionalen Rhythmus (Enge vs. Weite). Eine durchgängig flache Fläche
-ist die größte einzelne Schwäche des ursprünglichen Terrain-Sets.
+### 1. Verticality / height rhythm
+Height differences create viewpoints, cover, landmarks and an emotional
+rhythm (tight vs. open). A consistently flat surface is the single biggest
+weakness of the original terrain set.
 
-### 2. Landmarks / Points of Interest
-Eine sichtbare "Landmark-Kette" verhindert, dass sich Spieler verlaufen, und
-gibt jeder Zone eine unverwechselbare Identität ("das ist die Zone mit dem
-Felsbogen/Torbogen/Boss-Tor/Abgrund").
+### 2. Landmarks / points of interest
+A visible "landmark chain" keeps players from getting lost, and gives each
+zone a distinctive identity ("that's the zone with the rock arch/gate/boss
+gate/abyss").
 
-### 3. Sichtachsen / "Leading the Eye"
-Gezielte Lichtsetzung, freigehaltene Sichtlinien und Formationen, die den
-Blick lenken, wecken Neugier und weisen (ohne UI) den Weg – ein
-Kernprinzip aus Subnautica/Abzù, wo Licht und leere Räume als "Atempausen"
-gezielt zur Navigation genutzt werden.
+### 3. Sightlines / "leading the eye"
+Deliberate lighting, kept-clear sightlines, and formations that guide the
+gaze spark curiosity and point the way (without UI) — a core principle from
+Subnautica/Abzù, where light and empty spaces are deliberately used as
+"breathing room" for navigation.
 
-### 4. Silhouetten-Lesbarkeit bei Low-Poly
-Bei wenigen Polygonen zählt die Kontur: große, eindeutige Blockformen lesen
-sich aus der Distanz besser als viele kleine Detailteile. Passt zum
-bestehenden blocky Roblox-Stil des Projekts.
+### 4. Silhouette readability at low-poly
+With few polygons, the outline matters most: large, unambiguous block
+shapes read better from a distance than many small detail pieces. Fits the
+project's existing blocky Roblox style.
 
-### 5. Farbpalette / Kontrast zwischen Zonen
-Jede Zone braucht eine klar unterscheidbare Farbsignatur (Wert- und
-Sättigungskontrast), damit "Tiefe" sich auch ohne UI-Levelanzeige anfühlt –
-von hell/warm (Sonnenzone) bis fast schwarz mit einzelnen Neon-Akzenten
-(Mitternachtszone, Hadal-Tiefe).
+### 5. Color palette / contrast between zones
+Every zone needs a clearly distinguishable color signature (value and
+saturation contrast), so that "depth" is felt even without a UI level
+indicator — from bright/warm (Sun Zone) to near-black with isolated neon
+accents (Midnight Zone, Hadal Depths).
 
-### 6. Deko-Dichte-Rhythmus (dicht vs. offen)
-Gleichmäßig verteilte Deko wirkt schnell monoton und kostet Performance ohne
-Mehrwert. Dichte "Taschen" rund um Landmarks, abgewechselt mit bewusst
-ruhigen/leeren Flächen, erzeugen Spannungsrhythmus und lenken zusätzlich die
-Aufmerksamkeit (Prinzip aus Roblox-Tycoon-/Dekorations-Analysen: dynamische
-Setups schlagen statische, aber Überfüllung schadet Ladezeiten/Retention).
+### 6. Decoration density rhythm (dense vs. open)
+Evenly distributed decoration quickly feels monotonous and costs
+performance without adding value. Dense "pockets" around landmarks,
+alternating with deliberately calm/empty areas, create tension rhythm and
+additionally guide attention (a principle from Roblox tycoon/decoration
+analyses: dynamic setups beat static ones, but overcrowding hurts load
+times/retention).
 
-### 7. Wegführung durch Enge/Weite-Wechsel
-Speziell für Höhlen-/Tiefsee-Level (Subnautica-Prinzip): schmale Passagen,
-die sich in große Kavernen/Plätze öffnen, erzeugen Spannung und
-Wiedererkennungspunkte im Streckenverlauf.
+### 7. Pacing through tight/open transitions
+Specifically for cave/deep-sea levels (a Subnautica principle): narrow
+passages that open into large caverns/plazas create tension and
+recognizable points along the route.
 
-### 8. Performance-Grenzen (Roblox-spezifisch)
-Roblox-Terrain (Smooth Terrain) ist ideal für sehr große, homogene Flächen;
-für kontrollierte, deterministische Buildscripts mit klaren Landmarks sind
-Parts + CSG (`UnionAsync`/`SubtractAsync`) die bessere Wahl, weil komplexe
-Formen (Bögen, Höhlentore, Mulden) zu **einem** performanten Part
-zusammengefasst werden, statt Dutzende Einzelteile zu benötigen. PartCount
-pro Chunk wurde deshalb bewusst in einem niedrigen zwei- bis unterem
-dreistelligen Bereich gehalten.
+### 8. Performance limits (Roblox-specific)
+Roblox terrain (Smooth Terrain) is ideal for very large, homogeneous
+surfaces; for controlled, deterministic buildscripts with clear landmarks,
+parts + CSG (`UnionAsync`/`SubtractAsync`) are the better choice, because
+complex shapes (arches, cave gates, basins) get merged into **one**
+performant part instead of needing dozens of individual pieces. PartCount
+per chunk was therefore deliberately kept in the low-to-mid three-digit
+range.
 
-## 2. Umsetzung pro Zone
+## 2. Implementation per zone
 
-Alle vier Skripte teilen ein wiederkehrendes Kompositionsmuster: eine
-**freigehaltene Sichtachse/Gasse** von der Hub-seitigen Kante zu einer
-**Landmark am gegenüberliegenden Zonen-Ende**, flankiert von
-**dichten Deko-Taschen an den Landmarks** und **ruhigeren Flächen dazwischen**
-– dieses wiederkehrende Muster verbindet die vier sehr unterschiedlichen
-Biome stilistisch, ohne sie gleich aussehen zu lassen.
+All four scripts share a recurring composition pattern: a **kept-clear
+sightline/lane** from the hub-facing edge to a **landmark at the opposite
+end of the zone**, flanked by **dense decoration pockets at the landmarks**
+and **calmer areas in between** — this recurring pattern ties the four
+very different biomes together stylistically, without making them look the
+same.
 
-### Sonnenzone (`SunZoneTerrainChunk.lua`, überarbeitet)
-- **Verticality:** per CSG-`SubtractAsync` (NegateOperation) eine sanfte,
-  runde Mulde ("Tidal Basin") in den Sandboden eingesenkt, plus zwei
-  gestufte Dünenhügel mit hellerer "Sonnenkuppe" (Farbbänderung als
-  billiger Tiefenhinweis).
-- **Landmarks (2):** "Sonnentor"-Felsbogen (CSG-`UnionAsync` aus zwei
-  Pfeilern + Sturz) nahe der Hub-Kante; gestrandetes Schiffswrack
-  (blocky Rumpf/Bug/Heck/Rippen-Silhouette) tiefer in der Zone.
-- **Sichtachse:** freigehaltene Hub-Gasse (`LANE_HALF_WIDTH`), gerahmt von
-  zwei Dünenrücken.
-- **Dichte-Rhythmus:** dichte Stein-/Korallen-Taschen um beide Landmarks,
-  ruhige, offene Sandflächen dazwischen.
-- **Palette:** warme Sand-/Korallentöne (Tutorial-Freundlichkeit).
+### Sun Zone (`SunZoneTerrainChunk.lua`, revised)
+- **Verticality:** a gentle, round basin ("Tidal Basin") sunk into the sand
+  floor via CSG `SubtractAsync` (NegateOperation), plus two stepped dune
+  hills with a lighter "sun crest" (color banding as a cheap depth cue).
+- **Landmarks (2):** "Sun Gate" rock arch (CSG `UnionAsync` of two pillars
+  + a lintel) near the hub edge; a beached shipwreck (blocky hull/bow/
+  stern/rib silhouette) deeper in the zone.
+- **Sightline:** a kept-clear hub lane (`LANE_HALF_WIDTH`), framed by two
+  dune ridges.
+- **Density rhythm:** dense rock/coral pockets around both landmarks, calm,
+  open sand areas in between.
+- **Palette:** warm sand/coral tones (tutorial-friendly).
 
-### Dämmerzone (`TwilightZoneTerrainChunk.lua`, überarbeitet)
-- **Verticality:** zwei aufragende Felsnadeln (CSG-`UnionAsync` gestapelter,
-  leicht versetzter Blöcke) plus eine lang gezogene, per `SubtractAsync`
-  eingeschnittene Felsspalte (Canyon-Charakter statt runder Mulde).
-- **Landmark:** "Kelp-Torbogen" – zwei Kelp-Stämme, die sich **entlang einer
-  echten Kurve** (nicht nur Rotations-Sway wie die übrigen Kelp-Halme)
-  zueinander biegen und sich oben in einem leuchtenden Neon-Knoten treffen.
-- **Sichtachse:** engere Hub-Gasse als in der Sonnenzone (bewusst
-  klaustrophobischeres Zonengefühl), gesäumt von dichten Fels-/Kelp-Wänden.
-- **Dichte-Rhythmus:** dichte Kelpwälder an den Rändern, klare Gasse in der
-  Mitte.
-- **Palette:** kühle, dunklere Grau-/Blautöne mit türkis-aqua Neon-Akzenten
-  (starker Kontrast zur Sonnenzone).
+### Twilight Zone (`TwilightZoneTerrainChunk.lua`, revised)
+- **Verticality:** two towering rock spires (CSG `UnionAsync` of stacked,
+  slightly offset blocks) plus a long, cut-in rock crevice via
+  `SubtractAsync` (canyon character instead of a round basin).
+- **Landmark:** "Kelp Arch" — two kelp stalks that curve toward each other
+  **along a real curve** (not just rotational sway like the other kelp
+  strands) and meet at the top in a glowing neon knot.
+- **Sightline:** a narrower hub lane than the Sun Zone (deliberately more
+  claustrophobic zone feel), lined with dense rock/kelp walls.
+- **Density rhythm:** dense kelp forests at the edges, a clear lane in the
+  middle.
+- **Palette:** cool, darker gray/blue tones with turquoise-aqua neon
+  accents (strong contrast with the Sun Zone).
 
-### Mitternachtszone (`MidnightZoneTerrainChunk.lua`, neu)
-- **Verticality/Enge-Rhythmus:** enge Einstiegs-Passage (dichte Wände +
-  überhängende Deckenplatte) öffnet sich zu einer hohen Hauptkaverne mit
-  Stalagmiten (CSG-`UnionAsync` gestapelter Tiers) und Stalaktiten.
-- **Landmark:** Arena-Eingang "Der Tiefenfürst" – ein per `SubtractAsync`
-  (NegateOperation) aus einem Felsblock herausgeschnittenes, rundes
-  Höhlentor, flankiert von zwei lava-geäderten Felsnadeln, vor einer per
-  `SubtractAsync` eingesenkten, lavaumrandeten Arena-Vorplatzfläche.
-- **Licht als Wegführung:** da Silhouetten im Dunkeln kaum lesbar sind,
-  übernehmen glühende Lavaspalten/-pools (`Enum.Material.Neon` +
-  `PointLight`) die Rolle der Sichtachse aus der Sonnenzone und markieren
-  den begehbaren Pfad vom Eingang bis zum Boss-Tor.
-- **Dichte-Rhythmus:** dichte Passage, sparsame/monumentale Kaverne, dichte
-  Deko direkt am Tor (Erwartungsspannung).
-- **Palette:** fast schwarzes Basalt/Obsidian + heißes Orange-Rot als
-  einzige warme Akzentfarbe.
+### Midnight Zone (`MidnightZoneTerrainChunk.lua`, new)
+- **Verticality/tight-open rhythm:** a narrow entry passage (dense walls +
+  an overhanging ceiling slab) opens into a tall main cavern with
+  stalagmites (CSG `UnionAsync` of stacked tiers) and stalactites.
+- **Landmark:** arena entrance "The Trench Warden" — a round cave gate cut
+  out of a rock block via `SubtractAsync` (NegateOperation), flanked by two
+  lava-veined rock spires, in front of a lava-rimmed arena forecourt area
+  sunk in via `SubtractAsync`.
+- **Light as pathfinding:** since silhouettes are barely readable in the
+  dark, glowing lava rifts/pools (`Enum.Material.Neon` + `PointLight`) take
+  over the role of the Sun Zone's sightline and mark the walkable path from
+  the entrance to the boss gate.
+- **Density rhythm:** dense passage, sparse/monumental cavern, dense
+  decoration right at the gate (anticipation tension).
+- **Palette:** near-black basalt/obsidian + hot orange-red as the sole warm
+  accent color.
 
-### Hadal-Tiefe (`HadalDepthsTerrainChunk.lua`, neu)
-- **Extremste Verticality:** das begehbare Plateau deckt bewusst nur einen
-  Teil des Chunk-Footprints ab (`FLOOR_DEPTH < CHUNK_SIZE`) – jenseits der
-  Abgrund-Kante existiert **kein Boden mehr**; winzige, weit unten
-  verstreute "Deep Glints" verstärken den Eindruck von Bodenlosigkeit.
-- **Landmark:** monumentales Kristallspitzen-Ensemble (zwei CSG-`UnionAsync`-
-  Cluster aus je 5 Kristallschalen) direkt an der Kante, mit einer
-  freischwebenden, aus der Kante herausragenden Glas-Aussichtsplattform
-  ("Void-Tech"-Streben statt organischer Formen).
-- **Sichtachse:** "Void-Gasse" (gleiche Hub-Achse wie Mitternachtszone)
-  führt direkt auf die Aussichtsplattform zu; Kristallfelder werden zur
-  Kante hin per Skalen-Crescendo größer (lenkt den Blick zusätzlich).
-- **Silhouetten/Formsprache:** scharfkantige `WedgePart`-Kristallsplitter
-  statt organischer Rundungen – bewusster stilistischer Bruch zu den drei
-  organischeren Vorzonen.
-- **Palette:** fast schwarzes Abgrund-Violett + Neon-Quartett (Cyan,
-  Magenta, Violett, Teal) – stärkster Palettenkontrast aller vier Zonen.
+### Hadal Depths (`HadalDepthsTerrainChunk.lua`, new)
+- **Most extreme verticality:** the walkable plateau deliberately covers
+  only part of the chunk footprint (`FLOOR_DEPTH < CHUNK_SIZE`) — beyond
+  the abyss edge, there is **no floor at all**; tiny "deep glints"
+  scattered far below reinforce the sense of bottomlessness.
+- **Landmark:** a monumental crystal-spire ensemble (two CSG `UnionAsync`
+  clusters of 5 crystal shards each) right at the edge, with a floating
+  glass overlook platform jutting out from the edge ("void-tech" struts
+  instead of organic shapes).
+- **Sightline:** the "Void Lane" (same hub axis as the Midnight Zone) leads
+  directly to the overlook platform; crystal fields grow larger toward the
+  edge via a scale crescendo (further guiding the gaze).
+- **Silhouettes/shape language:** sharp-edged `WedgePart` crystal splinters
+  instead of organic curves — a deliberate stylistic break from the three
+  more organic preceding zones.
+- **Palette:** near-black abyss-violet + a neon quartet (cyan, magenta,
+  violet, teal) — the strongest palette contrast of all four zones.
 
-## 3. Technische Umsetzungshinweise (für Wartung/Erweiterung)
+## 3. Technical implementation notes (for maintenance/expansion)
 
-- CSG-Technik "Mulde/Spalte": eine (ggf. gestreckte) `Enum.PartType.Ball`
-  wird so positioniert, dass ihr Mittelpunkt exakt auf der Oberkante der
-  Grundfläche liegt (`localY = BASE_TOP_Y`); `SubtractAsync` entfernt dann
-  die untere Hemisphäre und erzeugt eine sanfte, runde Senke mit
-  Tiefe = vertikaler Kugelradius. Gleiche Technik, unterschiedliche
-  Seitenverhältnisse: runde Mulde (Sonnenzone/Mitternachtszone) vs.
-  lang gezogener Canyon (Dämmerzone).
-- CSG-Technik "Torbogen/Nadel": mehrere Parts werden überlappend/berührend
-  angeordnet und per `UnionAsync` zu einem einzigen Part zusammengefasst
-  (Pfeiler+Sturz = Bogen; gestapelte, leicht versetzte Tiers = Felsnadel/
-  Stalagmit/Kristallcluster).
-- Alle `ORIGIN`-CFrames in diesem Projekt sind reine Translationen (keine
-  Rotation) – das vereinfacht Weltraum-/Lokalraum-Umrechnungen bei
-  prozeduralen Kurven (z. B. Kelp-Torbogen) erheblich.
-- Jedes Skript bleibt idempotent (vorhandenes Modell wird vor dem Neubau
-  entfernt) und exportiert `PrimaryPart = "ChunkBase"` sowie das Attribut
-  `Zone` – unverändert gegenüber dem ursprünglichen Muster.
+- CSG technique "basin/crevice": a (possibly stretched) `Enum.PartType.Ball`
+  is positioned so its center sits exactly on the top edge of the base
+  surface (`localY = BASE_TOP_Y`); `SubtractAsync` then removes the lower
+  hemisphere, creating a gentle, round depression with depth = vertical
+  sphere radius. Same technique, different aspect ratios: round basin (Sun
+  Zone/Midnight Zone) vs. elongated canyon (Twilight Zone).
+- CSG technique "arch/spire": several parts are arranged overlapping/
+  touching and merged into a single part via `UnionAsync` (pillars + lintel
+  = arch; stacked, slightly offset tiers = rock spire/stalagmite/crystal
+  cluster).
+- All `ORIGIN` CFrames in this project are pure translations (no rotation)
+  — this significantly simplifies world-space/local-space conversions for
+  procedural curves (e.g. the kelp arch).
+- Every script stays idempotent (an existing model is removed before the
+  rebuild) and exports `PrimaryPart = "ChunkBase"` as well as the `Zone`
+  attribute — unchanged from the original pattern.
 
-## 4. Quellen (Recherche-Links)
+## 4. Sources (research links)
 
 - [Map Design Guidelines – Roblox DevForum](https://devforum.roblox.com/t/map-design-guidelines-make-your-maps-superior/1293781)
 - [Tips for Building Beautiful Terrain – Medium/Developer Baseplate](https://medium.com/roblox-developer/tips-for-building-beautiful-terrain-6a13fd1ba314)
