@@ -92,7 +92,7 @@ function ProgressionService.AwardXP(player: Player, source: ProgressionEventSour
 
 	local reward = ProgressionConfig.XP_REWARDS[source]
 	if not reward then
-		warn(("[ProgressionService] Unbekannte XP-Quelle '%s' - keine XP vergeben."):format(tostring(source)))
+		warn(("[ProgressionService] Unknown XP source '%s' - no XP granted."):format(tostring(source)))
 		return false
 	end
 

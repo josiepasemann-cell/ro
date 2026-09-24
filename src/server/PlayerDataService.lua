@@ -474,7 +474,7 @@ local function withRetry(description: string, fn: () -> any): (boolean, any)
 
 		lastErr = resultOrErr
 		warn(
-			("[PlayerDataService] %s fehlgeschlagen (Versuch %d/%d): %s"):format(
+			("[PlayerDataService] %s failed (attempt %d/%d): %s"):format(
 				description,
 				attempt,
 				DATASTORE_RETRY_ATTEMPTS,

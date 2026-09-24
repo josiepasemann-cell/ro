@@ -1,91 +1,93 @@
-# Release-Checkliste: Abyssara – Deep Tide Tycoon
+# Release Checklist: Abyssara – Deep Tide Tycoon
 
-Stand: 2026-09-24. Der gesamte Code kompiliert (luau-compile) und wurde mit
-luau-lsp gegen die Roblox-API geprüft sowie von drei Review-Durchgängen auf
-Laufzeitfehler und Exploits durchgesehen. **Er ist aber noch nie in Roblox
-Studio gelaufen.** Rechne beim ersten Start mit Fehlern im Output-Fenster.
+As of: 2026-09-24. All code compiles (luau-compile), has been checked with
+luau-lsp against the Roblox API, and has been reviewed three times for
+runtime errors and exploits. **It has, however, never been run in Roblox
+Studio.** Expect errors in the Output window on first launch.
 
-## 1. Projekt in Studio bringen (Rojo)
+## 1. Get the project into Studio (Rojo)
 
-1. Rojo installieren (z. B. über die VS-Code-Erweiterung "Rojo" oder `rokit add rojo-rbx/rojo`) und das Rojo-Plugin in Studio installieren.
-2. Im Repo-Ordner `rojo serve` starten.
-3. In Studio einen neuen, leeren Place öffnen, im Rojo-Plugin auf **Connect** klicken.
-   `default.project.json` legt `src/shared` → ReplicatedStorage, `src/server` → ServerScriptService, `src/client` → StarterPlayerScripts.
+1. Install Rojo (e.g. via the "Rojo" VS Code extension or `rokit add rojo-rbx/rojo`) and install the Rojo plugin in Studio.
+2. In the repo folder, run `rojo serve`.
+3. In Studio, open a new, empty place and click **Connect** in the Rojo plugin.
+   `default.project.json` maps `src/shared` → ReplicatedStorage, `src/server` → ServerScriptService, `src/client` → StarterPlayerScripts.
 
-## 2. Studio-Einstellungen
+## 2. Studio settings
 
-- **Home → Game Settings → Security → "Enable Studio Access to API Services"** einschalten. Ohne das funktionieren Speichern (DataStore) und Ranglisten in Studio nicht.
-- Place einmal veröffentlichen (File → Publish to Roblox), sonst gibt es keine DataStores.
-- `Workspace.StreamingEnabled` einschalten (Handy-Performance, siehe `assets/models/README.md`).
-- Avatar-Typ R15 (erzwingt `CharacterSetup.server.lua` ohnehin).
+- Enable **Home → Game Settings → Security → "Enable Studio Access to API Services"**. Without this, saving (DataStore) and leaderboards won't work in Studio.
+- Publish the place once (File → Publish to Roblox), otherwise there are no DataStores.
+- Enable `Workspace.StreamingEnabled` (mobile performance, see `assets/models/README.md`).
+- Avatar type R15 (`CharacterSetup.server.lua` enforces this anyway).
 
-## 3. Modelle einmalig bauen
+## 3. Build the models once
 
-Die Modelle sind Buildscripts, keine fertigen Dateien. Jede Datei in Studio
-**im Bearbeitungsmodus** in die Command Bar (View → Command Bar) kopieren
-und ausführen. Die Skripte sind wiederholbar, doppeltes Ausführen ersetzt
-nur das alte Modell.
+The models are buildscripts, not finished files. Copy each file into the
+Command Bar in Studio **in Edit mode** (View → Command Bar) and run it. The
+scripts are repeatable — running one twice just replaces the old model.
 
-1. `assets/models/terrain/HabitatPlotBase.lua` (Plot-Vorlage)
-2. `assets/models/buildings/` alle 4 Dateien (Gebäude-Vorlagen)
-3. `assets/models/enemies/ShadowKraken.lua` (Raid-Gegner)
-4. `assets/models/pickups/GlowSporePickup.lua` (Glow Spore)
-5. `assets/models/creatures/` alle 6 Dateien
-6. `assets/models/gacha/` alle 7 Dateien (Eier + Öffnungs-Effekt)
-7. `assets/models/terrain/` die 4 `*TerrainChunk.lua` (Zonen, bleiben in der Welt)
-8. `assets/models/hub/TidalMarketHub.lua` (Hub mit Spawn, Shop-Stand, Portalen)
+1. `assets/models/terrain/HabitatPlotBase.lua` (plot template)
+2. `assets/models/buildings/` all 18 files (6 base-stage buildings + their Stage 2/3 upgrade files: BroodPool, GlowBuoyStation, FilterPlant, AnglerfishTower, CoralBarrier, ElectricEelTrap)
+3. `assets/models/enemies/` all 5 files (dedicated raid enemies SpineDrifter, ThornSwarmer, IronMawBrute, TrenchWardenBoss, plus the ShadowKraken fail-soft fallback template)
+4. `assets/models/pickups/` all 3 files (GlowSporePickup, SunkenChest, FrozenSpore)
+5. `assets/models/creatures/` all 22 files (6 MVP + 8 event-exclusive + 8 Zone 3/4 creatures)
+6. `assets/models/gacha/` all 7 files (eggs + opening effect)
+7. `assets/models/terrain/` the 4 `*TerrainChunk.lua` files (zones, stay in the world)
+8. `assets/models/decorations/` all 6 files (event cosmetic decorations: VenomDrip, JackOCoral, CoralGardenSet, IceSpire, MagmaVent, TreasurePile)
+9. `assets/models/hub/TidalMarketHub.lua` (hub with spawn, shop stand, portals)
+10. `assets/models/npcs/` all 5 files (Shopkeeper, EggKeeper, QuestGiver, Trader, Guide — run after the hub, since each NPC looks up its stand in `Workspace.Assets.Hub.TidalMarketHub`)
 
-Danach **speichern bzw. veröffentlichen**. Beim Serverstart verschiebt
-`AssetTemplateSetup.lua` die Vorlagen automatisch nach
-`ReplicatedStorage.AssetTemplates`. Fehlt ein Modell, gibt es eine Warnung im
-Output statt eines Absturzes; ohne Hub landen Spieler an einem Notfall-Spawn.
+Then **save or publish**. On server start, `AssetTemplateSetup.lua`
+automatically moves the templates to `ReplicatedStorage.AssetTemplates`. If a
+model is missing, there's a warning in the Output instead of a crash;
+without the hub, players land at an emergency spawn.
 
-Beim Serverstart stellt `GachaServer` drei Schau-Eier (Common, Epic, Mythic)
-auf die Mystery-Egg-Station im Hub; die übrigen Eier werden zu Vorlagen. Ein
-Ei an der Station kostet 350 Tide Coins (`GachaConfig.EGG_COST_TIDE_COINS`).
-Die 6 Kreaturen-Modelle bleiben dort stehen, wo ihr Buildscript sie baut
-(bei z = 60 nahe dem ersten Plot). Wer sie woanders will, ändert vor dem
-Ausführen `ORIGIN` oben in der jeweiligen Datei.
+On server start, `GachaServer` places three display eggs (Common, Epic,
+Mythic) on the Mystery Egg station in the hub; the remaining eggs become
+templates. An egg at the station costs 350 Tide Coins
+(`GachaConfig.EGG_COST_TIDE_COINS`). The creature models stay wherever their
+buildscript places them (around z = 60 near the first plot). If you want them
+elsewhere, change `ORIGIN` at the top of the respective file before running
+it.
 
-`assets/models/ui/GachaOddsPanel.lua` wird nicht mehr gebraucht (die Odds-UI
-entsteht per Code).
+`assets/models/ui/GachaOddsPanel.lua` is no longer needed (the odds UI is
+now generated by code).
 
-## 4. Testen
+## 4. Testing
 
-- **Test → Play**: Output-Fenster (View → Output) auf rote Fehler prüfen. Jeder Fehler dort ist ein echter Bug.
-- **Test → Clients and Servers** mit 2 Spielern: jeder bekommt einen eigenen Plot, niemand kann auf fremden Plots bauen, Ranglisten füllen sich.
-- **Test → Device** (Geräte-Emulator): mindestens ein Handy hochkant und quer, ein Tablet, Konsole. Prüfen: Menüleiste scrollt, nichts überlappt, Bauen per Tippen, Buttons groß genug.
-- Durchspielen: Tutorial → zum Plot reisen → bauen → Glow Spore aufheben und abgeben → Zucht starten und abholen → Mystery Egg → Raid abwarten (25 Min.; zum Testen `RaidConfig.RAID_INTERVAL_SECONDS` kurz stellen und vor dem Release zurücksetzen) → Level-Up → Quests abholen → Shop öffnen.
-- Mehrmals rejoinen: Daten bleiben, Tutorial kommt nicht wieder, Tages-Belohnung nicht doppelt.
-- Shop in Studio: "Studio: Testkauf"-Buttons simulieren Käufe (live unsichtbar).
+- **Test → Play**: check the Output window (View → Output) for red errors. Every error there is a real bug.
+- **Test → Clients and Servers** with 2 players: each gets their own plot, no one can build on someone else's plot, leaderboards fill in.
+- **Test → Device** (device emulator): at least one phone in portrait and landscape, one tablet, one console. Check: the menu bar scrolls, nothing overlaps, building works by tapping, buttons are large enough.
+- Play through: tutorial → travel to your plot → build → pick up and deliver a Glow Spore → start breeding and claim it → Mystery Egg → wait for a raid (25 min.; for testing, temporarily lower `RaidConfig.RAID_INTERVAL_SECONDS` and reset it before release) → level up → claim quests → open the shop.
+- Rejoin multiple times: data persists, the tutorial doesn't reappear, the daily reward isn't granted twice.
+- Shop in Studio: "Studio: Test Purchase" buttons simulate purchases (invisible live).
 
-## 5. Selbst eintragen
+## 5. Fill in yourself
 
-| Was | Wo | Anleitung |
+| What | Where | Guide |
 |---|---|---|
-| Gamepass- und Produkt-IDs | `src/shared/ShopConfig.lua` | `docs/monetization-setup.md` |
-| Sounds (Klick, Toast, Level-Up, Mythic, Musik, Ambiente) | `src/shared/UIKit/SoundConfig.lua` | Eigene oder lizenzierte Sounds hochladen (Creator Dashboard → Audio), `rbxassetid://…` eintragen. Alle IDs sind leer; leere ID = Stille, kein Fehler. |
-| Eigene Animationen (optional) | `src/shared/CharacterAnimation/AnimationConfig.lua` | `docs/animations.md` |
-| Shop-Icons (optional) | `IconAssetId` in `ShopConfig.lua` | Aktuell zeigt der Shop Neon-Symbole statt Bildern. |
+| Gamepass and product IDs | `src/shared/ShopConfig.lua` | `docs/monetization-setup.md` |
+| Sounds (click, toast, level-up, Mythic, music, ambience) | `src/shared/UIKit/SoundConfig.lua` | Upload your own or licensed sounds (Creator Dashboard → Audio), enter `rbxassetid://…`. All IDs are empty; an empty ID = silence, not an error. |
+| Custom animations (optional) | `src/shared/CharacterAnimation/AnimationConfig.lua` | `docs/animations.md` |
+| Shop icons (optional) | `IconAssetId` in `ShopConfig.lua` | The shop currently shows neon symbols instead of images. |
+| Roblox badge IDs (optional, recommended for 4 milestone achievements) | `BadgeId` in `src/shared/AchievementConfig.lua` | `docs/achievements.md` § "Creating real Roblox badges" — recommended: `Building_MasterBuilder`, `Raids_Tier3`, `Levels_AbyssalMaster`, `Secret_TrueAbyssal`. `BadgeId = 0` means no badge (currency/title reward only) and works fine as-is. |
 
-**Den Gamepass "Extra Habitat-Plot" NICHT anlegen**, solange die ID dort auf
-0 steht: Das Spiel unterstützt nur einen Plot pro Spieler, Käufer bekämen
-nichts.
+**Do NOT create the "Extra Habitat Plot" gamepass** while its ID is still 0:
+the game only supports one plot per player, so buyers would get nothing.
 
-## 6. Veröffentlichen (Creator Dashboard)
+## 6. Publishing (Creator Dashboard)
 
-- Fragebogen zur Altersfreigabe / Inhalte ausfüllen (Pflicht für öffentliche Spiele).
-- Name, Beschreibung, Icon (512×512), mindestens ein Thumbnail, Genre.
-- Unterstützte Geräte: Computer, Handy, Tablet, Konsole. (Konsole nur anhaken, wenn mit Gamepad getestet.)
-- Erst privat bzw. für Freunde testen, dann öffentlich schalten.
+- Fill out the age rating / content questionnaire (required for public games).
+- Name, description, icon (512×512), at least one thumbnail, genre.
+- Supported devices: computer, phone, tablet, console. (Only check console if it's been tested with a gamepad.)
+- Test privately or with friends first, then switch to public.
 
-## 7. Bekannte Lücken
+## 7. Known gaps
 
-Nicht gebaut, obwohl im Konzept (`docs/game-design-doc.md`):
+Not built, even though it's in the concept (`docs/game-design-doc.md`):
 
-- **Handel zwischen Spielern**: Das Handelsdock im Hub ist nur Deko.
-- **Wächter-Kreaturen im Raid**, weitere Turmtypen (Korallen-Barriere, Elektro-Aal), eigene Gegnermodelle (alle Gegner nutzen die Schattenkrake).
-- **Zone 3 und 4** sind begehbar, haben aber noch keine eigenen Kreaturen oder stärkeren Raids.
-- **Prestige, Koop-Modus, Season Pass** (Phase 2 laut Konzept).
-- Rangliste "Tiefste Zone" nutzt vorerst das Level.
-- Mehrere Plots pro Spieler.
+- **Trading between players**: the trade dock in the hub is decoration only.
+- **Guardian creatures in raids** (deploying bred creatures as active combat allies during a Trench Raid — `RaidService` only has a comment placeholder for a future `RequestDeployGuardian` remote).
+- **Prestige, co-op mode** (Phase 2 per the concept).
+- No season pass — this is a deliberate design decision, not a gap: event rotation (six 12-hour live events, see `docs/live-events.md`) is the sole live-content mechanic for this game.
+- The "Deepest Zone" leaderboard uses the player's level as a stand-in for now.
+- Multiple plots per player.

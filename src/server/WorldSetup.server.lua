@@ -136,7 +136,7 @@ sunRays.Enabled = false
 -- klaren Stimmungsgewinn gegenüber Fog+Atmosphere - siehe README "hub"-
 -- Abschnitt, Performance-Hinweise.
 
-print("[Abyssara] WorldSetup: Lighting/Atmosphere/ColorCorrection/Bloom für Tiefsee-Stimmung gesetzt.")
+print("[Abyssara] WorldSetup: Lighting/Atmosphere/ColorCorrection/Bloom set for deep-sea mood.")
 
 -- // 3) Hub-Vorhandensein prüfen (analog AssetTemplateSetup-Muster) ------
 local function findHubModel(): Model?
@@ -170,11 +170,11 @@ local function ensureFallbackSpawn()
 	spawn.Parent = fallbackFolder
 
 	warn(
-		"[WorldSetup] Workspace.Assets.Hub.TidalMarketHub fehlt - bitte "
-			.. "assets/models/hub/TidalMarketHub.lua einmal in Studio ausführen "
-			.. "und das Place speichern (siehe Kopfkommentar dort). Ein "
-			.. "minimaler Notfall-Spawn wurde erzeugt, damit Spieler trotzdem "
-			.. "sicher joinen können."
+		"[WorldSetup] Workspace.Assets.Hub.TidalMarketHub is missing - please "
+			.. "run assets/models/hub/TidalMarketHub.lua once in Studio "
+			.. "and save the place (see the header comment there). A "
+			.. "minimal fallback spawn was created so players can still "
+			.. "join safely."
 	)
 end
 
@@ -184,7 +184,7 @@ local hubCenter = hubModel and hubModel.PrimaryPart and hubModel.PrimaryPart.Pos
 if not hubModel then
 	ensureFallbackSpawn()
 else
-	print("[Abyssara] WorldSetup: TidalMarketHub gefunden bei " .. tostring(hubCenter) .. ".")
+	print("[Abyssara] WorldSetup: TidalMarketHub found at " .. tostring(hubCenter) .. ".")
 end
 
 -- // 4) Ambiente Lebendigkeit: Blasen, Plankton, sanftes Flackern --------

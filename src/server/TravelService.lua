@@ -298,8 +298,8 @@ local function attachPlotGatePrompt(hubModel: Model)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "PlotGatePrompt"
-	prompt.ActionText = "Zum eigenen Plot"
-	prompt.ObjectText = "Plot-Tor"
+	prompt.ActionText = "To Your Plot"
+	prompt.ObjectText = "Plot Gate"
 	prompt.HoldDuration = 0.3
 	prompt.MaxActivationDistance = 10
 	prompt.RequiresLineOfSight = false
@@ -323,7 +323,7 @@ local function attachZonePortalPrompts(hubModel: Model)
 			if part and not part:FindFirstChild("ZonePortalPrompt") then
 				local prompt = Instance.new("ProximityPrompt")
 				prompt.Name = "ZonePortalPrompt"
-				prompt.ActionText = "Reisen"
+				prompt.ActionText = "Travel"
 				prompt.ObjectText = zoneId
 				prompt.HoldDuration = 0.5
 				prompt.MaxActivationDistance = 12
@@ -352,8 +352,8 @@ local function runHubPromptSetup()
 
 	if not hubModel then
 		warn(
-			"[TravelService] Workspace.Assets.Hub.TidalMarketHub nicht gefunden - PlotGate-/Zonenportal-"
-				.. "ProximityPrompts werden übersprungen (siehe assets/models/hub/TidalMarketHub.lua)."
+			"[TravelService] Workspace.Assets.Hub.TidalMarketHub not found - PlotGate/zone portal "
+				.. "ProximityPrompts skipped (see assets/models/hub/TidalMarketHub.lua)."
 		)
 		return
 	end
