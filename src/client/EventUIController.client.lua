@@ -77,31 +77,31 @@ local SHOP_ITEM_GLYPH: { [string]: string } = {
 }
 
 local SHOP_REASON_MESSAGES: { [string]: string } = {
-	DataNotLoaded = "Deine Spieldaten laden noch – bitte kurz warten.",
-	NoActiveEvent = "Gerade ist kein Event aktiv.",
-	UnknownItem = "Dieser Artikel ist nicht mehr verfügbar.",
-	InsufficientFunds = "Nicht genug Event-Währung.",
-	EggRollFailed = "Ei konnte nicht geöffnet werden – bitte erneut versuchen.",
-	PersistenceFailed = "Speichern fehlgeschlagen – bitte erneut versuchen.",
+	DataNotLoaded = "Your save data is still loading - please wait a moment.",
+	NoActiveEvent = "No event is active right now.",
+	UnknownItem = "This item is no longer available.",
+	InsufficientFunds = "Not enough event currency.",
+	EggRollFailed = "Egg could not be opened - please try again.",
+	PersistenceFailed = "Save failed - please try again.",
 }
 
 local QUEST_REASON_MESSAGES: { [string]: string } = {
-	DataNotLoaded = "Deine Spieldaten laden noch – bitte kurz warten.",
-	NoActiveEvent = "Gerade ist kein Event aktiv.",
-	AlreadyClaimed = "Belohnung wurde bereits abgeholt.",
-	NotCompleted = "Noch nicht alle Schritte abgeschlossen.",
+	DataNotLoaded = "Your save data is still loading - please wait a moment.",
+	NoActiveEvent = "No event is active right now.",
+	AlreadyClaimed = "Reward already claimed.",
+	NotCompleted = "Not all steps are complete yet.",
 }
 
 local CURRENCY_REASON_TOAST: { [string]: string } = {
-	VentPulse = "🔥 Vent-Puls! Bonus-Währung erhalten.",
-	GhostShipFound = "👻 Das Ghost Ship wurde gesichtet!",
-	SunkenChestOpened = "🏴‍☠️ Sunken Chest geöffnet!",
-	FrozenSporeThawed = "❄️ Frozen Spore aufgetaut!",
+	VentPulse = "🔥 Vent pulse! Bonus currency earned.",
+	GhostShipFound = "👻 The Ghost Ship has been sighted!",
+	SunkenChestOpened = "🏴‍☠️ Sunken Chest opened!",
+	FrozenSporeThawed = "❄️ Frozen Spore thawed!",
 }
 
 local function friendlyReason(map: { [string]: string }, reason: string?): string
 	if not reason then
-		return "Aktion fehlgeschlagen. Bitte erneut versuchen."
+		return "Action failed. Please try again."
 	end
 	return map[reason] or ("Aktion fehlgeschlagen (" .. reason .. ").")
 end
@@ -232,7 +232,7 @@ local bannerGlyphLabel = makeLabel({
 
 local bannerNameLabel = makeLabel({
 	Parent = bannerFrame,
-	Text = "Lädt…",
+	Text = "Loading…",
 	Size = UDim2.new(1, -46, 0, 22),
 	Position = UDim2.fromOffset(44, 4),
 	Font = Theme.Font.BodyBold,
@@ -318,7 +318,7 @@ local function buildShopCard(parent: Instance, order: number, item: ShopItemRow)
 
 	local buyButton = Button.new({
 		Parent = card,
-		Text = "Kaufen",
+		Text = "Buy",
 		Variant = "Primary",
 		Size = UDim2.fromOffset(96, 34),
 		LayoutOrder = 1,
@@ -449,7 +449,7 @@ local function rebuildQuestTab()
 
 	questRewardLabel = makeLabel({
 		Parent = host,
-		Text = ("Belohnung: 🪙%d + Titel \"%s\""):format(questLine.RewardTideCoins, questLine.RewardTitle),
+		Text = ("Reward: 🪙%d + \"%s\" title"):format(questLine.RewardTideCoins, questLine.RewardTitle),
 		Size = UDim2.new(1, 0, 0, 20),
 		Color = Theme.Neon.Yellow,
 		MinSize = 10,
@@ -463,7 +463,7 @@ local function rebuildQuestTab()
 	end
 	questClaimButton = Button.new({
 		Parent = host,
-		Text = "Belohnung abholen",
+		Text = "Claim Reward",
 		Variant = "Success",
 		Important = true,
 		Size = UDim2.new(1, 0, 0, 42),
@@ -484,7 +484,7 @@ refreshQuestClaimState = function()
 	local questLine = currentState.QuestLine
 	if questLine.Claimed then
 		questClaimButton:SetDisabled(true)
-		questClaimButton:SetText("Erledigt ✓")
+		questClaimButton:SetText("Done ✓")
 		return
 	end
 	local allComplete = true
@@ -495,7 +495,7 @@ refreshQuestClaimState = function()
 		end
 	end
 	questClaimButton:SetDisabled(not allComplete)
-	questClaimButton:SetText(if allComplete then "Belohnung abholen!" else "In Arbeit")
+	questClaimButton:SetText(if allComplete then "Claim Reward!" else "In Progress")
 end
 
 -- // Info-Reiter ------------------------------------------------------------------
@@ -524,7 +524,7 @@ local function rebuildInfoTab()
 
 	makeLabel({
 		Parent = host,
-		Text = "Dieses Event läuft alle 3 Tage erneut für 12 Stunden. Verpasste Event-Kreaturen kommen also bald wieder!",
+		Text = "This event runs for 12 hours every 3 days. Missed event creatures come back soon!",
 		Size = UDim2.new(1, 0, 0, 60),
 		Color = Theme.Text.Secondary,
 		Wrapped = true,
@@ -535,7 +535,7 @@ local function rebuildInfoTab()
 
 	makeLabel({
 		Parent = host,
-		Text = "Event-Währung: " .. currentState.CurrencyDisplayName .. " (setzt sich bei Slot-Ende zurück)",
+		Text = "Event currency: " .. currentState.CurrencyDisplayName .. " (resets when the slot ends)",
 		Size = UDim2.new(1, 0, 0, 22),
 		Color = Theme.Neon.Yellow,
 		MinSize = 10,
@@ -635,7 +635,7 @@ local function applyState(state: EventStateRow, isBigMoment: boolean)
 
 	if isBigMoment then
 		Toast.Show({
-			Text = ("🌊 Neues Event: %s!"):format(state.DisplayName),
+			Text = ("🌊 New event: %s!"):format(state.DisplayName),
 			Type = "Info",
 			Duration = 4.5,
 		})
@@ -703,8 +703,8 @@ LiveEventRemotes.ShopPurchaseResult.OnClientEvent:Connect(function(payload: {
 			refreshShopAffordability()
 		end
 		local rewardText = if payload.CreatureId
-			then ("Eingetauscht: %s (%s)!"):format(payload.CreatureId, payload.Rarity or "?")
-			else "Artikel gekauft!"
+			then ("Hatched: %s (%s)!"):format(payload.CreatureId, payload.Rarity or "?")
+			else "Item purchased!"
 		Toast.Show({ Text = rewardText, Type = "Success", Duration = 3.5 })
 		if payload.CreatureId then
 			ScreenFX.BigMoment(currentState and currentState.ColorPrimary or Theme.Neon.Cyan)
@@ -734,7 +734,7 @@ LiveEventRemotes.ClaimEventQuestResult.OnClientEvent:Connect(function(payload: {
 		end
 		refreshQuestClaimState()
 		Toast.Show({
-			Text = ("Event-Quest abgeschlossen: 🪙%d + Titel \"%s\"!"):format(
+			Text = ("Event quest completed: 🪙%d + \"%s\" title!"):format(
 				payload.RewardTideCoins or 0,
 				payload.RewardTitle or ""
 			),

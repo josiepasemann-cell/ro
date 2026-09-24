@@ -252,7 +252,7 @@ local function attachPickupPrompt(pickup: Model)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "PickupPrompt"
-	prompt.ActionText = "Aufheben"
+	prompt.ActionText = "Pick Up"
 	prompt.ObjectText = "Glow Spore"
 	prompt.HoldDuration = HeldItemConfig.Pickup.PromptHoldDurationSeconds
 	prompt.MaxActivationDistance = HeldItemConfig.Pickup.PromptMaxActivationDistance
@@ -317,7 +317,7 @@ local function attachFrozenSporePrompt(pickup: Model)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "ThawPrompt"
-	prompt.ActionText = "Auftauen"
+	prompt.ActionText = "Thaw"
 	prompt.ObjectText = "Frozen Spore"
 	prompt.HoldDuration = LiveEventService.GetModifier("FrozenSporeThawSeconds", 3)
 	prompt.MaxActivationDistance = HeldItemConfig.Pickup.PromptMaxActivationDistance
@@ -496,8 +496,8 @@ local function attachDepositPrompt(station: Model)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "DepositPrompt"
-	prompt.ActionText = "Abgeben"
-	prompt.ObjectText = "Lichtboje"
+	prompt.ActionText = "Deposit"
+	prompt.ObjectText = "Glow Buoy Station"
 	prompt.HoldDuration = HeldItemConfig.Deposit.PromptHoldDurationSeconds
 	prompt.MaxActivationDistance = HeldItemConfig.Deposit.PromptMaxActivationDistance
 	prompt.RequiresLineOfSight = false
@@ -629,7 +629,7 @@ local function attachSunkenChestPrompt(chest: Model)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "OpenPrompt"
-	prompt.ActionText = "Öffnen"
+	prompt.ActionText = "Open"
 	prompt.ObjectText = "Sunken Chest"
 	prompt.HoldDuration = HeldItemConfig.Pickup.PromptHoldDurationSeconds
 	prompt.MaxActivationDistance = HeldItemConfig.Pickup.PromptMaxActivationDistance
