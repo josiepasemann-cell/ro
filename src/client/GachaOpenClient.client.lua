@@ -305,6 +305,11 @@ GachaRemotes.OpenEggResult.OnClientEvent:Connect(function(payload: { [string]: a
 			-- Kein UI-Fehlerdialog nötig fürs MVP - einfache Konsole-Warnung
 			-- reicht, da es sich um einen reinen Anti-Spam-Schutz handelt.
 			warn("[GachaOpenClient] Anfrage zu schnell wiederholt, bitte kurz warten.")
+		elseif payload.Failure == "DataNotLoaded" then
+			-- Spielerdaten (PlayerDataService) sind serverseitig noch nicht
+			-- fertig geladen (z. B. Anfrage sehr kurz nach dem Join). Kein
+			-- Datenverlust-Risiko, einfach erneut versuchen.
+			warn("[GachaOpenClient] Spielerdaten werden noch geladen, bitte kurz warten und erneut versuchen.")
 		end
 		return
 	end
