@@ -23,6 +23,16 @@
 		schlimmsten Fall nur die eigene Anzeige verfälschen, nie den
 		tatsächlichen Spielzustand.
 
+		GEÄNDERT (UIKit-Umstellung): Nutzt jetzt UIKit.Theme für Farben/
+		Schrift (konsistent mit dem restlichen UIKit) und dockt
+		geräteabhängig knapp ÜBER der MainMenuController-Menüleiste an,
+		damit sich beide auf keinem Gerät überlappen. Der "Ablegen"-Button
+		selbst bleibt bewusst ein nativer, von ContextActionService via
+		createTouchButton=true erzeugter Touch-Button (kein
+		TextButton/ImageButton, das wir selbst instanziieren - die
+		UIKit-Button-Pflicht gilt für selbst gebaute klickbare UI-Elemente,
+		nicht für dieses Roblox-Systemwidget).
+
 	Rojo-Einhängepunkt:
 		src/client/HeldItemClient.client.lua -> StarterPlayer.StarterPlayerScripts.HeldItemClient
 		(".client.lua"-Suffix signalisiert Rojo, hieraus ein LocalScript zu
@@ -35,6 +45,10 @@ local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 
 local HeldItemRemotes = require(ReplicatedStorage:WaitForChild("HeldItemRemotes"))
+local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
+
+local Theme = UIKit.Theme
+local Device = UIKit.Device
 
 local LocalPlayer = Players.LocalPlayer
 local playerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -42,47 +56,61 @@ local playerGui = LocalPlayer:WaitForChild("PlayerGui")
 local DROP_ACTION_NAME = "Abyssara_DropHeldItem"
 local HELD_TAG = "HeldItem"
 
--- // Minimales, isoliertes HUD -------------------------------------------------
+-- // Minimales HUD (Theme-gestylt, geräteabhängig positioniert) --------------
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "HeldItemHUD"
 screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
+screenGui.IgnoreGuiInset = false
+screenGui.DisplayOrder = 16
 screenGui.Enabled = false
+Device.ApplySafeArea(screenGui)
 screenGui.Parent = playerGui
+
+local uiScale = Instance.new("UIScale")
+uiScale.Parent = screenGui
+local unbindScale = Device.BindUIScale(uiScale)
 
 local frame = Instance.new("Frame")
 frame.Name = "HeldItemFrame"
 frame.AnchorPoint = Vector2.new(0.5, 1)
-frame.Position = UDim2.new(0.5, 0, 1, -150)
-frame.Size = UDim2.new(0, 280, 0, 44)
-frame.BackgroundColor3 = Color3.fromRGB(8, 28, 38)
-frame.BackgroundTransparency = 0.2
+frame.Size = UDim2.new(0, 300, 0, 48)
+frame.BackgroundColor3 = Theme.Background.Panel
+frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
 frame.Parent = screenGui
+Theme.ApplyCorner(frame, UDim.new(0, 10))
+local stroke = Theme.ApplyStroke(frame, Theme.Neon.Cyan, 1.5)
+stroke.Transparency = 0.4
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
-corner.Parent = frame
-
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(120, 220, 235)
-stroke.Transparency = 0.5
-stroke.Thickness = 1
-stroke.Parent = frame
+-- Knapp über der MainMenuController-Menüleiste andocken (siehe dort für die
+-- genauen Höhen: ~84px Phone-Leiste, ~68px Desktop/Konsolen-Leiste).
+local function applyFramePosition()
+	if Device.ShouldUseFullscreenPanels() then
+		frame.Position = UDim2.new(0.5, 0, 1, -118)
+	else
+		frame.Position = UDim2.new(0.5, 0, 1, -108)
+	end
+end
+applyFramePosition()
+local frameDeviceConnection = Device.Changed:Connect(applyFramePosition)
 
 local label = Instance.new("TextLabel")
 label.Name = "HeldItemLabel"
 label.BackgroundTransparency = 1
 label.Size = UDim2.new(1, -16, 1, 0)
 label.Position = UDim2.new(0, 8, 0, 0)
-label.Font = Enum.Font.GothamMedium
-label.TextColor3 = Color3.fromRGB(190, 245, 255)
+label.Font = Theme.Font.Body
+label.TextColor3 = Theme.Text.Primary
 label.TextScaled = true
 label.TextXAlignment = Enum.TextXAlignment.Left
 label.TextYAlignment = Enum.TextYAlignment.Center
 label.Text = ""
 label.Parent = frame
+local labelConstraint = Instance.new("UITextSizeConstraint")
+labelConstraint.MinTextSize = 12
+labelConstraint.MaxTextSize = 18
+labelConstraint.Parent = label
 
 local function setHudVisible(visible: boolean, displayName: string?)
 	screenGui.Enabled = visible
@@ -186,5 +214,15 @@ end
 
 CollectionService:GetInstanceAddedSignal(HELD_TAG):Connect(applyGlow)
 CollectionService:GetInstanceRemovedSignal(HELD_TAG):Connect(removeGlow)
+
+Players.PlayerRemoving:Connect(function(leavingPlayer)
+	if leavingPlayer ~= LocalPlayer then
+		return
+	end
+	frameDeviceConnection:Disconnect()
+	unbindScale()
+	unbindDropAction()
+	screenGui:Destroy()
+end)
 
 print("[Abyssara] HeldItemClient bereit.")

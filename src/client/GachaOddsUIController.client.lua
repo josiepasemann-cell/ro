@@ -1,13 +1,13 @@
+--!strict
 --[[
 	Abyssara – Deep Tide Tycoon
 	Skript: GachaOddsUIController (LocalScript)
 	Zuständigkeit:
-		Befüllt das bereits bestehende, rein visuelle UI-Layout
-		`GachaOddsUI` (assets/models/ui/GachaOddsPanel.lua, unter
-		game.StarterGui -> beim Spieler-Join automatisch nach PlayerGui
-		geklont) mit den ECHTEN, serverseitig autoritativen Odds-Werten aus
-		GachaService.GetOddsTable() - abgefragt über den RemoteFunction-
-		Kanal "GetGachaOdds" aus GachaRemotes.
+		Baut das Mystery-Egg-Odds-Panel vollständig zur Laufzeit über das
+		UIKit (UIKit.Panel + UIKit.RarityBadge), befüllt es mit den ECHTEN,
+		serverseitig autoritativen Odds-Werten aus GachaService.
+		GetOddsTable() - abgefragt über den RemoteFunction-Kanal
+		"GetGachaOdds" aus GachaRemotes.
 
 		Wichtig: Es werden bewusst KEINE Prozentwerte auf Client-Seite
 		hartkodiert. Alle Anzeigewerte kommen ausschließlich aus der
@@ -15,23 +15,26 @@
 		auseinanderlaufen können (Compliance-Anforderung aus
 		expansion-concepts.md 1.7).
 
-		Verdrahtet außerdem den bislang funktionslosen "CloseButton" und
-		stellt einen einfachen Toggle bereit (Taste "P"), um das Panel vor
-		einem Kauf einzublenden - Roblox verlangt, dass die Odds VOR dem
-		Öffnen einsehbar sind.
+		GEÄNDERT (UIKit-Umstellung): Hing vorher an einer per Buildscript
+		erzeugten, manuell in Studio gebauten ScreenGui
+		(assets/models/ui/GachaOddsPanel.lua -> game.StarterGui.GachaOddsUI).
+		Das ist jetzt entfernt - das Panel entsteht komplett per Code über
+		UIKit.Panel, ist dadurch responsiv (Phone Vollbild, Tablet/PC/
+		Konsole zentriert) und hängt an keinem manuell gebauten
+		Studio-Objekt mehr. assets/models/ui/GachaOddsPanel.lua wird von
+		diesem Skript nicht mehr referenziert (kann als Altlast im
+		Buildscript-Ordner verbleiben, baut aber ohnehin nur noch ein
+		totes StarterGui-Objekt, das kein Skript mehr ausliest).
+
+		Öffnen des Panels:
+			- Taste "P" (Debug/MVP-Shortcut, wie vorher),
+			- MainMenuController-Button "Mystery Egg" (über die
+			  Bridge-BindableEvent "OpenMysteryEgg", siehe
+			  MainMenuController.client.lua Kopfkommentar).
 
 	Rojo-Einhängepunkt:
 		src/client/GachaOddsUIController.client.lua
 			->  StarterPlayerScripts.GachaOddsUIController
-		(".client.lua"-Suffix signalisiert Rojo, hieraus ein `LocalScript`
-		zu machen)
-
-	Voraussetzung:
-		assets/models/ui/GachaOddsPanel.lua muss vorher einmal ausgeführt
-		worden sein (baut game.StarterGui.GachaOddsUI auf, siehe
-		assets/models/README.md). Dieses Skript verändert an der Struktur
-		des Panels nichts, nur Text-/Attribut-Werte der bestehenden
-		Instanzen.
 ]]
 
 local Players = game:GetService("Players")
@@ -39,30 +42,106 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local GachaRemotes = require(ReplicatedStorage:WaitForChild("GachaRemotes"))
+local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
+
+local Theme = UIKit.Theme
+local Panel = UIKit.Panel
+local RarityBadge = UIKit.RarityBadge
 
 local localPlayer = Players.LocalPlayer
-local playerGui = localPlayer:WaitForChild("PlayerGui")
 
--- GachaOddsPanel.lua klont "GachaOddsUI" nach game.StarterGui, wodurch es
--- beim Join automatisch mit in PlayerGui landet.
-local oddsGui = playerGui:WaitForChild("GachaOddsUI", 10)
-if not oddsGui then
-	warn("[GachaOddsUIController] GachaOddsUI nicht gefunden - wurde assets/models/ui/GachaOddsPanel.lua ausgeführt?")
-	return
+-- // Bridge (siehe MainMenuController.client.lua Kopfkommentar) ----------------
+local function getOrCreateBridgeEvent(eventName: string): BindableEvent
+	local bridge = ReplicatedStorage:FindFirstChild("AbyssaraUIBridge")
+	if not bridge then
+		bridge = Instance.new("Folder")
+		bridge.Name = "AbyssaraUIBridge"
+		bridge.Parent = ReplicatedStorage
+	end
+	local event = bridge:FindFirstChild(eventName)
+	if not event then
+		event = Instance.new("BindableEvent")
+		event.Name = eventName
+		event.Parent = bridge
+	end
+	return event :: BindableEvent
 end
 
-local oddsPanel = oddsGui:WaitForChild("Dimmer"):WaitForChild("OddsPanel")
-local rarityList = oddsPanel:WaitForChild("RarityList")
-local closeButton = oddsPanel:WaitForChild("CloseButton") :: TextButton
+local openMysteryEggEvent = getOrCreateBridgeEvent("OpenMysteryEgg")
 
 --- Formatiert einen Prozentwert konsistent zu den bisherigen
---- Platzhalter-Strings ("45.0%") aus GachaOddsPanel.lua.
+--- Platzhalter-Strings ("45.0%").
 local function formatPercent(percent: number): string
 	return string.format("%.1f%%", percent)
 end
 
---- Fragt die autoritative Odds-Tabelle vom Server ab und schreibt sie in
---- die bestehenden RarityRow_<Tier>-Instanzen.
+-- // Panel per UIKit bauen (einmalig, danach wiederverwendet) ------------------
+
+local panel = Panel.new({
+	Title = "Mystery Egg – Drop-Chancen",
+	Closable = true,
+	CenteredSize = UDim2.fromOffset(460, 480),
+})
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Name = "Subtitle"
+subtitle.BackgroundTransparency = 1
+subtitle.Size = UDim2.new(1, 0, 0, 22)
+subtitle.Font = Theme.Font.Body
+subtitle.TextColor3 = Theme.Text.Secondary
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.TextScaled = true
+subtitle.Text = "Offengelegte Wahrscheinlichkeiten pro Öffnung"
+subtitle.Parent = panel.Content
+local subtitleConstraint = Instance.new("UITextSizeConstraint")
+subtitleConstraint.MinTextSize = 12
+subtitleConstraint.MaxTextSize = 16
+subtitleConstraint.Parent = subtitle
+
+local scroll = Instance.new("ScrollingFrame")
+scroll.Name = "RarityScroll"
+scroll.BackgroundTransparency = 1
+scroll.BorderSizePixel = 0
+scroll.Position = UDim2.fromOffset(0, 30)
+scroll.Size = UDim2.new(1, 0, 1, -70)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scroll.ScrollBarThickness = 6
+scroll.ScrollBarImageColor3 = Theme.Neon.Cyan
+scroll.Parent = panel.Content
+
+local scrollList = Instance.new("UIListLayout")
+scrollList.SortOrder = Enum.SortOrder.LayoutOrder
+scrollList.Padding = UDim.new(0, 8)
+scrollList.Parent = scroll
+
+local footerNote = Instance.new("TextLabel")
+footerNote.Name = "FooterNote"
+footerNote.BackgroundTransparency = 1
+footerNote.Position = UDim2.new(0, 0, 1, -36)
+footerNote.Size = UDim2.new(1, 0, 0, 30)
+footerNote.Font = Theme.Font.Body
+footerNote.TextColor3 = Theme.Text.Muted
+footerNote.TextWrapped = true
+footerNote.TextScaled = true
+footerNote.Text = "Chancen gelten pro einzelner Ei-Öffnung. Kein Kaufzwang."
+footerNote.Parent = panel.Content
+local footerConstraint = Instance.new("UITextSizeConstraint")
+footerConstraint.MinTextSize = 10
+footerConstraint.MaxTextSize = 13
+footerConstraint.Parent = footerNote
+
+local rowHandles: { any } = {}
+
+local function clearRows()
+	for _, handle in rowHandles do
+		handle:Destroy()
+	end
+	table.clear(rowHandles)
+end
+
+--- Fragt die autoritative Odds-Tabelle vom Server ab und baut die Zeilen im
+--- UIKit-Panel neu auf.
 local function refreshOddsFromServer()
 	local ok, oddsRows = pcall(function()
 		return GachaRemotes.GetGachaOdds:InvokeServer()
@@ -73,28 +152,49 @@ local function refreshOddsFromServer()
 		return
 	end
 
-	for _, row in ipairs(oddsRows) do
-		local rowFrame = rarityList:FindFirstChild("RarityRow_" .. row.Tier)
-		if rowFrame then
-			local percentLabel = rowFrame:FindFirstChild("PercentLabel") :: TextLabel?
-			local nameLabel = rowFrame:FindFirstChild("NameLabel") :: TextLabel?
-			local swatch = rowFrame:FindFirstChild("ColorSwatch") :: Frame?
+	clearRows()
 
-			if percentLabel then
-				percentLabel.Text = formatPercent(row.Percent)
-				-- Die Werte sind jetzt echt, nicht mehr nur Layout-Platzhalter.
-				percentLabel:SetAttribute("PlaceholderOnly", false)
-				percentLabel.TextColor3 = row.Color
-			end
-			if nameLabel then
-				nameLabel.Text = row.Label
-			end
-			if swatch then
-				swatch.BackgroundColor3 = row.Color
-			end
-		else
-			warn("[GachaOddsUIController] Keine RarityRow für Tier '" .. tostring(row.Tier) .. "' im UI gefunden.")
-		end
+	for order, row in ipairs(oddsRows) do
+		local rowFrame = Instance.new("Frame")
+		rowFrame.Name = "RarityRow_" .. tostring(row.Tier)
+		rowFrame.BackgroundColor3 = Theme.Background.PanelLight
+		rowFrame.Size = UDim2.new(1, 0, 0, 48)
+		rowFrame.LayoutOrder = order
+		rowFrame.Parent = scroll
+		Theme.ApplyCorner(rowFrame, UDim.new(0, 10))
+
+		local rarityKey = (row.Tier :: any) :: Theme.Rarity
+		local badgeOk = table.find(Theme.RarityOrder, rarityKey) ~= nil
+
+		local badge = RarityBadge.new({
+			Parent = rowFrame,
+			Rarity = if badgeOk then rarityKey else "Common",
+			Size = UDim2.fromOffset(120, 30),
+			Position = UDim2.new(0, 10, 0.5, -15),
+		})
+
+		local percentLabel = Instance.new("TextLabel")
+		percentLabel.Name = "PercentLabel"
+		percentLabel.BackgroundTransparency = 1
+		percentLabel.AnchorPoint = Vector2.new(1, 0.5)
+		percentLabel.Position = UDim2.new(1, -10, 0.5, 0)
+		percentLabel.Size = UDim2.new(0, 100, 0, 30)
+		percentLabel.Font = Theme.Font.BodyBold
+		percentLabel.TextColor3 = row.Color or (if badgeOk then Theme.Rarity[rarityKey] else Theme.Text.Primary)
+		percentLabel.TextScaled = true
+		percentLabel.Text = formatPercent(row.Percent)
+		percentLabel.Parent = rowFrame
+		local percentConstraint = Instance.new("UITextSizeConstraint")
+		percentConstraint.MinTextSize = 14
+		percentConstraint.MaxTextSize = 22
+		percentConstraint.Parent = percentLabel
+
+		table.insert(rowHandles, {
+			Destroy = function(_self)
+				badge:Destroy()
+				rowFrame:Destroy()
+			end,
+		})
 	end
 end
 
@@ -103,27 +203,35 @@ refreshOddsFromServer()
 -- // Panel-Ein-/Ausblenden ---------------------------------------------------
 
 local function setPanelVisible(visible: boolean)
-	oddsGui.Enabled = visible
 	if visible then
-		-- Odds bei jedem Öffnen frisch vom Server abfragen (z. B. falls sich
-		-- die Drop-Tabelle durch ein Live-Update geändert hat).
 		refreshOddsFromServer()
+		panel:Open()
+	else
+		panel:Close()
 	end
 end
 
-closeButton.MouseButton1Click:Connect(function()
-	setPanelVisible(false)
-end)
-
--- Einfacher Toggle für Tests/MVP, solange es noch keinen dedizierten
--- "Kaufen"-Button mit Odds-Vorschau gibt: Taste "P" öffnet/schließt das
--- Odds-Panel. Ein künftiges Shop-/Kauf-UI kann stattdessen direkt
--- setPanelVisible(true) vor dem eigentlichen Kaufabschluss aufrufen.
-UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+-- Einfacher Toggle für Tests/MVP: Taste "P" öffnet/schließt das Odds-Panel,
+-- genau wie der "Mystery Egg"-Button in der Menüleiste.
+local inputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
 	if gameProcessedEvent then
 		return
 	end
 	if input.KeyCode == Enum.KeyCode.P then
-		setPanelVisible(not oddsGui.Enabled)
+		setPanelVisible(not panel.ScreenGui.Enabled)
 	end
+end)
+
+local bridgeConnection = openMysteryEggEvent.Event:Connect(function()
+	setPanelVisible(true)
+end)
+
+Players.PlayerRemoving:Connect(function(leavingPlayer)
+	if leavingPlayer ~= localPlayer then
+		return
+	end
+	inputConnection:Disconnect()
+	bridgeConnection:Disconnect()
+	clearRows()
+	panel:Destroy()
 end)

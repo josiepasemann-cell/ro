@@ -18,6 +18,17 @@
 			3) Zeigt kurz (per BillboardGui) die gewonnene Kreatur inkl.
 			   Rarity und - im Duplikat-Fall - den Tide-Coin-Ausgleich an.
 
+	GEÄNDERT (UIKit-Umstellung): Die Rarity-Farbe wird nicht mehr aus dem
+	DOM-Baum des alten, manuell gebauten Odds-Panels ausgelesen (dieses
+	Panel entsteht jetzt komplett per Code, siehe
+	GachaOddsUIController.client.lua), sondern direkt aus
+	UIKit.Theme.Rarity - laut docs/ui-kit.md 1:1 mit GachaConfig.DROP_TABLE
+	synchron gehalten, also strikt äquivalent, aber ohne fragile
+	Abhängigkeit von einer fremden UI-Instanzstruktur. Die Reveal-Anzeige
+	nutzt jetzt UIKit.RarityBadge/Theme-Styling, und bei Legendary/Mythic-
+	Drops spielt UIKit.ScreenFX.BigMoment (Flash + Kamera-Shake) plus ein
+	UIKit.Toast fuer den "grossen Moment".
+
 	Rojo-Einhängepunkt:
 		src/client/GachaOpenClient.client.lua
 			->  StarterPlayerScripts.GachaOpenClient
@@ -48,6 +59,12 @@ local Workspace = game:GetService("Workspace")
 local TweenService = game:GetService("TweenService")
 
 local GachaRemotes = require(ReplicatedStorage:WaitForChild("GachaRemotes"))
+local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
+
+local Theme = UIKit.Theme
+local Toast = UIKit.Toast
+local ScreenFX = UIKit.ScreenFX
+local RarityBadge = UIKit.RarityBadge
 
 local localPlayer = Players.LocalPlayer
 
@@ -56,32 +73,25 @@ local CRACK_TWEEN_TIME = 0.35
 local VFX_ACTIVE_TIME = 1.1
 local REVEAL_DISPLAY_TIME = 2.75
 
--- Fallback-Farben, falls das Odds-Panel (noch) nicht geladen ist. Werden
--- normalerweise NICHT benutzt, siehe getRarityColor() - dort wird primär
--- die Farbe live aus dem bereits vom Server befüllten GachaOddsUI-Panel
--- gelesen, um Farbwerte nicht ein zweites Mal hart zu duplizieren.
+-- Fallback-Farbe, falls der Tier-String aus irgendeinem Grund nicht Teil
+-- von Theme.RarityOrder ist (sollte praktisch nie vorkommen, da Server und
+-- Theme dieselben Tier-Strings verwenden).
 local FALLBACK_RARITY_COLOR = Color3.fromRGB(120, 235, 255)
+
+-- Tiers, bei denen ein "großer Moment" (Flash + Kamera-Shake) gespielt wird.
+local BIG_MOMENT_TIERS = { Legendary = true, Mythic = true }
 
 local isOpeningEgg = false -- lokaler Debounce, verhindert Doppel-Klicks
 local pendingEggModel: Model? = nil -- zuletzt angeklicktes Ei, für die VFX-Position
 
 -- // Hilfsfunktionen ----------------------------------------------------------
 
---- Liest die Rarity-Farbe live aus dem bereits befüllten GachaOddsUI-Panel
---- (siehe GachaOddsUIController.client.lua), statt die Farben hier ein
---- zweites Mal hart zu hinterlegen. Fällt auf eine neutrale Platzhalter-
---- farbe zurück, falls das Panel aus irgendeinem Grund nicht existiert.
+--- Liest die Rarity-Farbe direkt aus UIKit.Theme.Rarity (siehe
+--- docs/ui-kit.md: 1:1 synchron zu GachaConfig.DROP_TABLE gehalten).
 local function getRarityColor(rarityTier: string): Color3
-	local playerGui = localPlayer:FindFirstChild("PlayerGui")
-	local oddsGui = playerGui and playerGui:FindFirstChild("GachaOddsUI")
-	local dimmer = oddsGui and oddsGui:FindFirstChild("Dimmer")
-	local panel = dimmer and dimmer:FindFirstChild("OddsPanel")
-	local rarityList = panel and panel:FindFirstChild("RarityList")
-	local row = rarityList and rarityList:FindFirstChild("RarityRow_" .. rarityTier)
-	local swatch = row and row:FindFirstChild("ColorSwatch") :: Frame?
-
-	if swatch then
-		return swatch.BackgroundColor3
+	local key = (rarityTier :: any) :: Theme.Rarity
+	if table.find(Theme.RarityOrder, key) then
+		return Theme.Rarity[key]
 	end
 	return FALLBACK_RARITY_COLOR
 end
@@ -236,55 +246,69 @@ local function showRevealBillboard(eggModel: Model, resultPayload: { [string]: a
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "GachaRevealBillboard"
-	billboard.Size = UDim2.fromOffset(220, 90)
+	billboard.Size = UDim2.fromOffset(240, 100)
 	billboard.StudsOffset = Vector3.new(0, 4, 0)
 	billboard.AlwaysOnTop = true
 	billboard.Parent = shell
 
 	local background = Instance.new("Frame")
 	background.Size = UDim2.fromScale(1, 1)
-	background.BackgroundColor3 = Color3.fromRGB(14, 22, 30)
-	background.BackgroundTransparency = 0.15
+	background.BackgroundColor3 = Theme.Background.Panel
+	background.BackgroundTransparency = 0.1
 	background.BorderSizePixel = 0
 	background.Parent = billboard
-
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 10)
-	corner.Parent = background
+	Theme.ApplyCorner(background, UDim.new(0, 10))
+	Theme.ApplyGradient(background, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
 
 	local rarityColor = getRarityColor(resultPayload.Rarity)
+	local stroke = Theme.ApplyStroke(background, rarityColor, 2)
+	stroke.Transparency = 0.1
 
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = rarityColor
-	stroke.Thickness = 2
-	stroke.Parent = background
+	local rarityKey = (resultPayload.Rarity :: any) :: Theme.Rarity
+	if table.find(Theme.RarityOrder, rarityKey) then
+		RarityBadge.new({
+			Parent = background,
+			Rarity = rarityKey,
+			Size = UDim2.fromOffset(110, 24),
+			Position = UDim2.new(0.5, -55, 0, 8),
+		})
+	end
 
 	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Size = UDim2.new(1, -12, 0, 34)
-	nameLabel.Position = UDim2.new(0, 6, 0, 8)
+	nameLabel.Size = UDim2.new(1, -12, 0, 30)
+	nameLabel.Position = UDim2.new(0, 6, 0, 36)
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Text = resultPayload.CreatureName
-	nameLabel.TextColor3 = Color3.fromRGB(235, 245, 250)
-	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.TextColor3 = Theme.Text.Primary
+	nameLabel.Font = Theme.Font.BodyBold
 	nameLabel.TextScaled = true
 	nameLabel.Parent = background
+	Theme.ApplyStroke(nameLabel, Theme.Text.Stroke, 1)
 
 	local subLabel = Instance.new("TextLabel")
-	subLabel.Size = UDim2.new(1, -12, 0, 26)
-	subLabel.Position = UDim2.new(0, 6, 0, 42)
+	subLabel.Size = UDim2.new(1, -12, 0, 24)
+	subLabel.Position = UDim2.new(0, 6, 0, 68)
 	subLabel.BackgroundTransparency = 1
 	subLabel.TextColor3 = rarityColor
-	subLabel.Font = Enum.Font.GothamMedium
+	subLabel.Font = Theme.Font.Body
 	subLabel.TextScaled = true
+	local toastText: string
 	if resultPayload.ResultType == "Duplicate" then
-		subLabel.Text = ("%s (Duplikat, +%d Tide Coins)"):format(
-			resultPayload.Rarity,
-			resultPayload.CompensationTideCoins
-		)
+		subLabel.Text = ("Duplikat, +%d Tide Coins"):format(resultPayload.CompensationTideCoins)
+		toastText = ("%s (Duplikat) +%d Tide Coins"):format(resultPayload.CreatureName, resultPayload.CompensationTideCoins)
 	else
-		subLabel.Text = resultPayload.Rarity .. (resultPayload.PityForced and " (Pity!)" or "")
+		subLabel.Text = if resultPayload.PityForced then "Pity!" else ""
+		toastText = ("Neu: %s (%s)"):format(resultPayload.CreatureName, Theme.RarityLabel[rarityKey] or resultPayload.Rarity)
 	end
 	subLabel.Parent = background
+
+	-- // Große Momente: Legendary/Mythic bekommen Flash + Kamera-Shake ---------
+	if BIG_MOMENT_TIERS[resultPayload.Rarity] then
+		ScreenFX.BigMoment(rarityColor)
+		Toast.Show({ Text = toastText, Type = "Success", Duration = 4.5 })
+	else
+		Toast.Show({ Text = toastText, Type = "Info", Duration = 3 })
+	end
 
 	task.delay(REVEAL_DISPLAY_TIME, function()
 		if billboard and billboard.Parent then

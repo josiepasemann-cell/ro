@@ -1,3 +1,4 @@
+--!strict
 --[[
 	Abyssara – Deep Tide Tycoon
 	Skript: IdleIncomeClient (LocalScript)
@@ -8,8 +9,9 @@
 			   hochschwebt und ausblendet.
 			2. Beim Login, falls seit dem letzten Logout spürbar Zeit
 			   vergangen ist (IdleIncomeRemotes.OfflineProgressSummary), ein
-			   einfaches "Während du weg warst: +X Tide Coins"-Panel mit
-			   Schließen-Button, das sich zusätzlich nach einigen Sekunden
+			   UIKit.Panel ("Während du weg warst ...") mit UIKit.CountUp-
+			   Hochzähl-Animation für den Betrag und einem UIKit.Button
+			   zum Schließen, das sich zusätzlich nach einigen Sekunden
 			   automatisch ausblendet.
 
 		WICHTIG: Dieses Skript erzeugt/verändert NIEMALS selbst einen
@@ -18,11 +20,14 @@
 		(kein Client-Trust: der Server bleibt einzige Autorität über Tide
 		Coins, siehe PlayerDataService/IdleIncomeService).
 
+		Layout: Popups erscheinen über dem Anker unten-mittig, knapp über
+		der MainMenuController-Menüleiste (siehe dort für das
+		Gesamt-Layout); das Offline-Panel ist ein zentriertes/fullscreen
+		UIKit.Panel wie jedes andere Menü.
+
 	Rojo-Einhängepunkt:
 		src/client/IdleIncomeClient.client.lua ->
 		StarterPlayer.StarterPlayerScripts.IdleIncomeClient
-		(".client.lua"-Suffix signalisiert Rojo, hieraus ein `LocalScript`
-		zu machen.)
 ]]
 
 local Players = game:GetService("Players")
@@ -30,6 +35,14 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local IdleIncomeRemotes = require(ReplicatedStorage:WaitForChild("IdleIncomeRemotes"))
+local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
+
+local Theme = UIKit.Theme
+local Device = UIKit.Device
+local Panel = UIKit.Panel
+local Button = UIKit.Button
+local CountUp = UIKit.CountUp
+local ScreenFX = UIKit.ScreenFX
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -39,16 +52,33 @@ local playerGui = player:WaitForChild("PlayerGui")
 local popupGui = Instance.new("ScreenGui")
 popupGui.Name = "IdleIncomePopups"
 popupGui.ResetOnSpawn = false
-popupGui.IgnoreGuiInset = true
+popupGui.IgnoreGuiInset = false
+popupGui.DisplayOrder = 18
+Device.ApplySafeArea(popupGui)
 popupGui.Parent = playerGui
+
+local popupUiScale = Instance.new("UIScale")
+popupUiScale.Parent = popupGui
+local unbindPopupScale = Device.BindUIScale(popupUiScale)
 
 local popupAnchor = Instance.new("Frame")
 popupAnchor.Name = "PopupAnchor"
 popupAnchor.AnchorPoint = Vector2.new(0.5, 1)
-popupAnchor.Position = UDim2.new(0.5, 0, 1, -90)
 popupAnchor.Size = UDim2.new(0, 10, 0, 10)
 popupAnchor.BackgroundTransparency = 1
 popupAnchor.Parent = popupGui
+
+-- Knapp über der unten angedockten MainMenuController-Leiste positionieren,
+-- damit sich Popups und Menüleiste auf keinem Gerät überlappen.
+local function applyPopupAnchorPosition()
+	if Device.ShouldUseFullscreenPanels() then
+		popupAnchor.Position = UDim2.new(0.5, 0, 1, -108) -- über der ~84px hohen Phone-Menüleiste
+	else
+		popupAnchor.Position = UDim2.new(0.5, 0, 1, -100) -- über der ~68px hohen Desktop/Konsolen-Menüleiste
+	end
+end
+applyPopupAnchorPosition()
+local popupDeviceConnection = Device.Changed:Connect(applyPopupAnchorPosition)
 
 local POPUP_RISE_STUDS = 55 -- Pixel, die das Popup während der Animation nach oben wandert
 local POPUP_DURATION_SECONDS = 1.4
@@ -59,13 +89,16 @@ local function showIncomePopup(amount: number)
 	label.Position = UDim2.new(0.5, 0, 0, 0)
 	label.Size = UDim2.new(0, 220, 0, 32)
 	label.BackgroundTransparency = 1
-	label.Font = Enum.Font.GothamBold
-	label.TextSize = 22
-	label.TextColor3 = Color3.fromRGB(120, 235, 210)
-	label.TextStrokeTransparency = 0.3
-	label.TextStrokeColor3 = Color3.fromRGB(5, 20, 20)
+	label.Font = Theme.Font.BodyBold
+	label.TextScaled = true
+	label.TextColor3 = Theme.Neon.ToxicGreen
 	label.Text = ("+%d Tide Coins"):format(amount)
 	label.Parent = popupAnchor
+	Theme.ApplyStroke(label, Theme.Text.Stroke, 1.25)
+	local constraint = Instance.new("UITextSizeConstraint")
+	constraint.MinTextSize = 14
+	constraint.MaxTextSize = 22
+	constraint.Parent = label
 
 	local tweenUp = TweenService:Create(
 		label,
@@ -85,87 +118,59 @@ IdleIncomeRemotes.IncomeGranted.OnClientEvent:Connect(function(payload)
 	showIncomePopup(payload.Amount)
 end)
 
--- // Offline-Progress-Zusammenfassung beim Login ------------------------------
+-- // Offline-Progress-Zusammenfassung beim Login (UIKit.Panel) ---------------
 
-local offlineGui = Instance.new("ScreenGui")
-offlineGui.Name = "OfflineProgressSummary"
-offlineGui.ResetOnSpawn = false
-offlineGui.IgnoreGuiInset = true
-offlineGui.Enabled = false
-offlineGui.Parent = playerGui
-
-local panel = Instance.new("Frame")
-panel.Name = "SummaryPanel"
-panel.AnchorPoint = Vector2.new(0.5, 0.5)
-panel.Position = UDim2.new(0.5, 0, 0.5, 0)
-panel.Size = UDim2.new(0, 420, 0, 170)
-panel.BackgroundColor3 = Color3.fromRGB(8, 24, 32)
-panel.BackgroundTransparency = 0.08
-panel.BorderSizePixel = 0
-panel.Parent = offlineGui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 12)
-corner.Parent = panel
-
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.BackgroundTransparency = 1
-titleLabel.Position = UDim2.new(0, 20, 0, 16)
-titleLabel.Size = UDim2.new(1, -40, 0, 30)
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextSize = 22
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.TextColor3 = Color3.fromRGB(210, 245, 250)
-titleLabel.Text = "Während du weg warst ..."
-titleLabel.Parent = panel
+local offlinePanel = Panel.new({
+	Title = "Während du weg warst ...",
+	Closable = true,
+	CenteredSize = UDim2.fromOffset(440, 240),
+})
 
 local amountLabel = Instance.new("TextLabel")
 amountLabel.Name = "AmountLabel"
 amountLabel.BackgroundTransparency = 1
-amountLabel.Position = UDim2.new(0, 20, 0, 56)
-amountLabel.Size = UDim2.new(1, -40, 0, 40)
-amountLabel.Font = Enum.Font.GothamBold
-amountLabel.TextSize = 28
+amountLabel.Size = UDim2.new(1, 0, 0, 48)
+amountLabel.Font = Theme.Font.Header
+amountLabel.TextScaled = true
 amountLabel.TextXAlignment = Enum.TextXAlignment.Left
-amountLabel.TextColor3 = Color3.fromRGB(120, 235, 210)
-amountLabel.Text = "+0 Tide Coins"
-amountLabel.Parent = panel
+amountLabel.TextColor3 = Theme.Neon.ToxicGreen
+amountLabel.Text = "+0"
+amountLabel.Parent = offlinePanel.Content
+local amountConstraint = Instance.new("UITextSizeConstraint")
+amountConstraint.MinTextSize = 20
+amountConstraint.MaxTextSize = 32
+amountConstraint.Parent = amountLabel
 
 local detailLabel = Instance.new("TextLabel")
 detailLabel.Name = "DetailLabel"
 detailLabel.BackgroundTransparency = 1
-detailLabel.Position = UDim2.new(0, 20, 0, 100)
-detailLabel.Size = UDim2.new(1, -40, 0, 24)
-detailLabel.Font = Enum.Font.Gotham
-detailLabel.TextSize = 14
+detailLabel.Position = UDim2.new(0, 0, 0, 52)
+detailLabel.Size = UDim2.new(1, 0, 0, 28)
+detailLabel.Font = Theme.Font.Body
+detailLabel.TextScaled = true
 detailLabel.TextXAlignment = Enum.TextXAlignment.Left
-detailLabel.TextColor3 = Color3.fromRGB(170, 200, 205)
+detailLabel.TextColor3 = Theme.Text.Secondary
 detailLabel.Text = ""
-detailLabel.Parent = panel
+detailLabel.Parent = offlinePanel.Content
+local detailConstraint = Instance.new("UITextSizeConstraint")
+detailConstraint.MinTextSize = 12
+detailConstraint.MaxTextSize = 16
+detailConstraint.Parent = detailLabel
 
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.AnchorPoint = Vector2.new(0.5, 1)
-closeButton.Position = UDim2.new(0.5, 0, 1, -16)
-closeButton.Size = UDim2.new(0, 140, 0, 34)
-closeButton.BackgroundColor3 = Color3.fromRGB(30, 90, 95)
-closeButton.Font = Enum.Font.GothamMedium
-closeButton.TextSize = 16
-closeButton.TextColor3 = Color3.fromRGB(230, 250, 250)
-closeButton.Text = "Danke!"
-closeButton.Parent = panel
-
-local closeButtonCorner = Instance.new("UICorner")
-closeButtonCorner.CornerRadius = UDim.new(0, 8)
-closeButtonCorner.Parent = closeButton
+local thanksButton = Button.new({
+	Parent = offlinePanel.Content,
+	Text = "Danke!",
+	Variant = "Primary",
+	Important = true,
+	Size = UDim2.new(1, 0, 0, 48),
+})
+thanksButton.Instance.Position = UDim2.new(0, 0, 1, -48)
+thanksButton.Clicked:Connect(function()
+	offlinePanel:Close()
+end)
 
 local AUTO_HIDE_SECONDS = 8
-local hideConnection: thread? = nil
-
-local function hideOfflinePanel()
-	offlineGui.Enabled = false
-end
+local hideThread: thread? = nil
 
 local function formatDuration(totalSeconds: number): string
 	local hours = math.floor(totalSeconds / 3600)
@@ -176,8 +181,6 @@ local function formatDuration(totalSeconds: number): string
 	return ("%dmin"):format(math.max(minutes, 1))
 end
 
-closeButton.MouseButton1Click:Connect(hideOfflinePanel)
-
 IdleIncomeRemotes.OfflineProgressSummary.OnClientEvent:Connect(function(payload)
 	if type(payload) ~= "table" then
 		return
@@ -187,15 +190,35 @@ IdleIncomeRemotes.OfflineProgressSummary.OnClientEvent:Connect(function(payload)
 	local cappedSeconds = tonumber(payload.CappedSeconds) or 0
 	local wasCapped = payload.WasCapped == true
 
-	amountLabel.Text = ("+%d Tide Coins"):format(amount)
+	amountLabel.Text = "+0 Tide Coins"
+	CountUp.Animate(amountLabel, 0, amount, 1.0, function(value)
+		return ("+%s Tide Coins"):format(CountUp.DefaultFormat(value))
+	end)
 	detailLabel.Text = if wasCapped
 		then ("Abwesenheit: %s (auf max. 4h gedeckelt)"):format(formatDuration(cappedSeconds))
 		else ("Abwesenheit: %s"):format(formatDuration(cappedSeconds))
 
-	offlineGui.Enabled = true
+	offlinePanel:Open()
+	ScreenFX.Flash({ Color = Theme.Neon.Cyan, Duration = 0.4, MaxTransparency = 0.35 })
 
-	if hideConnection then
-		task.cancel(hideConnection)
+	if hideThread then
+		task.cancel(hideThread)
 	end
-	hideConnection = task.delay(AUTO_HIDE_SECONDS, hideOfflinePanel)
+	hideThread = task.delay(AUTO_HIDE_SECONDS, function()
+		hideThread = nil
+		offlinePanel:Close()
+	end)
+end)
+
+Players.PlayerRemoving:Connect(function(leavingPlayer)
+	if leavingPlayer ~= player then
+		return
+	end
+	popupDeviceConnection:Disconnect()
+	unbindPopupScale()
+	if hideThread then
+		task.cancel(hideThread)
+	end
+	offlinePanel:Destroy()
+	popupGui:Destroy()
 end)
