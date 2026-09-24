@@ -44,4 +44,4 @@ for _, existingPlayer in ipairs(Players:GetPlayers()) do
 	task.spawn(PickupSpawner.OnPlayerAdded, existingPlayer)
 end
 
-print("[Abyssara] HeldItemServer bereit (RequestDropHeld verdrahtet, PickupSpawner aktiv).")
+print("[Abyssara] HeldItemServer ready (RequestDropHeld wired up, PickupSpawner active).")

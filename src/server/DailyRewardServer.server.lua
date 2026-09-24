@@ -25,4 +25,4 @@ QuestRemotes.RequestClaimDailyReward.OnServerEvent:Connect(function(player: Play
 	QuestRemotes.DailyRewardClaimed:FireClient(player, result)
 end)
 
-print("[Abyssara] DailyRewardServer bereit (GetDailyRewardState / RequestClaimDailyReward verdrahtet).")
+print("[Abyssara] DailyRewardServer ready (GetDailyRewardState / RequestClaimDailyReward wired up).")

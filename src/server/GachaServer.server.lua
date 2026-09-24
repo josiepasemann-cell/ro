@@ -53,7 +53,7 @@ local function arrangeEggsAtStation()
 	end
 
 	if not station then
-		warn("[GachaServer] Hub/GachaStation fehlt - Eier bleiben an ihrer Bau-Position.")
+		warn("[GachaServer] Hub/GachaStation is missing - eggs stay at their build position.")
 		return
 	end
 
@@ -111,4 +111,4 @@ GachaRemotes.GetGachaOdds.OnServerInvoke = function(_player: Player)
 	return GachaService.GetOddsTable()
 end
 
-print("[Abyssara] GachaServer bereit (RequestOpenEgg / GetGachaOdds verdrahtet).")
+print("[Abyssara] GachaServer ready (RequestOpenEgg / GetGachaOdds wired up).")

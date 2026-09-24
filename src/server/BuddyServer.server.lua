@@ -36,4 +36,4 @@ BuddyRemotes.RequestSetBuddy.OnServerEvent:Connect(function(player: Player, crea
 	})
 end)
 
-print("[Abyssara] BuddyServer bereit (GetBuddyState / RequestSetBuddy verdrahtet).")
+print("[Abyssara] BuddyServer ready (GetBuddyState / RequestSetBuddy wired up).")

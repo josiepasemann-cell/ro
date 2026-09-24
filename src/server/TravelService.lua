@@ -310,6 +310,13 @@ local function attachPlotGatePrompt(hubModel: Model)
 	end)
 end
 
+local ZONE_DISPLAY_NAMES = {
+	SunZone = "Sun Zone",
+	TwilightZone = "Twilight Zone",
+	MidnightZone = "Midnight Zone",
+	HadalDepths = "Hadal Depths",
+}
+
 local function attachZonePortalPrompts(hubModel: Model)
 	for _, zoneId in ipairs(TravelService.ZONE_IDS) do
 		local portal = hubModel:FindFirstChild("Portal_" .. zoneId, true)
@@ -324,7 +331,7 @@ local function attachZonePortalPrompts(hubModel: Model)
 				local prompt = Instance.new("ProximityPrompt")
 				prompt.Name = "ZonePortalPrompt"
 				prompt.ActionText = "Travel"
-				prompt.ObjectText = zoneId
+				prompt.ObjectText = ZONE_DISPLAY_NAMES[zoneId] or zoneId
 				prompt.HoldDuration = 0.5
 				prompt.MaxActivationDistance = 12
 				prompt.RequiresLineOfSight = false
@@ -360,7 +367,7 @@ local function runHubPromptSetup()
 
 	attachPlotGatePrompt(hubModel)
 	attachZonePortalPrompts(hubModel)
-	print("[Abyssara] TravelService: PlotGate-/Zonenportal-Prompts am Hub eingerichtet.")
+	print("[Abyssara] TravelService: PlotGate/zone portal prompts set up at the hub.")
 end
 
 -- // Aufräumen bei PlayerRemoving ----------------------------------------------

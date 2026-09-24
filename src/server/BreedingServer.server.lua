@@ -52,4 +52,4 @@ BreedingRemotes.GetBreedingStatuses.OnServerInvoke = function(player: Player)
 	return BreedingService.GetAllStatuses(player)
 end
 
-print("[Abyssara] BreedingServer bereit (RequestStartBreeding / RequestClaimBreeding / GetBreedingStatuses verdrahtet).")
+print("[Abyssara] BreedingServer ready (RequestStartBreeding / RequestClaimBreeding / GetBreedingStatuses wired up).")

@@ -100,4 +100,4 @@ PlayerDataService.DataChanged:Connect(function(player: Player, changeKind: strin
 	HUDRemotes.HUDStateChanged:FireClient(player, statePush)
 end)
 
-print("[Abyssara] HUDServer bereit (GetHUDState verdrahtet, DataChanged-Weiterleitung aktiv).")
+print("[Abyssara] HUDServer ready (GetHUDState wired up, DataChanged forwarding active).")

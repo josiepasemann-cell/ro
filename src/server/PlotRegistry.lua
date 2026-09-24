@@ -98,7 +98,7 @@ function PlotRegistry.AssignPlot(player: Player): Model?
 
 	local template = AssetTemplateSetup.GetPlotTemplate()
 	if not template then
-		warn(("[PlotRegistry] Kann %s keinen Plot zuweisen - HabitatPlotBase-Vorlage fehlt."):format(player.Name))
+		warn(("[PlotRegistry] Cannot assign a plot to %s - HabitatPlotBase template is missing."):format(player.Name))
 		return nil
 	end
 

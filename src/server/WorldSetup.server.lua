@@ -308,7 +308,7 @@ if hubCenter then
 	CollectionService:AddTag(ambientFolder, AMBIENT_FX_TAG)
 end
 
-print("[Abyssara] WorldSetup: Ambient-FX (Blasen/Plankton/Flackern) am Hub aktiv.")
+print("[Abyssara] WorldSetup: Ambient FX (bubbles/plankton/flicker) active at the hub.")
 
 --[[
 	CLIENT-HOOK-VORSCHLAG (nicht implementiert, siehe Auftrag - Grafik-

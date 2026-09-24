@@ -92,4 +92,4 @@ for _, existingPlayer in ipairs(Players:GetPlayers()) do
 	task.spawn(onPlayerAdded, existingPlayer)
 end
 
-print("[Abyssara] RaidServer bereit (GetRaidStatus / RequestRescueCreature verdrahtet).")
+print("[Abyssara] RaidServer ready (GetRaidStatus / RequestRescueCreature wired up).")

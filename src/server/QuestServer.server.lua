@@ -25,4 +25,4 @@ QuestRemotes.RequestClaimQuestReward.OnServerEvent:Connect(function(player: Play
 	QuestRemotes.ClaimQuestRewardResult:FireClient(player, result)
 end)
 
-print("[Abyssara] QuestServer bereit (GetQuestState / RequestClaimQuestReward verdrahtet).")
+print("[Abyssara] QuestServer ready (GetQuestState / RequestClaimQuestReward wired up).")

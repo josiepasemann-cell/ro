@@ -73,7 +73,7 @@ function GachaHistoryLogger.LogRoll(player: Player, entryData: {
 	end
 
 	print(
-		("[GachaAudit] %s (UserId %d) -> %s/%s (%s%s) | Ausgleich: %d Tide Coins"):format(
+		("[GachaAudit] %s (UserId %d) -> %s/%s (%s%s) | compensation: %d Tide Coins"):format(
 			entry.Username,
 			entry.UserId,
 			entry.Rarity,

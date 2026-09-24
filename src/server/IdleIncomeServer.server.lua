@@ -24,4 +24,4 @@ local IdleIncomeService = require(script.Parent:WaitForChild("IdleIncomeService"
 -- PlayerAdded-Hook bereits vollständig selbst beim require() oben.
 local _ = IdleIncomeService
 
-print("[Abyssara] IdleIncomeServer bereit (Online-Tick-Loop + Offline-Progress aktiv).")
+print("[Abyssara] IdleIncomeServer ready (online tick loop + offline progress active).")

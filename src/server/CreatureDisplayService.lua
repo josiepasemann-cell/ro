@@ -460,6 +460,6 @@ GameEvents.Connect("CodexFavoritesChanged", onInventoryRelevantEvent)
 task.spawn(runWanderLoop)
 task.spawn(runSafetyResyncLoop)
 
-print("[Abyssara] CreatureDisplayService bereit (Plot-Kreaturenanzeige aktiv).")
+print("[Abyssara] CreatureDisplayService ready (plot creature display active).")
 
 return CreatureDisplayService

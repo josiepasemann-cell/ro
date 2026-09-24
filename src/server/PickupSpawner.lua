@@ -113,7 +113,7 @@ local function promotePickupTemplate(name: string)
 	clone.Parent = pickupTemplatesFolder
 
 	source:Destroy()
-	print(("[PickupSpawner] Template '%s' bereit unter %s."):format(name, pickupTemplatesFolder:GetFullName()))
+	print(("[PickupSpawner] Template '%s' ready under %s."):format(name, pickupTemplatesFolder:GetFullName()))
 end
 
 promotePickupTemplate("GlowSporePickup")

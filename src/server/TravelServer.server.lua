@@ -31,4 +31,4 @@ TravelRemotes.RequestTravelToZone.OnServerEvent:Connect(function(player: Player,
 	TravelService.RequestTravelToZone(player, zoneId)
 end)
 
-print("[Abyssara] TravelServer bereit (RequestTravelToPlot / RequestTravelToHub / RequestTravelToZone verdrahtet).")
+print("[Abyssara] TravelServer ready (RequestTravelToPlot / RequestTravelToHub / RequestTravelToZone wired up).")

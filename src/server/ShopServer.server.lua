@@ -111,4 +111,4 @@ ShopRemotes.RequestSimulateStudioPurchase.OnServerEvent:Connect(function(player:
 	end
 end)
 
-print("[Abyssara] ShopServer bereit (Katalog/Gamepass-Prompts/Entwicklerprodukt-Prompts/Kosmetik/Studio-Testmodus verdrahtet).")
+print("[Abyssara] ShopServer ready (catalog/gamepass prompts/developer product prompts/cosmetics/Studio test mode wired up).")

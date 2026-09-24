@@ -53,4 +53,4 @@ CodexRemotes.RequestClaimZoneReward.OnServerEvent:Connect(function(player: Playe
 	})
 end)
 
-print("[Abyssara] CodexServer bereit (GetCodexCatalog / GetCodexState / RequestSetFavorites / RequestClaimZoneReward verdrahtet).")
+print("[Abyssara] CodexServer ready (GetCodexCatalog / GetCodexState / RequestSetFavorites / RequestClaimZoneReward wired up).")

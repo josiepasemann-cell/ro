@@ -19,4 +19,4 @@ LeaderboardRemotes.GetLeaderboard.OnServerInvoke = function(player: Player, cate
 	return LeaderboardService.GetLeaderboard(category)
 end
 
-print("[Abyssara] LeaderboardServer bereit (GetLeaderboard verdrahtet).")
+print("[Abyssara] LeaderboardServer ready (GetLeaderboard wired up).")

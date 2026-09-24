@@ -90,4 +90,4 @@ for _, existingPlayer in ipairs(Players:GetPlayers()) do
 	task.spawn(onPlayerAdded, existingPlayer)
 end
 
-print("[Abyssara] PlacementServer bereit (RequestPlaceBuilding / RequestRemoveBuilding verdrahtet).")
+print("[Abyssara] PlacementServer ready (RequestPlaceBuilding / RequestRemoveBuilding wired up).")

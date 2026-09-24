@@ -34,4 +34,4 @@ LiveEventRemotes.RequestClaimEventQuest.OnServerEvent:Connect(function(player: P
 	LiveEventRemotes.ClaimEventQuestResult:FireClient(player, result)
 end)
 
-print("[Abyssara] LiveEventServer bereit (GetEventState / RequestPurchaseShopItem / RequestClaimEventQuest verdrahtet).")
+print("[Abyssara] LiveEventServer ready (GetEventState / RequestPurchaseShopItem / RequestClaimEventQuest wired up).")
