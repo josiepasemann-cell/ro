@@ -145,6 +145,12 @@ export type DevProductDefinition = {
 	-- spurlos verpufft oder unbegrenzt als "NotProcessedYet" retried wird,
 	-- siehe MonetizationService-Kopfkommentar.
 	FallbackCompensationTideCoins: number,
+	-- NUR für EffectKey == "GrantCoins" gesetzt: die tatsächlich gutzu-
+	-- schreibende Coin-Menge (bewusst getrennt von
+	-- FallbackCompensationTideCoins, auch wenn beide Werte hier identisch
+	-- sind - unterschiedliche Bedeutung, siehe MonetizationService.
+	-- applyDevProductEffect).
+	GrantAmount: number?,
 	-- true, falls Roblox' "Paid Random Items"-Richtlinie greift (Mystery
 	-- Egg) - siehe MonetizationService.PlayerMayPurchasePaidRandomItems.
 	IsPaidRandomItem: boolean?,
@@ -164,6 +170,7 @@ ShopConfig.DEV_PRODUCTS = {
 		IconAssetId = "rbxassetid://0",
 		EffectKey = "GrantCoins",
 		FallbackCompensationTideCoins = 500,
+		GrantAmount = 500,
 	},
 	Coins3000 = {
 		Key = "Coins3000",
@@ -174,6 +181,7 @@ ShopConfig.DEV_PRODUCTS = {
 		IconAssetId = "rbxassetid://0",
 		EffectKey = "GrantCoins",
 		FallbackCompensationTideCoins = 3000,
+		GrantAmount = 3000,
 	},
 	RescueToken = {
 		Key = "RescueToken",
