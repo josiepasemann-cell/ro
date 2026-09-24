@@ -12,8 +12,6 @@
 	Zustände: Idle, Walk, Run, Jump (Anticipation+Rise), Fall, Land
 ]]
 
-local RunService = game:GetService("RunService")
-
 local RigJoints = require(script.Parent:WaitForChild("RigJoints"))
 local PoseLibrary = require(script.Parent:WaitForChild("PoseLibrary"))
 local Spring = require(script.Parent:WaitForChild("Spring"))
@@ -32,7 +30,6 @@ export type ProceduralAnimatorT = typeof(setmetatable(
 		Rig: RigJoints.RigData,
 
 		LOD: LODLevel,
-		_accumUpdateTime: number,
 
 		Phase: number,
 		LastPosition: Vector3,
@@ -45,7 +42,6 @@ export type ProceduralAnimatorT = typeof(setmetatable(
 		CarryWeight: any,
 
 		LeanSpring: any,
-		HipSwaySmoothed: number,
 		HeadLookSpring: any,
 
 		LandSquash: any,
@@ -133,7 +129,6 @@ function ProceduralAnimator.new(character: Model, effectsPool: any?): Procedural
 	self.Rig = rig
 
 	self.LOD = "Full"
-	self._accumUpdateTime = 0
 
 	self.Phase = 0
 	self.LastPosition = rootPart.Position
@@ -148,7 +143,6 @@ function ProceduralAnimator.new(character: Model, effectsPool: any?): Procedural
 	self.CarryWeight = Spring.new(0, AnimationConfig.CarryBlendSpeed, AnimationConfig.CarryBlendDamping)
 
 	self.LeanSpring = Spring.new(0, AnimationConfig.LeanSpringSpeed, AnimationConfig.LeanSpringDamping)
-	self.HipSwaySmoothed = 0
 	self.HeadLookSpring = Spring.new(0, 8, 1)
 
 	self.LandSquash = Spring.new(0, AnimationConfig.LandSquashSpeed, AnimationConfig.LandSquashDamping)
@@ -173,13 +167,6 @@ end
 
 function ProceduralAnimator.SetLOD(self: ProceduralAnimatorT, level: LODLevel)
 	self.LOD = level
-end
-
-local function blendCFrame(a: CFrame, b: CFrame, weight: number): CFrame
-	if weight <= 0 then
-		return a
-	end
-	return a:Lerp(a * b, math.clamp(weight, 0, 1))
 end
 
 local function combine(base: { [string]: CFrame }, pose: PoseLibrary.PoseOffsets, weight: number)
@@ -257,7 +244,8 @@ function ProceduralAnimator.Update(self: ProceduralAnimatorT, dt: number)
 	local landedNow = self.WasInAir and not inAir
 
 	local sprintFlag = humanoid:GetAttribute("Sprinting") == true
-	local isRunning = (not inAir) and horizontalSpeed > (sprintFlag and 1 or AnimationConfig.RunSpeedThreshold - 4)
+	local isRunning = (not inAir)
+		and horizontalSpeed > 1.2
 		and (sprintFlag or horizontalSpeed > AnimationConfig.RunSpeedThreshold)
 	local isWalking = (not inAir) and horizontalSpeed > 1.2 and not isRunning
 	local isIdle = (not inAir) and horizontalSpeed <= 1.2
@@ -290,8 +278,8 @@ function ProceduralAnimator.Update(self: ProceduralAnimatorT, dt: number)
 		self.LandWeight:SetTarget(0)
 
 		if self.LOD == "Full" and AnimationConfig.LandingFXEnabled and self.EffectsPool then
-			local castOrigin = rootPart.Position
-			self.EffectsPool:EmitAt(castOrigin - Vector3.new(0, rootPart.Size.Y / 2, 0), "Landing")
+			local groundOffset = humanoid.HipHeight + rootPart.Size.Y / 2
+			self.EffectsPool:EmitAt(rootPart.Position - Vector3.new(0, groundOffset, 0), "Landing")
 		end
 	end
 	if inAir then
@@ -310,6 +298,25 @@ function ProceduralAnimator.Update(self: ProceduralAnimatorT, dt: number)
 	local runLeanTarget = math.clamp(horizontalSpeed / AnimationConfig.SprintSpeed, 0, 1) * AnimationConfig.RunLean * runW
 	self.LeanSpring:SetTarget(runLeanTarget)
 	local lean = self.LeanSpring:Update(dt)
+
+	-- ===== Kopf leicht in Bewegungsrichtung (Differenz Blickrichtung vs. Zielrichtung) =====
+	local moveDirection = humanoid.MoveDirection
+	local headLookTarget = 0
+	if moveDirection.Magnitude > 0.1 then
+		local lookVector = rootPart.CFrame.LookVector
+		local flatMove = Vector3.new(moveDirection.X, 0, moveDirection.Z)
+		local flatLook = Vector3.new(lookVector.X, 0, lookVector.Z)
+		if flatMove.Magnitude > 0.05 and flatLook.Magnitude > 0.05 then
+			flatMove = flatMove.Unit
+			flatLook = flatLook.Unit
+			local cross = flatLook.X * flatMove.Z - flatLook.Z * flatMove.X
+			local dot = math.clamp(flatLook:Dot(flatMove), -1, 1)
+			local angle = math.acos(dot) * (cross < 0 and -1 or 1)
+			headLookTarget = math.clamp(angle, -0.8, 0.8) * AnimationConfig.HeadLookStrength
+		end
+	end
+	self.HeadLookSpring:SetTarget(headLookTarget)
+	local headLook = self.HeadLookSpring:Update(dt)
 
 	-- ===== Pose-Zusammensetzung =====
 	local pose: { [string]: CFrame } = {}
@@ -367,6 +374,12 @@ function ProceduralAnimator.Update(self: ProceduralAnimatorT, dt: number)
 	if landSquashV > EPS and not isOverrideActive(self, "Land") then
 		local landPose = PoseLibrary.LandSquash(math.clamp(landSquashV, 0, 1))
 		combine(pose, landPose, math.clamp(landSquashV, 0, 1))
+	end
+
+	-- Head-Look additiv einmischen (unabhängig vom Zustand, sofern kein Override aktiv ist)
+	if math.abs(headLook) > EPS and not isOverrideActive(self, "Idle") then
+		local neckOffset = pose.Neck or CFrame.identity
+		pose.Neck = neckOffset * CFrame.Angles(0, headLook, 0)
 	end
 
 	-- ===== Carry-Pose Override (Arme) =====
@@ -427,9 +440,11 @@ function ProceduralAnimator.Update(self: ProceduralAnimatorT, dt: number)
 		local sign = math.sign(math.sin(self.Phase))
 		if sign ~= 0 and sign ~= self.FootCycleSign then
 			self.FootCycleSign = sign
-			local footJoint = sign > 0 and joints.RightHip or joints.LeftHip
-			if footJoint then
-				local footPos = footJoint.Part1.Position - Vector3.new(0, footJoint.Part1.Size.Y, 0)
+			-- Bevorzugt das Fußgelenk (R15) für eine präzise Bodenposition, sonst Hüfte (R6) als Näherung.
+			local footJoint = sign > 0 and (joints.RightAnkle or joints.RightHip) or (joints.LeftAnkle or joints.LeftHip)
+			if footJoint and footJoint.Part1 then
+				local part1 = footJoint.Part1
+				local footPos = part1.Position - Vector3.new(0, part1.Size.Y / 2, 0)
 				self.EffectsPool:EmitAt(footPos, "Footstep")
 			end
 		end
