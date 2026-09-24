@@ -556,6 +556,7 @@ local entries: { MenuEntry } = {
 	{ Icon = "⚙️", Text = "Optionen", OnClick = onSettingsClicked },
 	{ Icon = "🛒", Text = "Shop", OnClick = onShopClicked },
 	{ Icon = "📖", Text = "Kodex", OnClick = onCodexClicked },
+	{ Icon = "🌊", Text = "Event", OnClick = onEventClicked },
 }
 
 for index, entry in ipairs(entries) do
@@ -587,6 +588,8 @@ local inputConnection = UserInputService.InputBegan:Connect(function(input, game
 		onSettingsClicked()
 	elseif input.KeyCode == Enum.KeyCode.C then
 		onCodexClicked()
+	elseif input.KeyCode == Enum.KeyCode.E then
+		onEventClicked()
 	end
 end)
 
