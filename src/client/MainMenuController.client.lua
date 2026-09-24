@@ -11,11 +11,22 @@
 			- Brutbecken-Übersicht (BreedingUIController)
 			- Mystery Egg / Drop-Chancen (GachaOddsUIController)
 			- Entführte Kreaturen (RaidUIController)
+			- Quests (QuestUIController: Tages-Quests + Tages-Login-Serie,
+			  zeigt ein Badge mit Zähler, sobald etwas abholbar ist)
+			- Rangliste (LeaderboardUIController)
+			- Reisen (TravelUIController: Hub/Plot/Zonenportale)
 			- Einstellungen (Reduzierte Effekte, Sound-/Musik-Lautstärke -
 			  rein lokale Client-Einstellungen, siehe UIKit.Settings)
 			- Shop (öffnet ShopUIController.client.lua über die
 			  Bridge-BindableEvent "OpenShop", identisches Muster wie
 			  "OpenMysteryEgg"/"OpenBreedingOverview" unten)
+
+		ÜBERLAUF-SCHUTZ (Auftrag: "darf auf Handy nicht überlaufen"): Mit
+		9 Einträgen passt die Leiste auf schmalen Phones nicht mehr in eine
+		feste Breite. `rowHost` ist deshalb eine horizontal scrollbare
+		`ScrollingFrame` (Wisch-/Mausrad-Scroll, auf Konsole scrollt die
+		Engine bei Gamepad-Fokuswechsel automatisch mit) statt einer starren
+		Frame - siehe buildBar()/applyBarLayout() unten.
 
 		Kommunikation mit den anderen Controllern läuft bewusst NICHT über
 		direkte Requires (das wären Kreis-Abhängigkeiten zwischen
@@ -33,7 +44,7 @@
 			  eigentlich Spalte, hier bewusst erzwungene Reihe mit
 			  Wrap, siehe buildBar()).
 			- Tablet/PC: unten mittig angedockte, kompakte Reihe.
-			- PC zusätzlich: Tastaturkürzel (B/U/M/N/O), nur als Hinweis
+			- PC zusätzlich: Tastaturkürzel (B/U/M/N/Q/L/R/O), nur als Hinweis
 			  sichtbar, wenn Device.ShouldShowKeyboardHints() true ist.
 			- Konsole: gleiche Leiste, Buttons sind über die native
 			  Gamepad-Selektion (UIKit.Button macht das automatisch)
@@ -91,6 +102,10 @@ local openBreedingOverviewEvent = getOrCreateBridgeEvent("OpenBreedingOverview")
 local openMysteryEggEvent = getOrCreateBridgeEvent("OpenMysteryEgg")
 local openAbductedCreaturesEvent = getOrCreateBridgeEvent("OpenAbductedCreatures")
 local openShopEvent = getOrCreateBridgeEvent("OpenShop")
+local openQuestsEvent = getOrCreateBridgeEvent("OpenQuests")
+local openLeaderboardEvent = getOrCreateBridgeEvent("OpenLeaderboard")
+local openTravelEvent = getOrCreateBridgeEvent("OpenTravel")
+local questBadgeCountEvent = getOrCreateBridgeEvent("QuestBadgeCountChanged")
 
 -- // Root-ScreenGui --------------------------------------------------------------
 
@@ -118,12 +133,25 @@ local barStroke = Theme.ApplyStroke(bar, Theme.Neon.Cyan, 2)
 barStroke.Transparency = 0.3
 Theme.ApplyGradient(bar, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
 
-local rowHost = Instance.new("Frame")
+-- Horizontal scrollbare Leiste statt starrer Frame (siehe Kopfkommentar
+-- "ÜBERLAUF-SCHUTZ") - mit 9 Einträgen reicht auf schmalen Phones/kleinen
+-- Fenstern eine feste Breite nicht mehr aus. AutomaticCanvasSize berechnet
+-- die Scroll-Breite automatisch aus dem UIListLayout-Inhalt, Wraps bleibt
+-- AUS (eine einzige Reihe, die seitlich scrollt, statt in eine 2. Zeile
+-- umzubrechen, die in der festen Bar-Höhe abgeschnitten würde).
+local rowHost = Instance.new("ScrollingFrame")
 rowHost.Name = "RowHost"
 rowHost.BackgroundTransparency = 1
+rowHost.BorderSizePixel = 0
 rowHost.AnchorPoint = Vector2.new(0.5, 0.5)
 rowHost.Position = UDim2.fromScale(0.5, 0.5)
 rowHost.Size = UDim2.new(1, -16, 1, -16)
+rowHost.CanvasSize = UDim2.new(0, 0, 0, 0)
+rowHost.AutomaticCanvasSize = Enum.AutomaticSize.X
+rowHost.ScrollingDirection = Enum.ScrollingDirection.X
+rowHost.ScrollBarThickness = 4
+rowHost.ScrollBarImageColor3 = Theme.Neon.Cyan
+rowHost.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
 rowHost.Parent = bar
 
 local listLayout = Instance.new("UIListLayout")
@@ -131,7 +159,7 @@ listLayout.FillDirection = Enum.FillDirection.Horizontal
 listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 listLayout.Padding = UDim.new(0, 8)
-listLayout.Wraps = true
+listLayout.Wraps = false
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = rowHost
 
@@ -144,15 +172,17 @@ hintLabel.Size = UDim2.new(1, 0, 0, 18)
 hintLabel.Font = Theme.Font.Body
 hintLabel.TextColor3 = Theme.Text.Muted
 hintLabel.TextScaled = true
-hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · O Einstellungen"
+hintLabel.Text = "B Bauen · U Brutbecken · M Mystery Egg · N Entführte · Q Quests · L Rangliste · R Reisen · O Einstellungen"
 hintLabel.Visible = false
 hintLabel.Parent = bar
 local hintConstraint = Instance.new("UITextSizeConstraint")
-hintConstraint.MinTextSize = 10
-hintConstraint.MaxTextSize = 14
+hintConstraint.MinTextSize = 9
+hintConstraint.MaxTextSize = 13
 hintConstraint.Parent = hintLabel
 
 -- // Geräteabhängiges Andocken ---------------------------------------------------
+
+local MENU_ENTRY_COUNT = 9 -- Bauen, Brutbecken, Mystery Egg, Entführt, Quests, Rangliste, Reisen, Optionen, Shop
 
 local function applyBarLayout()
 	local state = Device.GetState()
@@ -166,7 +196,12 @@ local function applyBarLayout()
 		bar.AnchorPoint = Vector2.new(0.5, 1)
 		bar.Position = UDim2.new(0.5, 0, 1, -18)
 		bar.AutomaticSize = Enum.AutomaticSize.None
-		bar.Size = UDim2.fromOffset(6 * 56 + 5 * 8 + 32, 68)
+		-- Breite: passt alle Einträge in eine Reihe, außer der verfügbare
+		-- Viewport ist zu schmal dafür - dann übernimmt die ScrollingFrame
+		-- (rowHost) das horizontale Scrollen statt die Bar zu sprengen.
+		local desiredWidth = MENU_ENTRY_COUNT * 56 + (MENU_ENTRY_COUNT - 1) * 8 + 32
+		local maxWidth = math.max(state.ViewportSize.X - 48, 240)
+		bar.Size = UDim2.fromOffset(math.min(desiredWidth, maxWidth), 68)
 		hintLabel.Visible = Device.ShouldShowKeyboardHints()
 	end
 end
@@ -180,9 +215,12 @@ type MenuEntry = {
 	Icon: string,
 	Text: string,
 	OnClick: () -> (),
+	HasBadge: boolean?, -- true nur beim "Quests"-Eintrag (siehe questBadgeFrame unten)
 }
 
 local buttonHandles: { any } = {}
+local questBadgeFrame: Frame? = nil
+local questBadgeLabel: TextLabel? = nil
 
 local function buildButton(entry: MenuEntry, order: number)
 	local buttonSize = if Device.IsPhone() then UDim2.fromOffset(64, 64) else UDim2.fromOffset(56, 56)
@@ -199,8 +237,58 @@ local function buildButton(entry: MenuEntry, order: number)
 	end
 	handle.Clicked:Connect(entry.OnClick)
 	table.insert(buttonHandles, handle)
+
+	if entry.HasBadge then
+		-- Kleines, grelles Zähler-Abzeichen oben rechts am Button (Quests:
+		-- offene Belohnung zum Abholen). QuestUIController meldet den
+		-- aktuellen Zähler über die Bridge "QuestBadgeCountChanged".
+		local badge = Instance.new("Frame")
+		badge.Name = "Badge"
+		badge.AnchorPoint = Vector2.new(1, 0)
+		badge.Position = UDim2.new(1, 6, 0, -6)
+		badge.Size = UDim2.fromOffset(20, 20)
+		badge.BackgroundColor3 = Theme.Semantic.Danger
+		badge.ZIndex = 10
+		badge.Visible = false
+		Theme.ApplyCorner(badge, UDim.new(1, 0))
+		Theme.ApplyStroke(badge, Theme.Text.Stroke, 1.5)
+		badge.Parent = handle.Instance
+
+		local badgeLabel = Instance.new("TextLabel")
+		badgeLabel.BackgroundTransparency = 1
+		badgeLabel.Size = UDim2.fromScale(1, 1)
+		badgeLabel.Font = Theme.Font.BodyBold
+		badgeLabel.TextColor3 = Theme.Text.OnNeon
+		badgeLabel.TextScaled = true
+		badgeLabel.Text = "0"
+		badgeLabel.ZIndex = 11
+		badgeLabel.Parent = badge
+		local badgeConstraint = Instance.new("UITextSizeConstraint")
+		badgeConstraint.MinTextSize = 10
+		badgeConstraint.MaxTextSize = 14
+		badgeConstraint.Parent = badgeLabel
+
+		questBadgeFrame = badge
+		questBadgeLabel = badgeLabel
+	end
+
 	return handle
 end
+
+local function updateQuestBadge(count: number)
+	if not questBadgeFrame or not questBadgeLabel then
+		return
+	end
+	local clamped = math.clamp(count, 0, 99)
+	questBadgeFrame.Visible = clamped > 0
+	questBadgeLabel.Text = clamped > 9 and "9+" or tostring(clamped)
+end
+
+local questBadgeConnection = questBadgeCountEvent.Event:Connect(function(count: number)
+	if type(count) == "number" then
+		updateQuestBadge(count)
+	end
+end)
 
 -- // Baumodus ----------------------------------------------------------------------
 
@@ -224,6 +312,24 @@ end
 
 local function onAbductedClicked()
 	openAbductedCreaturesEvent:Fire()
+end
+
+-- // Quests (QuestUIController.client.lua) -------------------------------------------
+
+local function onQuestsClicked()
+	openQuestsEvent:Fire()
+end
+
+-- // Rangliste (LeaderboardUIController.client.lua) ----------------------------------
+
+local function onLeaderboardClicked()
+	openLeaderboardEvent:Fire()
+end
+
+-- // Reisen (TravelUIController.client.lua) ------------------------------------------
+
+local function onTravelClicked()
+	openTravelEvent:Fire()
 end
 
 -- // Shop --------------------------------------------------------------------------
@@ -349,10 +455,10 @@ local function buildSettingsPanel()
 	end)
 
 	-- // Musik-Lautstärke ---------------------------------------------------------
-	-- HINWEIS: Es gibt aktuell noch kein Hintergrundmusik-System im Spiel.
-	-- Dieser Regler speichert den Wert bereits als Attribut auf Workspace
-	-- ("MusicVolume"), damit ein künftiges Musik-Modul ihn sofort nutzen
-	-- kann, ohne dass dieses Einstellungsmenü nochmal angefasst werden muss.
+	-- Steuert AudioController.client.lua (Hintergrundmusik + Unterwasser-
+	-- Ambiente) über das Workspace-Attribut "MusicVolume" - AudioController
+	-- liest dieses Attribut live (GetAttributeChangedSignal), kein weiterer
+	-- Draht zwischen diesem Menü und AudioController nötig.
 	local musicLabel = Instance.new("TextLabel")
 	musicLabel.BackgroundTransparency = 1
 	musicLabel.Size = UDim2.new(1, 0, 0, 24)
@@ -361,7 +467,7 @@ local function buildSettingsPanel()
 	musicLabel.TextColor3 = Theme.Text.Primary
 	musicLabel.TextXAlignment = Enum.TextXAlignment.Left
 	musicLabel.TextScaled = true
-	musicLabel.Text = "Musik-Lautstärke (folgt bald)"
+	musicLabel.Text = "Musik-Lautstärke"
 	musicLabel.Parent = content
 	local musicLabelConstraint = Instance.new("UITextSizeConstraint")
 	musicLabelConstraint.MinTextSize = 12
@@ -426,6 +532,9 @@ local entries: { MenuEntry } = {
 	{ Icon = "🥚", Text = "Brutbecken", OnClick = onBreedingClicked },
 	{ Icon = "🎁", Text = "Mystery Egg", OnClick = onMysteryEggClicked },
 	{ Icon = "🆘", Text = "Entführt", OnClick = onAbductedClicked },
+	{ Icon = "📜", Text = "Quests", OnClick = onQuestsClicked, HasBadge = true },
+	{ Icon = "🏆", Text = "Rangliste", OnClick = onLeaderboardClicked },
+	{ Icon = "🧭", Text = "Reisen", OnClick = onTravelClicked },
 	{ Icon = "⚙️", Text = "Optionen", OnClick = onSettingsClicked },
 	{ Icon = "🛒", Text = "Shop", OnClick = onShopClicked },
 }
@@ -449,6 +558,12 @@ local inputConnection = UserInputService.InputBegan:Connect(function(input, game
 		onMysteryEggClicked()
 	elseif input.KeyCode == Enum.KeyCode.N then
 		onAbductedClicked()
+	elseif input.KeyCode == Enum.KeyCode.Q then
+		onQuestsClicked()
+	elseif input.KeyCode == Enum.KeyCode.L then
+		onLeaderboardClicked()
+	elseif input.KeyCode == Enum.KeyCode.R then
+		onTravelClicked()
 	elseif input.KeyCode == Enum.KeyCode.O then
 		onSettingsClicked()
 	end
@@ -475,6 +590,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	deviceConnection:Disconnect()
 	deviceForGamepadConnection:Disconnect()
 	inputConnection:Disconnect()
+	questBadgeConnection:Disconnect()
 	unbindScale()
 	for _, handle in buttonHandles do
 		handle:Destroy()

@@ -41,6 +41,18 @@ local SoundConfig: { [string]: SoundDefinition } = {
 	LevelUp = { Id = "rbxassetid://6895081384", Volume = 0.6 }, -- PLATZHALTER
 	-- Großer Moment: Mythic-Drop aus dem Gacha.
 	MythicDrop = { Id = "rbxassetid://6895081760", Volume = 0.7 }, -- PLATZHALTER
+
+	-- // Musik/Ambiente (AudioController.client.lua) ---------------------------
+	-- BEWUSST LEERE Id: Anders als die Klick-/Feedback-Sounds oben (bestehende,
+	-- funktionierende Platzhalter-Katalog-Sounds) wird hier KEINE erfundene
+	-- Asset-ID eingetragen - eine falsche/erratene ID würde in Produktion
+	-- entweder gar nichts oder (schlimmer) einen fremden/ungeeigneten Sound
+	-- abspielen. Leere Id = AudioController spielt bewusst nichts ab, bis
+	-- die Spiel-Autorin hier eine selbst hochgeladene/lizenzierte
+	-- rbxassetid:// einträgt (Loop = true auf dem jeweiligen Sound-Objekt ist
+	-- in AudioController bereits vorbereitet).
+	BackgroundMusic = { Id = "", Volume = 0.5 }, -- PLATZHALTER: eigene Musik-Asset-ID hier eintragen
+	UnderwaterAmbience = { Id = "", Volume = 0.35 }, -- PLATZHALTER: eigene Ambiente-Asset-ID hier eintragen
 }
 
 return SoundConfig
