@@ -19,9 +19,10 @@ Additiv erweitert (kein bestehendes Verhalten verändert):
 - `src/server/PlayerDataService.lua`: neues `BuddyState` (`CreatureId: string?`)
   + `GetBuddyCreatureId`/`SetBuddyCreatureId`. `SCHEMA_VERSION` 5 -> 6 (reine
   Feld-Ergänzung, identisches Migrations-Muster wie `CodexState`).
-- `src/client/CodexUIController.client.lua`: neuer "🐾"-Button auf jeder
-  besessenen Kreaturen-Karte ("Set as buddy" / entfernen bei erneutem
-  Klick), spiegelbildlich zum bestehenden Favoriten-Stern-Button.
+- `src/client/CodexUIController.client.lua`: neuer "Set Buddy"-Button auf
+  jeder besessenen Kreaturen-Karte (Text wechselt zu "✓ Buddy" beim
+  aktuell gewählten Buddy, erneuter Klick entfernt ihn), spiegelbildlich
+  zum bestehenden Favoriten-Stern-Button.
 
 ## Bewegungs-Architektur: bewusst KOMPLETT CLIENT-GETRIEBEN
 
