@@ -75,7 +75,7 @@ end
 function Signal:Fire(...: any)
 	-- Kopie ziehen, damit Disconnects während des Feuerns nicht die
 	-- laufende Iteration verfälschen.
-	local listeners = table.clone((self :: any)._listeners)
+	local listeners = table.clone((self :: any)._listeners) :: { Listener }
 	for _, listener in listeners do
 		if listener.connected then
 			task.spawn(listener.fn, ...)

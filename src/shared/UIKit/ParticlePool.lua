@@ -38,10 +38,8 @@ end
 -- Holt ein freies Partikel-Frame aus dem Pool (oder erzeugt ein neues,
 -- falls der Pool leer ist), parentet es und macht es sichtbar.
 function ParticlePool.Acquire(parent: Instance): Frame
-	local particle = table.remove(freeList)
-	if not particle then
-		particle = createParticle()
-	end
+	local pooled: Frame? = table.remove(freeList)
+	local particle: Frame = pooled or createParticle()
 	particle.Visible = true
 	particle.BackgroundTransparency = 0
 	particle.Rotation = 0

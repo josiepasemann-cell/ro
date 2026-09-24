@@ -44,7 +44,7 @@ local Workspace = game:GetService("Workspace")
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
-local Theme = UIKit.Theme
+local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
 local Device = UIKit.Device
 local Panel = UIKit.Panel
 local Button = UIKit.Button

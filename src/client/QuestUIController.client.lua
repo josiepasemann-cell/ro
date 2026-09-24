@@ -114,7 +114,7 @@ end
 
 local function secondsUntilNextUtcMidnight(): number
 	local now = os.time()
-	local utcNow = os.date("!*t", now) :: { [string]: number }
+	local utcNow = os.date("!*t", now)
 	local nowClock = utcNow.hour * 3600 + utcNow.min * 60 + utcNow.sec
 	local remaining = (24 * 3600) - nowClock
 	if remaining <= 0 then

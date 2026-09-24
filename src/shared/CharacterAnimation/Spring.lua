@@ -33,17 +33,17 @@ function Spring.new(initial: number?, speed: number?, damping: number?): Spring
 	return self
 end
 
-function Spring:SetTarget(target: number)
+function Spring.SetTarget(self: Spring, target: number)
 	self.Target = target
 end
 
-function Spring:Snap(value: number)
+function Spring.Snap(self: Spring, value: number)
 	self.Position = value
 	self.Target = value
 	self.Velocity = 0
 end
 
-function Spring:Update(dt: number): number
+function Spring.Update(self: Spring, dt: number): number
 	-- Clamp dt gegen Spikes (Teleports/Lag), verhindert Instabilität der Integration.
 	if dt > 0.25 then
 		dt = 0.25

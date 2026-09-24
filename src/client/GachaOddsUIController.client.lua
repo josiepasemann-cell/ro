@@ -44,7 +44,7 @@ local UserInputService = game:GetService("UserInputService")
 local GachaRemotes = require(ReplicatedStorage:WaitForChild("GachaRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
-local Theme = UIKit.Theme
+local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
 local Panel = UIKit.Panel
 local RarityBadge = UIKit.RarityBadge
 

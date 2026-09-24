@@ -61,7 +61,7 @@ local TweenService = game:GetService("TweenService")
 local GachaRemotes = require(ReplicatedStorage:WaitForChild("GachaRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
-local Theme = UIKit.Theme
+local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
 local Toast = UIKit.Toast
 local ScreenFX = UIKit.ScreenFX
 local RarityBadge = UIKit.RarityBadge

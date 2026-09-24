@@ -40,7 +40,7 @@ local BreedingConfig = require(ReplicatedStorage:WaitForChild("BreedingConfig"))
 local BreedingRemotes = require(ReplicatedStorage:WaitForChild("BreedingRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
-local Theme = UIKit.Theme
+local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
 local Panel = UIKit.Panel
 local Button = UIKit.Button
 local ProgressBar = UIKit.ProgressBar
