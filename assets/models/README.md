@@ -71,6 +71,47 @@ Code-Agenten).
 | `MysteryEgg_Mythic.lua` | Mysterium-Ei (Mythisch) | `Mythic` | Aufwendigste Stufe: Kristallschale mit Glow-Kern, 7er-Dornenkrone, 2 versetzt geneigte Runenringe, 3 Kristallsplitter-Satelliten, hellstes `PointLight` |
 | `GachaEggOpenVFX.lua` | Öffnungs-VFX-Rig | – | Wiederverwendbares Effekt-Modell: `ParticleEmitter`s (Schalenriss + Lichtexplosion), `PointLight`-Blitz, rarity-farbiger `Beam`. Alle standardmäßig `Enabled = false` |
 
+### `hub/` – Hub-Welt "Tidal Market"
+Zentrale Marktplatz-/Lobby-Welt gemäß GDD Abschnitt 4 & 8: Landmark,
+NPC-Stände, Handelsdock, Leaderboard, Quest-Brett, 4 Zonenportale,
+SpawnLocations und ein symbolischer, leuchtender Weg zu den Spieler-Plots.
+Folgt denselben 8 Design-Prinzipien wie die Zonen-Terrain-Chunks (siehe
+`/home/user/ro/docs/terrain-design-notes.md`), übertragen auf eine
+Marktplatz-Situation statt eines Erkundungs-Terrains.
+
+| Datei | Asset | Beschreibung |
+|---|---|---|
+| `TidalMarketHub.lua` | Hub-Welt "Tidal Market" | Dunkler Basalt-Rundplatz (Ø 220 Studs) mit zentraler Landmark ("Leuchtturm-Koralle": CSG-Korallenturm + Riesenqualle mit Multi-Neon-Tentakeln), 5 Interactable-Ständen im Ring (Shop/Gacha/Trade/Leaderboard/Quests), 4 Zonenportalen (CSG-Torbögen, farbcodiert je Zone) und 6 SpawnLocations |
+
+**Weltplatzierung (wichtig):** Der Hub liegt bewusst bei `CFrame.new(-500, 0, -500)`
+– weit entfernt sowohl vom Spieler-Plot-Raster (`PlotRegistry.lua`: Slots
+beginnen bei `(0,0,0)` und wachsen über `x/z >= 0`) als auch vom
+Zonen-Terrain-Chunk-Cluster (alle 4 Chunks liegen im Radius ~170 Studs um
+den Weltursprung `(0,0,0)`). Ohne diesen Versatz würde der Hub direkt mit
+Plot-Slot #1 und den Zonen-Chunks kollidieren – ein Platzkonflikt zwischen
+zwei bereits bestehenden, hier nicht änderbaren Systemen (Details siehe
+Kopfkommentar in `TidalMarketHub.lua`). Zonenportale und die "Plot-Straße"
+sind deshalb bewusst **logische Teleport-Punkte** (Attribute, siehe unten),
+keine physisch begehbaren Verbindungen zur echten Zonen-/Plot-Geometrie –
+das passt zum bestehenden Design, da `PlotRegistry` Spielern ohnehin bei
+jedem Join einen zur Laufzeit wechselnden Welt-Slot zuweist.
+
+**Interactable-Attribute (für den UI-/Code-Agenten):**
+
+| Unter-Modell | `Interactable`-Attribut | Sonstiges |
+|---|---|---|
+| `ShopStand` | `"Shop"` | `DisplayPanel`-Fläche für spätere Shop-UI, `InteractionPoint`-Attachment |
+| `GachaStation` | `"Gacha"` | 3x `EggDisplaySlot<n>`-Attachment (Platz für `gacha/MysteryEgg_*.lua`-Modelle), `DisplayPanel` |
+| `TradeDock` | `"Trade"` | 2x `TradePodium<n>` (Stehpunkte für sicheren 2-Spieler-Trade) |
+| `LeaderboardBoard` | `"Leaderboard"` | `DisplayPanel`-Fläche für spätere `SurfaceGui` (OrderedDataStore-Ranglisten) |
+| `QuestBoard` | `"Quests"` | `DisplayPanel`-Fläche (Holzbrett) für tägliche Quest-UI |
+| `PlotGate` (Bonus, über den Auftrag hinaus) | `"PlotGate"` | Symbolisches Ende der "Plot-Straße"; optionaler Hook für `PlotRegistry.AssignPlot()` + Teleport |
+
+4 Zonenportale (`Portal_<Zone>`) tragen stattdessen `ZonePortal`
+(`"SunZone"` / `"TwilightZone"` / `"MidnightZone"` / `"HadalDepths"`) und
+`RequiredLevel` (`1` / `10` / `25` / `45`), plus ein `TeleportPoint`-
+Attachment als Zielanker für die spätere Teleport-Logik.
+
 ### `ui/` – UI-Layout-Grundgerüste
 Reine `ScreenGui`/`Frame`-Layouts ohne Funktions-Logik (kein `LocalScript`
 lädt Daten oder verarbeitet Klicks – das kommt bewusst erst später).
@@ -198,6 +239,49 @@ Jedes Skript hat oben einen Konfigurationsblock (`ORIGIN`, ggf. `RARITY`,
     durch serverseitig synchrone Compliance-Odds-Daten.
   - `TextButton "CloseButton"` besitzt bewusst keine
     `MouseButton1Click`-Verbindung – reines visuelles Grundgerüst.
+
+## Wie der Hub ins Live-Spiel kommt
+
+Wie alle anderen Buildscripts in diesem Ordner ist `hub/TidalMarketHub.lua`
+ein **einmaliges Studio-Skript**, kein Laufzeit-Code. Workflow (identisch
+zum bestehenden `AssetTemplateSetup.lua`-Muster für Plot/Gebäude-Vorlagen,
+siehe dort):
+
+1. `TidalMarketHub.lua` einmal in der Studio-Command-Bar ausführen (siehe
+   Kopfkommentar in der Datei). Das Modell entsteht unter
+   `Workspace.Assets.Hub.TidalMarketHub`.
+2. Place speichern/veröffentlichen – der Hub wird damit fester Bestandteil
+   der Welt, genau wie Terrain-Chunks und Habitat-Plot-Basis.
+3. `src/server/WorldSetup.server.lua` läuft bei jedem Serverstart und
+   **prüft nur**, ob der Hub vorhanden ist (kein erneuter Bau – das würde
+   unnötig teure CSG-Berechnungen wiederholen). Fehlt er, wird gewarnt und
+   ein minimaler Notfall-Spawn erzeugt, damit Spieler trotzdem sicher
+   joinen können, statt ins Leere zu fallen.
+
+## Handy-Performance (Hub & Weltatmosphäre)
+
+- `Workspace.StreamingEnabled = true` wird empfohlen (nicht von
+  `WorldSetup.server.lua` selbst erzwungen, da dies ein globales
+  Workspace-Property ist, das mit den Zonen-/Plot-Streaming-Grenzen
+  anderer Agenten abgestimmt werden sollte) – wichtig, da die Welt durch
+  Hub + 4 Zonen + potenziell viele Spieler-Plots groß werden kann.
+- Partikel-Raten in `WorldSetup.server.lua` bewusst moderat gehalten
+  (Blasen: `Rate = 5` je Quelle, 4 Quellen am Hub; Plankton: `Rate = 8` je
+  Quelle, 2 Quellen) statt eines einzelnen, welt-großen Hochfrequenz-
+  Emitters.
+- Lichtquellen begrenzt: `PointLight.Shadows = false` überall (siehe Hub-
+  und Terrain-Buildscripts), globales, sanftes Flackern läuft über
+  `ColorCorrectionEffect.Brightness` (ein einziger Heartbeat-Tween statt
+  Dutzender einzeln animierter Lights).
+- Alle Ambient-FX-Instanzen tragen den `CollectionService`-Tag
+  `"AmbientFX"` und spiegeln ihre Basis-Rate im Attribut `BaseRate` –
+  vorbereitet für einen späteren client-seitigen Qualitätsstufen-Hook
+  (siehe Kommentarblock am Ende von `WorldSetup.server.lua`), da der
+  Server weder Client-Grafikqualität noch (fair) Spieleranzahl-Lastspitzen
+  zuverlässig allein entscheiden sollte.
+- Hub-PartCount bewusst im niedrigen dreistelligen Bereich (~220,
+  vergleichbar mit den Zonen-Terrain-Chunks) trotz 4 Portalen + 5 Ständen +
+  Landmark, durch CSG-Union für alle Torbögen/Podeste/den Korallenturm.
 
 ## Technische Hinweise
 
