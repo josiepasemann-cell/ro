@@ -88,6 +88,9 @@ local function pickTextColor(variant: ButtonVariant): Color3
 end
 
 local function playSound(definition: { Id: string, Volume: number, PitchRange: NumberRange? })
+	if definition.Id == "" then
+		return
+	end
 	local sound = Instance.new("Sound")
 	sound.SoundId = definition.Id
 	sound.Volume = definition.Volume

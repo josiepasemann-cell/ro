@@ -147,12 +147,14 @@ function Toast.Show(props: ToastProps)
 	local offsetIn = Device.ShouldUseFullscreenPanels() and UDim2.new(0, 0, 0, 20) or UDim2.new(0.15, 0, 0, 0)
 	entry.Position = offsetIn
 
-	local playSound = Instance.new("Sound")
-	playSound.SoundId = SoundConfig.Toast.Id
-	playSound.Volume = SoundConfig.Toast.Volume
-	playSound.Parent = SoundService
-	playSound:Play()
-	game:GetService("Debris"):AddItem(playSound, 3)
+	if SoundConfig.Toast.Id ~= "" then
+		local playSound = Instance.new("Sound")
+		playSound.SoundId = SoundConfig.Toast.Id
+		playSound.Volume = SoundConfig.Toast.Volume
+		playSound.Parent = SoundService
+		playSound:Play()
+		game:GetService("Debris"):AddItem(playSound, 3)
+	end
 
 	TweenService:Create(entry, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 		BackgroundTransparency = 0.05,
