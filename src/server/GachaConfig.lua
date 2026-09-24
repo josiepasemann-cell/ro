@@ -126,6 +126,12 @@ GachaConfig.DUPLICATE_COMPENSATION_TIDE_COINS = {
 	Mythic = 4000,
 } :: { [Rarity]: number }
 
+-- // Preis für ein Ei an der Station (Tide Coins) --------------------------
+-- Muss deutlich über dem erwarteten Duplikat-Ausgleich liegen (~145 Coins pro
+-- Roll, wenn nur noch Duplikate kommen), sonst wird das Ei zur Münzmaschine.
+-- Der Robux-Kauf (OpenPurchasedEgg) ist davon unberührt.
+GachaConfig.EGG_COST_TIDE_COINS = 350
+
 -- // Anti-Spam: Mindestabstand zwischen zwei Öffnungs-Anfragen (Sekunden) --
 GachaConfig.MIN_SECONDS_BETWEEN_ROLLS = 1.0
 

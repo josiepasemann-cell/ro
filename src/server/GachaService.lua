@@ -53,7 +53,7 @@ export type OpenEggResult = {
 	PityCounter: number,
 }
 
-export type OpenEggFailure = "OnCooldown" | "DataNotLoaded"
+export type OpenEggFailure = "OnCooldown" | "DataNotLoaded" | "NotEnoughCoins"
 
 local GachaService = {}
 
@@ -320,8 +320,9 @@ end
 --- Spieler vollständig serverseitig (Roll, Pity, Duplikat-Check, Ausgleich,
 --- Logging), inkl. Anti-Spam-Cooldown. Gibt entweder (result, nil) oder
 --- (nil, failure) zurück (z. B. bei zu schneller Wiederholungs-Anfrage).
---- Für den GRATIS-Öffnen-Kanal (RequestOpenEgg via GachaRemotes) gedacht -
---- Robux-Käufe laufen über OpenPurchasedEgg (siehe unten).
+--- Für den Tide-Coins-Kanal (RequestOpenEgg an der Station, kostet
+--- GachaConfig.EGG_COST_TIDE_COINS) - Robux-Käufe laufen über
+--- OpenPurchasedEgg (siehe unten).
 function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
 	-- 0) Persistenz-Voraussetzung: ohne geladene Spielerdaten kein Roll -
 	-- sonst könnten Pity-Zähler/Inventar/Tide-Coins-Gutschrift verloren
@@ -338,6 +339,12 @@ function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
 		return nil, "OnCooldown"
 	end
 	state.lastRollAt = now
+
+	local cost = GachaConfig.EGG_COST_TIDE_COINS
+	if PlayerDataService.GetCurrency(player, "TideCoins") < cost then
+		return nil, "NotEnoughCoins"
+	end
+	PlayerDataService.AddCurrency(player, "TideCoins", -cost)
 
 	return performRoll(player, false), nil
 end

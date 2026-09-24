@@ -47,10 +47,9 @@
 		Server geschickt (kein Client-Trust) - der Server kennt nur den
 		anfragenden `player`.
 
-		Da es noch kein Kauf-/Bestandssystem gibt, ist jedes Ei-Modell ein
-		wiederverwendbarer Test-Interaktionspunkt (kein Verbrauchsgut) - die
-		Anbindung an einen echten Kauf-Flow (Developer Product/Robux via
-		ProcessReceipt) ist bewusst nicht Teil dieses Bausteins.
+		Jeder Klick kostet Tide Coins (Preis setzt der Server als Attribut
+		"EggCostTideCoins" am Ei) und wird vorher per Dialog bestätigt. Der
+		Robux-Kauf läuft separat über den Shop (MonetizationService).
 ]]
 
 local Players = game:GetService("Players")
@@ -120,8 +119,22 @@ local function ensureClickDetector(eggModel: Model)
 			return
 		end
 		isOpeningEgg = true
-		pendingEggModel = eggModel
-		GachaRemotes.RequestOpenEgg:FireServer()
+		local cost = eggModel:GetAttribute("EggCostTideCoins")
+		UIKit.ConfirmDialog.Show({
+			Title = "Mystery Egg öffnen?",
+			Message = if type(cost) == "number"
+				then ("Kostet %d Tide Coins. Die Chancen siehst du im Menü unter Mystery Egg."):format(cost)
+				else "Die Chancen siehst du im Menü unter Mystery Egg.",
+			ConfirmText = "Öffnen",
+			CancelText = "Abbrechen",
+			OnConfirm = function()
+				pendingEggModel = eggModel
+				GachaRemotes.RequestOpenEgg:FireServer()
+			end,
+			OnCancel = function()
+				isOpeningEgg = false
+			end,
+		})
 	end)
 end
 
@@ -332,10 +345,9 @@ GachaRemotes.OpenEggResult.OnClientEvent:Connect(function(payload: { [string]: a
 			-- reicht, da es sich um einen reinen Anti-Spam-Schutz handelt.
 			warn("[GachaOpenClient] Anfrage zu schnell wiederholt, bitte kurz warten.")
 		elseif payload.Failure == "DataNotLoaded" then
-			-- Spielerdaten (PlayerDataService) sind serverseitig noch nicht
-			-- fertig geladen (z. B. Anfrage sehr kurz nach dem Join). Kein
-			-- Datenverlust-Risiko, einfach erneut versuchen.
-			warn("[GachaOpenClient] Spielerdaten werden noch geladen, bitte kurz warten und erneut versuchen.")
+			Toast.Show({ Text = "Deine Daten laden noch, versuch es gleich nochmal.", Type = "Info", Duration = 3 })
+		elseif payload.Failure == "NotEnoughCoins" then
+			Toast.Show({ Text = "Nicht genug Tide Coins für ein Mystery Egg.", Type = "Error", Duration = 3 })
 		end
 		return
 	end
