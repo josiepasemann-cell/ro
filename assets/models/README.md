@@ -39,6 +39,8 @@ Flächen. Chunk-Größe wurde dafür von 50 auf 90-120 Studs erhöht.
 | `GlowBuoyStation.lua` | Lichtboje / Glow-Sammler-Station | Mast mit Haupt-Glow-Orb + 3 Satelliten-Orbs |
 | `FilterPlant.lua` | Filteranlage | Haupttank + 2 Nebentanks, Rohre, Status-Leuchtlicht |
 | `AnglerfishTower.lua` | Verteidigungsturm: Anglerfisch-Turm | Verjüngter Turmschaft, gebogenes Illicium mit Köder-Orb (Ziel-/Schusspunkt) |
+| `CoralBarrier.lua` | Verteidigungsturm: Korallen-Barriere (Flächen-Slow/Tank) | Ø7-Stud-Sockel wie AnglerfishTower, CSG-verschweißter Korallenspitzen-Ring, Neon-türkisener Puls-Kern `SlowPulseCore` (LureOrb-Äquivalent) + `MuzzlePoint`-Attachment |
+| `ElectricEelTrap.lua` | Verteidigungsturm: Elektroaal-Falle (Ketten-Schaden) | Ø7-Stud-Sockel wie AnglerfishTower, aufgerollter Aal-Körper um Felsanker, Angriffs-Ursprung `EelHead` + `MuzzlePoint`-Attachment, sichtbarer `ChargeCore`-Part (+ `ChargeLight`) für spätere Ladezustand-Anzeige |
 
 ### `creatures/` – Kreaturen (MVP-Set, 6 Modelle)
 | Datei | Asset | Rarity (Platzhalter) | Zone |
@@ -78,6 +80,10 @@ Flächen. Chunk-Größe wurde dafür von 50 auf 90-120 Studs erhöht.
 | Datei | Asset | Beschreibung |
 |---|---|---|
 | `ShadowKraken.lua` | Schattenkrake (Platzhalter-Raid-Gegner) | Größerer, bedrohlicher Kraken mit 8 Tentakeln, rote Glow-Augen, `EnemyTier`-Attribut |
+| `SpineDrifter.lua` | Stachel-Treiber (`EnemyId "Drifter"`) | Schlanker, spindeldürrer Aal-Körper, dünne Rückenstacheln, `EnemyTier = "Trash"` |
+| `ThornSwarmer.lua` | Dornschwarmer (`EnemyId "Swarmer"`) | Kompakter Seeigel-Fisch-Hybrid, 6 radiale Dornstacheln, `EnemyTier = "Trash"` |
+| `IronMawBrute.lua` | Eisenmaul-Brute (`EnemyId "Brute"`) | Gedrungener Tank-Körper, überdim. Kiefer, CSG-verschweißte `ArmorPlate`, `EnemyTier = "Elite"` |
+| `TrenchWardenBoss.lua` | Der Tiefenfürst (`EnemyId "TrenchWarden"`, Boss) | Turmhoher Kraken-Fürst, 8 dicke Tentakel, Kronendorn-Cluster mit `PointLight`, `EnemyTier = "Boss"` |
 
 ### `decorations/` – Event-Kosmetik-Dekorationen (Content Update 1, Abschnitt 1.3/7a)
 Rein kosmetische, auf einem Spieler-Baufeld platzierbare Deko-Objekte, je
