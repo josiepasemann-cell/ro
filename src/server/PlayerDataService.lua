@@ -225,6 +225,25 @@ local loadedFlags: { [number]: boolean } = {}
 local loadFailedFlags: { [number]: boolean } = {}
 local loadSignals: { [number]: BindableEvent } = {}
 
+-- // Zentraler Änderungs-Hook (für HUD/Progression, siehe unten) --------------
+-- EIN gemeinsames BindableEvent statt eines gestreuten Remote-Calls pro
+-- Aufrufer (Auftrag Punkt 5): jedes System, das Spielerdaten mit
+-- HUD-Relevanz verändert (aktuell: Währungen über AddCurrency), feuert
+-- automatisch dieses Signal statt selbst RemoteEvents zu kennen/zu feuern.
+-- HUDServer.server.lua ist der einzige aktuelle Abonnent (leitet daraus
+-- HUDRemotes.HUDStateChanged an den betroffenen Client weiter) - weitere
+-- künftige Abonnenten (z. B. ein Telemetrie-System) können sich einfach
+-- zusätzlich verbinden, ohne dass PlayerDataService sie kennen muss.
+-- ACHTUNG: bewusst KEIN RemoteEvent selbst (siehe Sicherheitsprinzip oben,
+-- "exponiert absichtlich KEINE RemoteEvents") - rein server-internes Signal.
+local dataChangedBindable = Instance.new("BindableEvent")
+
+--- Feuert (player: Player, changeKind: string, payload: { [string]: any }).
+--- `changeKind` aktuell nur "Currency" (payload: { CurrencyType, NewBalance }
+--- ) - weitere Kinds können künftig ergänzt werden, ohne bestehende
+--- Abonnenten zu brechen (sie prüfen changeKind bereits selektiv).
+PlayerDataService.DataChanged = dataChangedBindable.Event
+
 -- // Kleine Hilfsfunktionen ----------------------------------------------------
 
 local function dataKey(userId: number): string
@@ -704,6 +723,9 @@ function PlayerDataService.AddCurrency(player: Player, currencyType: CurrencyTyp
 
 	local newBalance = math.max(0, (data.Currencies[currencyType] or 0) + amount)
 	data.Currencies[currencyType] = newBalance
+
+	dataChangedBindable:Fire(player, "Currency", { CurrencyType = currencyType, NewBalance = newBalance })
+
 	return true, newBalance
 end
 
@@ -774,9 +796,16 @@ function PlayerDataService.SetPityCounter(player: Player, value: number): boolea
 end
 
 -- // Level / XP ------------------------------------------------------------------
--- Speichert nur die Rohwerte; die eigentliche XP->Level-Kurve (GDD
--- Abschnitt 6) gehört zum künftigen Progression-/Level-System (GDD
--- Abschnitt 9, Punkt 7) und wird bewusst NICHT hier vorweggenommen.
+-- Speichert nur die Rohwerte (Level als eigenes Feld, XP als All-Time-
+-- kumulative Summe). Die eigentliche XP->Level-Kurve, Level-Up-Verarbeitung
+-- und das Feuern von HUD-/Level-Up-Events gehören zum Progression-/Level-
+-- System (GDD Abschnitt 9, Punkt 7) und leben bewusst NICHT hier, sondern in
+-- ProgressionService/ProgressionConfig (analog zu Habitat-Layout/Zucht-
+-- Inkubationen oben: reine Datenhaltung hier, Spielregeln dort). XP.AddXP
+-- feuert bewusst KEIN DataChanged-Signal (anders als AddCurrency) - HUD-
+-- relevante Level-/XP-Pushes laufen direkt über ProgressionService, das die
+-- neuen Werte ohnehin bereits berechnet hat und keinen zusätzlichen
+-- Round-Trip über dieses generische Signal braucht.
 
 function PlayerDataService.GetLevel(player: Player): number
 	local data = dataCache[player.UserId]
