@@ -1,0 +1,154 @@
+--[[
+	Abyssara – Deep Tide Tycoon
+	Modul: AssetTemplateSetup
+	Zuständigkeit:
+		Schließt eine Lücke zwischen den 3D-Buildscripts
+		(assets/models/**/*.lua) und dem Bauplatzierungs-System: Die
+		Buildscripts sind laut assets/models/README.md bewusst EINMALIGE
+		Aufbau-Skripte, die ihre Modelle live unter
+		Workspace.Assets.<Kategorie>.<Name> an einer fest im Skript
+		codierten ORIGIN-Position erzeugen (z. B. BroodPool_Basic immer bei
+		CFrame.new(20, 2, 20)). Sie existieren NICHT als fertige,
+		wiederverwendbare Instanzen in ReplicatedStorage.
+
+		Für Platzierung (PlacementService) UND Client-Vorschau
+		(PlacementPreviewController) wird aber genau das gebraucht: eine
+		stabile, beliebig oft klonbare Modell-VORLAGE pro Gebäude/Plot-Typ,
+		die nicht an der (für mehrere Spieler ungeeigneten, sich
+		überlappenden) Buildscript-ORIGIN-Position im offenen Workspace
+		herumsteht.
+
+	PRAGMATISCHE ENTSCHEIDUNG (siehe Auftrag zu diesem System):
+		Dieses Modul räumt das automatisch auf, sobald der Server startet
+		bzw. sobald es zum ersten Mal requiret wird:
+			1) Sucht die vom 3D-Artist-Agent einmalig in Studio ausgeführten
+			   Buildscript-Ergebnisse unter Workspace.Assets.Terrain /
+			   Workspace.Assets.Buildings (siehe README, Abschnitt "Wie man
+			   die Skripte in Roblox Studio ausführt").
+			2) Klont jedes gefundene Modell nach
+			   ReplicatedStorage.AssetTemplates.<Terrain|Buildings>.<Name>
+			   (idempotent - ein vorhandenes Template wird ersetzt, falls
+			   der Artist ein Buildscript erneut/aktualisiert ausgeführt
+			   hat).
+			3) Entfernt das Workspace-Original wieder, da es nur als
+			   Bau-Nebenprodukt an der ORIGIN-Position existiert und sonst
+			   dauerhaft sichtbar/kollidierbar im offenen Meeresboden
+			   herumstehen würde (überlappt z. B. mit jedem Spieler-Plot,
+			   siehe PlotRegistry).
+
+		Fehlt ein Buildscript-Ergebnis (Buildscript wurde in Studio noch
+		nicht ausgeführt), wird das klar per warn() gemeldet statt den
+		Server hart abstürzen zu lassen - PlotRegistry/PlacementService
+		lehnen betroffene Anfragen dann sauber mit einem Fehlergrund
+		("TemplateMissing"/"NoPlot") ab, statt mit nil-Referenzen zu
+		crashen.
+
+		ALTERNATIVE, die bewusst NICHT gewählt wurde: die Buildscripts
+		selbst zu Server-Startskripten machen, die bei jedem Server-Start
+		neu ausführen. Das würde funktionieren, aber pro Server-Start
+		unnötig CSG-Operationen wiederholen (teuer) und würde die
+		Buildscripts entgegen ihrer dokumentierten Zweckbestimmung
+		("einmalig, von Hand in Studio") zu Laufzeit-Code machen. Der hier
+		gewählte Weg (einmal bauen, danach nur noch klonen) ist sowohl
+		performanter als auch näher am dokumentierten Workflow.
+
+	Rojo-Einhängepunkt:
+		src/server/AssetTemplateSetup.lua -> ServerScriptService.AssetTemplateSetup
+		(reines Server-Modul; wird per require() von PlotRegistry und
+		PlacementServer.server.lua angestoßen - läuft dank Luaus
+		Modul-Caching garantiert nur einmal pro Server, unabhängig davon,
+		wer zuerst requiret.)
+]]
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local TERRAIN_TEMPLATE_NAMES = { "HabitatPlotBase" }
+local BUILDING_TEMPLATE_NAMES = { "BroodPool_Basic", "GlowBuoyStation", "FilterPlant", "AnglerfishTower" }
+
+local function getOrCreateFolder(parent: Instance, name: string): Folder
+	local folder = parent:FindFirstChild(name)
+	if not folder or not folder:IsA("Folder") then
+		if folder then
+			folder:Destroy()
+		end
+		folder = Instance.new("Folder")
+		folder.Name = name
+		folder.Parent = parent
+	end
+	return folder :: Folder
+end
+
+local templatesRoot = getOrCreateFolder(ReplicatedStorage, "AssetTemplates")
+local terrainTemplatesFolder = getOrCreateFolder(templatesRoot, "Terrain")
+local buildingTemplatesFolder = getOrCreateFolder(templatesRoot, "Buildings")
+
+local assetsFolder = Workspace:FindFirstChild("Assets")
+local workspaceTerrainFolder: Instance? = assetsFolder and assetsFolder:FindFirstChild("Terrain")
+local workspaceBuildingsFolder: Instance? = assetsFolder and assetsFolder:FindFirstChild("Buildings")
+
+--- Klont `name` aus `sourceFolder` (Workspace-Buildscript-Ergebnis) nach
+--- `destFolder` (ReplicatedStorage-Template) und entfernt danach das
+--- Workspace-Original. Ist `name` im Workspace nicht (mehr) vorhanden,
+--- bleibt ein bereits vorhandenes Template unangetastet (z. B. weil dieses
+--- Modul in derselben Studio-Session schon einmal gelaufen ist) - nur wenn
+--- WEDER Workspace-Original NOCH Template existieren, wird gewarnt.
+local function promoteToTemplate(sourceFolder: Instance?, name: string, destFolder: Folder)
+	local source = sourceFolder and sourceFolder:FindFirstChild(name)
+	if not source or not source:IsA("Model") then
+		if not destFolder:FindFirstChild(name) then
+			warn(
+				("[AssetTemplateSetup] '%s' fehlt unter Workspace.Assets - bitte das passende Buildscript unter assets/models/**/%s.lua einmal in Studio ausführen (siehe assets/models/README.md)."):format(
+					name,
+					name
+				)
+			)
+		end
+		return
+	end
+
+	local clone = source:Clone()
+	clone.Name = name
+
+	local existingTemplate = destFolder:FindFirstChild(name)
+	if existingTemplate then
+		existingTemplate:Destroy()
+	end
+	clone.Parent = destFolder
+
+	source:Destroy()
+
+	print(("[AssetTemplateSetup] Template '%s' bereit unter %s."):format(name, destFolder:GetFullName()))
+end
+
+for _, name in ipairs(TERRAIN_TEMPLATE_NAMES) do
+	promoteToTemplate(workspaceTerrainFolder, name, terrainTemplatesFolder)
+end
+
+for _, name in ipairs(BUILDING_TEMPLATE_NAMES) do
+	promoteToTemplate(workspaceBuildingsFolder, name, buildingTemplatesFolder)
+end
+
+local AssetTemplateSetup = {}
+
+--- Liefert die Plot-Basis-Vorlage, oder nil, falls das HabitatPlotBase-
+--- Buildscript nie in Studio ausgeführt wurde (siehe warn() oben).
+function AssetTemplateSetup.GetPlotTemplate(): Model?
+	local model = terrainTemplatesFolder:FindFirstChild("HabitatPlotBase")
+	if model and model:IsA("Model") then
+		return model
+	end
+	return nil
+end
+
+--- Liefert die Gebäude-Vorlage für `templateName`
+--- (siehe BuildingConfig.TemplateName je Gebäude).
+function AssetTemplateSetup.GetBuildingTemplate(templateName: string): Model?
+	local model = buildingTemplatesFolder:FindFirstChild(templateName)
+	if model and model:IsA("Model") then
+		return model
+	end
+	return nil
+end
+
+return AssetTemplateSetup
