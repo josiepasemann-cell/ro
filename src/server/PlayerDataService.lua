@@ -90,6 +90,22 @@ export type SessionLock = {
 	LockedAt: number, -- os.time() der letzten Lock-Erneuerung
 }
 
+--- Eine laufende (oder bereits fertige, aber noch nicht abgeholte) Zucht an
+--- EINEM platzierten BroodPool-Gebäude (GDD Abschnitt 9, Punkt 4). Das
+--- Ergebnis (CreatureId/Rarity) wird bewusst bereits beim Start gewürfelt
+--- und hier persistiert (siehe BreedingService.RequestStartBreeding) statt
+--- erst beim Abholen - das macht den Ausgang robust gegen Serverneustarts
+--- (kein erneutes Würfeln nötig) und hält ihn trotzdem vor dem Client
+--- verborgen, bis tatsächlich abgeholt wird (nur ReadyAt wird an den Client
+--- gesendet, niemals CreatureId/Rarity vor dem Abholen).
+export type BreedingIncubation = {
+	PlacementId: string, -- HabitatPlacement.PlacementId des BroodPool-Gebäudes, an dem diese Zucht läuft
+	StartedAt: number, -- os.time()
+	ReadyAt: number, -- os.time(); StartedAt + Inkubationsdauer (BreedingConfig-Stufe)
+	CreatureId: string, -- bereits gewürfeltes Ergebnis, siehe Kommentar oben
+	Rarity: string,
+}
+
 --- Versioniertes Spieler-Datenschema. SchemaVersion erlaubt künftigen
 --- Migrationen (siehe MIGRATIONS unten), alte DataStore-Einträge sicher auf
 --- neue Strukturen zu heben, statt sie zu verwerfen.
@@ -115,6 +131,18 @@ export type PlayerData = {
 
 	GachaState: {
 		PityCounter: number, -- Pity-Zähler fürs Mystery-Egg-Gacha-System (GachaConfig.PITY_THRESHOLD)
+	},
+
+	BreedingState: {
+		-- Minimale Erweiterung für das Zucht-/Ei-System (GDD Abschnitt 9,
+		-- Punkt 4), analog dazu, wie das Idle-Einkommen-System weiter unten
+		-- `Timestamps.LastIncomeAt` ergänzt hat: EIN Array laufender/fertiger
+		-- Inkubationen, je platziertem BroodPool-Gebäude höchstens ein
+		-- Eintrag (BreedingService erzwingt das). Absolute Zeitstempel
+		-- (StartedAt/ReadyAt, os.time()) statt eines In-Memory-Countdowns,
+		-- damit ein Serverneustart/Reconnect keinen Fortschritt kostet -
+		-- siehe BreedingIncubation-Typ oben.
+		Incubations: { BreedingIncubation },
 	},
 
 	Timestamps: {
@@ -228,6 +256,10 @@ local function createDefaultData(userId: number): PlayerData
 
 		GachaState = {
 			PityCounter = 0,
+		},
+
+		BreedingState = {
+			Incubations = {},
 		},
 
 		Timestamps = {
@@ -788,6 +820,82 @@ end
 function PlayerDataService.GetIncomeMultiplier(player: Player): number
 	local data = dataCache[player.UserId]
 	return data and data.Prestige.IncomeMultiplier or 1.0
+end
+
+-- // Zucht-/Ei-System (Brutbecken-Inkubationen) -----------------------------
+-- Reine Datenhaltung - Rezept-/Timer-/Rarity-Roll-Logik gehört zum künftigen
+-- Zucht-/Ei-System (GDD Abschnitt 9, Punkt 4: BreedingConfig/BreedingService)
+-- und lebt NICHT hier, analog zum Habitat-Layout-Abschnitt oben.
+
+--- Liefert alle laufenden/fertigen Inkubationen eines Spielers (leere Liste,
+--- falls nicht geladen).
+function PlayerDataService.GetIncubations(player: Player): { BreedingIncubation }
+	local data = dataCache[player.UserId]
+	return data and data.BreedingState.Incubations or {}
+end
+
+--- Liefert die Inkubation für ein bestimmtes BroodPool-`placementId`, oder
+--- nil, falls dort aktuell keine läuft/bereit ist.
+function PlayerDataService.GetIncubationForPlacement(player: Player, placementId: string): BreedingIncubation?
+	local data = dataCache[player.UserId]
+	if not data then
+		return nil
+	end
+	for _, incubation in ipairs(data.BreedingState.Incubations) do
+		if incubation.PlacementId == placementId then
+			return incubation
+		end
+	end
+	return nil
+end
+
+--- Fügt eine neue Inkubation hinzu (z. B. nach erfolgreichem Zucht-Start).
+--- Gibt nil zurück, falls die Daten nicht geladen sind ODER für dieses
+--- `PlacementId` bereits eine Inkubation existiert (Aufrufer - BreedingService
+--- - muss das vorher selbst per GetIncubationForPlacement geprüft haben;
+--- diese Funktion verweigert das Duplikat trotzdem defensiv ein zweites Mal).
+function PlayerDataService.AddIncubation(
+	player: Player,
+	incubationData: { PlacementId: string, StartedAt: number, ReadyAt: number, CreatureId: string, Rarity: string }
+): BreedingIncubation?
+	local data = dataCache[player.UserId]
+	if not data then
+		return nil
+	end
+
+	for _, existing in ipairs(data.BreedingState.Incubations) do
+		if existing.PlacementId == incubationData.PlacementId then
+			return nil
+		end
+	end
+
+	local incubation: BreedingIncubation = {
+		PlacementId = incubationData.PlacementId,
+		StartedAt = incubationData.StartedAt,
+		ReadyAt = incubationData.ReadyAt,
+		CreatureId = incubationData.CreatureId,
+		Rarity = incubationData.Rarity,
+	}
+
+	table.insert(data.BreedingState.Incubations, incubation)
+	return incubation
+end
+
+--- Entfernt die Inkubation eines `placementId` (z. B. nach erfolgreichem
+--- Abholen der geschlüpften Kreatur, oder wenn das BroodPool-Gebäude verkauft
+--- wird). Gibt true zurück, wenn ein Eintrag entfernt wurde.
+function PlayerDataService.RemoveIncubation(player: Player, placementId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	for index, incubation in ipairs(data.BreedingState.Incubations) do
+		if incubation.PlacementId == placementId then
+			table.remove(data.BreedingState.Incubations, index)
+			return true
+		end
+	end
+	return false
 end
 
 -- // Idle-Einkommen (Timestamp-Tracking) -------------------------------------

@@ -132,10 +132,17 @@ local function findNearestField(fields: { BuildField }, localPosition: Vector3):
 	return nil
 end
 
-local function tagModel(model: Model, placementId: string, buildingId: string, fieldIndex: number)
+local function tagModel(model: Model, placementId: string, buildingId: string, fieldIndex: number, level: number?)
 	model:SetAttribute("PlacementId", placementId)
 	model:SetAttribute("BuildingId", buildingId)
 	model:SetAttribute("FieldIndex", fieldIndex)
+	-- "Level" ergänzt für das Zucht-/Ei-System (BreedingUIController liest
+	-- dies, um clientseitig ohne Extra-Roundtrip die richtige
+	-- BreedingConfig-Stufe anzuzeigen, z. B. Fütterungskosten VOR dem
+	-- Start). Ein künftiges Gebäude-Upgrade-System würde diesen Wert bei
+	-- einem Upgrade einfach mit aktualisieren - Default 1, siehe
+	-- PlayerDataService.AddHabitatPlacement.
+	model:SetAttribute("Level", level or 1)
 end
 
 -- // Öffentliche API ------------------------------------------------------
@@ -219,7 +226,7 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 
 	local model = template:Clone()
 	model.Name = "Building_" .. placement.PlacementId
-	tagModel(model, placement.PlacementId, buildingId, field.Index)
+	tagModel(model, placement.PlacementId, buildingId, field.Index, placement.Level)
 	model.Parent = buildingsFolder
 	model:PivotTo(field.Attachment.WorldCFrame * CFrame.Angles(0, math.rad(snappedRotation), 0))
 
@@ -267,6 +274,14 @@ function PlacementService.RequestRemove(player: Player, placementId: any): Remov
 	if not removed then
 		return { Success = false, Reason = "PersistenceRemoveFailed" }
 	end
+
+	-- Ein verkauftes BroodPool kann eine laufende/fertige Zucht-Inkubation
+	-- (Zucht-/Ei-System, GDD Abschnitt 9 Punkt 4) hinterlassen haben - ohne
+	-- Aufräumen bliebe der Datensatz verwaist (referenziert eine nicht mehr
+	-- existierende PlacementId) liegen. Kein zusätzlicher Refund der
+	-- Fütterungskosten hier, analog dazu, dass ein Verkauf generell nur den
+	-- SellRefundFraction-Anteil der Baukosten erstattet.
+	PlayerDataService.RemoveIncubation(player, placementId)
 
 	if meta.Model and meta.Model.Parent then
 		meta.Model:Destroy()
@@ -342,7 +357,7 @@ function PlacementService.RestorePlayerLayout(player: Player)
 		model:PivotTo(primaryCFrame * CFrame.new(storedPos) * CFrame.Angles(0, math.rad(placement.RotationY), 0))
 
 		local resolvedFieldIndex = matchedField and matchedField.Index or -1
-		tagModel(model, placement.PlacementId, placement.BuildingId, resolvedFieldIndex)
+		tagModel(model, placement.PlacementId, placement.BuildingId, resolvedFieldIndex, placement.Level)
 
 		if matchedField then
 			occupiedFieldByUser[userId][matchedField.Index] = placement.PlacementId
