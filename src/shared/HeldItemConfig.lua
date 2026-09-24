@@ -39,6 +39,7 @@ HeldItemConfig.ItemKinds = {
 	GlowSpore = "GlowSpore", -- Sammel-Ressource, siehe PickupSpawner (GDD Abschnitt 3)
 	Egg = "Egg", -- gekaufte/gewürfelte Mystery-Eggs, siehe GachaService (künftiger Aufrufer)
 	Creature = "Creature", -- geschlüpfte/gezüchtete Kreaturen, siehe BreedingService (künftiger Aufrufer)
+	FrozenSpore = "FrozenSpore", -- Frozen-Current-Event-Pickup (Auftauen + Aufheben), siehe PickupSpawner
 }
 
 HeldItemConfig.DefaultCarryPose = "OneHand" :: CarryPose
@@ -49,6 +50,7 @@ local CARRY_POSE_BY_KIND: { [string]: CarryPose } = {
 	GlowSpore = "OneHand",
 	Egg = "TwoHand", -- Eier sind sperrig - siehe ProceduralAnimator.CarryPose-Auswertung
 	Creature = "TwoHand",
+	FrozenSpore = "OneHand", -- verhält sich wie GlowSpore, siehe HeldItemConfig-Kopfkommentar
 }
 
 -- Model:ScaleTo()-Faktor beim Anbringen in der Hand (Items sollen kompakt in
@@ -57,12 +59,14 @@ local HOLD_SCALE_BY_KIND: { [string]: number } = {
 	GlowSpore = 0.5,
 	Egg = 0.85,
 	Creature = 0.65,
+	FrozenSpore = 0.5,
 }
 
 local DISPLAY_NAME_BY_KIND: { [string]: string } = {
 	GlowSpore = "Glow Spore",
 	Egg = "Mysterium-Ei",
 	Creature = "Kreatur",
+	FrozenSpore = "Frozen Spore",
 }
 
 -- Lokaler CFrame-Versatz des "ItemGripAttachment" relativ zum PrimaryPart des
@@ -74,6 +78,7 @@ local GRIP_OFFSET_BY_KIND: { [string]: CFrame } = {
 	GlowSpore = CFrame.new(0, -0.2, -0.5),
 	Egg = CFrame.new(0, -0.7, -1.1) * CFrame.Angles(math.rad(-8), 0, 0),
 	Creature = CFrame.new(0, -0.6, -1.0),
+	FrozenSpore = CFrame.new(0, -0.2, -0.5),
 }
 
 --- Liefert die Trageposen-Attribut für `itemKind` ("OneHand"/"TwoHand"),
