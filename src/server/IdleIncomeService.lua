@@ -92,9 +92,16 @@ local JOIN_DATA_TIMEOUT_SECONDS = 15
 --- Summiert die Tide-Coin-Produktion/Minute aller aktuell platzierten
 --- Gebäude eines Spielers (nur Gebäude mit BuildingConfig.IncomeRate > 0
 --- zählen - BroodPool/AnglerfishTower liefern laut BuildingConfig 0), und
---- wendet den Prestige-Einkommensmultiplikator an (GDD Abschnitt 6).
+--- wendet den Prestige-Einkommensmultiplikator sowie (falls vorhanden) den
+--- "2x Tide Coins"-Gamepass-Multiplikator an (GDD Abschnitt 5 + 6).
 --- Unbekannte BuildingIds (z. B. aus künftig entfernten Gebäudetypen) werden
 --- übersprungen statt den Server abstürzen zu lassen.
+---
+--- BEWUSST ein LAZY require() von MonetizationService (Funktionskörper statt
+--- Modul-Kopf) - identische Begründung wie in BreedingService.
+--- RequestStartBreeding/RaidService.applyDoubleCoinsGamepass: bricht einen
+--- potenziellen zirkulären require-Zyklus, falls MonetizationService
+--- irgendwann IdleIncomeService referenziert.
 local function computeIncomePerMinute(player: Player): number
 	local layout = PlayerDataService.GetHabitatLayout(player)
 
@@ -107,7 +114,26 @@ local function computeIncomePerMinute(player: Player): number
 	end
 
 	local multiplier = PlayerDataService.GetIncomeMultiplier(player)
+
+	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+	if MonetizationService.PlayerOwnsGamepass(player, "DoubleCoins") then
+		multiplier *= MonetizationService.GetDoubleCoinsMultiplier()
+	end
+
 	return totalPerMinute * multiplier
+end
+
+--- Liefert das für `player` geltende Offline-Einkommens-Cap in Sekunden -
+--- Standard GDD-Cap (4h), ODER das verlängerte Auto-Collector-Cap (siehe
+--- ShopConfig.AUTO_COLLECTOR_OFFLINE_CAP_SECONDS-Kommentar zur Abweichung
+--- vom wörtlichen GDD-Effekt "ohne Klicken" - dieses System hat ohnehin nie
+--- Klicken gebraucht).
+local function computeOfflineIncomeCapSeconds(player: Player): number
+	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+	if MonetizationService.PlayerOwnsGamepass(player, "AutoCollector") then
+		return MonetizationService.GetAutoCollectorOfflineCapSeconds()
+	end
+	return OFFLINE_INCOME_CAP_SECONDS
 end
 
 -- // Online-Tick ---------------------------------------------------------------
@@ -175,7 +201,8 @@ local function grantOfflineProgress(player: Player)
 	local now = os.time()
 	local lastIncomeAt = PlayerDataService.GetLastIncomeAt(player)
 	local elapsedSeconds = math.max(0, now - lastIncomeAt)
-	local cappedSeconds = math.min(elapsedSeconds, OFFLINE_INCOME_CAP_SECONDS)
+	local offlineCapSeconds = computeOfflineIncomeCapSeconds(player)
+	local cappedSeconds = math.min(elapsedSeconds, offlineCapSeconds)
 
 	local perMinute = computeIncomePerMinute(player)
 	local amount = 0
@@ -200,7 +227,7 @@ local function grantOfflineProgress(player: Player)
 		NewBalance = PlayerDataService.GetCurrency(player, "TideCoins"),
 		ElapsedSeconds = elapsedSeconds,
 		CappedSeconds = cappedSeconds,
-		WasCapped = elapsedSeconds > OFFLINE_INCOME_CAP_SECONDS,
+		WasCapped = elapsedSeconds > offlineCapSeconds,
 	})
 end
 

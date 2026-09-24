@@ -111,6 +111,38 @@ export type SessionLock = {
 	LockedAt: number, -- os.time() der letzten Lock-Erneuerung
 }
 
+--- Erweiterung für das Monetarisierungs-/Shop-Backend (GDD Abschnitt 5 +
+--- Abschnitt 9, Punkt 9 "Monetarisierungs-Integration"). Reine Datenhaltung,
+--- analog zu BreedingState/RaidState oben - die eigentliche
+--- MarketplaceService-Logik (ProcessReceipt, Gamepass-Ownership-Cache,
+--- Effekt-Anwendung) lebt vollständig in MonetizationService/ShopService,
+--- NICHT hier.
+---
+--- ProcessedPurchaseIds: Idempotenz-Register für MonetizationService.
+--- ProcessReceipt - jede erfolgreich verarbeitete CurrencyReceiptData.
+--- PurchaseId wird hier als Schlüssel eingetragen (Wert = os.time() der
+--- Verarbeitung, rein zu Diagnosezwecken). Ein Entwicklerprodukt-Kauf, der
+--- bereits hier eingetragen ist, wird NIE ein zweites Mal gutgeschrieben,
+--- selbst wenn Roblox denselben Receipt (z. B. nach einem Server-Crash
+--- zwischen Gutschrift und Speichern) erneut zustellt. Bewusst unbegrenzt
+--- (kein Pruning) - PurchaseIds sind kurze GUID-Strings, selbst bei
+--- tausenden Käufen über Jahre bleibt das deutlich unter Robloxs
+--- Datensatz-Größenlimit (4 MB).
+export type MonetizationState = {
+	ProcessedPurchaseIds: { [string]: number },
+	LastRaidSkipDate: string?, -- "YYYY-MM-DD" (UTC) - Tagesbegrenzung fürs Raid-Skip-Entwicklerprodukt
+	LastVipChestClaimedDate: string?, -- "YYYY-MM-DD" (UTC) - tägliche VIP-Bonus-Truhe (GDD Abschnitt 5, VIP-Taucher-Gamepass)
+}
+
+--- Kosmetik-Besitz/Ausrüstung (Auftrag Punkt 5: "Taucheranzug-Farben,
+--- Kreaturen-Leuchtfarben, Deko - Datenmodell + Besitz + Ausrüsten
+--- persistiert"). EquippedCosmetics ist je Slot (z. B. "DiverSuitColor")
+--- höchstens EIN Eintrag - siehe ShopConfig.CosmeticSlot.
+export type CosmeticState = {
+	OwnedCosmetics: { [string]: boolean },
+	EquippedCosmetics: { [string]: string },
+}
+
 --- Eine laufende (oder bereits fertige, aber noch nicht abgeholte) Zucht an
 --- EINEM platzierten BroodPool-Gebäude (GDD Abschnitt 9, Punkt 4). Das
 --- Ergebnis (CreatureId/Rarity) wird bewusst bereits beim Start gewürfelt
@@ -189,12 +221,20 @@ export type PlayerData = {
 		                       -- Get/SetLastIncomeAt unten und IdleIncomeService.lua für die Erklärung).
 	},
 
+	MonetizationState: MonetizationState,
+	CosmeticState: CosmeticState,
+
 	ActiveSession: SessionLock?, -- Session-Lock-Metadaten; niemals von Gameplay-Code lesen/schreiben
 }
 
 -- // Konfiguration ------------------------------------------------------------
 
-local SCHEMA_VERSION = 1
+-- SCHEMA_VERSION 2: MonetizationState/CosmeticState ergänzt (Shop-/
+-- Monetarisierungs-Backend). Keine dedizierte MIGRATIONS[1]-Funktion nötig -
+-- die generische fillMissing()-Auffüllung in migrateData() deckt reine
+-- Feld-ERGÄNZUNGEN (keine Umbenennung/Aufspaltung bestehender Felder)
+-- bereits vollständig ab, siehe Kommentar dort.
+local SCHEMA_VERSION = 2
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -327,6 +367,17 @@ local function createDefaultData(userId: number): PlayerData
 			LastLoginAt = now,
 			LastSavedAt = 0,
 			LastIncomeAt = now, -- neuer Spieler: keine rückwirkende Offline-Gutschrift ab "jetzt"
+		},
+
+		MonetizationState = {
+			ProcessedPurchaseIds = {},
+			LastRaidSkipDate = nil,
+			LastVipChestClaimedDate = nil,
+		},
+
+		CosmeticState = {
+			OwnedCosmetics = {},
+			EquippedCosmetics = {},
 		},
 
 		ActiveSession = nil,
@@ -1093,6 +1144,126 @@ function PlayerDataService.RescueAbductedCreature(player: Player, instanceId: st
 		end
 	end
 	return false
+end
+
+-- // Monetarisierung (Idempotenz + Tagesbegrenzungen) --------------------------
+-- Reine Datenhaltung für MonetizationService/ShopService (GDD Abschnitt 5 +
+-- 9.9) - Käufe/Gamepass-Logik selbst lebt NICHT hier, analog zu allen
+-- anderen Abschnitten oben.
+
+--- true, wenn `purchaseId` (CurrencyReceiptData.PurchaseId) bereits
+--- erfolgreich verarbeitet wurde - MonetizationService.ProcessReceipt prüft
+--- dies VOR jeder Gutschrift, um Robloxs garantiert-mindestens-einmal-
+--- Zustellung (Retries bei NotProcessedYet) niemals doppelt zu vergüten.
+function PlayerDataService.HasProcessedPurchase(player: Player, purchaseId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	return data.MonetizationState.ProcessedPurchaseIds[purchaseId] ~= nil
+end
+
+--- Trägt `purchaseId` als verarbeitet ein. Gibt false zurück, falls die
+--- Daten des Spielers nicht geladen sind (Aufrufer darf dann NICHT
+--- PurchaseGranted zurückgeben, siehe MonetizationService).
+function PlayerDataService.MarkPurchaseProcessed(player: Player, purchaseId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(purchaseId) ~= "string" or purchaseId == "" then
+		return false
+	end
+	data.MonetizationState.ProcessedPurchaseIds[purchaseId] = os.time()
+	return true
+end
+
+--- Heutiges Datum als "YYYY-MM-DD" (UTC) - gemeinsame Basis für alle
+--- 1x/Tag-Begrenzungen (Raid-Skip-Entwicklerprodukt, VIP-Bonus-Truhe), damit
+--- alle Server weltweit denselben Tageswechsel sehen, unabhängig von der
+--- Serverregion.
+function PlayerDataService.GetUtcDateString(timestamp: number?): string
+	return os.date("!%Y-%m-%d", timestamp or os.time()) :: string
+end
+
+function PlayerDataService.GetLastRaidSkipDate(player: Player): string?
+	local data = dataCache[player.UserId]
+	return data and data.MonetizationState.LastRaidSkipDate or nil
+end
+
+function PlayerDataService.SetLastRaidSkipDate(player: Player, dateString: string): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(dateString) ~= "string" then
+		return false
+	end
+	data.MonetizationState.LastRaidSkipDate = dateString
+	return true
+end
+
+function PlayerDataService.GetLastVipChestClaimedDate(player: Player): string?
+	local data = dataCache[player.UserId]
+	return data and data.MonetizationState.LastVipChestClaimedDate or nil
+end
+
+function PlayerDataService.SetLastVipChestClaimedDate(player: Player, dateString: string): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(dateString) ~= "string" then
+		return false
+	end
+	data.MonetizationState.LastVipChestClaimedDate = dateString
+	return true
+end
+
+-- // Kosmetik (Besitz/Ausrüstung) -----------------------------------------------
+-- Reine Datenhaltung - Preis-/Rotations-/Slot-Regeln gehören zu ShopConfig/
+-- ShopService, NICHT hier (identisches Prinzip wie Habitat-Layout/Zucht).
+
+function PlayerDataService.OwnsCosmetic(player: Player, itemId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	return data.CosmeticState.OwnedCosmetics[itemId] == true
+end
+
+--- Schaltet einen Kosmetik-Artikel dauerhaft frei (z. B. nach erfolgreichem
+--- Soft-Currency-Kauf, bereits VOR diesem Aufruf durch ShopService
+--- abgebucht). Gibt false zurück, falls Daten nicht geladen sind.
+function PlayerDataService.AddOwnedCosmetic(player: Player, itemId: string): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(itemId) ~= "string" or itemId == "" then
+		return false
+	end
+	data.CosmeticState.OwnedCosmetics[itemId] = true
+	return true
+end
+
+--- Liefert die Menge aller besessenen Kosmetik-Artikel-IDs (leere Tabelle,
+--- falls nicht geladen). Live-Referenz, siehe GetData-Hinweis oben.
+function PlayerDataService.GetOwnedCosmetics(player: Player): { [string]: boolean }
+	local data = dataCache[player.UserId]
+	return data and data.CosmeticState.OwnedCosmetics or {}
+end
+
+--- Liefert die aktuell ausgerüsteten Kosmetik-Artikel je Slot (leere
+--- Tabelle, falls nicht geladen). Live-Referenz.
+function PlayerDataService.GetEquippedCosmetics(player: Player): { [string]: string }
+	local data = dataCache[player.UserId]
+	return data and data.CosmeticState.EquippedCosmetics or {}
+end
+
+--- Setzt den ausgerüsteten Artikel für `slot`. Validiert bewusst NICHT
+--- Besitz/Slot-Zugehörigkeit (Aufgabe von ShopService, analog dazu, wie
+--- AddIncubation auch keine Baukosten prüft) - `itemId == nil` entfernt die
+--- Ausrüstung in diesem Slot wieder (z. B. "zurücksetzen auf Standard").
+function PlayerDataService.SetEquippedCosmetic(player: Player, slot: string, itemId: string?): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(slot) ~= "string" or slot == "" then
+		return false
+	end
+	if itemId == nil then
+		data.CosmeticState.EquippedCosmetics[slot] = nil
+	else
+		data.CosmeticState.EquippedCosmetics[slot] = itemId
+	end
+	return true
 end
 
 return PlayerDataService

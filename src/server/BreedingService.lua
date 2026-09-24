@@ -241,8 +241,25 @@ function BreedingService.RequestStartBreeding(player: Player, placementId: any):
 		return { Success = false, Reason = "ChargeFailed" }
 	end
 
+	-- GDD Abschnitt 5: VIP-Taucher-Gamepass gewährt "1,5x Zucht-
+	-- Geschwindigkeit" - Inkubationsminuten werden entsprechend verkürzt.
+	-- BEWUSST ein LAZY require() (erst hier im Funktionskörper, nicht am
+	-- Modul-Kopf) statt eines normalen Top-Level-requires: MonetizationService
+	-- selbst benötigt BreedingService (für das InstantBreeding-Entwickler-
+	-- produkt, siehe dort), ein Top-Level-require hier würde also einen
+	-- zirkulären require-Zyklus erzeugen (Roblox/Luau liefert in diesem Fall
+	-- ein noch unvollständiges Modul-Table zurück). Ein lazy require im
+	-- Funktionskörper wird erst zur Laufzeit ausgeführt (lange nachdem beide
+	-- Module vollständig geladen sind) und liefert dann zuverlässig das
+	-- fertige, gecachte Modul-Table - kein Zyklus beim Server-Start.
+	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+	local incubationMinutes = tier.IncubationMinutes
+	if MonetizationService.PlayerOwnsGamepass(player, "VIPDiver") then
+		incubationMinutes = incubationMinutes / MonetizationService.GetVipBreedingSpeedMultiplier()
+	end
+
 	local now = os.time()
-	local readyAt = now + (tier.IncubationMinutes * 60)
+	local readyAt = now + (incubationMinutes * 60)
 
 	local incubation = PlayerDataService.AddIncubation(player, {
 		PlacementId = placementId,
@@ -354,35 +371,46 @@ function BreedingService.GetAllStatuses(player: Player): { BroodPoolStatus }
 	return statuses
 end
 
--- // PLATZHALTER: "Sofort abschließen"-Hook (Entwicklerprodukt/Robux) -------
--- Laut GDD Abschnitt 5 ist ein Developer Product für den sofortigen Abschluss
--- zeitbasierter Vorgänge vorgesehen (vgl. "Raid-Skip"); für Brutbecken ist
--- ein analoges Produkt plausibel, aber NICHT Teil des MVP-Scopes (Abschnitt
--- 10) und im GDD nicht explizit benannt. Dieses Modul hält daher bereits
--- jetzt die vollständige Funktions-SIGNATUR bereit, die ein künftiger
--- MarketplaceService.ProcessReceipt-Handler aufrufen würde, tut aber
--- inhaltlich noch nichts (kein Kauf-Flow, keine Robux-Integration im Projekt
--- vorhanden) - identisches PLATZHALTER-Prinzip wie GachaHistoryLogger's
--- Persistenz-Hinweis. Sobald ein echtes Produkt existiert, muss NUR diese
--- Funktion implementiert werden (ReadyAt auf `os.time()` vorziehen, ggf.
--- Erfolg/Fehlschlag korrekt an ProcessReceiptResult zurückmelden) - der
--- restliche Zucht-Flow (Start/Claim/Status) bleibt unverändert.
+-- // EINHÄNGEPUNKT: Robux-"Zucht sofort abschließen"-Entwicklerprodukt --------
+-- GDD-Ergänzung (siehe ShopConfig.DEV_PRODUCTS.InstantBreeding-Kommentar für
+-- die ausführliche Begründung, warum dieses Produkt nicht wörtlich im GDD
+-- steht, aber vom Auftrag explizit verlangt wird). Aufgerufen ausschließlich
+-- von MonetizationService.ProcessReceipt NACH erfolgreich verifiziertem Kauf
+-- (Robux bereits abgebucht) - schließt die laufende Inkubation an
+-- `placementId` exakt wie RequestClaimBreeding ab, aber OHNE die ReadyAt-
+-- Prüfung (das "sofort" ist der ganze Sinn des Produkts). Gibt (true, nil)
+-- bei Erfolg zurück, sonst (false, reason) - "NoActiveIncubation"/
+-- "InvalidPlacement" sind für MonetizationService NICHT retry-würdig (siehe
+-- dortige Fallback-Kompensationslogik: der Spieler bekommt in diesem Fall
+-- stattdessen ShopConfig.DEV_PRODUCTS.InstantBreeding.FallbackCompensationTideCoins).
 function BreedingService.RequestInstantComplete(player: Player, placementId: any): (boolean, string?)
 	if not PlayerDataService.IsDataLoaded(player) then
 		return false, "DataNotLoaded"
 	end
-	if type(placementId) ~= "string" or not findOwnBroodPoolPlacement(player, placementId) then
+	if type(placementId) ~= "string" then
 		return false, "InvalidPlacement"
 	end
-	if not PlayerDataService.GetIncubationForPlacement(player, placementId) then
+	if not findOwnBroodPoolPlacement(player, placementId) then
+		return false, "InvalidPlacement"
+	end
+
+	local incubation = PlayerDataService.GetIncubationForPlacement(player, placementId)
+	if not incubation then
 		return false, "NoActiveIncubation"
 	end
 
-	-- Absichtlich (noch) keine Wirkung: kein MarketplaceService-Kauf-Flow im
-	-- Projekt vorhanden. Client-UI kann diesen Button bereits anzeigen/
-	-- verdrahten, erhält aber bis zur echten Integration konsequent
-	-- "NotImplemented" zurück statt eines stillen Fehlschlags.
-	return false, "NotImplemented"
+	PlayerDataService.AddCreatureToInventory(player, {
+		CreatureId = incubation.CreatureId,
+		Rarity = incubation.Rarity,
+	})
+	PlayerDataService.RemoveIncubation(player, placementId)
+
+	-- Identischer Progression-Einhängepunkt wie beim regulären Abholen -
+	-- "sofort abgeschlossen" ist spielerisch weiterhin ein abgeschlossener
+	-- Zuchterfolg.
+	ProgressionService.AwardXP(player, "BreedingCompleted")
+
+	return true, nil
 end
 
 return BreedingService

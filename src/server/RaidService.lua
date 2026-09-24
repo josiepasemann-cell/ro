@@ -123,6 +123,25 @@ local activeRaids: { [number]: RaidRuntime } = {} -- keyed by UserId
 
 -- // Hilfsfunktionen ------------------------------------------------------------
 
+--- GDD Abschnitt 5: "2x Tide Coins - Dauerhaft doppelte Währung" gilt laut
+--- Gamepass-Beschreibung fürs Idle-Einkommen UND fürs Raid-Sieg-Coin-
+--- Belohnung (siehe MonetizationService-Kopfkommentar für die Herleitung,
+--- warum beide Systeme diesen Effekt tragen). BEWUSST ein LAZY require()
+--- (Funktionskörper statt Modul-Kopf) - RaidService wird selbst NICHT von
+--- MonetizationService benötigt, aber die allgemeine Konvention in diesem
+--- Auftrag ist, jeden MonetizationService-Zugriff aus Gameplay-Services
+--- konsequent lazy zu halten (siehe identischer Kommentar in
+--- BreedingService.RequestStartBreeding) - vermeidet zukünftige
+--- Zyklusprobleme, falls RaidService selbst einmal zu einem
+--- MonetizationService-Abhängigkeitsziel wird.
+local function applyDoubleCoinsGamepass(player: Player, baseAmount: number): number
+	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+	if MonetizationService.PlayerOwnsGamepass(player, "DoubleCoins") then
+		return math.floor(baseAmount * MonetizationService.GetDoubleCoinsMultiplier() + 0.5)
+	end
+	return baseAmount
+end
+
 --- Färbt/skaliert das (einzige, wiederverwendete) ShadowKraken-Modell gemäß
 --- der Gegnertyp-Definition ein - siehe RaidConfig-Kopfkommentar zur
 --- bewussten MVP-Vereinfachung "ein Gegnermodell für alle Typen".
@@ -267,8 +286,9 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 	}
 
 	if won then
-		local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", RaidConfig.VICTORY_REWARD_TIDE_COINS)
-		resultPayload.RewardTideCoins = RaidConfig.VICTORY_REWARD_TIDE_COINS
+		local tideCoinReward = applyDoubleCoinsGamepass(player, RaidConfig.VICTORY_REWARD_TIDE_COINS)
+		local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", tideCoinReward)
+		resultPayload.RewardTideCoins = tideCoinReward
 		resultPayload.NewTideCoinBalance = newBalance
 
 		-- Progression-Einhängepunkt: NACH erfolgreichem Sieg (nicht beim
@@ -544,7 +564,7 @@ local function evaluateOfflineRaids(player: Player)
 
 	for _ = 1, missedRaids do
 		if won then
-			totalTideCoins += RaidConfig.VICTORY_REWARD_TIDE_COINS
+			totalTideCoins += applyDoubleCoinsGamepass(player, RaidConfig.VICTORY_REWARD_TIDE_COINS)
 			if rng:NextNumber() <= RaidConfig.VICTORY_ABYSSAL_SHARD_CHANCE then
 				totalShards += RaidConfig.VICTORY_ABYSSAL_SHARD_AMOUNT
 			end
@@ -677,14 +697,14 @@ function RaidService.RequestRescue(player: Player, instanceId: any): { [string]:
 	}
 end
 
--- // PLATZHALTER: Robux-"Rettungs-Token" (Entwicklerprodukt) ---------------------
+-- // EINHÄNGEPUNKT: Robux-"Rettungs-Token" (Entwicklerprodukt) ------------------
 -- GDD Abschnitt 5: "Rettungs-Token (entführte Kreatur sofort zurückholen),
--- 49 Robux - Umgeht Rettungsmission". Identisches Platzhalter-Prinzip wie
--- BreedingService.RequestInstantComplete: Signatur bereits vollständig da,
--- aber KEINE Wirkung, da kein MarketplaceService/ProcessReceipt-Handler im
--- Projekt existiert. Sobald ein echtes Produkt existiert, muss NUR diese
--- Funktion implementiert werden (Lösegeld erlassen, RescueAbductedCreature
--- aufrufen) - der restliche Rettungs-Flow bleibt unverändert.
+-- 49 Robux - Umgeht Rettungsmission". Aufgerufen ausschließlich von
+-- MonetizationService.ProcessReceipt NACH erfolgreich verifiziertem Kauf
+-- (Robux bereits abgebucht) - identischer Rettungs-Flow wie RequestRescue,
+-- ABER ohne Lösegeld-Abbuchung (das hat der Robux-Kauf bereits ersetzt).
+-- "NotAbducted" ist für MonetizationService NICHT retry-würdig (siehe
+-- ShopConfig.DEV_PRODUCTS.RescueToken.FallbackCompensationTideCoins).
 function RaidService.RequestRescueWithToken(player: Player, instanceId: any): (boolean, string?)
 	if not PlayerDataService.IsDataLoaded(player) then
 		return false, "DataNotLoaded"
@@ -692,7 +712,51 @@ function RaidService.RequestRescueWithToken(player: Player, instanceId: any): (b
 	if type(instanceId) ~= "string" then
 		return false, "InvalidInstance"
 	end
-	return false, "NotImplemented"
+
+	local exists = false
+	for _, abducted in ipairs(PlayerDataService.GetAbductedCreatures(player)) do
+		if abducted.InstanceId == instanceId then
+			exists = true
+			break
+		end
+	end
+	if not exists then
+		return false, "NotAbducted"
+	end
+
+	local rescued = PlayerDataService.RescueAbductedCreature(player, instanceId)
+	if not rescued then
+		return false, "PersistenceFailed"
+	end
+	return true, nil
+end
+
+-- // EINHÄNGEPUNKT: Robux-"Raid-Skip" (Entwicklerprodukt) -----------------------
+-- GDD Abschnitt 5: "Raid-Skip (aktueller Raid wird automatisch 'gewonnen'
+-- gewertet, 1x/Tag), 59 Robux - Zeitersparnis". Die "1x/Tag"-Begrenzung gilt
+-- laut GDD-Wortlaut für das PRODUKT selbst (nicht nur für einen separaten
+-- Gratis-Weg) - siehe PlayerDataService.Get/SetLastRaidSkipDate. Aufgerufen
+-- ausschließlich von MonetizationService.ProcessReceipt NACH erfolgreich
+-- verifiziertem Kauf. "NoActiveRaid"/"AlreadyUsedToday" sind für
+-- MonetizationService NICHT retry-würdig (Fallback-Kompensation greift).
+function RaidService.RequestRaidSkip(player: Player): (boolean, string?)
+	if not PlayerDataService.IsDataLoaded(player) then
+		return false, "DataNotLoaded"
+	end
+
+	local today = PlayerDataService.GetUtcDateString()
+	if PlayerDataService.GetLastRaidSkipDate(player) == today then
+		return false, "AlreadyUsedToday"
+	end
+
+	local raid = activeRaids[player.UserId]
+	if not raid or raid.Finished then
+		return false, "NoActiveRaid"
+	end
+
+	PlayerDataService.SetLastRaidSkipDate(player, today)
+	finishRaid(raid, true)
+	return true, nil
 end
 
 --- Räumt den rein transienten Laufzeit-Zustand eines Spielers auf

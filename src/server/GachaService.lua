@@ -218,27 +218,12 @@ function GachaService.GetOddsTable(): { { Tier: Rarity, Label: string, Percent: 
 	return rows
 end
 
---- Kernfunktion: verarbeitet EINE Mystery-Egg-Öffnungs-Anfrage für einen
---- Spieler vollständig serverseitig (Roll, Pity, Duplikat-Check,
---- Ausgleich, Logging). Gibt entweder (result, nil) oder (nil, failure)
---- zurück (z. B. bei zu schneller Wiederholungs-Anfrage).
-function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
-	-- 0) Persistenz-Voraussetzung: ohne geladene Spielerdaten kein Roll -
-	-- sonst könnten Pity-Zähler/Inventar/Tide-Coins-Gutschrift verloren
-	-- gehen (z. B. bei einer Anfrage, die ungewöhnlich schnell nach dem
-	-- Join eintrifft, noch bevor PlayerDataService fertig geladen hat).
-	if not PlayerDataService.IsDataLoaded(player) then
-		return nil, "DataNotLoaded"
-	end
-
-	local state = getOrCreatePlayerState(player)
-
-	local now = os.clock()
-	if now - state.lastRollAt < GachaConfig.MIN_SECONDS_BETWEEN_ROLLS then
-		return nil, "OnCooldown"
-	end
-	state.lastRollAt = now
-
+--- Interne Kernlogik EINES Rolls (Roll, Pity, Duplikat-Check, Ausgleich,
+--- Logging, Progression) - OHNE Anti-Spam-Cooldown-Prüfung. Von OpenEgg
+--- (Cooldown VOR dem Aufruf geprüft) UND OpenPurchasedEgg (siehe unten,
+--- bewusst OHNE Cooldown - eine bezahlte Robux-Transaktion darf niemals an
+--- einem reinen Anti-Spam-Timer scheitern) gemeinsam genutzt.
+local function performRoll(player: Player): OpenEggResult
 	-- 1) Gewichteter Roll + Pity (persistent über PlayerDataService) -----------
 	local naturalRarity = rollWeightedRarity()
 	local finalRarity, pityForced, pityCounterAfter = applyPity(player, naturalRarity)
@@ -286,7 +271,50 @@ function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
 		PityCounter = pityCounterAfter,
 	}
 
-	return result, nil
+	return result
+end
+
+--- Öffentliche API: verarbeitet EINE Mystery-Egg-Öffnungs-Anfrage für einen
+--- Spieler vollständig serverseitig (Roll, Pity, Duplikat-Check, Ausgleich,
+--- Logging), inkl. Anti-Spam-Cooldown. Gibt entweder (result, nil) oder
+--- (nil, failure) zurück (z. B. bei zu schneller Wiederholungs-Anfrage).
+--- Für den GRATIS-Öffnen-Kanal (RequestOpenEgg via GachaRemotes) gedacht -
+--- Robux-Käufe laufen über OpenPurchasedEgg (siehe unten).
+function GachaService.OpenEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
+	-- 0) Persistenz-Voraussetzung: ohne geladene Spielerdaten kein Roll -
+	-- sonst könnten Pity-Zähler/Inventar/Tide-Coins-Gutschrift verloren
+	-- gehen (z. B. bei einer Anfrage, die ungewöhnlich schnell nach dem
+	-- Join eintrifft, noch bevor PlayerDataService fertig geladen hat).
+	if not PlayerDataService.IsDataLoaded(player) then
+		return nil, "DataNotLoaded"
+	end
+
+	local state = getOrCreatePlayerState(player)
+
+	local now = os.clock()
+	if now - state.lastRollAt < GachaConfig.MIN_SECONDS_BETWEEN_ROLLS then
+		return nil, "OnCooldown"
+	end
+	state.lastRollAt = now
+
+	return performRoll(player), nil
+end
+
+-- // EINHÄNGEPUNKT: Robux-"Mystery Egg"-Entwicklerprodukt -----------------------
+-- GDD Abschnitt 5: "Mystery Egg (zufällige Kreatur, Rarity-Chance), 89 Robux -
+-- Gacha-artiges Sammelelement (mit klar kommunizierten Drop-Chancen)".
+-- Aufgerufen ausschließlich von MonetizationService.ProcessReceipt NACH
+-- erfolgreich verifiziertem Kauf (Robux bereits abgebucht) - deshalb bewusst
+-- OHNE den Anti-Spam-Cooldown von OpenEgg (siehe performRoll-Kommentar) und
+-- OHNE eigene Idempotenz-Prüfung (die übernimmt MonetizationService zentral
+-- über PlayerDataService.HasProcessedPurchase/MarkPurchaseProcessed - jeder
+-- Aufruf hier führt IMMER zu genau einem Roll). Teilt sich die komplette
+-- Roll-/Pity-/Duplikat-/Logging-Logik 1:1 mit OpenEgg über performRoll.
+function GachaService.OpenPurchasedEgg(player: Player): (OpenEggResult?, OpenEggFailure?)
+	if not PlayerDataService.IsDataLoaded(player) then
+		return nil, "DataNotLoaded"
+	end
+	return performRoll(player), nil
 end
 
 Players.PlayerRemoving:Connect(GachaService.HandlePlayerRemoving)
