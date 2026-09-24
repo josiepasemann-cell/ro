@@ -222,6 +222,19 @@ export type CodexState = {
 	UnlockedTitles: { string },
 }
 
+--- Buddy-System-Zustand (frei wählbares, besessenes Kreaturen-Maskottchen,
+--- das dem Spieler sichtbar für ALLE Spieler durch Hub/Plot/Zonen folgt,
+--- siehe docs/buddy.md). Additive Erweiterung nach demselben Muster wie
+--- CodexState oben - reine Datenhaltung, Besitz-Validierung/Modell-
+--- Lebenszyklus lebt vollständig in BuddyService. `CreatureId` ist (wie
+--- CodexState.Favorites) eine Kreaturen-ART, keine einzelne
+--- CreatureInstance.InstanceId - identische Begründung: eine Raid-
+--- Entführung einer einzelnen Instanz soll den Buddy nicht invalidieren,
+--- solange noch eine andere Instanz derselben Art besessen wird.
+export type BuddyState = {
+	CreatureId: string?,
+}
+
 --- Zustand des rotierenden Live-Event-Systems (docs/content-update-1.md,
 --- Abschnitt 1 + 7b). `EventId`/`SlotStart` markieren, zu welchem 12h-Slot
 --- `Balance`/`StepProgress` aktuell gehören - LiveEventService vergleicht
@@ -321,6 +334,7 @@ export type PlayerData = {
 	Stats: PlayerStats,
 	CodexState: CodexState,
 	LiveEventState: LiveEventState,
+	BuddyState: BuddyState,
 
 	OnboardingCompleted: boolean,
 
@@ -354,7 +368,12 @@ export type PlayerData = {
 -- Slot-Zugehörigkeit, Event-Quest-Linien-Fortschritt, besessene Event-Shop-
 -- Artikel). Wie bei Version 2/3/4 eine reine Top-Level-Feld-ERGÄNZUNG, keine
 -- dedizierte MIGRATIONS[4]-Funktion nötig.
-local SCHEMA_VERSION = 5
+--
+-- SCHEMA_VERSION 6: BuddyState ergänzt (frei wählbares Kreaturen-Maskottchen,
+-- das dem Spieler sichtbar durch die Welt folgt, siehe docs/buddy.md). Wie
+-- bei Version 2/3/4/5 eine reine Top-Level-Feld-ERGÄNZUNG, keine dedizierte
+-- MIGRATIONS[5]-Funktion nötig.
+local SCHEMA_VERSION = 6
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -524,6 +543,10 @@ local function createDefaultData(userId: number): PlayerData
 			Currency = { EventId = nil, SlotStart = nil, Balance = 0 },
 			Quest = { EventId = nil, SlotStart = nil, StepProgress = {}, Claimed = false },
 			OwnedEventItems = {},
+		},
+
+		BuddyState = {
+			CreatureId = nil,
 		},
 
 		OnboardingCompleted = false,
@@ -1098,6 +1121,29 @@ function PlayerDataService.RemoveHabitatPlacement(player: Player, placementId: s
 	return false
 end
 
+--- Setzt die Ausbaustufe (`level`, 1..BuildingConfig.BuildingDefinition.
+--- MaxStage) einer bestehenden Platzierung - einziger Setter für
+--- HabitatPlacement.Level, verwendet vom Gebäude-Upgrade-System (siehe
+--- PlacementService.RequestUpgrade, docs/building-upgrades.md). Liefert
+--- false, falls die Daten nicht geladen sind oder `placementId` nicht im
+--- eigenen HabitatLayout existiert - PlacementService prüft Eigentümerschaft/
+--- Gültigkeit bereits VOR diesem Aufruf, dies ist nur die reine
+--- Persistenz-Operation (identisches Prinzip zu AddHabitatPlacement/
+--- RemoveHabitatPlacement oben).
+function PlayerDataService.SetHabitatPlacementLevel(player: Player, placementId: string, level: number): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(level) ~= "number" then
+		return false
+	end
+	for _, placement in ipairs(data.HabitatLayout) do
+		if placement.PlacementId == placementId then
+			placement.Level = math.max(1, math.floor(level))
+			return true
+		end
+	end
+	return false
+end
+
 -- // Prestige / Ascend ------------------------------------------------------------
 
 function PlayerDataService.GetAscendCount(player: Player): number
@@ -1590,6 +1636,30 @@ local CODEX_ZONE_INCOME_BONUS_PER_ZONE = 0.02
 --- Modul wendet selbst NIE einen Multiplikator an, es liefert nur den Wert.
 function PlayerDataService.GetCodexIncomeMultiplier(player: Player): number
 	return 1 + (countClaimedZoneRewards(player) * CODEX_ZONE_INCOME_BONUS_PER_ZONE)
+end
+
+-- // Buddy (BuddyState) -----------------------------------------------------
+-- Reine Datenhaltung - Besitz-Validierung/Modell-Lebenszyklus gehören zu
+-- BuddyService, NICHT hier (identisches Prinzip wie CodexState oben).
+
+--- Liefert die aktuell gewählte Buddy-CreatureId (oder nil, falls nicht
+--- geladen oder noch nie gesetzt).
+function PlayerDataService.GetBuddyCreatureId(player: Player): string?
+	local data = dataCache[player.UserId]
+	return data and data.BuddyState.CreatureId or nil
+end
+
+--- Setzt/löscht (nil) die persistierte Buddy-Wahl. Roh-Setter OHNE
+--- Besitz-Validierung - das übernimmt vollständig BuddyService.SetBuddy VOR
+--- dem Aufruf hier, identisches Prinzip zu PlayerDataService.
+--- SetCodexFavorites. Gibt false zurück, falls nicht geladen.
+function PlayerDataService.SetBuddyCreatureId(player: Player, creatureId: string?): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.BuddyState.CreatureId = creatureId
+	return true
 end
 
 --- Trägt `title` in UnlockedTitles ein (nur einmal, Duplikate übersprungen) -

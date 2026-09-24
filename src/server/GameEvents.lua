@@ -31,6 +31,7 @@
 	verwenden, die Konstanten unten sind nur Tippfehler-Schutz für die
 	bekannten MVP-Ereignisse):
 		BuildingPlaced   (player, { BuildingId: string, PlacementId: string })
+		BuildingUpgraded (player, { BuildingId: string, PlacementId: string, NewStage: number })
 		BreedingCompleted(player, { CreatureId: string, Rarity: string, PlacementId: string, Instant: boolean? })
 		RaidWon          (player, { WavesCleared: number, RewardTideCoins: number?, Offline: boolean? })
 		RaidLost         (player, { AbductedInstanceId: string?, Offline: boolean? })
@@ -44,6 +45,7 @@
 
 export type EventName =
 	"BuildingPlaced"
+	| "BuildingUpgraded"
 	| "BreedingCompleted"
 	| "RaidWon"
 	| "RaidLost"
@@ -56,6 +58,7 @@ local GameEvents = {}
 -- // Bekannte Ereignis-Namen (Tippfehler-Schutz für Aufrufer, siehe Kopfkommentar) --
 GameEvents.Events = {
 	BuildingPlaced = "BuildingPlaced" :: EventName,
+	BuildingUpgraded = "BuildingUpgraded" :: EventName,
 	BreedingCompleted = "BreedingCompleted" :: EventName,
 	RaidWon = "RaidWon" :: EventName,
 	RaidLost = "RaidLost" :: EventName,

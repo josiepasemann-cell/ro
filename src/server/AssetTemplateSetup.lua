@@ -93,6 +93,21 @@ local ENEMY_TEMPLATE_FALLBACK_NAME = "ShadowKraken"
 local BUILDING_TEMPLATE_FALLBACK_NAME = "AnglerfishTower"
 local warnedMissingTemplate: { [string]: boolean } = {}
 
+-- // Gebäude-Upgrade-System (siehe docs/building-upgrades.md) -----------------
+-- Stufe-2/3-Modelle sind laut Auftrag OPTIONAL: der 3D-Agent liefert sie
+-- ggf. erst später unter Workspace.Assets.Buildings.<BuildingId>_Stage2 /
+-- _Stage3 (Namensschema bewusst über die BuildingId, NICHT über
+-- BuildingConfig.TemplateName, da beide beim BroodPool auseinanderlaufen -
+-- TemplateName ist "BroodPool_Basic", die BuildingId aber "BroodPool").
+-- Fehlt ein Stufe-Modell, bleibt PlacementService beim Stufe-1-Modell und
+-- ergänzt stattdessen einen einfachen Glow-Akzent (siehe dortige
+-- applyStageAccent-Funktion) - deshalb wird hier bewusst NICHT gewarnt, wenn
+-- ein Stufe-Template fehlt (anders als bei den verpflichtenden Stufe-1-
+-- Templates oben), das ist der erwartete Normalfall, bis der 3D-Agent
+-- liefert.
+local BUILDING_IDS_WITH_STAGES = { "BroodPool", "GlowBuoyStation", "FilterPlant", "AnglerfishTower", "CoralBarrier", "ElectricEelTrap" }
+local UPGRADE_STAGE_LEVELS = { 2, 3 }
+
 local function getOrCreateFolder(parent: Instance, name: string): Folder
 	local folder = parent:FindFirstChild(name)
 	if not folder or not folder:IsA("Folder") then
@@ -150,6 +165,32 @@ local function promoteToTemplate(sourceFolder: Instance?, name: string, destFold
 	print(("[AssetTemplateSetup] Template '%s' bereit unter %s."):format(name, destFolder:GetFullName()))
 end
 
+--- Wie promoteToTemplate, aber OHNE Warnung, falls `name` weder im
+--- Workspace NOCH bereits als Template existiert - für optionale Stufe-2/3-
+--- Gebäude-Modelle (siehe BUILDING_IDS_WITH_STAGES oben), deren Fehlen der
+--- erwartete Normalfall ist (Fail-Soft-Akzent-Fallback in PlacementService),
+--- nicht ein zu meldender Konfigurationsfehler wie bei den Stufe-1-Basis-
+--- Templates.
+local function promoteOptionalToTemplate(sourceFolder: Instance?, name: string, destFolder: Folder)
+	local source = sourceFolder and sourceFolder:FindFirstChild(name)
+	if not source or not source:IsA("Model") then
+		return
+	end
+
+	local clone = source:Clone()
+	clone.Name = name
+
+	local existingTemplate = destFolder:FindFirstChild(name)
+	if existingTemplate then
+		existingTemplate:Destroy()
+	end
+	clone.Parent = destFolder
+
+	source:Destroy()
+
+	print(("[AssetTemplateSetup] Stufe-Template '%s' bereit unter %s."):format(name, destFolder:GetFullName()))
+end
+
 for _, name in ipairs(TERRAIN_TEMPLATE_NAMES) do
 	promoteToTemplate(workspaceTerrainFolder, name, terrainTemplatesFolder)
 end
@@ -160,6 +201,12 @@ end
 
 for _, name in ipairs(ENEMY_TEMPLATE_NAMES) do
 	promoteToTemplate(workspaceEnemiesFolder, name, enemyTemplatesFolder)
+end
+
+for _, buildingId in ipairs(BUILDING_IDS_WITH_STAGES) do
+	for _, stage in ipairs(UPGRADE_STAGE_LEVELS) do
+		promoteOptionalToTemplate(workspaceBuildingsFolder, buildingId .. "_Stage" .. tostring(stage), buildingTemplatesFolder)
+	end
 end
 
 local AssetTemplateSetup = {}
@@ -213,6 +260,25 @@ function AssetTemplateSetup.GetBuildingTemplate(templateName: string): Model?
 		end
 	end
 
+	return nil
+end
+
+--- Liefert die Stufe-2/3-Gebäude-Vorlage für `buildingId` bei `stage`, oder
+--- nil, wenn `stage` <= 1 ist ODER (der erwartete Normalfall, bis der
+--- 3D-Agent liefert - siehe BUILDING_IDS_WITH_STAGES-Kommentar oben) das
+--- Modell schlicht noch nicht existiert. Liefert BEWUSST KEINEN
+--- AnglerfishTower-Fallback wie GetBuildingTemplate unten - ein "falsches"
+--- Turmmodell für z. B. ein Stufe-2-Brutbecken wäre irreführender als gar
+--- kein Modellwechsel. Aufrufer (PlacementService) behandelt `nil` als
+--- "Stufe-1-Modell beibehalten, stattdessen Glow-Akzent ergänzen".
+function AssetTemplateSetup.GetBuildingStageTemplate(buildingId: string, stage: number): Model?
+	if stage <= 1 then
+		return nil
+	end
+	local model = buildingTemplatesFolder:FindFirstChild(buildingId .. "_Stage" .. tostring(stage))
+	if model and model:IsA("Model") then
+		return model
+	end
 	return nil
 end
 
