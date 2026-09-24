@@ -41,7 +41,7 @@ HeldItemConfig.ItemKinds = {
 	Creature = "Creature", -- geschlüpfte/gezüchtete Kreaturen, siehe BreedingService (künftiger Aufrufer)
 }
 
-HeldItemConfig.DefaultCarryPose: CarryPose = "OneHand"
+HeldItemConfig.DefaultCarryPose = "OneHand" :: CarryPose
 local DEFAULT_HOLD_SCALE = 0.6
 local DEFAULT_GRIP_OFFSET = CFrame.new(0, -0.3, -0.6)
 

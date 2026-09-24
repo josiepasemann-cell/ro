@@ -187,14 +187,16 @@ local function playOpenCeremony(eggModel: Model, rarityColor: Color3)
 		local rarityBeam = vfxClone:FindFirstChild("RarityBeam", true) :: Beam?
 
 		if shellCrackEmitter then
-			(shellCrackEmitter :: ParticleEmitter).Color = ColorSequence.new(rarityColor)
-			(shellCrackEmitter :: ParticleEmitter).Enabled = true
-			(shellCrackEmitter :: ParticleEmitter):Emit(30)
+			local emitter = shellCrackEmitter :: ParticleEmitter
+			emitter.Color = ColorSequence.new(rarityColor)
+			emitter.Enabled = true
+			emitter:Emit(30)
 		end
 		if lightBurstEmitter then
-			(lightBurstEmitter :: ParticleEmitter).Color = ColorSequence.new(rarityColor)
-			(lightBurstEmitter :: ParticleEmitter).Enabled = true
-			(lightBurstEmitter :: ParticleEmitter):Emit(45)
+			local emitter = lightBurstEmitter :: ParticleEmitter
+			emitter.Color = ColorSequence.new(rarityColor)
+			emitter.Enabled = true
+			emitter:Emit(45)
 		end
 		if shineBurst then
 			shineBurst.Color = rarityColor

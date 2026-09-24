@@ -24,7 +24,7 @@ local AnimationConfig = {}
 -- ===== Optionaler Override: echte, hochgeladene Animationen =====
 -- Leer lassen ("") = prozedurale Animation wird benutzt (Standard/Hauptweg).
 -- Siehe docs/animations.md für die Upload-Anleitung.
-AnimationConfig.AnimationOverrides: AnimationOverrideTable = {
+local animationOverrides: AnimationOverrideTable = {
 	Idle = "",
 	Walk = "",
 	Run = "",
@@ -32,6 +32,7 @@ AnimationConfig.AnimationOverrides: AnimationOverrideTable = {
 	Fall = "",
 	Land = "",
 }
+AnimationConfig.AnimationOverrides = animationOverrides
 
 -- Bevorzugte Priorität beim Abspielen mehrerer Override-Animationen gleichzeitig
 AnimationConfig.OverridePriority = Enum.AnimationPriority.Movement
