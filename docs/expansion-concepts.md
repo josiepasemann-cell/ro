@@ -1,556 +1,909 @@
-# Erweiterungskonzepte: **Abyssara – Deep Tide Tycoon**
+# Expansion Concepts: **Abyssara – Deep Tide Tycoon**
 
-*Stand: 2026-09-24 · Version 1.0 · Ergänzung zum Game Design Document (`game-design-doc.md`)*
+*As of: 2026-09-24 · Version 1.0 · Companion to the Game Design Document (`game-design-doc.md`)*
 
 ---
 
-## 0. Zweck & Überblick
+## 0. Purpose & overview
 
-Dieses Dokument vertieft die in Abschnitt 10 des Haupt-GDD grob skizzierten Erweiterungen (Phase 2 & Phase 3) zu vollständigen, umsetzbaren Konzepten – jeweils mit Begründung, Gameplay-Mechanik, 3D-Asset-Auftrag und Code-Auftrag, analog zur Detailtiefe von Abschnitt 8/9 des Haupt-GDD. Zusätzlich enthält Abschnitt 3 ("Phase 4 / Zusatzideen") drei neue, bisher nicht erwähnte Erweiterungsvorschläge.
+This document deepens the expansions roughly sketched in Section 10 of the
+main GDD (Phase 2 & Phase 3) into complete, actionable concepts — each with
+rationale, gameplay mechanics, a 3D asset brief, and a code brief, matching
+the level of detail of Sections 8/9 of the main GDD. Additionally, Section
+3 ("Phase 4 / Extra ideas") contains three new expansion proposals not
+previously mentioned.
 
-**Referenzierte Kernsysteme des MVP** (siehe Haupt-GDD Abschnitt 9): Plot-/Datenpersistenz, Bauplatzierung, Idle-Einkommen, Zucht-/Ei-System, Trench-Raid-System, Trading, Progression/Level, Monetarisierungs-Integration, Leaderboards, Quest-System, Social-Features, Client-UI, Anti-Exploit. Alle unten stehenden Erweiterungen bauen auf diesen Systemen auf.
+**Referenced core MVP systems** (see main GDD Section 9): plot/data
+persistence, build placement, idle income, breeding/egg system, Trench
+Raid system, trading, progression/level, monetization integration,
+leaderboards, quest system, social features, client UI, anti-exploit. All
+expansions below build on top of these systems.
 
-### Überblickstabelle
+### Overview table
 
-| # | Erweiterung | Phase | Aufwand | Kernnutzen | Hauptabhängigkeiten |
+| # | Expansion | Phase | Effort | Core benefit | Main dependencies |
 |---|---|---|---|---|---|
-| 1 | Mitternachtszone (Zone 3) | 2 | groß | Content/Progression | Zonen-/Raid-System |
-| 2 | Prestige-/Ascend-System | 2 | mittel | Retention (Idle-Loop) | Mitternachtszone, Persistenz |
-| 3 | Reef Cluster Koop | 2 | groß | Social/Retention | Raid-System, Social |
-| 4 | Season Pass "Tide Pass" | 2 | mittel–groß | Monetarisierung (wiederkehrend) | Quest-System, Shop |
-| 5 | Kreaturen-Kodex mit Set-Boni | 2 | klein–mittel | Engagement (Completionism) | Kodex, Zucht, Trading |
-| 6 | Erweiterte Kosmetik-Rotation | 2 | klein | Monetarisierung, Wiederkehr | Shop-System |
-| 7 | Mystery Egg Gacha | 2 | klein–mittel | Monetarisierung | Monetarisierung, Kodex |
-| 8 | Hadal-Tiefe (Zone 4, Endgame) | 3 | groß | Endgame-Retention, Whale-Monetarisierung | Prestige, Zone 3, Raid |
-| 9 | Asynchrones Reef Raiding | 3 | groß | Engagement, PvP-lite ohne Toxizität | Raid-System, Leaderboard |
-| 10 | Saisonale Live-Events | 3 | mittel/Event | Wiederkehr, Marketing | Quest-/Shop-System, Hub |
-| 11 | Zweites Habitat-Plot (Ausbau) | 3 | mittel | Monetarisierungs-Leiter | Plot-/Placement-System |
-| 12 | Anti-Exploit/Telemetrie/A-B-Testing | 3 | mittel–groß | Wirtschaftsschutz, datenbasierte Optimierung | alle Systeme |
-| 13 | Cross-Zone-Boss-Events | 3 | groß | Community/Concurrent-Spikes | Raid, Leaderboard, MessagingService |
-| 14 | Symbiose-Fusion-Labor | 4 (neu) | mittel–groß | Engagement, Dupe-Sink, Monetarisierung | Zucht, Kodex |
-| 15 | Tiefsee-Aquarium (Schauvitrine) | 4 (neu) | mittel | Social/UGC, virales Marketing | Bau-System, Kodex, Hub |
-| 16 | Gezeiten-Allianz (Cross-Promo-Event) | 4 (neu) | mittel (einmalig)/klein (Wdh.) | PR/Discovery, CSR, Neuspieler | Live-Event-Framework, Hub |
+| 1 | Midnight Zone (Zone 3) | 2 | large | Content/progression | Zone/raid system |
+| 2 | Prestige/ascend system | 2 | medium | Retention (idle loop) | Midnight Zone, persistence |
+| 3 | Reef Cluster co-op | 2 | large | Social/retention | Raid system, social |
+| 4 | Season Pass "Tide Pass" | 2 | medium–large | Monetization (recurring) | Quest system, shop |
+| 5 | Creature codex with set bonuses | 2 | small–medium | Engagement (completionism) | Codex, breeding, trading |
+| 6 | Expanded cosmetic rotation | 2 | small | Monetization, return visits | Shop system |
+| 7 | Mystery Egg gacha | 2 | small–medium | Monetization | Monetization, codex |
+| 8 | Hadal Depths (Zone 4, endgame) | 3 | large | Endgame retention, whale monetization | Prestige, Zone 3, raid |
+| 9 | Asynchronous Reef Raiding | 3 | large | Engagement, PvP-lite without toxicity | Raid system, leaderboard |
+| 10 | Seasonal live events | 3 | medium/event | Return visits, marketing | Quest/shop system, hub |
+| 11 | Second Habitat Plot (expansion) | 3 | medium | Monetization ladder | Plot/placement system |
+| 12 | Anti-exploit/telemetry/A-B testing | 3 | medium–large | Economy protection, data-driven optimization | all systems |
+| 13 | Cross-zone boss events | 3 | large | Community/concurrent spikes | Raid, leaderboard, MessagingService |
+| 14 | Symbiosis Fusion Lab | 4 (new) | medium–large | Engagement, dupe sink, monetization | Breeding, codex |
+| 15 | Deep-sea aquarium (showcase) | 4 (new) | medium | Social/UGC, viral marketing | Build system, codex, hub |
+| 16 | Tidal Alliance (cross-promo event) | 4 (new) | medium (one-time)/small (repeat) | PR/discovery, CSR, new players | Live-event framework, hub |
 
 ---
 
-## 1. Phase 2 – Ausbau nach erfolgreichem Soft-Launch
+## 1. Phase 2 – Expansion after a successful soft launch
 
-### 1.1 Mitternachtszone (Zone 3)
+### 1.1 Midnight Zone (Zone 3)
 
-**Beschreibung:** Dritte Kern-Zone (Level 25–45), dunkles Höhlen-/Lavaspalten-Biom mit eigenem Kreaturen-Pool, stärkeren Raid-Gegnern und neuen Bauteilen. Bildet den Übergang vom "leichten" MVP-Fortschritt zum mittelschweren Grind, der Prestige attraktiv macht.
+**Description:** The third core zone (level 25–45), a dark cave/lava-rift
+biome with its own creature pool, stronger raid enemies, and new build
+parts. Forms the transition from the "light" MVP progression to the
+medium-heavy grind that makes prestige attractive.
 
-**Warum das Spiel bereichert:**
-- **Retention:** Neue Zone = klassischer Content-Update-Spike (Wiederkehr ehemaliger Spieler, PR-Anlass für Roblox-Feed/Discovery-Algorithmus).
-- **Monetarisierung:** Gate für neue Gamepasses (z. B. "Druckschutz-Ausrüstung") und Kosmetik-Sets; motiviert Robux-Kauf, um den steileren Grind (Kostenkurve x1,2, siehe Haupt-GDD Abschnitt 6) abzufedern.
-- **Engagement:** Neue Umweltmechanik hält die Bauplatzierung strategisch relevant statt reiner Wiederholung.
+**Why it enriches the game:**
+- **Retention:** a new zone is a classic content-update spike (brings back
+  former players, gives a PR hook for the Roblox feed/discovery algorithm).
+- **Monetization:** gates new gamepasses (e.g. "pressure-protection gear")
+  and cosmetic sets; motivates Robux purchases to cushion the steeper
+  grind (cost curve x1.2, see main GDD Section 6).
+- **Engagement:** a new environmental mechanic keeps build placement
+  strategically relevant instead of pure repetition.
 
-**Mechanik-Details:**
-- Neue Ressource **"Druck-Kristalle"**, ausschließlich in Zone 3 abbaubar, Grundzutat für Zone-3-Baurezepte.
-- Umweltgefahr **Pressure Damage**: ohne gebauten "Druckstabilisator" verlieren platzierte Kreaturen schrittweise Produktivität (Debuff-Timer) – schafft neuen Baupflicht-Anreiz statt reinem Deko-Ausbau.
-- Elite-Modifikatoren bei Raid-Gegnerwellen (z. B. "Panzerung +30%", "Gift-Aura") als Vorstufe zu echten Boss-Mechaniken.
-- Zonen-Boss **"Der Tiefenfürst"** als Meilenstein-Encounter (mehrstufiger Kampf, schaltet Zone-3-Abschluss-Truhe frei).
+**Mechanics details:**
+- A new resource, **"Pressure Crystals"**, minable exclusively in Zone 3,
+  a base ingredient for Zone 3 build recipes.
+- Environmental hazard **Pressure Damage**: without a built "Pressure
+  Stabilizer", placed creatures gradually lose productivity (debuff
+  timer) — creates a new build incentive instead of pure decorative
+  expansion.
+- Elite modifiers on raid enemy waves (e.g. "+30% armor", "poison aura")
+  as a stepping stone toward real boss mechanics.
+- Zone boss **"The Trench Warden"** as a milestone encounter (multi-phase
+  fight, unlocks the Zone 3 completion chest).
 
-**Neue 3D-Assets (Auftrag 3D-Artist-Agent):**
-- Terrain-Set Mitternachtszone: dunkle Höhlenformationen, Lavaspalten-Texturvarianten, spärliche Lichtquellen-Platzierungspunkte.
-- Portal-Tor-Modell (Übergang Hub → Zone 3, konsistent mit bestehenden Zonen-Portalen).
-- 6–8 neue Kreaturen-Modelle (Rare/Epic/Mythic-Schwerpunkt) inkl. Idle-/Angriffsanimation.
-- 3 neue Bauteile: Druckstabilisator (3 Stufen), Lava-Filteranlage, verstärkter Verteidigungsturm-Skin.
-- Boss-Modell "Der Tiefenfürst" inkl. mehrphasiger Angriffsanimationen (Vorbereitung, Wutphase, Finisher).
-- Partikeleffekte: Dunkelheits-/Biolumineszenz-Kontrast-Beleuchtung, Druckwellen-VFX.
+**New 3D assets (brief for the 3D artist agent):**
+- Midnight Zone terrain set: dark cave formations, lava-rift texture
+  variants, sparse light-source placement points.
+- Portal gate model (transition hub → Zone 3, consistent with the
+  existing zone portals).
+- 6–8 new creature models (Rare/Epic/Mythic focus) including idle/attack
+  animation.
+- 3 new build parts: Pressure Stabilizer (3 stages), lava filter plant,
+  reinforced defense-tower skin.
+- Boss model "The Trench Warden" including multi-phase attack animations
+  (windup, rage phase, finisher).
+- Particle effects: darkness/bioluminescence contrast lighting, pressure-
+  wave VFX.
 
-**Neue Skripte/Systeme (Auftrag Code-Agent):**
-- Erweiterung Zonen-Freischaltungslogik um Zone 3 (Level-Gate 25, Voraussetzungsprüfung).
-- Pressure-Damage-System (Debuff-Tick-Loop pro Gebäude ohne Stabilisator im Radius).
-- Neue Gegner-KI-Pattern für Elite-Modifikatoren (Datentabellen-getriebene Modifikator-Zuweisung).
-- Boss-Encounter-Skript (State Machine: Phasenwechsel, Angriffsmuster, Loot-Ausschüttung).
-- Integration "Druck-Kristalle" in bestehendes Economy-/Bau-Rezept-System.
+**New scripts/systems (brief for the code agent):**
+- Extend the zone-unlock logic to include Zone 3 (level gate 25,
+  prerequisite check).
+- Pressure Damage system (debuff tick loop per building without a
+  stabilizer in range).
+- New enemy AI patterns for elite modifiers (data-table-driven modifier
+  assignment).
+- Boss encounter script (state machine: phase transitions, attack
+  patterns, loot payout).
+- Integrate "Pressure Crystals" into the existing economy/build-recipe
+  system.
 
-**Aufwand:** groß. **Abhängigkeiten:** MVP Zonen-/Bauplatzierungs-/Raid-System.
-
----
-
-### 1.2 Prestige-/Ascend-System ("Resurface")
-
-**Beschreibung:** Nach Erreichen der tiefsten freigeschalteten Zone (initial Mitternachtszone) kann der Spieler "auftauchen": Reset von Level, Coins und Zonenfortschritt gegen einen permanenten Einkommens-Multiplikator plus kosmetische Titel/Abzeichen. Klassische Idle-Prestige-Kurve, die die Progression über den MVP-Horizont hinaus verlängert.
-
-**Warum das Spiel bereichert:**
-- **Retention:** Idle-Genre lebt von "einer Ebene höher spielen" – Prestige verhindert Progressions-Stillstand und liefert einen neuen Langzeit-Loop ohne neue Content-Kosten.
-- **Engagement:** Skill-Tree-artige Multiplikator-Verteilung gibt strategische Entscheidungen (welcher Boost zuerst?).
-- **Monetarisierung (indirekt):** Spieler kaufen eher Zeit-/Boost-Produkte, um schneller zum nächsten Ascend zu kommen ("Raid-Skip", "2x Coins"-Gamepass gewinnen an Wert).
-
-**Mechanik-Details:**
-- Neue Prestige-Währung **"Tide Essence"**, ausgezahlt proportional zur erreichten Zonentiefe/Level beim Ascend.
-- Permanenter Einkommens-Multiplikator: +10 %/Ascend, mit Diminishing Returns ab Ascend 10 (wie in Haupt-GDD Abschnitt 6 spezifiziert).
-- Prestige-Skill-Tree (Nodes: Einkommens-Multiplikator, Zucht-Geschwindigkeit, Raid-Verteidigungsstärke) – Tide Essence wird frei verteilt, respec gegen kleine Coin-Gebühr möglich.
-- Kosmetische Ascend-Titel/Abzeichen-Stufen (z. B. "Gezeitenwanderer" ab Ascend 1, "Abgrundmeister" ab Ascend 10) sichtbar im Hub über dem Spieler-Avatar.
-- Bestätigungs-UI mit klarer Kosten/Nutzen-Vorschau vor dem Reset (verhindert versehentlichen Verlust).
-
-**Neue 3D-Assets:**
-- "Resurfacing"-Übergangseffekt (Bildschirm-VFX: Aufstieg durch Wassersäule, Lichtstrahl-Partikel).
-- Ascend-Abzeichen-Icon-Set (5–6 Stufen, konsistent mit bestehendem Rarity-Rahmen-Stil).
-- Kosmetische Aura/Trail-Partikeleffekte pro Meilenstein (an Avatar koppelbar).
-
-**Neue Skripte/Systeme:**
-- `PrestigeManager`: Reset-Logik (welche Daten bleiben erhalten: Kodex, Kosmetik, Freunde – welche werden zurückgesetzt: Level, Coins, Zonenfortschritt).
-- Skill-Tree-Datenstruktur & Persistenz (Node-Zustände, Tide-Essence-Ledger).
-- Prestige-Tree-UI (Client) mit Server-Validierung jeder Node-Aktivierung.
-- Erweiterung Leaderboard-System um "Meiste Ascends" (bereits als Statistik in Haupt-GDD Abschnitt 7 vorgesehen).
-- Anti-Exploit-Prüfung gegen Reset-Abuse (z. B. Cooldown zwischen Ascends, Mindestfortschritt-Gate).
-
-**Aufwand:** mittel. **Abhängigkeiten:** Mitternachtszone (1.1) als Trigger-Punkt, MVP-Datenpersistenz.
+**Effort:** large. **Dependencies:** MVP zone/build-placement/raid system.
 
 ---
 
-### 1.3 Reef Cluster Koop-Modus
+### 1.2 Prestige/ascend system ("Resurface")
 
-**Beschreibung:** Bis zu 4 Spieler schließen sich zu einem "Reef Cluster" zusammen, bestreiten gemeinsam größere Boss-Raids, tragen zu einem gemeinsamen Cluster-Projekt-Ressourcenpool bei und teilen sich ein Cluster-Leaderboard.
+**Description:** After reaching the deepest unlocked zone (initially the
+Midnight Zone), the player can "resurface": a reset of level, coins, and
+zone progress in exchange for a permanent income multiplier plus a
+cosmetic title/badge. A classic idle-prestige curve that extends
+progression beyond the MVP horizon.
 
-**Warum das Spiel bereichert:**
-- **Social/Retention:** Gruppenverbindlichkeit ("meine Freunde spielen mit") ist einer der stärksten Retention-Hebel in Sammel-/Tycoon-Spielen; senkt Churn, weil Verlassen des Spiels auch die Gruppe im Stich lässt.
-- **Engagement:** Cluster-Boss-Raids erfordern Koordination (Verteidigungstürme + Wächter-Zuweisung mehrerer Spieler), erhöht Sessionlänge.
-- **Monetarisierung:** Cluster-exklusive Kosmetik (Banner, Founder-Gamepass) und höhere Investitionsbereitschaft durch sozialen Druck ("meine Gruppe braucht bessere Verteidigung").
+**Why it enriches the game:**
+- **Retention:** the idle genre thrives on "playing one tier higher" —
+  prestige prevents progression standstill and delivers a new long-term
+  loop without new content costs.
+- **Engagement:** a skill-tree-style multiplier distribution gives
+  strategic decisions (which boost first?).
+- **Monetization (indirect):** players are more likely to buy time/boost
+  products to reach the next ascend faster ("Raid Skip", "2x Coins"
+  gamepass gain value).
 
-**Mechanik-Details:**
-- Cluster-Erstellung/Beitritt über Hub-UI (Einladungscode oder Freundesliste-Filter), max. 4 Mitglieder, ein "Cluster-Anführer" mit Verwaltungsrechten.
-- **Cluster-Projekte:** Gemeinsamer Beitragspool (Tide Coins/Materialien), der bei Erreichen von Schwellenwerten permanente Cluster-Buffs freischaltet (z. B. "+5 % Raid-Verteidigung für alle Mitglieder").
-- **Cluster-Boss-Raid** (wöchentlich, terminiert): Instanz mit skaliertem Gegner-Roster proportional zur Clustergröße; jedes Mitglied bringt eigene Verteidigungstürme/Wächter-Kreaturen ein.
-- Cluster-Ränge/-Tiers basierend auf kumulativem Beitrag, sichtbar im Cluster-Leaderboard.
-- Cluster-Chat-Kanal (moderiert über Roblox TextService-Filter).
+**Mechanics details:**
+- A new prestige currency, **"Tide Essence"**, paid out proportional to
+  the zone depth/level reached at ascend.
+- Permanent income multiplier: +10%/ascend, with diminishing returns
+  starting at ascend 10 (as specified in main GDD Section 6).
+- A prestige skill tree (nodes: income multiplier, breeding speed, raid
+  defense strength) — Tide Essence is freely allocated, respec possible
+  for a small coin fee.
+- Cosmetic ascend title/badge tiers (e.g. "Tide Wanderer" from ascend 1,
+  "Abyssal Master" from ascend 10) visible in the hub above the player's
+  avatar.
+- A confirmation UI with a clear cost/benefit preview before the reset
+  (prevents accidental loss).
 
-**Neue 3D-Assets:**
-- Cluster-Hub-Instanz: visuelle Zusammenführung der 4 Plots (oder dedizierte "Cluster-Insel") mit gemeinsamer Infrastruktur (Cluster-Rathaus-Gebäude für Projekt-Beiträge).
-- Cluster-Boss-Modell: großer, mehrphasiger Gegner mit Gruppen-Angriffsmustern (AoE-Angriffe, die Koordination erfordern).
-- Cluster-Banner/Emblem-Customization-Set (platzierbar am Cluster-Rathaus).
-- UI-Icons: Cluster-Rang-Abzeichen, Beitrags-Fortschrittsbalken.
+**New 3D assets:**
+- "Resurfacing" transition effect (screen VFX: rising through a water
+  column, light-beam particles).
+- Ascend-badge icon set (5–6 tiers, consistent with the existing rarity-
+  frame style).
+- Cosmetic aura/trail particle effects per milestone (attachable to the
+  avatar).
 
-**Neue Skripte/Systeme:**
-- `ClusterService`: Datenpersistenz für Gruppenzugehörigkeit, Einladung/Beitritt/Verlassen, Anführer-Rechteverwaltung.
-- Matchmaking-/Einladungssystem (Code-basiert + Freundesliste-Integration).
-- Cluster-Boss-Encounter-System: Multiplayer-Wellen-Spawner (Erweiterung des bestehenden Trench-Raid-Systems auf mehrere gleichzeitige Spieler-Instanzen in einer Session).
-- Cluster-Beitrags-Ledger (serverseitig validierte Ressourcenübertragung, Anti-Dupe).
-- Cluster-Leaderboard (OrderedDataStore-Erweiterung).
-- Anti-Abuse: Kick-Funktion, Beitragsübertragung bei Anführerwechsel, Schutz vor Cluster-Hopping zur Ressourcenausbeutung.
+**New scripts/systems:**
+- `PrestigeManager`: reset logic (which data is kept: codex, cosmetics,
+  friends — which is reset: level, coins, zone progress).
+- Skill-tree data structure & persistence (node states, Tide Essence
+  ledger).
+- Prestige-tree UI (client) with server validation of every node
+  activation.
+- Extend the leaderboard system with "Most Ascends" (already planned as a
+  stat in main GDD Section 7).
+- Anti-exploit check against reset abuse (e.g. cooldown between ascends,
+  minimum-progress gate).
 
-**Aufwand:** groß. **Abhängigkeiten:** MVP Trench-Raid-System, Social-/Trading-Infrastruktur, Datenpersistenz.
+**Effort:** medium. **Dependencies:** Midnight Zone (1.1) as the trigger
+point, MVP data persistence.
+
+---
+
+### 1.3 Reef Cluster co-op mode
+
+**Description:** Up to 4 players join together into a "Reef Cluster",
+jointly take on bigger boss raids, contribute to a shared cluster-project
+resource pool, and share a cluster leaderboard.
+
+**Why it enriches the game:**
+- **Social/retention:** group commitment ("my friends play with me") is
+  one of the strongest retention levers in collect/tycoon games; lowers
+  churn, since leaving the game also lets the group down.
+- **Engagement:** cluster boss raids require coordination (defense towers
+  + guardian assignment from multiple players), increases session length.
+- **Monetization:** cluster-exclusive cosmetics (banner, founder gamepass)
+  and higher willingness to spend due to social pressure ("my group needs
+  better defense").
+
+**Mechanics details:**
+- Cluster creation/joining via hub UI (invite code or friends-list
+  filter), max 4 members, one "cluster leader" with admin rights.
+- **Cluster projects:** a shared contribution pool (Tide Coins/materials)
+  that unlocks permanent cluster buffs upon reaching thresholds (e.g.
+  "+5% raid defense for all members").
+- **Cluster boss raid** (weekly, scheduled): an instance with an enemy
+  roster scaled proportionally to cluster size; every member brings their
+  own defense towers/guardian creatures.
+- Cluster ranks/tiers based on cumulative contribution, visible on the
+  cluster leaderboard.
+- Cluster chat channel (moderated via the Roblox TextService filter).
+
+**New 3D assets:**
+- Cluster hub instance: a visual merge of the 4 plots (or a dedicated
+  "cluster island") with shared infrastructure (a cluster town-hall
+  building for project contributions).
+- Cluster boss model: a large, multi-phase enemy with group attack
+  patterns (AoE attacks that require coordination).
+- Cluster banner/emblem customization set (placeable at the cluster town
+  hall).
+- UI icons: cluster rank badges, contribution progress bars.
+
+**New scripts/systems:**
+- `ClusterService`: data persistence for group membership, invite/join/
+  leave, leader permission management.
+- Matchmaking/invite system (code-based + friends-list integration).
+- Cluster boss encounter system: a multiplayer wave spawner (extending the
+  existing Trench Raid system to multiple simultaneous player instances
+  in one session).
+- Cluster contribution ledger (server-validated resource transfer,
+  anti-dupe).
+- Cluster leaderboard (OrderedDataStore extension).
+- Anti-abuse: kick function, contribution transfer on leader change,
+  protection against cluster-hopping for resource exploitation.
+
+**Effort:** large. **Dependencies:** MVP Trench Raid system, social/trading
+infrastructure, data persistence.
 
 ---
 
 ### 1.4 Season Pass "Tide Pass" – Season 1
 
-**Beschreibung:** Battle-Pass-artiges System mit Free- und Premium-Track (399 Robux/Season, 6 Wochen Laufzeit), rein kosmetischer Premium-Vorteil (keine Gameplay-Power) plus kleine Coin-Boosts.
+**Description:** A Battle-Pass-style system with free and premium tracks
+(399 Robux/season, 6-week duration), a purely cosmetic premium advantage
+(no gameplay power) plus small coin boosts.
 
-**Warum das Spiel bereichert:**
-- **Monetarisierung:** Vorhersehbare, wiederkehrende Einnahmequelle (alle 6 Wochen neue Season) mit branchenüblich hoher Konversionsrate bei fairer (nicht Pay-to-Win) Gestaltung.
-- **Engagement:** Season-XP-Track motiviert tägliche/wöchentliche Rückkehr unabhängig vom Hauptlevel-Fortschritt.
-- **Retention:** Thematische Rotation (neue Kreaturen-Skins, Baustile pro Season) hält den visuellen Content frisch, ohne neue Zonen bauen zu müssen.
+**Why it enriches the game:**
+- **Monetization:** a predictable, recurring revenue source (a new season
+  every 6 weeks) with an industry-typical high conversion rate when
+  designed fairly (not pay-to-win).
+- **Engagement:** the season-XP track motivates daily/weekly returns
+  independent of main-level progress.
+- **Retention:** thematic rotation (new creature skins, build styles per
+  season) keeps visual content fresh without having to build new zones.
 
-**Mechanik-Details:**
-- Season-XP als separater Fortschrittsbalken (Quelle: Season-spezifische Dailies/Weeklies, zusätzlich zu regulären Quests).
-- 30–50 Tier-Stufen mit Free-Belohnungen (Coins, Standard-Kosmetik) und Premium-Belohnungen (exklusive Kreaturen-Skins, Habitat-Baustil-Sets, Bonus-Coins, Season-exklusiver Titel).
-- Catch-up-Mechanik für Späteinsteiger: käufliche XP-Booster (Developer Product), damit auch spät gekaufte Season-Pässe realistisch komplettierbar sind.
-- Season-Ende-Zeremonie (kleine UI-Sequenz) mit Zusammenfassung der erspielten Items; exklusive Items werden transparent als "diese Season" gekennzeichnet, keine dauerhafte Fear-of-missing-out-Täuschung.
-- Season-Theming-Beispiel Season 1: **"Bioluminiszenz-Erwachen"**.
+**Mechanics details:**
+- Season XP as a separate progress bar (source: season-specific
+  dailies/weeklies, in addition to regular quests).
+- 30–50 tier levels with free rewards (coins, standard cosmetics) and
+  premium rewards (exclusive creature skins, habitat build-style sets,
+  bonus coins, season-exclusive title).
+- Catch-up mechanic for late joiners: purchasable XP boosters (developer
+  product), so season passes bought late are still realistically
+  completable.
+- A season-end ceremony (a small UI sequence) summarizing earned items;
+  exclusive items are transparently marked as "this season", no
+  permanent fear-of-missing-out deception.
+- Season theming example for Season 1: **"Bioluminescence Awakening"**.
 
-**Neue 3D-Assets:**
-- Season-Pass-UI-Track-Visualisierung (Tier-Leiste, Belohnungs-Icons).
-- Exklusives Kosmetik-Set pro Season: 4–6 Kreaturen-Skins + 3–4 Habitat-Deko-Objekte im Season-Theme.
-- Season-Banner-/Icon-Art für Hub-Ankündigungstafel.
+**New 3D assets:**
+- Season Pass UI track visualization (tier bar, reward icons).
+- An exclusive cosmetic set per season: 4–6 creature skins + 3–4 habitat
+  decoration objects in the season theme.
+- Season banner/icon art for the hub announcement board.
 
-**Neue Skripte/Systeme:**
-- `SeasonPassManager`: Tier-Tracking, Premium-Kaufstatus-Flag, Belohnungsausgabe-Logik.
-- Season-Quest-Pool-Rotation (wöchentlich neue Quest-Sets, die Season-XP geben).
-- MarketplaceService-Hook für Premium-Pass-Kauf (ProcessReceipt-Erweiterung, robust gegen Doppelkäufe).
-- Season-Reset-/Rollover-Logik (Ende Season X → Start Season X+1, nicht-eingelöste Free-Rewards verfallen mit Warnhinweis).
-- Analytics-Hook zur Tracking der Pass-Konversionsrate (Grundlage für spätere A/B-Tests, siehe 3.12/2.12).
+**New scripts/systems:**
+- `SeasonPassManager`: tier tracking, premium purchase status flag,
+  reward-payout logic.
+- Season quest-pool rotation (new weekly quest sets that grant season XP).
+- MarketplaceService hook for premium pass purchase (ProcessReceipt
+  extension, robust against double purchases).
+- Season reset/rollover logic (end of Season X → start of Season X+1,
+  unclaimed free rewards expire with a warning).
+- Analytics hook to track the pass conversion rate (basis for later A/B
+  tests, see 3.12/2.12).
 
-**Aufwand:** mittel–groß (Erststruktur), danach klein pro weitere Season (v. a. Content-Austausch). **Abhängigkeiten:** MVP Quest-System, Monetarisierungs-Integration.
-
----
-
-### 1.5 Vollständiger Kreaturen-Kodex mit Set-Boni
-
-**Beschreibung:** Ausbau des MVP-Kodex (reine Sammel-Übersicht) um Familien-/Biom-Sets, deren Vervollständigung permanente passive Boni gewährt (z. B. "+5 % Einkommen in Dämmerzone" bei komplettem Dämmerzonen-Set).
-
-**Warum das Spiel bereichert:**
-- **Engagement:** Verstärkt den Kern-Completionism-Loop des Genres (vgl. Pet Simulator 99) – Spieler jagen gezielt fehlende Kreaturen statt zufällig zu sammeln.
-- **Monetarisierung:** Treibt Mystery-Egg-Käufe (1.7) an, wenn Spieler gezielt die letzten 1–2 fehlenden Set-Teile jagen ("nur noch 1 fehlt"-Effekt).
-- **Retention:** Set-Boni sind permanente, spürbare Fortschrittsziele über den reinen Level-Grind hinaus.
-
-**Mechanik-Details:**
-- Set-Definitionen als Datentabelle (Kreaturen gruppiert nach Zone/Familie, z. B. "Dämmerzonen-Fauna", "Aal-Familie").
-- Passive Bonus-Anwendung direkt in der Idle-Einkommens-Berechnungspipeline (multiplikativ, gestackt mit Prestige-Multiplikator).
-- Kodex-Meilensteine bei 25 %/50 %/75 %/100 % Gesamtvervollständigung schalten Abyssal Shards und ein Sammler-Titel frei.
-- "Fehlende Teile"-Hinweis-UI: zeigt an, welche Kreatur noch fehlt und – falls ein Freund sie besitzt – bietet einen Trade-Schnellzugriff (Verknüpfung mit Trading-System).
-
-**Neue 3D-Assets:**
-- Erweiterung Kodex-UI-Rahmen um Set-Gruppen-Ansicht (visuelle Gruppierung, Fortschrittsbalken pro Set).
-- Set-Completion-Abzeichen-Icons (pro Set-Thema eigenes Icon).
-- Optionales Vitrinen-Deko-Objekt ("Kodex-Trophäenregal") als platzierbares Habitat-Item bei 100 %-Abschluss eines Sets.
-
-**Neue Skripte/Systeme:**
-- `CodexSetManager`: Set-Zugehörigkeits-Check, Bonus-Berechnung, Persistenz des Vervollständigungsstatus.
-- Integration in Einkommens-Berechnung (Erweiterung des Idle-Produktionssystems aus MVP).
-- "Fehlendes Teil"-Erkennungslogik + Trade-Hinweis-UI-Anbindung.
-- Meilenstein-Trigger-System (Abyssal-Shard-Ausschüttung bei Schwellenwerten).
-
-**Aufwand:** klein–mittel. **Abhängigkeiten:** MVP Kodex-Grundstruktur, Zucht-System, Trading-System.
+**Effort:** medium–large (initial structure), then small per additional
+season (mainly content swaps). **Dependencies:** MVP quest system,
+monetization integration.
 
 ---
 
-### 1.6 Erweiterte Kosmetik-Rotation
+### 1.5 Full creature codex with set bonuses
 
-**Beschreibung:** Wöchentlich rotierender Kosmetik-Shop-Bereich mit zeitlich begrenzten Featured-Items, Wishlist-Funktion und Bundle-Rabatten – Ausbau des im MVP bereits vorhandenen statischen Kosmetik-Shops.
+**Description:** Expands the MVP codex (a pure collection overview) with
+family/biome sets, whose completion grants permanent passive bonuses (e.g.
+"+5% income in the Twilight Zone" for a complete Twilight Zone set).
 
-**Warum das Spiel bereichert:**
-- **Retention:** Konstanter, sanfter Grund zur Rückkehr ("was ist diese Woche neu") ohne aggressives FOMO.
-- **Monetarisierung:** Inkrementelle Robux-Umsätze durch Impulskäufe; Wishlist erlaubt kindgerechtes Sparen ("wenn ich Taschengeld/Robux bekomme").
-- **Engagement:** Testfeld für Kosmetik-Trends, dessen Daten später ins A/B-Testing-Framework (2.12) einfließen.
+**Why it enriches the game:**
+- **Engagement:** reinforces the genre's core completionism loop (cf. Pet
+  Simulator 99) — players hunt specific missing creatures instead of
+  collecting randomly.
+- **Monetization:** drives Mystery Egg purchases (1.7) when players
+  specifically hunt the last 1–2 missing set pieces ("only 1 left"
+  effect).
+- **Retention:** set bonuses are permanent, tangible progress goals beyond
+  the pure level grind.
 
-**Mechanik-Details:**
-- Wöchentlicher Rotationszyklus mit gewichteter Zufallsauswahl aus Item-Pool (verhindert zu häufige Wiederholung gleicher Items).
-- Featured-Slot (1–2 Items pro Woche, prominent im Shop-UI hervorgehoben, ggf. leichter Rabatt).
-- Wishlist-Funktion: Spieler markieren Wunsch-Items, erhalten Erinnerung bei erneuter Rotation.
-- Bundle-Angebote (z. B. 3 zusammengehörige Deko-Items im Paket-Rabatt).
+**Mechanics details:**
+- Set definitions as a data table (creatures grouped by zone/family, e.g.
+  "Twilight Zone Fauna", "Eel Family").
+- Passive bonus application directly in the idle-income calculation
+  pipeline (multiplicative, stacked with the prestige multiplier).
+- Codex milestones at 25%/50%/75%/100% total completion unlock Abyssal
+  Shards and a collector title.
+- A "missing pieces" hint UI: shows which creature is still missing and —
+  if a friend owns it — offers a trade quick-access shortcut (links to the
+  trading system).
 
-**Neue 3D-Assets:**
-- Rotations-Vorlage/-Slot-System (definiert, wie viele Kategorie-Slots pro Woche befüllt werden).
-- Startbatch von 20–30 zusätzlichen Kosmetik-Items (Habitat-Deko, Taucheranzug-Skins, Kreaturen-Leuchtfarben) über mehrere Kategorien verteilt.
+**New 3D assets:**
+- Extend the codex UI frame with a set-group view (visual grouping,
+  progress bar per set).
+- Set-completion badge icons (a unique icon per set theme).
+- An optional showcase decoration object ("codex trophy shelf") as a
+  placeable habitat item upon reaching 100% completion of a set.
 
-**Neue Skripte/Systeme:**
-- `ShopRotationService`: Zeitplan (wöchentlicher Reset), gewichtete Item-Pool-Auswahl, Wiederholungs-Vermeidung.
-- Wishlist-Persistenz (pro Spieler gespeicherte Item-IDs).
-- Purchase-Analytics-Hook (welche rotierenden Items konvertieren am besten).
+**New scripts/systems:**
+- `CodexSetManager`: set-membership check, bonus calculation, persistence
+  of completion status.
+- Integration into income calculation (extending the MVP idle-production
+  system).
+- "Missing piece" detection logic + trade-hint UI hookup.
+- Milestone trigger system (Abyssal Shard payout at thresholds).
 
-**Aufwand:** klein (System), laufender kleiner Content-Aufwand pro Rotation. **Abhängigkeiten:** MVP Shop-Basis.
-
----
-
-### 1.7 Mystery Egg Gacha (Compliance-konform)
-
-**Beschreibung:** Vollausbau des im MVP als einfaches Developer Product angelegten Mystery Eggs zu einem regelkonformen Gacha-System mit transparenter Drop-Tabelle, Pity-Mechanik und Duplikatsschutz gemäß Roblox-Richtlinien für Zufallsobjekte.
-
-**Warum das Spiel bereichert:**
-- **Monetarisierung:** Stärkster Einzel-Umsatzhebel für Sammler-Zielgruppe – muss aber fair gestaltet sein, um Vertrauen (und damit Langzeit-LTV) nicht zu gefährden.
-- **Engagement:** Pity-System sorgt dafür, dass sich auch "Pech-Serien" nie komplett verloren anfühlen, was Frustrations-Churn reduziert.
-- **Compliance/Vertrauen:** Roblox verlangt offengelegte Wahrscheinlichkeiten bei virtuellen Zufallsgütern – korrekte Umsetzung schützt vor Plattform-Sanktionen.
-
-**Mechanik-Details:**
-- Gewichteter Zufalls-Roll basierend auf veröffentlichter Drop-Tabelle (Rarity-Wahrscheinlichkeiten sichtbar vor Kauf).
-- Pity-Counter: garantierter Epic-oder-besser-Drop nach X erfolglosen Eiern (persistiert pro Spieler).
-- Duplikatsschutz: doppelte Kreaturen werden automatisch in Tide Coins/Fusions-Katalysatoren (vgl. 3.14) konvertiert statt wertlos zu verpuffen.
-- Ei-Öffnungs-Zeremonie (kurze Animation: Schale knackt, Licht-Enthüllung der Kreatur) als kleiner Dopamin-Moment.
-
-**Neue 3D-Assets:**
-- Ei-Modell-Varianten je Rarity-Erwartungsstufe (visuelles Schalen-Design unterscheidet sich leicht).
-- Öffnungs-VFX (Schalenriss-Partikel, Lichtexplosion, Rarity-farbiger Strahl).
-- Odds-Display-UI-Panel (Drop-Tabelle-Anzeige vor Kauf).
-
-**Neue Skripte/Systeme:**
-- `GachaService`: gewichteter Roll-Algorithmus, Pity-Tracking, Duplikat-Konvertierungslogik.
-- Compliance-Odds-UI-Datenbindung (Anzeige exakt synchron zur Server-Wahrscheinlichkeitstabelle).
-- Erweiterung ProcessReceipt-Handler um Gacha-Kauf-Pfad.
-- Kauf-/Roll-Historie-Logging (Audit-Fähigkeit bei Support-Anfragen).
-
-**Aufwand:** klein–mittel. **Abhängigkeiten:** MVP Monetarisierungs-Integration, Kreaturen-Kodex (1.5).
+**Effort:** small–medium. **Dependencies:** MVP codex base structure,
+breeding system, trading system.
 
 ---
 
-## 2. Phase 3 – Langzeit-Content & Retention
+### 1.6 Expanded cosmetic rotation
 
-### 2.8 Hadal-Tiefe (Zone 4, Endgame)
+**Description:** A weekly rotating cosmetic shop section with
+time-limited featured items, a wishlist function, and bundle discounts —
+an expansion of the static cosmetic shop already present in the MVP.
 
-**Beschreibung:** Vierte und tiefste Zone als reines Endgame-Ziel für Spieler mit mehreren Ascends. Kein weiteres Zonen-Level danach – stattdessen wiederholbarer Endgame-Content ("Abyssal Trials") mit eigener Mythic/Abyssal-Kreaturen-Stufe und Endgame-Währung.
+**Why it enriches the game:**
+- **Retention:** a constant, gentle reason to return ("what's new this
+  week") without aggressive FOMO.
+- **Monetization:** incremental Robux revenue from impulse purchases; the
+  wishlist allows kid-friendly saving ("when I get allowance/Robux").
+- **Engagement:** a testing ground for cosmetic trends, whose data later
+  feeds into the A/B testing framework (2.12).
 
-**Warum das Spiel bereichert:**
-- **Retention (Top-Spieler):** Committed Player brauchen langfristige Ziele jenseits der letzten regulären Zone, sonst churnen gerade die wertvollsten (aktivsten, zahlungsbereitesten) Spieler zuerst.
-- **Monetarisierung:** Endgame-Chase-Items sind der klassische Whale-Hebel (hochpreisige, seltene Kosmetik/Boosts für die investierteste Spielerschicht).
-- **Marketing:** Visuell beeindruckendstes Biom eignet sich für Trailer/Store-Screenshots und Discovery-Feed.
+**Mechanics details:**
+- A weekly rotation cycle with weighted random selection from the item
+  pool (prevents the same items repeating too often).
+- A featured slot (1–2 items per week, prominently highlighted in the
+  shop UI, possibly a slight discount).
+- Wishlist function: players mark desired items, get a reminder when they
+  rotate back in.
+- Bundle offers (e.g. 3 matching decoration items at a package discount).
 
-**Mechanik-Details:**
-- Zonenfreischaltung erfordert Mindestanzahl Ascends (z. B. 3+) statt reinem Level – verknüpft Prestige-System direkt mit Endgame-Zugang.
-- **Abyssal Trials:** wöchentlich rotierender Modifikator-Raid (z. B. "doppelte Gegnerdichte, +50 % Loot") mit saisonalem Leaderboard-Reset.
-- Neue Top-Rarity-Stufen "Mythic" und "Abyssal" exklusiv aus Hadal-Content.
-- Neue Endgame-Währung **"Void Pearls"** für exklusiven Void-Tech-Shop (Baustil, Kreaturen-Fütterungs-Boosts).
+**New 3D assets:**
+- Rotation template/slot system (defines how many category slots get
+  filled per week).
+- An initial batch of 20–30 additional cosmetic items (habitat
+  decorations, diving suit skins, creature glow colors) spread across
+  several categories.
 
-**Neue 3D-Assets:**
-- Hadal-Terrain: Abgrund-Formationen, Kristallcluster, extreme Tiefen-Beleuchtung (bereits in Haupt-GDD Abschnitt 8 grob vorgesehen, hier vollständiger Detailauftrag).
-- 3–4 einzigartige Raid-Bosse mit mehrphasigen Angriffsmustern (State-Machine-taugliche Rig-Struktur).
-- 8–10 Mythic-/Abyssal-Kreaturen-Modelle mit aufwendigeren Partikel-/Emission-Effekten.
-- Endgame-Bauteil-Set im "Void-Tech"-Look (futuristisch/kristallin, abgegrenzt vom organischen Stil früherer Zonen).
-- Void-Pearl-Währungssymbol.
+**New scripts/systems:**
+- `ShopRotationService`: schedule (weekly reset), weighted item-pool
+  selection, repeat avoidance.
+- Wishlist persistence (item IDs saved per player).
+- Purchase analytics hook (which rotating items convert best).
 
-**Neue Skripte/Systeme:**
-- Zone-4-Freischaltungs-Gate (Ascend-Zähler-Prüfung statt reinem Level-Check).
-- `AbyssalTrialsService`: wöchentliches Modifikator-Rotationssystem, saisonales Leaderboard mit Reset-Job.
-- Void-Pearl-Economy (Gewinn-/Ausgabe-Logik, Shop-Anbindung).
-- Boss-Encounter-Skripte (Mehrphasen-State-Machine, wiederverwendbar aus 1.1-Bossmuster, aber komplexer).
-
-**Aufwand:** groß. **Abhängigkeiten:** Prestige-System (1.2), Mitternachtszone (1.1), Trench-Raid-System.
-
----
-
-### 2.9 Asynchrones Reef Raiding
-
-**Beschreibung:** Spieler können die KI-gesteuerte Verteidigungs-Kopie ("Snapshot") eines fremden, bereits besuchten Reefs herausfordern, um Bonusressourcen zu erbeuten – ohne echten, permanenten Schaden am Zielspieler (kein direkter PvP-Verlust, Clash-of-Clans-artiges Prinzip, aber kinderfreundlich entschärft).
-
-**Warum das Spiel bereichert:**
-- **Engagement:** Gibt investierten Verteidigungstürmen einen dauerhaften Zweck über die eigenen Raids hinaus; "Energie"-Mechanik (begrenzte tägliche Angriffe) schafft mehrfache Rückkehr-Anlässe pro Tag.
-- **Kein Toxizitäts-Risiko:** Da nur ein Snapshot angegriffen wird (kein Echtzeit-Verlust beim Ziel), bleibt die Zielgruppe 8–14 geschützt vor Frustration/Mobbing-Dynamiken.
-- **Monetarisierung:** Energie-Auffüll-Produkt (Robux) für Vielspieler, die mehr Angriffe pro Tag wollen.
-
-**Mechanik-Details:**
-- **Snapshot-Erzeugung:** Server erfasst periodisch (z. B. alle 30 Min.) den Verteidigungs-Loadout eines Spielers (Turmplatzierung, zugewiesene Wächter-Kreaturen) als angreifbaren Zustand.
-- **Angriffs-Simulation:** deterministische, serverseitige Kampfberechnung (Angreifer-Wächter vs. Snapshot-Verteidigung), Ergebnis als kurze Replay-Sequenz dargestellt (Wiederverwendung bestehender Raid-Modelle/-Animationen).
-- **Energie-System:** begrenzte tägliche Angriffsversuche (regeneriert über Zeit oder per Developer Product sofort auffüllbar).
-- **Schutz-Schild:** nach erfolgreichem Angriff auf ein Ziel erhält dieses temporären Schutz vor erneuten Angriffen (Anti-Farming).
-- Belohnungsskalierung nach Zonentiefe/Level des Ziels (fairere Matchmaking-Brackets).
-
-**Neue 3D-Assets:**
-- Ziel-Auswahl-UI (Karten-/Listen-Ansicht angreifbarer Reefs).
-- Schutz-Schild-Sichteffekt (Visueller Indikator am Plot, wenn frisch angegriffen/geschützt).
-- Rang-/Trophäen-Abzeichen-Icons für Reef-Raiding-Erfolge.
-
-**Neue Skripte/Systeme:**
-- `SnapshotService`: periodische Erfassung des Verteidigungszustands pro Spieler.
-- `AsyncRaidEngine`: deterministische Kampfsimulation server-seitig (fair, nicht client-manipulierbar).
-- Matchmaking-Logik (Ziel-Vorschläge nach Level-/Zonentiefe-Bracket).
-- Energie-Regenerations-System + Developer-Product-Anbindung für Sofort-Auffüllung.
-- Schutz-Timer/Schild-Logik, Revenge-Queue (Option, zuletzt erfolgreiche Angreifer zurückzufordern).
-- Anti-Abuse: Verhinderung von wiederholtem Farmen desselben schwachen Ziels (Cooldown pro Zielpaar).
-
-**Aufwand:** groß. **Abhängigkeiten:** MVP Trench-Raid-System, Zonen-Tiefe-Leaderboard, Datenpersistenz.
+**Effort:** small (system), ongoing small content effort per rotation.
+**Dependencies:** MVP shop base.
 
 ---
 
-### 2.10 Saisonale Live-Events
+### 1.7 Mystery Egg gacha (compliance-friendly)
 
-**Beschreibung:** Zeitlich begrenzte Themen-Events (Beispiel: "Bioluminiszenz-Festival") mit exklusiven Kreaturen, Event-Währung, Quest-Kette und Hub-Reskin – wiederverwendbares Event-Framework für beliebig viele zukünftige Events.
+**Description:** A full expansion of the Mystery Egg, set up in the MVP as
+a simple developer product, into a compliant gacha system with a
+transparent drop table, pity mechanic, and duplicate protection per Roblox
+guidelines for random items.
 
-**Warum das Spiel bereichert:**
-- **Wiederkehr/Marketing:** Regelmäßige, ankündigungsfähige Anlässe (Social-Media-Posts, Roblox-Event-Feed) ohne die Kosten einer neuen Dauerzone.
-- **Monetarisierung:** Event-exklusiver Mini-Shop und optionaler Event-Pass erzeugen zusätzliche, zeitlich fokussierte Kaufanreize.
-- **Engagement:** Frischt das Spielgefühl regelmäßig auf, ohne Kernsysteme zu verändern – ideal, um Spieler zwischen großen Content-Updates bei Laune zu halten.
+**Why it enriches the game:**
+- **Monetization:** the strongest single revenue lever for the collector
+  audience — but must be designed fairly so as not to jeopardize trust
+  (and thus long-term LTV).
+- **Engagement:** the pity system ensures even "unlucky streaks" never
+  feel completely lost, reducing frustration churn.
+- **Compliance/trust:** Roblox requires disclosed probabilities for
+  virtual random items — correct implementation protects against platform
+  sanctions.
 
-**Mechanik-Details:**
-- `EventScheduler` aktiviert/deaktiviert einen definierten Content-Pack (Dauer i. d. R. 2–3 Wochen): Event-Währung, Event-Shop, Event-Quest-Kette, Hub-Dekoration.
-- Event-exklusive Kreaturen nur während des Zeitfensters erhältlich (spätere faire "Vault"-Wiederveröffentlichung möglich, um harte FOMO-Kritik zu vermeiden – ethische Kommunikation empfohlen).
-- Optionaler kompakter Event-Pass (Mini-Season-Pass-Variante, wiederverwendet Season-Pass-Infrastruktur aus 1.4).
-- Hub-Welt erhält temporäres visuelles Reskin (Banner, Lichterketten, thematische Deko) für Event-Atmosphäre.
+**Mechanics details:**
+- A weighted random roll based on a published drop table (rarity
+  probabilities visible before purchase).
+- Pity counter: a guaranteed Epic-or-better drop after X unsuccessful eggs
+  (persisted per player).
+- Duplicate protection: duplicate creatures are automatically converted
+  into Tide Coins/fusion catalysts (cf. 3.14) instead of being wasted.
+- An egg-opening ceremony (a short animation: shell cracks, light reveal
+  of the creature) as a small dopamine moment.
 
-**Neue 3D-Assets:**
-- Event-Deko-Set für Hub (Banner, Laternen, thematische Overlay-Objekte) – pro Event neu, aber wiederverwendbares Platzierungsraster.
-- 2–3 Event-exklusive Kreaturen-Modelle pro Event.
-- Event-Währungssymbol, Event-Quest-UI-Skin.
+**New 3D assets:**
+- Egg model variants per rarity-expectation tier (the visual shell design
+  differs slightly).
+- Opening VFX (shell-crack particles, light explosion, rarity-colored
+  beam).
+- An odds-display UI panel (drop-table display before purchase).
 
-**Neue Skripte/Systeme:**
-- `EventScheduler`: Start-/End-Zeitpunkte, Feature-Toggles, automatisches Hub-Reskin-Laden.
-- Event-Währungs-Ledger (separat von Hauptwährungen, verfällt oder konvertiert nach Event-Ende gemäß Design-Entscheidung).
-- Event-Quest-Ketten-System (Wiederverwendung Quest-Engine aus MVP, erweitert um Event-Flag).
-- Event-Shop (temporär eingeblendeter Shop-Bereich).
-- Telemetrie zur Event-Teilnahmequote (Grundlage für künftige Event-Optimierung).
+**New scripts/systems:**
+- `GachaService`: weighted roll algorithm, pity tracking, duplicate
+  conversion logic.
+- Compliance odds-UI data binding (display exactly synced to the server
+  probability table).
+- Extend the ProcessReceipt handler with the gacha purchase path.
+- Purchase/roll history logging (audit capability for support requests).
 
-**Aufwand:** mittel für Framework-Erstaufbau, danach klein pro einzelnem Event. **Abhängigkeiten:** MVP Quest-/Shop-System, Hub-Welt.
-
----
-
-### 2.11 Zweites Habitat-Plot (Ausbau)
-
-**Beschreibung:** Vertiefung des bereits im MVP als Gamepass angelegten zweiten Plots: eigenes Spezial-Biom (z. B. "Kelp-Garten") mit einzigartigen Zucht-/Produktionsboni, Plot-Wechsel-UI und Ressourcentransport zwischen Plots – als Grundlage für eine erweiterbare Plot-Monetarisierungsleiter (Plot 2, 3, 4 …).
-
-**Warum das Spiel bereichert:**
-- **Monetarisierungsleiter:** Jedes weitere Plot ist ein eigenständiger, wiederholbarer Robux-Kaufanreiz analog zu Grundstücks-Erweiterungen in anderen Tycoon-Spielen.
-- **Progressions-Frische:** Verhindert Stillstand, sobald Plot 1 "vollgebaut" ist – klassisches Endgame-Problem in Bau-/Tycoon-Spielen.
-- **Retention:** Spezial-Biome mit eigenen Boni motivieren strategische Neuplanung statt reiner Kopie des ersten Plots.
-
-**Mechanik-Details:**
-- Plot-Auswahl-/Wechsel-UI (Teleport zwischen eigenen Plots, keine Ladepause dank Instanz-Vorab-Laden).
-- Plot 2 als eigenständiges Biom mit spezifischem Kreaturen-/Produktions-Bonus (z. B. Zucht-Geschwindigkeit +X % für bestimmte Kreaturenfamilien).
-- Inter-Plot-Ressourcentransfer (mit kleiner Gebühr oder Transportzeit, um Plots als komplementär statt redundant zu positionieren).
-- Skalierbare Gamepass-Struktur für weitere Plots (Plot 3, 4 als spätere, teurere Stufen – Grundlage bereits mitgebaut).
-
-**Neue 3D-Assets:**
-- Neue Plot-Terrain-Variante (z. B. Kelp-Garten-Biom, abweichend von Standard-Habitat-Plattform).
-- Plot-Teleport-Portal-Modell (am Hauptplot platziert).
-- UI-Icons für Plot-Wechsel-Menü.
-
-**Neue Skripte/Systeme:**
-- `MultiPlotDataManager`: Erweiterung des Persistenz-Schemas von einem auf N Plots pro Spieler.
-- Plot-Wechsel-/Teleport-Logik (Server-seitige Instanzverwaltung).
-- Inter-Plot-Transfersystem (Ressourcenbuchung, Anti-Dupe-Absicherung).
-- Gamepass-Hooks für zusätzliche Plot-Stufen (erweiterbar über Konfigurationstabelle statt Hardcoding).
-
-**Aufwand:** mittel. **Abhängigkeiten:** MVP Plot-/Bauplatzierungs-System, Datenpersistenz.
+**Effort:** small–medium. **Dependencies:** MVP monetization integration,
+creature codex (1.5).
 
 ---
 
-### 2.12 Erweiterte Anti-Exploit-/Telemetrie-Systeme, A/B-Testing
+## 2. Phase 3 – Long-term content & retention
 
-**Beschreibung:** Ausbau der MVP-Basisvalidierung um systematische Wirtschafts-Anomalieerkennung, ein A/B-Testing-Framework für Monetarisierungs-/Onboarding-Varianten sowie eine Analytics-Pipeline für datenbasierte Balancing-Entscheidungen.
+### 2.8 Hadal Depths (Zone 4, endgame)
 
-**Warum das Spiel bereichert:**
-- **Wirtschaftsschutz:** Idle-/Sammelspiele sind besonders anfällig für Dupe-Exploits, die bei unentdeckter Ausbreitung die gesamte Wirtschaft (und damit Kaufanreiz) zerstören.
-- **Monetarisierung (datenbasiert):** A/B-Tests zu Preispunkten, Angebotsplatzierung und Onboarding-Flow erhöhen die Conversion-Rate messbar, statt auf Bauchgefühl zu vertrauen.
-- **Retention:** Frühwarnsystem für Balance-Probleme (z. B. plötzlicher Progression-Stillstand nach einem Update) verhindert stillen Spieler-Abfluss.
+**Description:** The fourth and deepest zone, as a pure endgame goal for
+players with multiple ascends. No further zone level after this — instead,
+repeatable endgame content ("Abyssal Trials") with its own Mythic/Abyssal
+creature tier and endgame currency.
 
-**Mechanik-Details:**
-- Serverseitige Anomalieerkennung: Vergleich von Ressourcenzuwachsraten gegen erwartete Obergrenzen (Flag statt Auto-Ban, Review-Queue für Moderatoren).
-- A/B-Testing-Framework: variantenbasierte Zuteilung pro Spieler (sticky bucketing), z. B. für Preisschilder, Tutorial-Reihenfolge, Shop-Layout.
-- Analytics-Event-Pipeline (strukturierte Events für Käufe, Level-Ups, Raid-Ausgänge, Churn-relevante Aktionen).
-- Admin-/Balancing-Dashboard (extern oder In-Game-Tool) zur Auswertung.
+**Why it enriches the game:**
+- **Retention (top players):** committed players need long-term goals
+  beyond the last regular zone, otherwise the most valuable (most active,
+  most willing-to-pay) players are the first to churn.
+- **Monetization:** endgame chase items are the classic whale lever
+  (high-priced, rare cosmetics/boosts for the most invested player
+  segment).
+- **Marketing:** the most visually impressive biome, well suited for
+  trailers/store screenshots and the discovery feed.
 
-**Neue 3D-Assets:** minimal – ggf. Icon-Set für internes Admin-Dashboard (kein spielerseitiger Content).
+**Mechanics details:**
+- Zone unlock requires a minimum number of ascends (e.g. 3+) instead of a
+  pure level requirement — directly links the prestige system to endgame
+  access.
+- **Abyssal Trials:** a weekly rotating modifier raid (e.g. "double enemy
+  density, +50% loot") with a seasonal leaderboard reset.
+- New top rarity tiers "Mythic" and "Abyssal" exclusive to Hadal content.
+- A new endgame currency, **"Void Pearls"**, for an exclusive Void-Tech
+  shop (build style, creature-feeding boosts).
 
-**Neue Skripte/Systeme:**
-- `AnomalyDetectionService`: Regelbasierte Erkennung ungewöhnlicher Ressourcen-/Käufer-Muster.
-- `ABTestingFramework`: Varianten-Zuteilung, persistente Bucket-Zuordnung pro Spieler, Ergebnis-Tracking.
-- Analytics-Event-Pipeline (HttpService-Anbindung an externes Analytics-Backend oder Roblox-eigene Analytics-API).
-- Review-/Flag-Queue-Tooling für manuelle Moderationsentscheidungen.
-- Dokumentierte Event-Taxonomie (damit alle Systeme konsistent loggen).
+**New 3D assets:**
+- Hadal terrain: abyss formations, crystal clusters, extreme depth
+  lighting (already roughly planned in main GDD Section 8, here a full
+  detail brief).
+- 3–4 unique raid bosses with multi-phase attack patterns (a state-
+  machine-capable rig structure).
+- 8–10 Mythic/Abyssal creature models with more elaborate particle/
+  emission effects.
+- An endgame build-part set in the "Void-Tech" look (futuristic/
+  crystalline, distinct from the organic style of earlier zones).
+- Void Pearl currency symbol.
 
-**Aufwand:** mittel–groß (durchzieht alle Systeme). **Abhängigkeiten:** praktisch alle bisherigen Systeme (misst/schützt sie).
+**New scripts/systems:**
+- Zone 4 unlock gate (ascend-count check instead of a pure level check).
+- `AbyssalTrialsService`: a weekly modifier rotation system, seasonal
+  leaderboard with a reset job.
+- Void Pearl economy (earn/spend logic, shop hookup).
+- Boss encounter scripts (multi-phase state machine, reusing the 1.1 boss
+  pattern, but more complex).
 
----
-
-### 2.13 Cross-Zone-Boss-Events (serverweite Community-Ziele)
-
-**Beschreibung:** Ein server-/community-weiter "Weltboss" erscheint nach Ankündigung; alle gleichzeitig aktiven Spieler (unabhängig von ihrer aktuellen Zone) tragen anteilig Schaden bei. Bei Sieg innerhalb des Zeitlimits erhalten alle Teilnehmer gestaffelte Belohnungen plus einen serverweiten Bonus für alle Spieler.
-
-**Warum das Spiel bereichert:**
-- **Community/Discovery:** Konzentrierte Spieleraktivität zu angekündigten Zeitpunkten erhöht Concurrent-Player-Zahlen – ein Schlüsselsignal für Roblox' Discovery-Algorithmus (mehr organische Sichtbarkeit).
-- **Engagement:** Gemeinschaftliches Erfolgserlebnis ("wir haben es gemeinsam geschafft") stärkt emotionale Bindung stärker als Solo-Content.
-- **Marketing:** Livestream-/Screenshot-taugliches Spektakel-Event, gut für Community-Posts und Influencer-Kooperationen.
-
-**Mechanik-Details:**
-- Geplanter Boss-Spawn (z. B. wöchentlich, vorab über Hub-Ankündigungstafel + externe Social-Kanäle kommuniziert).
-- Globale HP-Leiste, sichtbar für alle Spieler, gespeist aus Schadensbeiträgen unabhängig von Zonen-Zugehörigkeit (Schaden wird nach individueller Spielerstärke skaliert, damit Anfänger nicht wirkungslos sind).
-- Bei serverübergreifender Spielerbasis (mehrere parallele Server-Instanzen): Aggregation der Bosswerte über `MessagingService`/DataStore, damit alle Server gemeinsam an einem globalen Ziel arbeiten.
-- Belohnungsstaffelung: individueller Beitrag bestimmt persönliche Loot-Stufe, zusätzlicher "Serversieg-Bonus" geht an alle Teilnehmer, auch bei geringem Einzelbeitrag (inklusiv statt exklusiv).
-
-**Neue 3D-Assets:**
-- Massiver, einzigartiger Boss pro "Event-Saison" (mehrphasig, deutlich größer als Standard-Raid-Gegner).
-- Globale HP-Leisten-UI-Overlay (serverweit sichtbar, dramatische Gestaltung).
-- Server-Ankündigungstafel-Modell (Hub-Objekt für Countdown/Status).
-- Sieges-Kinematik/VFX (Boss-Niederlage-Sequenz).
-
-**Neue Skripte/Systeme:**
-- `WorldBossService`: Spawn-Zeitplan, Zustandsverwaltung, Zeitlimit-Überwachung.
-- Beitrags-Tracking-Ledger pro Spieler (serverseitig validiert).
-- Cross-Server-Synchronisation der Boss-HP via `MessagingService` (technisch anspruchsvollster Teil – erfordert eigene Architektur-Betrachtung für Konsistenz bei hoher Serveranzahl).
-- Gestaffelte Belohnungsausschüttung (individuell + Server-weiter Bonus-Pool).
-- Ankündigungs-/Countdown-System (In-Game + Vorbereitung für externe Kommunikation).
-
-**Aufwand:** groß (insbesondere Cross-Server-Synchronisation ist technisch komplex). **Abhängigkeiten:** Trench-Raid-System, Leaderboard-Infrastruktur, Hub-Welt, idealerweise nach Hadal-Tiefe (2.8) für sinnvolle Power-Skalierung der Top-Spieler.
+**Effort:** large. **Dependencies:** prestige system (1.2), Midnight Zone
+(1.1), Trench Raid system.
 
 ---
 
-## 3. Phase 4 / Zusatzideen (neu, eigene Vorschläge)
+### 2.9 Asynchronous Reef Raiding
 
-Diese drei Konzepte sind im Haupt-GDD noch nicht erwähnt, ergänzen aber die bestehenden Kernsysteme sinnvoll: eine neue Sammel-/Crafting-Mechanik, ein Social-/UGC-Feature und ein Cross-Promotion-/Community-Event-Format.
+**Description:** Players can challenge the AI-controlled defense copy
+("snapshot") of a foreign, already-visited reef to loot bonus resources —
+without real, permanent damage to the target player (no direct PvP loss, a
+Clash-of-Clans-style principle, but softened to be kid-friendly).
 
-### 3.14 Symbiose-Fusion-Labor
+**Why it enriches the game:**
+- **Engagement:** gives invested defense towers a lasting purpose beyond
+  the player's own raids; an "energy" mechanic (limited daily attacks)
+  creates multiple return reasons per day.
+- **No toxicity risk:** since only a snapshot is attacked (no real-time
+  loss for the target), the 8–14 audience stays protected from
+  frustration/bullying dynamics.
+- **Monetization:** an energy-refill product (Robux) for heavy players who
+  want more attacks per day.
 
-**Beschreibung:** Ein neues Gebäude ("Fusionskammer") erlaubt das gezielte Verschmelzen zweier Kreaturen zu einer visuell und statistisch einzigartigen **Hybrid-Kreatur** (z. B. Glühqualle + Anglerfisch → "Anglerqualle"), oberhalb der Mythic-Stufe angesiedelt.
+**Mechanics details:**
+- **Snapshot creation:** the server periodically captures (e.g. every 30
+  min.) a player's defense loadout (tower placement, assigned guardian
+  creatures) as an attackable state.
+- **Attack simulation:** deterministic, server-side combat calculation
+  (attacker guardians vs. snapshot defense), the result shown as a short
+  replay sequence (reusing existing raid models/animations).
+- **Energy system:** limited daily attack attempts (regenerates over time
+  or can be instantly refilled via a developer product).
+- **Protection shield:** after a successful attack on a target, that
+  target gets temporary protection from further attacks (anti-farming).
+- Reward scaling by the target's zone depth/level (fairer matchmaking
+  brackets).
 
-**Warum das Spiel bereichert:**
-- **Engagement:** Ergänzt den reinen Zufalls-Loop (Zucht, Gacha) um eine strategische, planbare Sammel-Dimension – Spieler können gezielt auf ein Wunsch-Hybrid hinarbeiten statt nur auf Glück zu hoffen.
-- **Dupe-Sink:** Gibt doppelten Kreaturen aus Gacha/Zucht (die sonst reinen Verkaufswert haben) einen sinnvollen Verwendungszweck als Fusionsmaterial – reduziert "wertloses Overflow-Gefühl" im Inventar.
-- **Monetarisierung:** Fusions-Katalysatoren (Developer Product) sowie ein "Fusion-Slot-Boost"-Gamepass (mehrere gleichzeitige Fusionen) erschließen einen neuen Kaufanreiz für engagierte Sammler.
+**New 3D assets:**
+- Target-selection UI (map/list view of attackable reefs).
+- A protection-shield visual effect (a visible indicator on the plot when
+  freshly attacked/protected).
+- Rank/trophy badge icons for Reef Raiding achievements.
 
-**Mechanik-Details:**
-- Fusion benötigt 2 Basis-Kreaturen + Fusions-Katalysator (Drop aus Raids oder Shop-Kauf) + Inkubationszeit (analog Brutbecken-Timer).
-- Erfolgswahrscheinlichkeit abhängig von der Rarity-Kombination der Ausgangskreaturen, mit Pity-Mechanik nach wiederholten Fehlversuchen (verhindert Frustrations-Sackgassen).
-- Hybrid-Kreaturen erhalten eine eigene Kodex-Sektion ("Fusions-Register"), separat trackbar von regulären Sets.
-- Manche Fusions-Rezepte sind fest definiert (bekannte Kombination = bekanntes Ergebnis), andere teilweise zufällig innerhalb einer Ergebnis-Bandbreite (Überraschungsfaktor bleibt erhalten).
+**New scripts/systems:**
+- `SnapshotService`: periodic capture of the defense state per player.
+- `AsyncRaidEngine`: deterministic combat simulation server-side (fair,
+  not client-manipulable).
+- Matchmaking logic (target suggestions by level/zone-depth bracket).
+- Energy regeneration system + developer-product hookup for instant
+  refills.
+- Protection timer/shield logic, revenge queue (option to retaliate
+  against the most recent successful attacker).
+- Anti-abuse: preventing repeated farming of the same weak target
+  (cooldown per target pair).
 
-**Neue 3D-Assets:**
-- Fusionskammer-Gebäudemodell (3 Ausbaustufen, analog Brutbecken-Progression).
-- Fusions-VFX (Licht-Verschmelzungseffekt beim Abschluss).
-- 10–15 Hybrid-Kreaturen-Modelle mit visuell kombinierten Merkmalen (eigenes Idle-/Angriffs-Rig, Rarity-Farbe oberhalb Mythic).
-- Fusions-Katalysator-Icon/Item-Modell.
-
-**Neue Skripte/Systeme:**
-- `FusionService`: Kombinationslogik, Erfolgschance-Berechnung, Pity-Counter-Persistenz.
-- Fusion-Rezept-Datenbank (feste + teilzufällige Kombinationen).
-- Fusion-UI (Auswahl-Dialog für Ausgangskreaturen, Fortschritts-/Erfolgsanzeige).
-- Integration in Kodex-System (Fusions-Register als neue Kategorie).
-- MarketplaceService-Hook für Katalysator-Kauf (Developer Product).
-
-**Aufwand:** mittel–groß. **Abhängigkeiten:** MVP Zucht-System, Kreaturen-Kodex mit Sets (1.5), optional Mystery Egg (1.7) als Dupe-Quelle.
-
----
-
-### 3.15 Tiefsee-Aquarium – Öffentliche Schauvitrine
-
-**Beschreibung:** Ein dedizierter Ausstellungsbereich auf dem eigenen Plot, in dem Spieler ihre seltensten Kreaturen kuratiert präsentieren können. Andere Spieler können vorbeischauen, per "Like"/Bubble-Reaktion Anerkennung zeigen und das Aquarium fotografieren.
-
-**Warum das Spiel bereichert:**
-- **Social/UGC:** Verwandelt seltene Kreaturen von reinen Statwerten in Status-Symbole – stärkt indirekt die Attraktivität von Gacha-/Fusions-Käufen ("damit ich es zeigen kann").
-- **Virales Marketing:** Screenshot-/Foto-Modus-Funktion senkt die Hürde, dass Spieler ihr Aquarium außerhalb von Roblox teilen (Social Media, Freundeskreis) – organische Reichweite ohne Werbebudget.
-- **Retention/Sessionlänge:** Ein Besuchs-Browser im Hub gibt einen neuen, entspannten Grund zum Verweilen (Browsing statt Grinden), erhöht durchschnittliche Sessiondauer.
-
-**Mechanik-Details:**
-- Separater Aquarium-Baumodus (eigenes Deko-Raster am Plot); ausgestellte Kreaturen sind rein dekorativ (kein Idle-Produktionseffekt), um Exploits/Doppelnutzung zu vermeiden.
-- "Besuchen"-Browser im Hub: Filter nach "meist geliked diese Woche", "neu", "Freunde".
-- Like-Mechanik mit Cooldown pro Ziel/Tag (Anti-Bot-Schutz, verhindert Like-Farming).
-- Wöchentliches Feature "Aquarium der Woche" mit Bonus-Belohnung für den Ersteller und Sichtbarkeits-Boost.
-- Integrierter In-Game-Foto-Modus (freie Kamera, kurzzeitiges Ausblenden von UI für saubere Screenshots).
-
-**Neue 3D-Assets:**
-- Aquarium-Plot-Erweiterung/Deko-Rahmen (Glaswand-Module, Beleuchtungs-Rigs, Podeste).
-- Deko-Requisiten-Set (Spotlight-Strahler, Themen-Hintergründe für Showcase-Bereiche).
-- Like-/Herz-VFX und UI-Icon.
-- Kamera-Tool-UI (Foto-Modus-Steuerung).
-- "Featured"-Abzeichen-Icon für ausgezeichnete Aquarien.
-
-**Neue Skripte/Systeme:**
-- `AquariumBuildService`: separates Placement-System, wiederverwendet Grundlogik des MVP-Bauplatzierungs-Systems.
-- Visit-Browser-Service: Serverabfrage populärer/zufälliger Aquarien (OrderedDataStore-basiertes Like-Ranking).
-- Like-System mit Cooldown- und Anti-Bot-Validierung (serverseitig).
-- Featured-Rotation-Job (wöchentliche automatische Auswahl nach Like-Zahl/Zufallsgewichtung).
-- In-Game-Screenshot-/Kamera-Tool-Skript (Client-seitig, UI-Ausblendung).
-
-**Aufwand:** mittel. **Abhängigkeiten:** MVP Bauplatzierungs-System, Kreaturen-Kodex, Hub-Welt, bestehende Leaderboard-Infrastruktur (für Like-Ranking).
+**Effort:** large. **Dependencies:** MVP Trench Raid system, zone-depth
+leaderboard, data persistence.
 
 ---
 
-### 3.16 Gezeiten-Allianz – Cross-Promotion & Meeresschutz-Event
+### 2.10 Seasonal live events
 
-**Beschreibung:** Jährliches (oder halbjährliches) Themen-Event rund um den Welttag der Ozeane (8. Juni), das drei Elemente kombiniert: (1) ein Lern-/Aufräum-Minispiel im Riff, (2) Cross-Promotion-Codes mit anderen Roblox-Erlebnissen und (3) ein optionales, transparent kommuniziertes Charity-Kosmetik-Paket zugunsten einer Meeresschutzorganisation.
+**Description:** Time-limited themed events (example: "Bioluminescence
+Festival") with exclusive creatures, event currency, a quest chain, and a
+hub reskin — a reusable event framework for any number of future events.
 
-**Warum das Spiel bereichert:**
-- **PR/Discovery:** Bietet einen natürlichen Presse-/Community-Aufhänger ("Kinderspiel vermittelt Meeresschutz-Bewusstsein"), erhöht Chancen auf redaktionelle Roblox-Feature-Platzierung.
-- **Neuspieler-Akquise ohne Werbebudget:** Cross-Promotion-Codes mit thematisch verwandten Roblox-Erlebnissen erzeugen gegenseitigen Spieler-Traffic – deutlich günstiger als klassische Werbung.
-- **Vertrauen/CSR:** Ein transparenter Charity-Anteil stärkt das Vertrauen der (oft mitentscheidenden) Eltern der Zielgruppe 8–14 und positioniert Abyssara positiv gegenüber austauschbaren Konkurrenzspielen.
-- **Community-Bindung:** Ein globales, gemeinsames Fortschrittsziel (server- und plattformübergreifend) erzeugt kollektives Zugehörigkeitsgefühl.
+**Why it enriches the game:**
+- **Return visits/marketing:** regular, announceable occasions (social
+  media posts, the Roblox event feed) without the cost of a new permanent
+  zone.
+- **Monetization:** an event-exclusive mini shop and an optional event
+  pass create additional, time-focused purchase incentives.
+- **Engagement:** regularly refreshes the game feel without changing core
+  systems — ideal for keeping players engaged between major content
+  updates.
 
-**Mechanik-Details:**
-- Event-Zeitfenster von 2–3 Wochen mit thematischem Hub-Reskin ("Riff-Reinigung"): sammelbare Müll-Objekte als Mini-Quest-Linie, begleitet von kurzen, altersgerechten Fakten-Popups über Meeresschutz.
-- Cross-Promo-Code-System: Spieler, die ein Partner-Roblox-Erlebnis besuchen, erhalten einen Code für ein exklusives Item in Abyssara – und umgekehrt (gegenseitige Traffic-Vereinbarung).
-- Charity-Kosmetik-Bundle (z. B. 150 Robux, transparent deklarierter Spendenanteil an Partnerorganisation).
-- Globaler Community-Fortschrittsbalken: alle Spieler weltweit sammeln gemeinsam auf ein Serverziel hin (z. B. "1 Million Müll-Stücke") – bei Erreichen wird ein permanentes kosmetisches "sauberes Riff"-Update im Hub für alle freigeschaltet.
+**Mechanics details:**
+- `EventScheduler` activates/deactivates a defined content pack (usually
+  2–3 weeks): event currency, event shop, event quest chain, hub
+  decoration.
+- Event-exclusive creatures are only obtainable during the time window (a
+  later fair "vault" re-release is possible, to avoid harsh FOMO
+  criticism — ethical communication recommended).
+- An optional compact event pass (a mini season-pass variant, reusing the
+  season-pass infrastructure from 1.4).
+- The hub world gets a temporary visual reskin (banners, string lights,
+  themed decoration) for event atmosphere.
 
-**Neue 3D-Assets:**
-- Event-Hub-Reskin-Deko: Müll-Objekte als sammelbare Props, "Vorher/Nachher"-Riff-Varianten (verschmutzt → sauber).
-- Partner-Item-Modelle (austauschbarer Platzhalter-Slot, abhängig vom jeweiligen Cross-Promo-Partner).
-- Charity-Kosmetik-Set (2–3 Items, z. B. "Schildkröten-Freund"-Anhänger, Riff-Schutz-Taucheranzug-Skin).
-- Community-Fortschrittsbalken-UI (serverweite/globale Anzeige).
-- Informative Fakten-Popup-UI-Rahmen (altersgerechtes, kurzes Bildungsformat).
+**New 3D assets:**
+- An event decoration set for the hub (banners, lanterns, themed overlay
+  objects) — new per event, but a reusable placement grid.
+- 2–3 event-exclusive creature models per event.
+- Event currency symbol, event quest UI skin.
 
-**Neue Skripte/Systeme:**
-- Erweiterung des `EventScheduler` aus 2.10 (wiederverwendete Event-Framework-Infrastruktur).
-- Cross-Promo-Code-Redemption-System (externe Code-Validierung, Anti-Abuse gegen Code-Missbrauch).
-- Community-Goal-Tracker: globaler, serverübergreifender Zähler (wiederverwendet `MessagingService`-Technik aus Cross-Zone-Boss-Events, 2.13).
-- Charity-Kauf-Tracking (transparentes Reporting, ggf. Anbindung an externe Spendenabwicklung/-Reporting-Seite).
-- Bildungs-Popup-Trigger-System (zeitgesteuerte, nicht-aufdringliche Einblendung).
+**New scripts/systems:**
+- `EventScheduler`: start/end times, feature toggles, automatic hub-reskin
+  loading.
+- Event currency ledger (separate from main currencies, expires or
+  converts after the event ends per design decision).
+- Event quest-chain system (reusing the MVP quest engine, extended with an
+  event flag).
+- Event shop (a temporarily displayed shop section).
+- Telemetry on event participation rate (basis for future event
+  optimization).
 
-**Aufwand:** mittel (Ersteinrichtung inkl. Cross-Promo-Partnerklärung), danach klein pro jährlicher Wiederholung. **Abhängigkeiten:** Saisonales Live-Event-Framework (2.10), Hub-Welt, Cross-Zone-Boss-Events-Infrastruktur (2.13, für globalen Zähler).
+**Effort:** medium for the initial framework build, then small per
+individual event. **Dependencies:** MVP quest/shop system, hub world.
 
 ---
 
-## 4. Priorisierungsempfehlung (Kurzfazit)
+### 2.11 Second Habitat Plot (expansion)
 
-Für den größten Retention-/Monetarisierungs-Hebel pro Aufwand empfiehlt sich innerhalb Phase 2 die Reihenfolge: **1.5 Kodex-Sets → 1.7 Mystery Egg → 1.2 Prestige → 1.1 Mitternachtszone → 1.4 Season Pass → 1.3 Reef Cluster → 1.6 Kosmetik-Rotation** (kleine/mittlere Systeme zuerst, die groß angelegte Content-Zone zuletzt, wenn die Kernschleife bereits durch Prestige und Kodex vertieft ist). In Phase 3 sollte **2.12 Anti-Exploit/Telemetrie** parallel zu allen anderen Punkten mitlaufen, da sie alle übrigen Systeme absichert. Aus Phase 4 eignet sich **3.15 Tiefsee-Aquarium** als vergleichsweise günstiger, hoher Social-Impact-Baustein für einen frühen Zusatz-Sprint.
+**Description:** Deepens the second plot already set up as a gamepass in
+the MVP: its own special biome (e.g. "Kelp Garden") with unique breeding/
+production bonuses, a plot-switch UI, and resource transport between
+plots — as the basis for an expandable plot monetization ladder (plot 2,
+3, 4 …).
+
+**Why it enriches the game:**
+- **Monetization ladder:** every additional plot is a standalone, repeatable
+  Robux purchase incentive, analogous to land expansions in other tycoon
+  games.
+- **Progression freshness:** prevents standstill once plot 1 is "fully
+  built" — a classic endgame problem in build/tycoon games.
+- **Retention:** special biomes with their own bonuses motivate strategic
+  replanning instead of just copying the first plot.
+
+**Mechanics details:**
+- Plot selection/switch UI (teleport between your own plots, no loading
+  pause thanks to instance preloading).
+- Plot 2 as its own biome with a specific creature/production bonus (e.g.
+  breeding speed +X% for certain creature families).
+- Inter-plot resource transfer (with a small fee or transport time, to
+  position plots as complementary rather than redundant).
+- A scalable gamepass structure for further plots (plot 3, 4 as later,
+  more expensive tiers — the foundation is already built in).
+
+**New 3D assets:**
+- A new plot terrain variant (e.g. a Kelp Garden biome, differing from the
+  standard habitat platform).
+- A plot teleport portal model (placed on the main plot).
+- UI icons for the plot-switch menu.
+
+**New scripts/systems:**
+- `MultiPlotDataManager`: extends the persistence schema from one to N
+  plots per player.
+- Plot switch/teleport logic (server-side instance management).
+- Inter-plot transfer system (resource booking, anti-dupe safeguards).
+- Gamepass hooks for additional plot tiers (extendable via a
+  configuration table instead of hardcoding).
+
+**Effort:** medium. **Dependencies:** MVP plot/build-placement system,
+data persistence.
 
 ---
 
-*Dieses Dokument ergänzt `game-design-doc.md` und ist wie dieses direkt als Arbeitsauftrag für den 3D-Asset-Agenten und den Luau-Code-Agenten nutzbar – pro Erweiterung unabhängig vom Rest umsetzbar, sofern die jeweils genannten Abhängigkeiten erfüllt sind.*
+### 2.12 Expanded anti-exploit/telemetry systems, A/B testing
+
+**Description:** Expands the MVP's baseline validation with systematic
+economy anomaly detection, an A/B testing framework for monetization/
+onboarding variants, and an analytics pipeline for data-driven balancing
+decisions.
+
+**Why it enriches the game:**
+- **Economy protection:** idle/collector games are especially vulnerable
+  to dupe exploits that, if they spread undetected, destroy the entire
+  economy (and thus purchase incentive).
+- **Monetization (data-driven):** A/B tests on price points, offer
+  placement, and onboarding flow measurably increase conversion rate,
+  instead of relying on gut feeling.
+- **Retention:** an early-warning system for balance problems (e.g. a
+  sudden progression standstill after an update) prevents silent player
+  drain.
+
+**Mechanics details:**
+- Server-side anomaly detection: comparing resource growth rates against
+  expected upper bounds (flag instead of auto-ban, a review queue for
+  moderators).
+- An A/B testing framework: variant-based assignment per player (sticky
+  bucketing), e.g. for price tags, tutorial order, shop layout.
+- An analytics event pipeline (structured events for purchases, level-ups,
+  raid outcomes, churn-relevant actions).
+- An admin/balancing dashboard (external or an in-game tool) for
+  evaluation.
+
+**New 3D assets:** minimal — possibly an icon set for an internal admin
+dashboard (no player-facing content).
+
+**New scripts/systems:**
+- `AnomalyDetectionService`: rule-based detection of unusual
+  resource/purchaser patterns.
+- `ABTestingFramework`: variant assignment, persistent bucket assignment
+  per player, result tracking.
+- An analytics event pipeline (HttpService hookup to an external
+  analytics backend or Roblox's own analytics API).
+- Review/flag-queue tooling for manual moderation decisions.
+- A documented event taxonomy (so all systems log consistently).
+
+**Effort:** medium–large (runs through all systems). **Dependencies:**
+practically all prior systems (it measures/protects them).
+
+---
+
+### 2.13 Cross-zone boss events (server-wide community goals)
+
+**Description:** A server-/community-wide "world boss" appears after an
+announcement; all simultaneously active players (regardless of their
+current zone) contribute damage proportionally. On victory within the time
+limit, all participants receive tiered rewards plus a server-wide bonus
+for all players.
+
+**Why it enriches the game:**
+- **Community/discovery:** concentrated player activity at announced
+  times raises concurrent-player counts — a key signal for Roblox's
+  discovery algorithm (more organic visibility).
+- **Engagement:** a shared sense of accomplishment ("we did it together")
+  strengthens emotional attachment more than solo content.
+- **Marketing:** a livestream/screenshot-worthy spectacle event, good for
+  community posts and influencer collaborations.
+
+**Mechanics details:**
+- A scheduled boss spawn (e.g. weekly, communicated in advance via the hub
+  announcement board + external social channels).
+- A global HP bar, visible to all players, fed by damage contributions
+  independent of zone affiliation (damage is scaled by individual player
+  power, so beginners aren't ineffective).
+- For a cross-server player base (several parallel server instances):
+  aggregate boss values via `MessagingService`/DataStore, so all servers
+  work jointly toward one global goal.
+- Tiered rewards: individual contribution determines personal loot tier,
+  an additional "server-victory bonus" goes to all participants, even
+  with a small individual contribution (inclusive rather than exclusive).
+
+**New 3D assets:**
+- A massive, unique boss per "event season" (multi-phase, significantly
+  larger than standard raid enemies).
+- A global HP-bar UI overlay (server-wide visible, dramatic design).
+- A server announcement-board model (a hub object for countdown/status).
+- Victory cinematic/VFX (boss-defeat sequence).
+
+**New scripts/systems:**
+- `WorldBossService`: spawn schedule, state management, time-limit
+  monitoring.
+- A per-player contribution tracking ledger (server-validated).
+- Cross-server synchronization of boss HP via `MessagingService`
+  (technically the most demanding part — requires its own architecture
+  consideration for consistency at high server counts).
+- Tiered reward payout (individual + a server-wide bonus pool).
+- Announcement/countdown system (in-game + preparation for external
+  communication).
+
+**Effort:** large (cross-server synchronization especially is technically
+complex). **Dependencies:** Trench Raid system, leaderboard
+infrastructure, hub world, ideally after Hadal Depths (2.8) for sensible
+power scaling of top players.
+
+---
+
+## 3. Phase 4 / Extra ideas (new, original proposals)
+
+These three concepts are not yet mentioned in the main GDD, but usefully
+complement the existing core systems: a new collection/crafting mechanic,
+a social/UGC feature, and a cross-promotion/community event format.
+
+### 3.14 Symbiosis Fusion Lab
+
+**Description:** A new building ("Fusion Chamber") allows deliberately
+fusing two creatures into a visually and statistically unique **hybrid
+creature** (e.g. Glow Jelly + Anglerfish → "Angler Jelly"), positioned
+above the Mythic tier.
+
+**Why it enriches the game:**
+- **Engagement:** complements the purely random loop (breeding, gacha)
+  with a strategic, plannable collection dimension — players can work
+  toward a desired hybrid instead of just hoping for luck.
+- **Dupe sink:** gives duplicate creatures from gacha/breeding (which
+  otherwise only have sell value) a meaningful use as fusion material —
+  reduces the "worthless overflow feeling" in the inventory.
+- **Monetization:** fusion catalysts (developer product) as well as a
+  "fusion slot boost" gamepass (multiple simultaneous fusions) open up a
+  new purchase incentive for engaged collectors.
+
+**Mechanics details:**
+- Fusion requires 2 base creatures + a fusion catalyst (a drop from raids
+  or a shop purchase) + an incubation time (analogous to the Brood Pool
+  timer).
+- Success probability depends on the rarity combination of the source
+  creatures, with a pity mechanic after repeated failed attempts
+  (prevents frustration dead-ends).
+- Hybrid creatures get their own codex section ("Fusion Register"),
+  trackable separately from regular sets.
+- Some fusion recipes are fixed (a known combination = a known result),
+  others are partly random within a result range (keeps the surprise
+  factor).
+
+**New 3D assets:**
+- Fusion Chamber building model (3 upgrade stages, analogous to Brood Pool
+  progression).
+- Fusion VFX (a light-merge effect on completion).
+- 10–15 hybrid creature models with visually combined traits (their own
+  idle/attack rig, a rarity color above Mythic).
+- Fusion catalyst icon/item model.
+
+**New scripts/systems:**
+- `FusionService`: combination logic, success-chance calculation, pity-
+  counter persistence.
+- A fusion recipe database (fixed + partly random combinations).
+- Fusion UI (a selection dialog for source creatures, progress/success
+  display).
+- Integration into the codex system (fusion register as a new category).
+- MarketplaceService hook for catalyst purchase (developer product).
+
+**Effort:** medium–large. **Dependencies:** MVP breeding system, creature
+codex with sets (1.5), optionally Mystery Egg (1.7) as a dupe source.
+
+---
+
+### 3.15 Deep-Sea Aquarium – public showcase
+
+**Description:** A dedicated exhibition area on the player's own plot,
+where players can curate and display their rarest creatures. Other players
+can drop by, show appreciation via a "like"/bubble reaction, and
+photograph the aquarium.
+
+**Why it enriches the game:**
+- **Social/UGC:** turns rare creatures from pure stat values into status
+  symbols — indirectly strengthens the appeal of gacha/fusion purchases
+  ("so I can show it off").
+- **Viral marketing:** a screenshot/photo-mode feature lowers the barrier
+  for players to share their aquarium outside of Roblox (social media,
+  friend groups) — organic reach without an ad budget.
+- **Retention/session length:** a visit browser in the hub gives a new,
+  relaxed reason to linger (browsing instead of grinding), raising average
+  session duration.
+
+**Mechanics details:**
+- A separate aquarium build mode (its own decoration grid on the plot);
+  displayed creatures are purely decorative (no idle production effect),
+  to avoid exploits/double use.
+- A "visit" browser in the hub: filter by "most liked this week", "new",
+  "friends".
+- A like mechanic with a per-target/day cooldown (anti-bot protection,
+  prevents like farming).
+- A weekly "Aquarium of the Week" feature with a bonus reward for the
+  creator and a visibility boost.
+- An integrated in-game photo mode (free camera, brief UI hiding for
+  clean screenshots).
+
+**New 3D assets:**
+- Aquarium plot extension/decoration frame (glass-wall modules, lighting
+  rigs, pedestals).
+- A decoration prop set (spotlights, themed backgrounds for showcase
+  areas).
+- Like/heart VFX and UI icon.
+- Camera-tool UI (photo-mode controls).
+- A "featured" badge icon for award-winning aquariums.
+
+**New scripts/systems:**
+- `AquariumBuildService`: a separate placement system, reusing the base
+  logic of the MVP build-placement system.
+- Visit-browser service: server query for popular/random aquariums
+  (OrderedDataStore-based like ranking).
+- A like system with cooldown and anti-bot validation (server-side).
+- A featured-rotation job (weekly automatic selection by like count/random
+  weighting).
+- An in-game screenshot/camera-tool script (client-side, UI hiding).
+
+**Effort:** medium. **Dependencies:** MVP build-placement system, creature
+codex, hub world, existing leaderboard infrastructure (for like ranking).
+
+---
+
+### 3.16 Tidal Alliance – cross-promotion & ocean-conservation event
+
+**Description:** An annual (or semi-annual) themed event around World
+Oceans Day (June 8th) that combines three elements: (1) an educational/
+cleanup minigame on the reef, (2) cross-promotion codes with other Roblox
+experiences, and (3) an optional, transparently communicated charity
+cosmetic bundle benefiting an ocean-conservation organization.
+
+**Why it enriches the game:**
+- **PR/discovery:** offers a natural press/community hook ("a kids' game
+  teaches ocean-conservation awareness"), raises the chance of an
+  editorial Roblox feature placement.
+- **New-player acquisition without ad budget:** cross-promotion codes with
+  thematically related Roblox experiences create mutual player traffic —
+  significantly cheaper than classic advertising.
+- **Trust/CSR:** a transparent charity share strengthens the trust of the
+  8–14 audience's (often co-deciding) parents and positions Abyssara
+  favorably against interchangeable competing games.
+- **Community bonding:** a global, shared progress goal (cross-server and
+  cross-platform) creates a collective sense of belonging.
+
+**Mechanics details:**
+- An event window of 2–3 weeks with a themed hub reskin ("Reef Cleanup"):
+  collectible litter objects as a mini quest line, accompanied by short,
+  age-appropriate fact popups about ocean conservation.
+- A cross-promo code system: players who visit a partner Roblox experience
+  get a code for an exclusive item in Abyssara — and vice versa (a mutual
+  traffic agreement).
+- A charity cosmetic bundle (e.g. 150 Robux, with a transparently declared
+  donation share to a partner organization).
+- A global community progress bar: all players worldwide collect jointly
+  toward one server goal (e.g. "1 million pieces of litter") — on reaching
+  it, a permanent cosmetic "clean reef" update is unlocked in the hub for
+  everyone.
+
+**New 3D assets:**
+- Event hub reskin decoration: litter objects as collectible props,
+  "before/after" reef variants (polluted → clean).
+- Partner item models (a swappable placeholder slot, depending on the
+  respective cross-promo partner).
+- A charity cosmetic set (2–3 items, e.g. a "Turtle Friend" charm, a
+  reef-protection diving-suit skin).
+- Community progress-bar UI (server-wide/global display).
+- An informative fact-popup UI frame (age-appropriate, short educational
+  format).
+
+**New scripts/systems:**
+- An extension of the `EventScheduler` from 2.10 (reused event-framework
+  infrastructure).
+- A cross-promo code redemption system (external code validation,
+  anti-abuse against code misuse).
+- A community goal tracker: a global, cross-server counter (reusing the
+  `MessagingService` technique from cross-zone boss events, 2.13).
+- Charity purchase tracking (transparent reporting, possibly hooked up to
+  an external donation processing/reporting page).
+- An educational popup trigger system (time-controlled, non-intrusive
+  display).
+
+**Effort:** medium (initial setup including cross-promo partner
+coordination), then small per yearly repeat. **Dependencies:** seasonal
+live-event framework (2.10), hub world, cross-zone boss-event
+infrastructure (2.13, for the global counter).
+
+---
+
+## 4. Prioritization recommendation (short summary)
+
+For the greatest retention/monetization leverage per effort, the
+recommended order within Phase 2 is: **1.5 Codex sets → 1.7 Mystery Egg →
+1.2 Prestige → 1.1 Midnight Zone → 1.4 Season Pass → 1.3 Reef Cluster →
+1.6 Cosmetic rotation** (small/medium systems first, the large-scale
+content zone last, once the core loop is already deepened by prestige and
+the codex). In Phase 3, **2.12 anti-exploit/telemetry** should run in
+parallel with all other items, since it protects all the remaining
+systems. From Phase 4, **3.15 Deep-Sea Aquarium** is a comparatively
+inexpensive, high-social-impact building block suited for an early extra
+sprint.
+
+---
+
+*This document complements `game-design-doc.md` and, like it, can be used
+directly as a work brief for the 3D asset agent and the Luau code agent —
+each expansion is independently implementable from the rest, provided its
+stated dependencies are met.*

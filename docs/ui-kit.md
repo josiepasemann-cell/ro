@@ -1,38 +1,38 @@
-# Abyssara UIKit – API-Doku für Menü-Umstellungen
+# Abyssara UIKit – API docs for menu conversions
 
-Dieses Dokument richtet sich an den nächsten Agenten, der bestehende Menüs
+This document is aimed at the next agent converting existing menus
 (`HUDController`, `GachaOpenClient`, `GachaOddsUIController`,
 `BreedingUIController`, `RaidUIController`, `PlacementPreviewController`,
-...) auf das gemeinsame UIKit umstellt.
+...) over to the shared UIKit.
 
-Quellcode: `src/shared/UIKit/` (Rojo-Mapping: `ReplicatedStorage.UIKit`).
-Demo (nur zu Referenzzwecken, standardmäßig deaktiviert):
+Source: `src/shared/UIKit/` (Rojo mapping: `ReplicatedStorage.UIKit`).
+Demo (reference only, disabled by default):
 `src/client/UIKitDemo.client.lua`.
 
 ```lua
 local UIKit = require(game:GetService("ReplicatedStorage"):WaitForChild("UIKit"))
 ```
 
-## HARTE REGEL: Keine Buttons außerhalb der Factory
+## HARD RULE: No buttons outside the factory
 
-**Es darf im gesamten Projekt kein `TextButton`/`ImageButton` mehr direkt per
-`Instance.new("TextButton")` gebaut werden, wenn es klickbar sein soll.**
-Ausnahmslos `UIKit.Button.new({...})` verwenden. Nur so sind garantiert:
+**No `TextButton`/`ImageButton` may be built anywhere in the project
+directly via `Instance.new("TextButton")` if it's meant to be clickable.**
+Always use `UIKit.Button.new({...})`, no exceptions. Only this guarantees:
 
-- Responsive Größe/Text (siehe Abschnitt "Responsivität" unten) auf JEDEM Gerät,
-- Hover/Press/Ripple/Partikel/Sound-FX,
-- Mindest-Touch-Zielgröße ~44px als echte Pixel-Untergrenze,
-- Gamepad-Selektion (`Selectable` + sichtbares `SelectionImageObject`),
-- Disabled-Zustand,
-- Reduzierte-Effekte-Unterstützung.
+- Responsive size/text (see the "Responsiveness" section below) on EVERY device,
+- Hover/press/ripple/particle/sound FX,
+- A minimum touch target size of ~44px as a real pixel floor,
+- Gamepad selection (`Selectable` + a visible `SelectionImageObject`),
+- Disabled state,
+- Reduced-effects support.
 
-Ein einzelner "nackter" Button umgeht alle diese Garantien und bricht die
-Konsistenz. Beim Umstellen bestehender Menüs: bestehende `TextButton`-
-Instanzen durch `UIKit.Button.new(...)` ersetzen, nicht nur stylen.
+A single "bare" button bypasses all of these guarantees and breaks
+consistency. When converting existing menus: replace existing `TextButton`
+instances with `UIKit.Button.new(...)`, don't just style them.
 
-## Geräteklassen (`UIKit.Device`)
+## Device classes (`UIKit.Device`)
 
-`Device.GetState()` liefert:
+`Device.GetState()` returns:
 
 ```lua
 {
@@ -42,60 +42,61 @@ Instanzen durch `UIKit.Button.new(...)` ersetzen, nicht nur stylen.
 }
 ```
 
-Erkennung: `UserInputService.TouchEnabled/KeyboardEnabled/GamepadEnabled`,
-`GuiService:IsTenFootInterface()`, `Camera.ViewportSize` (Kurzseite
-unterscheidet Phone/Tablet). `Device.Changed:Connect(fn)` feuert live bei
-Rotation/Fenstergrößenänderung.
+Detection: `UserInputService.TouchEnabled/KeyboardEnabled/GamepadEnabled`,
+`GuiService:IsTenFootInterface()`, `Camera.ViewportSize` (short side
+distinguishes Phone/Tablet). `Device.Changed:Connect(fn)` fires live on
+rotation/window size changes.
 
-Wichtige Helfer:
+Important helpers:
 
-- `Device.GetScale()` – zentraler Skalierungsfaktor (0.62–1.35), aus
-  Viewport-Kurzseite berechnet, mit Touch-Boost.
-- `Device.BindUIScale(uiScale, multiplier?)` – bindet ein `UIScale`-Objekt
-  dauerhaft an den Skalierungsfaktor, gibt eine Unbind-Funktion zurück.
-  `UIKit.Panel` macht das bereits automatisch für sein gesamtes Fenster –
-  **eigene Menüs sollten EIN UIScale pro Screen/Panel binden, nicht pro
-  Widget.**
-- `Device.ApplySafeArea(screenGui)` – setzt `ScreenInsets = DeviceSafeInsets`
-  (Notch/Punch-Hole) und liefert den `GuiService:GetGuiInset()`-Wert.
-- `Device.ShouldShowKeyboardHints()` – nur true, wenn echte Tastatur da ist
-  (für "[E] Interagieren"-Hinweise etc.).
-- `Device.ShouldShowGamepadHints()` – true auf Konsole/reinem Gamepad-Input.
-- `Device.ShouldUseFullscreenPanels()` – true auf Phone (Panels sollten dort
-  Vollbild sein statt zentriertes Fenster).
-- `Device.ClampTouchSize(px)` – klemmt eine gewünschte Pixelgröße auf
-  mindestens `Device.MinTouchSize` (44), wenn Touch aktiv ist.
+- `Device.GetScale()` – central scale factor (0.62–1.35), computed from
+  the viewport's short side, with a touch boost.
+- `Device.BindUIScale(uiScale, multiplier?)` – binds a `UIScale` object
+  permanently to the scale factor, returns an unbind function.
+  `UIKit.Panel` already does this automatically for its whole window –
+  **your own menus should bind ONE UIScale per screen/panel, not per
+  widget.**
+- `Device.ApplySafeArea(screenGui)` – sets `ScreenInsets = DeviceSafeInsets`
+  (notch/punch-hole) and returns the `GuiService:GetGuiInset()` value.
+- `Device.ShouldShowKeyboardHints()` – only true if a real keyboard is
+  present (for "[E] Interact" hints, etc.).
+- `Device.ShouldShowGamepadHints()` – true on console/pure gamepad input.
+- `Device.ShouldUseFullscreenPanels()` – true on Phone (panels should be
+  fullscreen there instead of a centered window).
+- `Device.ClampTouchSize(px)` – clamps a desired pixel size to at least
+  `Device.MinTouchSize` (44) when touch is active.
 
-## Responsivität – bindende Regeln für alle Widgets
+## Responsiveness – binding rules for all widgets
 
-Diese Regeln gelten für **jedes** UIKit-Widget und für jeden Code, der neue
-Menüs auf UIKit aufbaut:
+These rules apply to **every** UIKit widget and to any code building new
+menus on top of UIKit:
 
-1. **Nie feste Pixelgrößen ohne Skalierungsweg.** Breiten immer relativ
-   (`UDim2.new(1, 0, 0, H)`), Höhen dürfen offset-basiert sein, weil sie über
-   das vom Panel gebundene `UIScale` automatisch mitskalieren.
-2. **Text immer `TextScaled = true` + `UITextSizeConstraint`** (Min/Max-
-   Textgröße), nie eine feste `TextSize` ohne Constraint. `UIKit.Button`,
-   `UIKit.Panel`-Titel, `UIKit.Toast`, `UIKit.RarityBadge` machen das bereits
-   automatisch.
-3. **Touch-Mindestgröße ist ein `UISizeConstraint` auf `AbsoluteSize`,
-   kein Offset-Wert.** `UISizeConstraint.MinSize` wirkt auf die tatsächliche
-   gerenderte Pixelgröße – unabhängig davon, was `UIScale`-Vorfahren tun.
-   `UIKit.Button` setzt das automatisch und aktualisiert es live bei
-   Geräteänderung (`Device.Changed`).
-4. **Layout reagiert live auf Rotation/Fenstergröße.** Nutze
-   `UIKit.Layout.ResponsiveRow(...)` für Button-Reihen (auf Phone: eine
-   Spalte, volle Breite; auf Tablet/PC/Konsole: horizontale Reihe mit
-   Umbruch) und `UIKit.Layout.FullscreenOrCentered(frame, sizing)` für
-   Fenster (macht `UIKit.Panel` schon selbst).
-5. **Gleiches Feedback, unterschiedlicher Auslöser.** `UIKit.Button` gibt
-   Hover-Glow nur bei echtem Maus-Hover (`MouseEnter`/`MouseLeave`, wird auf
-   Touch-Geräten übersprungen); Touch/Maus-Klick lösen stattdessen sofort
-   den Press-Squash aus. Gamepad-Selektion (`SelectionGained`/`SelectionLost`)
-   löst denselben Glow wie Hover aus und zeigt zusätzlich ein sichtbares
+1. **Never use fixed pixel sizes without a scaling path.** Widths should
+   always be relative (`UDim2.new(1, 0, 0, H)`), heights may be
+   offset-based because they scale automatically via the panel's bound
+   `UIScale`.
+2. **Text always `TextScaled = true` + `UITextSizeConstraint`** (min/max
+   text size), never a fixed `TextSize` without a constraint. `UIKit.Button`,
+   `UIKit.Panel` titles, `UIKit.Toast`, `UIKit.RarityBadge` already do this
+   automatically.
+3. **The minimum touch size is a `UISizeConstraint` on `AbsoluteSize`,
+   not an offset value.** `UISizeConstraint.MinSize` affects the actual
+   rendered pixel size – regardless of what `UIScale` ancestors do.
+   `UIKit.Button` sets this automatically and updates it live on device
+   changes (`Device.Changed`).
+4. **Layout reacts live to rotation/window size.** Use
+   `UIKit.Layout.ResponsiveRow(...)` for button rows (on Phone: a single
+   column, full width; on Tablet/PC/Console: a horizontal row with
+   wrapping) and `UIKit.Layout.FullscreenOrCentered(frame, sizing)` for
+   windows (`UIKit.Panel` already does this itself).
+5. **Same feedback, different trigger.** `UIKit.Button` gives hover-glow
+   only on a real mouse hover (`MouseEnter`/`MouseLeave`, skipped on touch
+   devices); touch/mouse clicks instead immediately trigger the press
+   squash. Gamepad selection (`SelectionGained`/`SelectionLost`) triggers
+   the same glow as hover and additionally shows a visible
    `SelectionImageObject`.
 
-## Farben (`UIKit.Theme`)
+## Colors (`UIKit.Theme`)
 
 ```lua
 Theme.Background.{Deepest, Deep, Panel, PanelLight, Divider}
@@ -103,18 +104,18 @@ Theme.Neon.{Cyan, Magenta, ToxicGreen, Orange, Violet, Yellow}
 Theme.Text.{Primary, Secondary, Muted, Stroke, OnNeon}
 Theme.Semantic.{Primary, Secondary, Success, Danger, Warning, Info}
 Theme.Rarity.{Common, Uncommon, Rare, Epic, Legendary, Mythic}  -- Color3
-Theme.RarityLabel.{...} -- deutsche Anzeigenamen
+Theme.RarityLabel.{...} -- rarity display names
 Theme.RarityOrder -- { "Common", ..., "Mythic" }
 Theme.Font.{Header, Body, BodyBold, Mono}
 ```
 
-**`Theme.Rarity` MUSS farblich konsistent mit
-`src/server/GachaConfig.lua` (`DROP_TABLE[*].Color`) und
-`src/shared/BreedingConfig.lua` (`RARITY_DEFINITIONS`) bleiben** – die Werte
-wurden 1:1 von dort übernommen. Ändert sich dort eine Farbe, hier
-nachziehen (und umgekehrt).
+**`Theme.Rarity` MUST stay color-consistent with
+`src/server/GachaConfig.lua` (`DROP_TABLE[*].Color`) and
+`src/shared/BreedingConfig.lua` (`RARITY_DEFINITIONS`)** – the values were
+taken 1:1 from there. If a color changes there, update it here too (and
+vice versa).
 
-Hilfsfunktionen: `Theme.ApplyStroke(obj, color?, thickness?)`,
+Helper functions: `Theme.ApplyStroke(obj, color?, thickness?)`,
 `Theme.ApplyGradient(obj, {color3, ...}, rotation?)`,
 `Theme.ApplyCorner(obj, radius?)`.
 
@@ -123,62 +124,62 @@ Hilfsfunktionen: `Theme.ApplyStroke(obj, color?, thickness?)`,
 ```lua
 local button = UIKit.Button.new({
     Parent = someFrame,
-    Text = "Kaufen",
+    Text = "Buy",
     Variant = "Primary", -- "Primary" | "Secondary" | "Success" | "Danger" | "Ghost"
-    Size = UDim2.new(1, 0, 0, 48), -- optional, Default: volle Breite, 44px hoch
+    Size = UDim2.new(1, 0, 0, 48), -- optional, default: full width, 44px tall
     Icon = "rbxassetid://...", -- optional
-    Important = true, -- optional: Idle-Pulsieren (z. B. "Kaufen"-CTA)
+    Important = true, -- optional: idle pulsing (e.g. a "Buy" CTA)
     Disabled = false, -- optional
     LayoutOrder = 1,
 })
 
 button.Clicked:Connect(function()
-    -- Klick-Logik. WICHTIG: Client-Klick ist nie Autorität – immer über
-    -- RemoteEvent/RemoteFunction serverseitig validieren (Anti-Exploit).
+    -- Click logic. IMPORTANT: a client click is never authoritative –
+    -- always validate server-side via RemoteEvent/RemoteFunction (anti-exploit).
 end)
 
 button:SetDisabled(true)
-button:SetText("Ausverkauft")
-button:Destroy() -- WICHTIG beim Schließen eines Menüs: räumt Connections/Tweens/Pulse-Threads auf
+button:SetText("Sold Out")
+button:Destroy() -- IMPORTANT when closing a menu: cleans up connections/tweens/pulse threads
 ```
 
-Jeder Button bekommt automatisch: Hover-Glow (nur Maus), Press-Squash,
-Partikel-Burst (gepoolt), Ripple, Klick-Sound, optionales Idle-Pulsieren
-(`Important = true`), Disabled-Visuals, Gamepad-Selektionsrahmen,
-Touch-Mindestgröße, textbegrenztes `TextScaled`.
+Every button automatically gets: hover glow (mouse only), press squash,
+particle burst (pooled), ripple, click sound, optional idle pulsing
+(`Important = true`), disabled visuals, gamepad selection frame,
+minimum touch size, text-constrained `TextScaled`.
 
 ## Panel (`UIKit.Panel`)
 
 ```lua
 local panel = UIKit.Panel.new({
-    Title = "Brutbecken",
-    Closable = true, -- Default true, baut automatisch einen X-Button (aus der Button-Factory)
-    CenteredSize = UDim2.fromOffset(560, 420), -- Größe im Tablet/PC/Konsole-Modus
+    Title = "Brood Pool",
+    Closable = true, -- default true, automatically builds an X button (from the button factory)
+    CenteredSize = UDim2.fromOffset(560, 420), -- size in Tablet/PC/Console mode
     OnClose = function() ... end,
 })
 
-panel:Open()  -- Einblend-Animation
-panel:Close() -- Ausblend-Animation, feuert danach panel.Closed und OnClose
+panel:Open()  -- fade-in animation
+panel:Close() -- fade-out animation, then fires panel.Closed and OnClose
 panel.Closed:Connect(function() ... end)
-panel:Destroy() -- endgültig entfernen (Connections, UIScale-Binding, Layout-Binding sauber getrennt)
+panel:Destroy() -- removes it permanently (connections, UIScale binding, layout binding cleanly disconnected)
 
-panel.Content -- Frame, hier eigene Widgets reinbauen
+panel.Content -- Frame, build your own widgets in here
 ```
 
-Panel bindet automatisch **ein** `UIScale` fürs ganze Fenster
-(`Device.BindUIScale`) und positioniert sich via
-`Layout.FullscreenOrCentered` (Vollbild auf Phone, zentriert sonst) sowie
-`Device.ApplySafeArea` (Notch/Safe-Area).
+Panel automatically binds **one** `UIScale` for the whole window
+(`Device.BindUIScale`) and positions itself via
+`Layout.FullscreenOrCentered` (fullscreen on Phone, centered otherwise) as
+well as `Device.ApplySafeArea` (notch/safe area).
 
 ## Tabs (`UIKit.Tabs`)
 
 ```lua
 local tabs = UIKit.Tabs.new({
     Parent = panel.Content,
-    Tabs = { { Id = "Overview", Label = "Übersicht" }, { Id = "Feed", Label = "Füttern" } },
+    Tabs = { { Id = "Overview", Label = "Overview" }, { Id = "Feed", Label = "Feed" } },
     DefaultTabId = "Overview",
 })
-local overviewContent = tabs:GetContentFrame("Overview") -- ScrollingFrame mit eigenem UIListLayout, hier eigene Kinder reinbauen (KEIN zusätzliches UIListLayout hinzufügen)
+local overviewContent = tabs:GetContentFrame("Overview") -- ScrollingFrame with its own UIListLayout, build your own children in here (do NOT add another UIListLayout)
 tabs.Selected:Connect(function(id) ... end)
 tabs:SelectTab("Feed")
 tabs:Destroy()
@@ -187,24 +188,24 @@ tabs:Destroy()
 ## Toast (`UIKit.Toast`)
 
 ```lua
-UIKit.Toast.Show({ Text = "500 Tide Coins erhalten!", Type = "Success", Duration = 3.5 })
+UIKit.Toast.Show({ Text = "Received 500 Tide Coins!", Type = "Success", Duration = 3.5 })
 -- Type: "Info" | "Success" | "Warning" | "Error"
 ```
 
-Kein manuelles Init nötig (lazy). Position ist geräteabhängig (oben-rechts
-auf PC/Konsole, unten-zentriert auf Phone/Tablet) und stapelt automatisch.
+No manual init needed (lazy). Position is device-dependent (top-right on
+PC/Console, bottom-centered on Phone/Tablet) and stacks automatically.
 
 ## CountUp (`UIKit.CountUp`)
 
 ```lua
-UIKit.CountUp.Animate(label, currentValue, newValue, 0.8) -- tweent label.Text hoch/runter mit Tausenderpunkt-Format
+UIKit.CountUp.Animate(label, currentValue, newValue, 0.8) -- tweens label.Text up/down with thousands-separator formatting
 ```
 
 ## ProgressBar (`UIKit.ProgressBar`)
 
 ```lua
 local bar = UIKit.ProgressBar.new({ Parent = frame, Size = UDim2.new(1,0,0,18), Colors = { UIKit.Theme.Neon.Cyan, UIKit.Theme.Neon.Violet } })
-bar:SetProgress(0.42) -- animiert; bar:SetProgress(0.42, false) für sofortiges Setzen
+bar:SetProgress(0.42) -- animated; bar:SetProgress(0.42, false) for an instant set
 ```
 
 ## RarityBadge (`UIKit.RarityBadge`)
@@ -218,53 +219,53 @@ badge:SetRarity("Mythic")
 
 ```lua
 UIKit.ConfirmDialog.Show({
-    Title = "Wirklich verkaufen?",
-    Message = "Diese Aktion kann nicht rückgängig gemacht werden.",
+    Title = "Really sell this?",
+    Message = "This action cannot be undone.",
     Danger = true,
-    ConfirmText = "Verkaufen", CancelText = "Abbrechen",
+    ConfirmText = "Sell", CancelText = "Cancel",
     OnConfirm = function() end,
     OnCancel = function() end,
 })
 ```
 
-Selbstständig (öffnet, baut Buttons, räumt sich nach Entscheidung selbst
-auf – kein manuelles `:Destroy()` nötig).
+Self-contained (opens, builds buttons, cleans itself up after the decision
+– no manual `:Destroy()` needed).
 
 ## ScreenFX (`UIKit.ScreenFX`)
 
 ```lua
-UIKit.ScreenFX.Flash({ Color = UIKit.Theme.Neon.ToxicGreen, Duration = 0.5 }) -- Level-Up
-UIKit.ScreenFX.Shake(0.25, 0.4) -- magnitudeStuds, duration (additiver Kamera-Shake NACH Enum.RenderPriority.Camera, kein Ownership-Konflikt mit anderen Kamera-Skripten)
-UIKit.ScreenFX.BigMoment(UIKit.Theme.Rarity.Mythic) -- Flash + Shake kombiniert, z. B. Mythic-Gacha-Drop
+UIKit.ScreenFX.Flash({ Color = UIKit.Theme.Neon.ToxicGreen, Duration = 0.5 }) -- level-up
+UIKit.ScreenFX.Shake(0.25, 0.4) -- magnitudeStuds, duration (additive camera shake AFTER Enum.RenderPriority.Camera, no ownership conflict with other camera scripts)
+UIKit.ScreenFX.BigMoment(UIKit.Theme.Rarity.Mythic) -- Flash + Shake combined, e.g. a Mythic gacha drop
 ```
 
-## Reduzierte Effekte (`UIKit.Settings`)
+## Reduced effects (`UIKit.Settings`)
 
 ```lua
-UIKit.Settings.SetReducedEffects(true) -- deaktiviert Partikel-Burst, Idle-Pulsieren, Screen-Shake/-Flash global
+UIKit.Settings.SetReducedEffects(true) -- globally disables particle burst, idle pulsing, screen shake/flash
 UIKit.Settings.GetReducedEffects()
 UIKit.Settings.Changed:Connect(function(key, value) ... end)
 ```
 
-Noch nicht an ein echtes Einstellungsmenü/DataStore angebunden – das ist
-Aufgabe des Menü-Agenten (z. B. Toggle im Optionsmenü, Wert aus
-Spieler-Profil laden).
+Not yet wired to a real settings menu/DataStore – that's the job of the
+menu agent (e.g. a toggle in the options menu, loading the value from the
+player profile).
 
 ## Sounds (`UIKit.SoundConfig`)
 
-Alle Klick-/Feedback-Sounds sind zentral in `SoundConfig.lua` mit klar als
-**PLATZHALTER** markierten `rbxassetid`-Werten hinterlegt. Vor Launch dort
-final abgemischte Sounds eintragen – kein anderes Modul referenziert
-Sound-IDs direkt.
+All click/feedback sounds are stored centrally in `SoundConfig.lua` with
+`rbxassetid` values clearly marked as **PLACEHOLDERS**. Enter the final
+mixed sounds there before launch – no other module references sound IDs
+directly.
 
 ## Demo
 
-`src/client/UIKitDemo.client.lua` ist standardmäßig **deaktiviert**. Zum
-Testen in Studio:
+`src/client/UIKitDemo.client.lua` is **disabled** by default. To test it in
+Studio:
 
 ```lua
 workspace:SetAttribute("UIKitDemoEnabled", true)
 ```
 
-Zeigt alle Bausteine in einem Panel mit vier Tabs (Buttons, Widgets,
-Rarity, Screen-FX) inkl. Live-Geräteinfo-Anzeige.
+Shows all building blocks in a panel with four tabs (Buttons, Widgets,
+Rarity, Screen FX) including a live device-info display.

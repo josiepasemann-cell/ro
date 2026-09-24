@@ -1,185 +1,283 @@
 # Game Design Document: **Abyssara – Deep Tide Tycoon**
 
-*Stand: 2026-09-24 · Version 1.0*
+*As of: 2026-09-24 · Version 1.0*
 
 ---
 
-## 1. Titel & Elevator Pitch
+## 1. Title & Elevator Pitch
 
 **Abyssara – Deep Tide Tycoon**
 
-Baue eine bioluminiszente Unterwasser-Kolonie am Meeresgrund, züchte glühende Tiefsee-Kreaturen für passives Einkommen und verteidige deine Station gegen nächtliche "Trench Raids" – hungrige Tiefseemonster, die deine wertvollsten Kreaturen stehlen wollen. Tauche immer tiefer in neue, gefährlichere Gräben vor, um seltenere Arten und stärkere Verteidigungen freizuschalten.
+Build a bioluminescent underwater colony on the seafloor, breed glowing
+deep-sea creatures for passive income, and defend your station against
+nightly "Trench Raids" — hungry deep-sea monsters that want to steal your
+most valuable creatures. Dive ever deeper into new, more dangerous
+trenches to unlock rarer species and stronger defenses.
 
-## 2. Zielgruppe & vergleichbare erfolgreiche Spiele
+## 2. Target audience & comparable successful games
 
-- **Primäre Zielgruppe:** 8–14 Jahre, mit sekundärer Gruppe 15–25 (Sammler/Idle-Fans). Gemischt Jungen/Mädchen, da Sammel-/Zucht-Mechanik (wie Pet-Sim) breiter anspricht als reines Kampfspiel.
-- **Sessionlänge:** kurze aktive Sessions (5–10 Min. Check-in) + Idle-Fortschritt zwischen Sessions – passt zum Mobile/Snack-Play-Verhalten der Zielgruppe.
-- **Vergleichbare Hits (Referenz, keine Kopie):**
-  - *Grow a Garden* – Idle-Wachstum, Genetik/Mutationen, Trading-Hype.
-  - *Steal a Brainrot* – Raid-/Steal-Loop, Basisverteidigung, hohe Concurrent-Peaks.
-  - *Pet Simulator 99* – Sammel-Progression, Seltenheitsstufen, Zonen-Freischaltung.
-  - *Theme Park Tycoon 2* – klassischer Build-Tycoon-Loop.
-  - **Differenzierung:** Unterwasser/Tiefsee-Setting ist auf Roblox stark unterrepräsentiert (visuelle Nische: Biolumineszenz statt Neon-Brainrot-Ästhetik), PvE-Raid-Verteidigung statt reinem Spieler-gegen-Spieler-Diebstahl (kinderfreundlicher, weniger toxisch), plus optionales asynchrones "Reef Raiding" bei anderen Spielern für Meta-Tiefe ohne Pflicht-PvP.
+- **Primary audience:** ages 8–14, with a secondary group of 15–25
+  (collector/idle fans). Mixed boys/girls, since collect/breed mechanics
+  (like pet sims) appeal more broadly than a pure combat game.
+- **Session length:** short active sessions (5–10 min. check-ins) + idle
+  progress between sessions — fits the target audience's mobile/snack-play
+  behavior.
+- **Comparable hits (reference, not a copy):**
+  - *Grow a Garden* – idle growth, genetics/mutations, trading hype.
+  - *Steal a Brainrot* – raid/steal loop, base defense, high concurrent peaks.
+  - *Pet Simulator 99* – collection progression, rarity tiers, zone unlocks.
+  - *Theme Park Tycoon 2* – classic build-tycoon loop.
+  - **Differentiation:** the underwater/deep-sea setting is strongly
+    underrepresented on Roblox (a visual niche: bioluminescence instead of
+    neon-brainrot aesthetics), PvE raid defense instead of pure
+    player-vs-player stealing (more kid-friendly, less toxic), plus an
+    optional asynchronous "Reef Raiding" against other players for meta
+    depth without mandatory PvP.
 
-## 3. Kern-Gameplay-Loop
+## 3. Core gameplay loop
 
-### Minute-zu-Minute
-1. Spieler landet auf eigener Habitat-Plattform (persönliche Insel/Grube am Meeresgrund).
-2. Sammelt "Glow Spores" / Bioluminiszenz-Ressourcen von platzierten Kreaturen-Ständen (Klicken/Auto-Collect via Gamepass).
-3. Füttert & züchtet Kreaturen in Brutbecken (Timer-basiert, wie Ei-Schlüpfen).
-4. Kauft/platziert neue Gebäude (Filteranlagen, Lichtbojen, Verteidigungstürme) mit gesammelter Währung ("Tide Coins").
-5. Verkauft überschüssige Kreaturen am Handelsdock oder tauscht mit Freunden.
+### Minute-to-minute
+1. The player lands on their own Habitat Plot (a personal island/pit on
+   the seafloor).
+2. Collects "Glow Spores"/bioluminescence resources from placed creature
+   stands (clicking/auto-collect via gamepass).
+3. Feeds & breeds creatures in a Brood Pool (timer-based, like egg
+   hatching).
+4. Buys/places new buildings (filter plants, glow buoys, defense towers)
+   with collected currency ("Tide Coins").
+5. Sells surplus creatures at the trade dock or trades with friends.
 
-### Session-zu-Session
-- Alle ~20–30 Minuten (Echtzeit, auch offline zählend mit Cap) startet ein **Trench Raid**: Wellen von Tiefseemonstern greifen die Station an. Spieler platziert vorher Verteidigungstürme (Anglerfisch-Türme, Korallen-Barrieren) und kann während des Raids aktiv Kreaturen als "Wächter" einsetzen.
-- Erfolgreiche Verteidigung = Bonus-Loot (seltene Eier, Tide Coins). Fehlgeschlagene Verteidigung = eine zufällige Kreatur wird "entführt" (kann später gegen Lösegeld/Rettungsmission zurückgeholt werden – Soft-Loss statt Hard-Loss, kinderfreundlich).
-- Tägliche Quests ("Fange 3 Anglerfische", "Überlebe 1 Raid ohne Verlust") mit Belohnungstruhen.
+### Session-to-session
+- About every 20–30 minutes (real time, also counting offline with a
+  cap), a **Trench Raid** starts: waves of deep-sea monsters attack the
+  station. The player places defense towers beforehand (Anglerfish
+  Towers, Coral Barriers) and can actively deploy creatures as "guardians"
+  during the raid.
+- Successful defense = bonus loot (rare eggs, Tide Coins). Failed defense
+  = a random creature gets "abducted" (can later be recovered via a
+  ransom/rescue mission — a soft loss instead of a hard loss, kid-friendly).
+- Daily quests ("Catch 3 Anglerfish", "Survive 1 raid without a loss")
+  with reward chests.
 
-### Langzeit-Progression
-- **Gräben-System (Trench Depth):** Spieler steigt von "Sonnenzone" (Start) über "Dämmerzone", "Mitternachtszone" bis zur "Hadal-Tiefe" ab. Jede Zone = neue Karte/Biom, neue Kreaturen-Pools, stärkere Raid-Gegner, neue Bauteile.
-- **Prestige-System ("Ascend/Resurface"):** Nach Erreichen der tiefsten aktuellen Zone kann der Spieler "auftauchen" und mit einem permanenten Multiplikator (+X% Einkommen) sowie einem kosmetischen Titel/Abzeichen neu in Zone 1 starten – klassische Idle-Prestige-Kurve.
-- **Sammelalbum:** Kreaturen-Kodex mit Seltenheitsstufen (Common → Mythic → Abyssal). Vollständige Sets geben permanente Boni.
+### Long-term progression
+- **Trench Depth system:** the player descends from the "Sun Zone" (start)
+  through the "Twilight Zone", "Midnight Zone", down to the "Hadal
+  Depths". Each zone = a new map/biome, new creature pools, stronger raid
+  enemies, new build parts.
+- **Prestige system ("Ascend/Resurface"):** after reaching the deepest
+  currently available zone, the player can "resurface" and restart in
+  Zone 1 with a permanent multiplier (+X% income) and a cosmetic
+  title/badge — a classic idle prestige curve.
+- **Collection album:** a creature codex with rarity tiers (Common →
+  Mythic → Abyssal). Complete sets grant permanent bonuses.
 
-## 4. Spielmodi / Maps / Level-Struktur
+## 4. Game modes / maps / level structure
 
-- **Hauptmodus – Habitat-Building (Solo-Instanz, aber sichtbar für Freunde):** Jeder Spieler hat eine eigene, persistente Plot-Insel (server-seitig gespeichert wie bei Tycoon-Spielen), erreichbar über eine zentrale Hub-Welt.
-- **Hub-Welt "Tidal Market":** Zentrale Lobby mit Handelsdock (Trading), NPC-Händlern, Leaderboard-Anzeigen, Portalen zu den Trench-Zonen.
-- **4 Kern-Zonen (MVP: 2 davon):**
-  1. Sonnenzone (Tutorial/Start, Level 1–10)
-  2. Dämmerzone (Level 10–25)
-  3. Mitternachtszone (Level 25–45, Phase 2)
-  4. Hadal-Tiefe (Level 45+, Phase 3, Endgame/Prestige-Zone)
-- **Raid-Instanz:** separate, private Server-Instanz pro Spieler (oder Party bei Koop), in der die Trench-Raid-Welle stattfindet – prozedural aus Gegner-Pool der aktuellen Zone zusammengesetzt.
-- **Koop-Modus (Phase 2):** Bis zu 4 Spieler können ihre Habitate zu einem "Reef Cluster" verbinden und gemeinsam größere Raids (Boss-Raids) bestehen.
+- **Main mode – Habitat Building (solo instance, but visible to friends):**
+  every player has their own, persistent plot island (saved server-side
+  like in tycoon games), reachable via a central hub world.
+- **Hub world "Tidal Market":** a central lobby with a trade dock
+  (trading), NPC merchants, leaderboard displays, portals to the trench
+  zones.
+- **4 core zones (MVP: 2 of them):**
+  1. Sun Zone (tutorial/start, level 1–10)
+  2. Twilight Zone (level 10–25)
+  3. Midnight Zone (level 25–45, Phase 2)
+  4. Hadal Depths (level 45+, Phase 3, endgame/prestige zone)
+- **Raid instance:** a separate, private server instance per player (or
+  party in co-op), where the Trench Raid wave takes place — procedurally
+  assembled from the enemy pool of the current zone.
+- **Co-op mode (Phase 2):** up to 4 players can connect their habitats into
+  a "Reef Cluster" and jointly clear bigger raids (boss raids).
 
-## 5. Monetarisierung
+## 5. Monetization
 
-**Gamepasses (einmalig, Robux):**
-| Gamepass | Preis (Robux) | Effekt |
+**Gamepasses (one-time, Robux):**
+| Gamepass | Price (Robux) | Effect |
 |---|---|---|
-| Auto-Collector | 149 | Automatisches Einsammeln der Glow Spores ohne Klicken |
-| 2x Tide Coins | 349 | Dauerhaft doppelte Währung |
-| Extra Habitat-Plot | 199 | Zweites, eigenes Plot (mehr Baufläche) |
-| VIP-Taucher | 449 | Exklusiver Skin, tägliche Bonus-Truhe, 1,5x Zucht-Geschwindigkeit |
-| Trench Runner | 99 | Schnellere Bewegung/Tauchgeschwindigkeit |
+| Auto-Collector | 149 | Automatically collects Glow Spores without clicking |
+| 2x Tide Coins | 349 | Permanently doubled currency |
+| Extra Habitat Plot | 199 | A second, own plot (more build space) |
+| VIP Diver | 449 | Exclusive skin, daily bonus chest, 1.5x breeding speed |
+| Trench Runner | 99 | Faster movement/dive speed |
 
-**Entwicklerprodukte (wiederholt kaufbar, Robux):**
-| Produkt | Preis (Robux) | Effekt |
+**Developer products (repeatedly purchasable, Robux):**
+| Product | Price (Robux) | Effect |
 |---|---|---|
-| 500 Tide Coins | 79 | Direktwährung |
-| 3.000 Tide Coins | 399 | Direktwährung (Bulk-Rabatt) |
-| Rettungs-Token (entführte Kreatur sofort zurückholen) | 49 | Umgeht Rettungsmission |
-| Mystery Egg (zufällige Kreatur, Rarity-Chance) | 89 | Gacha-artiges Sammelelement (mit klar kommunizierten Drop-Chancen, s. Roblox-Richtlinien) |
-| Raid-Skip (aktueller Raid wird automatisch "gewonnen" gewertet, 1x/Tag) | 59 | Zeitersparnis |
+| 500 Tide Coins | 79 | Direct currency |
+| 3,000 Tide Coins | 399 | Direct currency (bulk discount) |
+| Rescue Token (instantly recover an abducted creature) | 49 | Bypasses the rescue mission |
+| Mystery Egg (random creature, rarity chance) | 89 | Gacha-style collection element (with clearly communicated drop chances, see Roblox guidelines) |
+| Raid Skip (the current raid is automatically counted as "won", 1x/day) | 59 | Time savings |
 
-**Season Pass ("Tide Pass"):** 399 Robux pro Season (6 Wochen), Battle-Pass-artige Free/Premium-Track mit kosmetischen Kreaturen-Skins, exklusiven Baustil-Sets, Bonus-Coins. Kein Gameplay-Vorteil in Premium (nur Kosmetik + kleine Coin-Boosts), um Fairness zu wahren.
+**Season Pass ("Tide Pass"):** 399 Robux per season (6 weeks), a
+Battle-Pass-style free/premium track with cosmetic creature skins,
+exclusive build-style sets, bonus coins. No gameplay advantage on premium
+(cosmetics + small coin boosts only), to keep things fair.
 
-**Kosmetik-Shop (rotierend):** Habitat-Deko, Taucheranzug-Skins, Leuchteffekt-Farben für Kreaturen – 25–150 Robux je Item.
+**Cosmetic shop (rotating):** habitat decorations, diving suit skins, glow
+color effects for creatures — 25–150 Robux per item.
 
-## 6. Fortschrittssystem
+## 6. Progression system
 
-- **Spieler-Level:** steigt durch XP aus Quests, Raid-Siegen, Zuchterfolgen. Level schaltet Baurezepte und Zonenzugang frei.
-- **Währungen:**
-  - *Tide Coins* (Hauptwährung, durch Idle-Einkommen/Verkauf) – Baukosten, Zuchtkosten.
-  - *Abyssal Shards* (Premium-nah, selten aus Raids/Season Pass) – seltene Kreaturen, Kosmetik.
-- **Progression Curve (Richtwert, exponentiell mit Soft-Caps):**
-  - Level 1–10: schnelle Freischaltungen (alle 5–10 Min.), Tutorial-Belohnungen hoch.
-  - Level 10–25: Kosten x1,15 pro Stufe, Einkommen x1,12 – leichtes Gap, durch Gamepasses/Season Pass abfederbar.
-  - Level 25–45: Kosten x1,2, stärkerer Grind, Prestige wird attraktiv.
-  - Prestige-Multiplikator: +10% Einkommen pro Ascend, kumulativ, mit sinkendem Grenznutzen ab Ascend 10 (Soft-Cap via Diminishing Returns, z. B. +10%/+10%/+8%/+8%…), um Inflation zu bremsen.
-- **Unlocks pro Level (Beispiele):** neues Baumodul (Level 3), zweiter Brutbeckenslot (Level 6), erster Verteidigungsturm (Level 8), Zonenportal Dämmerzone (Level 10).
+- **Player level:** rises via XP from quests, raid wins, breeding
+  successes. Level unlocks build recipes and zone access.
+- **Currencies:**
+  - *Tide Coins* (main currency, from idle income/selling) – build costs,
+    breeding costs.
+  - *Abyssal Shards* (premium-adjacent, rare from raids/season pass) –
+    rare creatures, cosmetics.
+- **Progression curve (guideline, exponential with soft caps):**
+  - Level 1–10: fast unlocks (every 5–10 min.), high tutorial rewards.
+  - Level 10–25: costs x1.15 per level, income x1.12 — a slight gap,
+    cushioned by gamepasses/season pass.
+  - Level 25–45: costs x1.2, stronger grind, prestige becomes attractive.
+  - Prestige multiplier: +10% income per ascend, cumulative, with
+    diminishing returns starting at ascend 10 (soft-capped via
+    diminishing returns, e.g. +10%/+10%/+8%/+8%…), to slow down inflation.
+- **Unlocks per level (examples):** a new build module (level 3), a second
+  Brood Pool slot (level 6), the first defense tower (level 8), the
+  Twilight Zone portal (level 10).
 
-## 7. Social / Multiplayer-Features
+## 7. Social / multiplayer features
 
-- **Freundesliste-Bonus:** Besuch bei Freunden gibt kleinen Coin-Bonus (Anti-Bot-Maßnahme: Cooldown 20 Min./Freund).
-- **Trading-System:** sicherer 2-Spieler-Trade-Dialog am Handelsdock für Kreaturen (mit Bestätigungs-Screen, Robux-Handel ausgeschlossen gemäß Roblox-Richtlinien).
-- **Reef Cluster (Teams, Phase 2):** Gruppen von bis zu 4 Spielern für Koop-Boss-Raids, gemeinsames Cluster-Leaderboard.
-- **Leaderboards:** globale Bestenlisten für "Tiefste erreichte Zone", "Meiste Ascends", "Seltenste Kreaturensammlung" – sichtbar im Hub.
-- **Asynchrones Reef Raiding (Phase 3, optional/PvE-lastig):** Spieler können die KI-Verteidigung eines fremden, "besuchten" Reefs herausfordern (kein direkter PvP-Schaden am Fortschritt des Ziels, nur Kopie/Snapshot-basiert wie bei Clash-of-Clans-artigen Systemen), um Bonusressourcen zu gewinnen.
-- **Emotes/Chat-Sticker:** thematische Unterwasser-Emotes (Bubble-Wave, Glow-Dance) als kleine Social-Layer, teils Shop-Items.
+- **Friends-list bonus:** visiting friends gives a small coin bonus
+  (anti-bot measure: 20-min. cooldown per friend).
+- **Trading system:** a secure 2-player trade dialog at the trade dock for
+  creatures (with a confirmation screen, Robux trading excluded per
+  Roblox guidelines).
+- **Reef Cluster (teams, Phase 2):** groups of up to 4 players for co-op
+  boss raids, a shared cluster leaderboard.
+- **Leaderboards:** global rankings for "Deepest Zone Reached", "Most
+  Ascends", "Rarest Creature Collection" — visible in the hub.
+- **Asynchronous Reef Raiding (Phase 3, optional/PvE-leaning):** players
+  can challenge the AI defense of a foreign, "visited" reef (no direct PvP
+  damage to the target's actual progress, only copy/snapshot-based like
+  Clash-of-Clans-style systems), to earn bonus resources.
+- **Emotes/chat stickers:** themed underwater emotes (bubble wave, glow
+  dance) as a small social layer, some shop items.
 
-## 8. Benötigte 3D-Assets (Auftrag für 3D-Artist-Agent)
+## 8. Required 3D assets (brief for the 3D artist agent)
 
-**Umgebung / Terrain:**
-- Meeresboden-Terrain-Sets pro Zone (4x): Sonnenzone (sandig, hell), Dämmerzone (Felsen, Kelp), Mitternachtszone (dunkle Höhlen, Lavaspalten), Hadal-Tiefe (Abgrund, Kristallformationen).
-- Modulare Habitat-Plot-Basis (kreisrunde/sechseckige Plattform, ca. 60x60 Studs, unterteilt in Baufelder-Raster).
-- Hub-Welt "Tidal Market": zentrale Marktplatz-Struktur mit Handelsdock, NPC-Ständen, Portal-Toren zu den 4 Zonen.
+**Environment / terrain:**
+- Seabed terrain sets per zone (4x): Sun Zone (sandy, bright), Twilight
+  Zone (rocks, kelp), Midnight Zone (dark caves, lava rifts), Hadal Depths
+  (abyss, crystal formations).
+- Modular Habitat Plot base (circular/hexagonal platform, approx. 60x60
+  studs, divided into a build-field grid).
+- Hub world "Tidal Market": central marketplace structure with trade
+  dock, NPC stands, portal gates to the 4 zones.
 
-**Gebäude/Bauteile (modular, platzierbar):**
-- Brutbecken (3 Stufen: Basic, Advanced, Master)
-- Lichtboje / Glow-Sammler-Station
-- Filteranlage (Ressourcen-Produktionsgebäude)
-- Verteidigungsturm: Anglerfisch-Turm, Korallen-Barriere, Elektro-Aal-Falle (je 3 Upgrade-Stufen)
-- Dekorationsobjekte (Kelp-Bündel, Muschel-Laternen, Kristall-Cluster) – für Kosmetik-Shop
+**Buildings/build parts (modular, placeable):**
+- Brood Pool (3 stages: Basic, Advanced, Master)
+- Glow Buoy / glow-collector station
+- Filter Plant (resource production building)
+- Defense tower: Anglerfish Tower, Coral Barrier, Electric Eel Trap (3
+  upgrade stages each)
+- Decoration objects (kelp bundles, shell lanterns, crystal clusters) —
+  for the cosmetic shop
 
-**Kreaturen (Kern-Content, skalierbar nach Seltenheit):**
-- MVP-Set: je Zone 6–8 Kreaturen-Modelle (Common/Uncommon/Rare/Epic), z. B. Glühqualle, Leuchtgarnele, Anglerfisch, Biolumineszenz-Aal, Kristallkrake.
-- Rig-Anforderung: einfache Idle-Animation (Schweben/Pulsieren) + Angriffsanimation für Wächter-Einsatz im Raid.
-- Rarity-Kennzeichnung visuell über Glow-Farbe/Partikeleffekt-Slot (technisch: Emission-Material-Parameter für Skript-Steuerung).
+**Creatures (core content, scalable by rarity):**
+- MVP set: 6–8 creature models per zone (Common/Uncommon/Rare/Epic), e.g.
+  Glow Jelly, Glow Shrimp, Anglerfish, Bioluminescent Eel, Crystal Kraken.
+- Rig requirement: simple idle animation (float/pulse) + attack animation
+  for guardian deployment in raids.
+- Rarity marked visually via glow color/particle-effect slot (technically:
+  an emission-material parameter for script control).
 
-**Raid-Gegner:**
-- 3–4 Basis-Monster-Typen pro Zone (z. B. "Schattenkraken", "Tiefenwurm", "Trench-Wächter" als Boss) inkl. simpler Lauf-/Angriffsanimation.
+**Raid enemies:**
+- 3–4 base monster types per zone (e.g. "Shadow Krakens", "Deep Worm",
+  "Trench Warden" as boss) including simple walk/attack animation.
 
-**Charakter/Avatar-Zubehör:**
-- Taucheranzug-Skin-Set (mehrere Farbvarianten für Kosmetik-Shop/VIP-Gamepass), Atemgerät/Helm-Accessoire.
+**Character/avatar accessories:**
+- Diving suit skin set (several color variants for the cosmetic
+  shop/VIP gamepass), breathing apparatus/helmet accessory.
 
-**UI-Assets:**
-- Icon-Set für Kreaturen-Kodex, Rarity-Rahmen (Common bis Abyssal, 5–6 Stufen), Währungssymbole (Tide Coin, Abyssal Shard).
+**UI assets:**
+- Icon set for the creature codex, rarity frames (Common to Abyssal, 5–6
+  tiers), currency symbols (Tide Coin, Abyssal Shard).
 
-**Technische Hinweise für den Asset-Agent:**
-- Alle Bauteile als separate Modelle mit klar benanntem PrimaryPart für Platzierungslogik (Snap-to-Grid).
-- Kreaturen als Model mit HumanoidRootPart-Äquivalent (oder einfaches PrimaryPart) für serverseitige Bewegungssteuerung.
-- Skalierung konsistent zu Standard-Roblox-Charaktergröße (Studs), Zonen mit klar abgegrenzten SpawnLocation-Markern liefern.
+**Technical notes for the asset agent:**
+- All build parts as separate models with a clearly named PrimaryPart for
+  placement logic (snap-to-grid).
+- Creatures as a Model with a HumanoidRootPart equivalent (or a simple
+  PrimaryPart) for server-side movement control.
+- Scale consistent with standard Roblox character size (studs), zones
+  should ship with clearly marked SpawnLocation markers.
 
-## 9. Benötigte Skripte/Systeme (Auftrag für Code-Agent)
+## 9. Required scripts/systems (brief for the code agent)
 
-**Core-Systeme:**
-1. **Plot-/Datenpersistenz-System** (DataStoreService oder ProfileService-Pattern): Speichert Habitat-Layout, Kreaturen-Inventar, Währungen, Level, Prestige-Stand.
-2. **Bauplatzierungs-System:** Grid-basiertes Placement (Snap, Kollisionsprüfung, Rotation), Kauf-/Upgrade-Logik pro Gebäude.
-3. **Idle-Einkommen-/Produktionssystem:** Serverseitiger Tick-Loop, der Ressourcenproduktion pro platziertem Gebäude/Kreatur berechnet, inkl. Offline-Progress-Berechnung (Cap, z. B. max. 4h Offline-Gewinn).
-4. **Zucht-/Ei-System:** Timer-basierte Inkubation, Genetik-/Rarity-Roll-Logik, Kreaturen-Kodex-Update.
-5. **Trench-Raid-System:** Wellen-Spawner (serverseitig, pro Spieler-Instanz), Gegner-KI (einfache Pathfinding-/Angriffslogik), Verteidigungsturm-Schadenslogik, Erfolg/Niederlage-Auswertung, "Entführungs"-Mechanik + Rettungsmission-Flow.
-6. **Trading-System:** Sicherer 2-Spieler-Trade mit Bestätigungsdialog, Server-seitige Validierung (Anti-Dupe/Anti-Scam), Cooldowns.
-7. **Progression-/Level-System:** XP-Berechnung, Level-Unlocks, Zonen-Zugangsfreischaltung.
-8. **Prestige-/Ascend-System:** Reset-Logik mit permanentem Multiplikator, Bestätigungs-UI mit klarer Kosten/Nutzen-Anzeige.
-9. **Monetarisierungs-Integration:** MarketplaceService-Hooks für Gamepasses & Developer Products (inkl. ProcessReceipt-Handler, Robustheit gegen Doppelkäufe), Season-Pass-Tracking-System.
-10. **Leaderboard-System:** OrderedDataStore-basierte globale Ranglisten (Zonen-Tiefe, Ascends, Sammlung), periodisches Update.
-11. **Quest-/Daily-System:** Tages-Reset-Logik, Quest-Pool-Rotation, Belohnungsausgabe.
-12. **Social-Features:** Freundesbesuch-Bonus-Logik (mit Cooldown/Anti-Abuse), Reef-Cluster-Team-System (Phase 2).
-13. **Client-UI-Systeme:** HUD (Währung, XP-Leiste), Bau-Menü, Kreaturen-Kodex-UI, Raid-HUD (Wellen-Anzeige, HP-Balken), Trade-UI, Shop-UI, Season-Pass-UI.
-14. **Anti-Exploit/Server-Validierung:** Alle Käufe, Platzierungen und Belohnungen serverseitig validiert (kein Client-Trust bei Währung/Inventar).
+**Core systems:**
+1. **Plot/data persistence system** (DataStoreService or a ProfileService
+   pattern): saves habitat layout, creature inventory, currencies, level,
+   prestige state.
+2. **Build placement system:** grid-based placement (snap, collision
+   check, rotation), purchase/upgrade logic per building.
+3. **Idle income/production system:** a server-side tick loop that
+   computes resource production per placed building/creature, including
+   offline-progress calculation (cap, e.g. max. 4h offline earnings).
+4. **Breeding/egg system:** timer-based incubation, genetics/rarity-roll
+   logic, creature codex update.
+5. **Trench Raid system:** wave spawner (server-side, per player
+   instance), enemy AI (simple pathfinding/attack logic), defense-tower
+   damage logic, win/loss evaluation, "abduction" mechanic + rescue
+   mission flow.
+6. **Trading system:** secure 2-player trade with a confirmation dialog,
+   server-side validation (anti-dupe/anti-scam), cooldowns.
+7. **Progression/level system:** XP calculation, level unlocks, zone
+   access unlocking.
+8. **Prestige/ascend system:** reset logic with a permanent multiplier, a
+   confirmation UI with a clear cost/benefit display.
+9. **Monetization integration:** MarketplaceService hooks for gamepasses &
+   developer products (including a ProcessReceipt handler, robust against
+   double purchases), season-pass tracking system.
+10. **Leaderboard system:** OrderedDataStore-based global rankings (zone
+    depth, ascends, collection), periodic updates.
+11. **Quest/daily system:** daily reset logic, quest-pool rotation, reward
+    payout.
+12. **Social features:** friend-visit bonus logic (with cooldown/anti-abuse),
+    Reef Cluster team system (Phase 2).
+13. **Client UI systems:** HUD (currency, XP bar), build menu, creature
+    codex UI, raid HUD (wave indicator, HP bars), trade UI, shop UI,
+    season-pass UI.
+14. **Anti-exploit/server validation:** all purchases, placements, and
+    rewards validated server-side (no client trust for currency/inventory).
 
-## 10. MVP-Scope vs. spätere Erweiterungen
+## 10. MVP scope vs. later expansions
 
-### MVP (Phase 1) – Ziel: spielbarer Kern in einer Zone, Playtestable
-- 1 Hub-Welt (klein) + 2 Zonen: Sonnenzone, Dämmerzone
-- Bau-/Placement-System mit ca. 6–8 Gebäudetypen
-- 10–14 Kreaturen (2 Zonen à 6–8, teils überlappend nach Rarity)
-- Idle-Einkommen inkl. Offline-Progress
-- Trench-Raid-System (Solo, 3 Gegnertypen, 1 Boss)
-- Basis-Trading (ohne erweiterte Anti-Scam-UI, aber sicher serverseitig)
-- Level-/XP-System bis Level 25
-- 3 Gamepasses (Auto-Collector, 2x Coins, VIP), 2 Developer Products (Coins, Rettungs-Token)
-- Einfaches Leaderboard (Zonen-Tiefe)
-- Tägliche Quests (3 Quest-Typen)
+### MVP (Phase 1) – goal: a playable core in one zone, playtestable
+- 1 hub world (small) + 2 zones: Sun Zone, Twilight Zone
+- Build/placement system with approx. 6–8 building types
+- 10–14 creatures (2 zones with 6–8 each, some overlapping by rarity)
+- Idle income including offline progress
+- Trench Raid system (solo, 3 enemy types, 1 boss)
+- Basic trading (without an advanced anti-scam UI, but secure server-side)
+- Level/XP system up to level 25
+- 3 gamepasses (Auto-Collector, 2x Coins, VIP), 2 developer products
+  (Coins, Rescue Token)
+- Simple leaderboard (zone depth)
+- Daily quests (3 quest types)
 
-### Phase 2 – Ausbau nach erfolgreichem Soft-Launch
-- Zone 3 (Mitternachtszone)
-- Prestige-/Ascend-System
-- Reef Cluster Koop-Modus (bis 4 Spieler)
-- Season Pass "Tide Pass" (erste Season)
-- Vollständiger Kreaturen-Kodex mit Set-Boni
-- Erweiterte Kosmetik-Rotation im Shop
-- Mystery Egg Developer Product (Gacha, mit Compliance-Check)
+### Phase 2 – expansion after a successful soft launch
+- Zone 3 (Midnight Zone)
+- Prestige/ascend system
+- Reef Cluster co-op mode (up to 4 players)
+- Season Pass "Tide Pass" (first season)
+- Full creature codex with set bonuses
+- Expanded cosmetic rotation in the shop
+- Mystery Egg developer product (gacha, with compliance check)
 
-### Phase 3 – Langzeit-Content & Retention
-- Zone 4 (Hadal-Tiefe, Endgame)
-- Asynchrones Reef Raiding zwischen Spielern
-- Saisonale Live-Events (z. B. "Bioluminiszenz-Festival" mit Zeitlimit-Kreaturen)
-- Zweites Habitat-Plot-Feature (Gamepass-Ausbau)
-- Erweiterte Anti-Exploit-/Telemetrie-Systeme, A/B-Testing für Monetarisierung
-- Cross-Zone-Boss-Events (Server-weite Community-Ziele)
+### Phase 3 – long-term content & retention
+- Zone 4 (Hadal Depths, endgame)
+- Asynchronous Reef Raiding between players
+- Seasonal live events (e.g. a "Bioluminescence Festival" with
+  time-limited creatures)
+- Second Habitat Plot feature (gamepass expansion)
+- Expanded anti-exploit/telemetry systems, A/B testing for monetization
+- Cross-zone boss events (server-wide community goals)
 
 ---
 
-*Dieses Dokument dient als Grundlage für die nachfolgenden Agenten: den 3D-Asset-Agent (Abschnitt 8) und den Luau-Code-Agent (Abschnitt 9). Beide Abschnitte sind so konkret gehalten, dass sie direkt als Arbeitsauftrag verwendet werden können.*
+*This document serves as the basis for the following agents: the 3D asset
+agent (Section 8) and the Luau code agent (Section 9). Both sections are
+kept concrete enough to be used directly as a work brief.*
