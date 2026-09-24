@@ -207,6 +207,29 @@ jedem Join einen zur Laufzeit wechselnden Welt-Slot zuweist.
 `RequiredLevel` (`1` / `10` / `25` / `45`), plus ein `TeleportPoint`-
 Attachment als Zielanker für die spätere Teleport-Logik.
 
+### `npcs/` – Hub-NPCs (nicht-humanoide Marktplatz-Charaktere)
+Fünf stilisierte, nicht-humanoide Meeresbewohner (kein `Humanoid`, keine
+Animations-Assets) beleben "Tidal Market": jeder Buildscript findet seinen
+Stand in `Workspace.Assets.Hub.TidalMarketHub` über dessen
+`Interactable`-Attribut und platziert sich seitlich neben dessen
+`InteractionPoint`-Attachment (blockiert den Prompt nicht), mit
+dokumentiertem Fallback-Versatz, falls der Hub noch nicht gebaut ist.
+`PrimaryPart` = `"Body"`; bewegliche, vom Client-Agenten benannte Parts:
+`Head`, `ArmL`/`ArmR`, `Eye1`/`Eye2` (direkte Geschwister-Parts von `Body`,
+nicht unter `Head` verschachtelt). Attribute: `NpcId`, `DisplayName`,
+`StandInteractable`, `SpeechHeight`. `CollectionService`-Tag `"NpcAmbient"`
+für die Laufzeit-Erkennung durch `src/client/NpcAmbientController.client.lua`
+(prozedurale Idle-Animation + Sprechblasen, siehe `docs/npcs.md`). Abgelegt
+unter `Workspace.Assets.Npcs`.
+
+| Datei | Asset | `NpcId` | Steht bei (`Interactable`) |
+|---|---|---|---|
+| `Shopkeeper.lua` | Shelly (Einsiedlerkrebs-Händlerin) | `Shopkeeper` | `Shop` |
+| `EggKeeper.lua` | Inky (alter Glüh-Oktopus) | `EggKeeper` | `Gacha` |
+| `QuestGiver.lua` | Captain Finn (Seepferdchen-Kapitän) | `QuestGiver` | `Quests` |
+| `Trader.lua` | Splash (Clownfisch) | `Trader` | `Trade` |
+| `Guide.lua` | Bubbles (Qualle) | `Guide` | nahe `HubSpawn1` (`StandInteractable = "Spawn"`, nur Markierung) |
+
 ### `ui/` – UI-Layout-Grundgerüste
 Reine `ScreenGui`/`Frame`-Layouts ohne Funktions-Logik (kein `LocalScript`
 lädt Daten oder verarbeitet Klicks – das kommt bewusst erst später).
