@@ -63,7 +63,7 @@
 		tatsächlich in Tide-Coin-Gutschriften umsetzt.
 ]]
 
-export type BuildingId = "BroodPool" | "GlowBuoyStation" | "FilterPlant" | "AnglerfishTower"
+export type BuildingId = "BroodPool" | "GlowBuoyStation" | "FilterPlant" | "AnglerfishTower" | "CoralBarrier" | "ElectricEelTrap"
 
 export type BuildingDefinition = {
 	Id: BuildingId,
@@ -124,11 +124,42 @@ local DEFINITIONS: { [string]: BuildingDefinition } = {
 		TemplateName = "AnglerfishTower",
 		IncomeRate = 0, -- kein Idle-Einkommen, reiner Verteidigungsturm (GDD Abschnitt 9 Punkt 5)
 	},
+	-- Content Update 1, Abschnitt 4.1: Flächen-Slow/Tank-Turm (siehe
+	-- RaidConfig.TOWER_STATS.CoralBarrier für Kampfwerte).
+	CoralBarrier = {
+		Id = "CoralBarrier",
+		DisplayName = "Korallen-Barriere",
+		Description = "Verlangsamt Gegner in einem Radius statt sie schnell zu töten - Flächen-Tank.",
+		Cost = 550,
+		SellRefundFraction = 0.5,
+		GridFieldCount = 1,
+		UnlockLevel = 12,
+		TemplateName = "CoralBarrier",
+		IncomeRate = 0,
+	},
+	-- Content Update 1, Abschnitt 4.2: Ketten-Schaden-Turm (siehe
+	-- RaidConfig.TOWER_STATS.ElectricEelTrap für Kampfwerte).
+	ElectricEelTrap = {
+		Id = "ElectricEelTrap",
+		DisplayName = "Elektroaal-Falle",
+		Description = "Kettenblitz trifft das Hauptziel plus nahe Gegner.",
+		Cost = 900,
+		SellRefundFraction = 0.5,
+		GridFieldCount = 1,
+		UnlockLevel = 18,
+		TemplateName = "ElectricEelTrap",
+		IncomeRate = 0,
+	},
 }
 
---- Feste Anzeige-/Hotkey-Reihenfolge (1-4), da `pairs()` über DEFINITIONS
---- keine stabile Reihenfolge garantiert.
-BuildingConfig.ORDER = { "GlowBuoyStation", "BroodPool", "FilterPlant", "AnglerfishTower" } :: { BuildingId }
+--- Feste Anzeige-/Hotkey-Reihenfolge, da `pairs()` über DEFINITIONS keine
+--- stabile Reihenfolge garantiert. Neue Türme (CoralBarrier/ElectricEelTrap)
+--- bewusst ans Ende gehängt - Tastatur-Hotkeys 1-4 (siehe
+--- PlacementPreviewController) bleiben dadurch für die 4 MVP-Gebäude
+--- unverändert, die 2 neuen Türme sind nur über die Baukarten-Leiste/
+--- Gamepad-DPad-Zyklus wählbar.
+BuildingConfig.ORDER =
+	{ "GlowBuoyStation", "BroodPool", "FilterPlant", "AnglerfishTower", "CoralBarrier", "ElectricEelTrap" } :: { BuildingId }
 
 --- Liefert die Definition für `buildingId`, oder nil bei unbekannter Id.
 --- Nimmt bewusst `string` (nicht `BuildingId`) entgegen, da Aufrufer

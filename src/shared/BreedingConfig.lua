@@ -70,7 +70,7 @@
 		Eintrag.
 ]]
 
-export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
+export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
 
 export type RarityDefinition = {
 	DisplayLabel: string,
@@ -87,9 +87,14 @@ export type BreedingTier = {
 
 local BreedingConfig = {}
 
--- // Rarity-Reihenfolge (Common = schwächste, Legendary = stärkste Zucht-
--- Stufe - kein "Mythic", siehe Kopfkommentar) --------------------------------
-BreedingConfig.RARITY_ORDER = { "Common", "Uncommon", "Rare", "Epic", "Legendary" } :: { Rarity }
+-- // Rarity-Reihenfolge (Common = schwächste, Mythic = stärkste Zucht-
+-- Stufe). "Mythic" wurde mit Content Update 1 ergänzt - AUSSCHLIESSLICH für
+-- CrystalLeviathan (HadalDepths, siehe Abschnitt 6/CREATURE_POOL unten) und
+-- AUSSCHLIESSLICH über TIERS[3].RarityWeights.Mythic erreichbar (Tier 1/2
+-- haben keinen Mythic-Weight-Eintrag -> rollWeightedRarity kann dort nie
+-- Mythic würfeln). Alle anderen Rarities bleiben wie zuvor klar unter den
+-- Gacha-Odds (siehe Design-Entscheidung im Kopfkommentar).
+BreedingConfig.RARITY_ORDER = { "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic" } :: { Rarity }
 
 BreedingConfig.RARITY_DEFINITIONS = {
 	Common = { DisplayLabel = "Gewöhnlich", Color = Color3.fromRGB(215, 250, 245) },
@@ -97,17 +102,79 @@ BreedingConfig.RARITY_DEFINITIONS = {
 	Rare = { DisplayLabel = "Selten", Color = Color3.fromRGB(70, 210, 235) },
 	Epic = { DisplayLabel = "Episch", Color = Color3.fromRGB(170, 90, 255) },
 	Legendary = { DisplayLabel = "Legendär", Color = Color3.fromRGB(150, 70, 255) },
+	-- Farbe identisch zu GachaConfig.DROP_TABLE.Mythic.Color (siehe
+	-- Content-Update-Dokument, Abschnitt 5.2: Codex-Karten müssen dieselbe
+	-- Rarity-Farbkonvention wie GachaOddsPanel.lua verwenden).
+	Mythic = { DisplayLabel = "Mythisch", Color = Color3.fromRGB(135, 60, 255) },
 } :: { [Rarity]: RarityDefinition }
 
 -- // Kreaturen-Pool je Rarity (Model-Namen identisch zu GachaConfig.
--- CREATURE_POOL / assets/models/creatures/*.lua, siehe Kopfkommentar) --------
+-- CREATURE_POOL / assets/models/creatures/*.lua, siehe Kopfkommentar). Dies
+-- ist der Pool, der an JEDER Zucht-Stufe verfügbar ist (Tier 1-3) - die
+-- Zonen-Pools unten (MIDNIGHT_ZONE_CREATURE_POOL/HADAL_DEPTHS_CREATURE_POOL)
+-- kommen erst ab Tier 2 bzw. 3 zusätzlich dazu, siehe GetCreaturePool.
 BreedingConfig.CREATURE_POOL = {
 	Common = { "GlowJelly", "GlowShrimp" },
 	Uncommon = { "GlowRay" },
 	Rare = { "Anglerfish" },
 	Epic = { "BioluminescentEel" },
 	Legendary = { "CrystalKraken" },
+	-- Content Update 1, Abschnitt 6 (HadalDepths): CrystalLeviathan ist die
+	-- EINZIGE Zucht-Mythic-Möglichkeit, absichtlich NICHT zonen-gated wie
+	-- die übrigen 8 (sie ist ohnehin nur über TIERS[3].RarityWeights.Mythic
+	-- mit 0,5% erreichbar - siehe Kopfkommentar).
+	Mythic = { "CrystalLeviathan" },
 } :: { [Rarity]: { string } }
+
+-- // Zonen-Kreaturen-Pools (Content Update 1, Abschnitt 2.1/2.2/6) -----------
+-- Getrennt von CREATURE_POOL geführt, damit die Basis-6-Kreaturen-Pools an
+-- JEDER Stufe unverändert bleiben (siehe Auftrag: "sie erscheinen NICHT in
+-- den Zone-1/2-Pools, Odds-Tabellen für bestehende Zonen bleiben
+-- unangetastet") - GetCreaturePool unten kombiniert sie erst zur Laufzeit,
+-- abhängig von der BroodPool-Stufe.
+local MIDNIGHT_ZONE_CREATURE_POOL: { [Rarity]: { string } } = {
+	Uncommon = { "ObsidianCrab" },
+	Rare = { "LanternWraith" },
+	Epic = { "MagmaSquid" },
+	Legendary = { "VoidHammerhead" },
+}
+
+local HADAL_DEPTHS_CREATURE_POOL: { [Rarity]: { string } } = {
+	Uncommon = { "TrenchWisp" },
+	Rare = { "AbyssalIsopod" },
+	Epic = { "GhostFinTuna" },
+	-- CrystalLeviathan (Mythic) läuft bewusst über CREATURE_POOL.Mythic
+	-- oben, nicht über diesen Zonen-Pool (siehe dortiger Kommentar).
+}
+
+--- Liefert den tatsächlich für eine Zucht-Stufe (`tierLevel`, 1-3) UND
+--- `rarity` gültigen Kreaturen-Pool: Basis-Pool (immer) + MidnightZone-Pool
+--- (ab Tier 2) + HadalDepths-Pool (ab Tier 3) - Content Update 1, Abschnitt
+--- 6: "BroodPool Level 2 ... ist die erste Stufe, deren RarityWeights eine
+--- MidnightZone-Kreatur würfeln kann" / "Level 3 ... ist die einzige Stufe,
+--- die eine HadalDepths-Kreatur würfeln kann". Liefert nie nil (ggf. leere
+--- Tabelle), Aufrufer prüft selbst auf #pool == 0.
+function BreedingConfig.GetCreaturePool(rarity: Rarity, tierLevel: number?): { string }
+	local pool = {}
+	for _, creatureId in ipairs(BreedingConfig.CREATURE_POOL[rarity] or {}) do
+		table.insert(pool, creatureId)
+	end
+
+	local clampedTier = math.clamp(math.floor(tonumber(tierLevel) or BreedingConfig.MIN_TIER_LEVEL), BreedingConfig.MIN_TIER_LEVEL, BreedingConfig.MAX_TIER_LEVEL)
+
+	if clampedTier >= 2 then
+		for _, creatureId in ipairs(MIDNIGHT_ZONE_CREATURE_POOL[rarity] or {}) do
+			table.insert(pool, creatureId)
+		end
+	end
+	if clampedTier >= 3 then
+		for _, creatureId in ipairs(HADAL_DEPTHS_CREATURE_POOL[rarity] or {}) do
+			table.insert(pool, creatureId)
+		end
+	end
+
+	return pool
+end
 
 -- // Anzeigenamen-Fallback je Kreatur (identisch zu GachaConfig.
 -- CREATURE_DISPLAY_NAME_FALLBACK) --------------------------------------------
@@ -118,6 +185,16 @@ BreedingConfig.CREATURE_DISPLAY_NAME_FALLBACK = {
 	Anglerfish = "Anglerfisch",
 	BioluminescentEel = "Biolumineszenz-Aal",
 	CrystalKraken = "Kristallkrake",
+	-- Content Update 1, Abschnitt 2.1 (MidnightZone):
+	LanternWraith = "Laternengeist",
+	ObsidianCrab = "Obsidiankrabbe",
+	MagmaSquid = "Magmakalmar",
+	VoidHammerhead = "Leerenhammerhai",
+	-- Content Update 1, Abschnitt 2.2 (HadalDepths):
+	TrenchWisp = "Grabenwisp",
+	AbyssalIsopod = "Abgrund-Assel",
+	GhostFinTuna = "Geisterflossen-Thun",
+	CrystalLeviathan = "Kristall-Leviathan",
 } :: { [string]: string }
 
 -- // Zucht-Stufen ---------------------------------------------------------
@@ -133,6 +210,8 @@ BreedingConfig.TIERS = {
 		RarityWeights = { Common = 70, Uncommon = 21, Rare = 7, Epic = 1.7, Legendary = 0.3 },
 	},
 	[2] = {
+		-- Content Update 1, Abschnitt 6: erste Stufe, die eine
+		-- MidnightZone-Kreatur würfeln kann (siehe GetCreaturePool).
 		Level = 2,
 		DisplayName = "Brutbecken (Fortgeschritten)",
 		IncubationMinutes = 20,
@@ -140,11 +219,17 @@ BreedingConfig.TIERS = {
 		RarityWeights = { Common = 48, Uncommon = 30, Rare = 16, Epic = 5, Legendary = 1 },
 	},
 	[3] = {
+		-- Content Update 1, Abschnitt 6: einzige Stufe, die eine
+		-- HadalDepths-Kreatur würfeln kann (siehe GetCreaturePool),
+		-- einschließlich eines kleinen (0,5%) Mythic-Anteils, der
+		-- ausschließlich CrystalLeviathan trifft (CREATURE_POOL.Mythic hat
+		-- nur diesen einen Eintrag) - "kleine Chance auf denselben
+		-- Top-Tier-Reward wie der Gacha-Pfad", siehe Kopfkommentar.
 		Level = 3,
 		DisplayName = "Brutbecken (Meisterstufe)",
 		IncubationMinutes = 45,
 		FeedCostTideCoins = 650,
-		RarityWeights = { Common = 30, Uncommon = 32, Rare = 25, Epic = 10, Legendary = 3 },
+		RarityWeights = { Common = 30, Uncommon = 32, Rare = 25, Epic = 10, Legendary = 2.5, Mythic = 0.5 },
 	},
 } :: { [number]: BreedingTier }
 

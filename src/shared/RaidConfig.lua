@@ -72,9 +72,12 @@ export type WaveDefinition = {
 }
 
 export type TowerCombatStats = {
-	Range: number, -- Studs, gemessen vom LureOrb-Part des Turms
-	Damage: number, -- Schaden pro Treffer
+	Range: number, -- Studs, gemessen vom Ursprungspunkt des Turms (Attachment "MuzzlePoint", Fallback siehe RaidService.getTowerOriginPosition)
+	Damage: number, -- Schaden pro Treffer (Hauptziel)
 	FireRate: number, -- Schüsse/Sekunde
+	BlockRadius: number?, -- Content Update 1, Abschnitt 4.1 (CoralBarrier): Studs, in denen Gegner RaidConfig.CORAL_BARRIER_SLOW_FRACTION MoveSpeed verlieren, solange sie im Radius stehen
+	ChainCount: number?, -- Content Update 1, Abschnitt 4.2 (ElectricEelTrap): zusätzliche Gegner, die pro Schuss zu ChainDamageFraction Schaden mitgetroffen werden
+	ChainRadius: number?, -- Studs um das Hauptziel, in denen Kettenblitze weitere Gegner treffen können
 }
 
 local RaidConfig = {}
@@ -92,7 +95,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 		BodyColor = Color3.fromRGB(40, 60, 70),
 		EyeColor = Color3.fromRGB(255, 60, 80),
 		IsBoss = false,
-		TemplateName = "ShadowKraken",
+		TemplateName = "SpineDrifter", -- Content Update 1, Abschnitt 3: eigenes Modell statt ShadowKraken-Platzhalter
 	},
 	Swarmer = {
 		Id = "Swarmer",
@@ -104,7 +107,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 		BodyColor = Color3.fromRGB(30, 90, 95),
 		EyeColor = Color3.fromRGB(255, 150, 60),
 		IsBoss = false,
-		TemplateName = "ShadowKraken",
+		TemplateName = "ThornSwarmer",
 	},
 	Brute = {
 		Id = "Brute",
@@ -116,7 +119,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 		BodyColor = Color3.fromRGB(55, 35, 70),
 		EyeColor = Color3.fromRGB(255, 40, 60),
 		IsBoss = false,
-		TemplateName = "ShadowKraken",
+		TemplateName = "IronMawBrute",
 	},
 	TrenchWarden = {
 		Id = "TrenchWarden",
@@ -128,7 +131,7 @@ local ENEMIES: { [EnemyId]: EnemyDefinition } = {
 		BodyColor = Color3.fromRGB(15, 10, 15),
 		EyeColor = Color3.fromRGB(255, 20, 30),
 		IsBoss = true,
-		TemplateName = "ShadowKraken",
+		TemplateName = "TrenchWardenBoss",
 	},
 }
 
@@ -142,6 +145,57 @@ RaidConfig.ENEMY_ORDER = { "Drifter", "Swarmer", "Brute", "TrenchWarden" } :: { 
 --- Liefert die Gegner-Definition zu `enemyId`, oder nil bei unbekannter Id.
 function RaidConfig.GetEnemy(enemyId: string): EnemyDefinition?
 	return ENEMIES[enemyId :: EnemyId]
+end
+
+-- // Zonen-Skalierung (Content Update 1, Abschnitt 3.1) --------------------------
+-- ENEMIES oben bleibt die einzige Basis-Wahrheitstabelle (siehe Kopfkommentar) -
+-- diese Multiplikatoren werden AUSSCHLIESSLICH zur Wellen-Generierungszeit
+-- angewendet (siehe RaidService.spawnWave -> RaidConfig.GetScaledEnemy),
+-- niemals in ENEMIES zurückgeschrieben. "Zone eines Spielers" für diesen
+-- Zweck = ZoneEconomyConfig.GetZoneForLevel(Spieler-Level) - siehe
+-- ZoneEconomyConfig-Kopfkommentar für die volle Begründung dieser
+-- Design-Entscheidung (gilt identisch für Raid-Skalierung UND
+-- Sporen-/Einkommens-Bonus).
+export type ZoneScaling = {
+	MaxHPMultiplier: number,
+	MoveSpeedMultiplier: number,
+	ScaleMultiplier: number,
+}
+
+local ZONE_SCALING: { [string]: ZoneScaling } = {
+	SunZone = { MaxHPMultiplier = 1.0, MoveSpeedMultiplier = 1.0, ScaleMultiplier = 1.0 },
+	TwilightZone = { MaxHPMultiplier = 1.0, MoveSpeedMultiplier = 1.0, ScaleMultiplier = 1.0 },
+	MidnightZone = { MaxHPMultiplier = 1.6, MoveSpeedMultiplier = 1.1, ScaleMultiplier = 1.1 },
+	HadalDepths = { MaxHPMultiplier = 2.4, MoveSpeedMultiplier = 1.2, ScaleMultiplier = 1.2 },
+}
+RaidConfig.ZONE_SCALING = ZONE_SCALING
+
+--- Liefert eine ZONEN-SKALIERTE Kopie der Basis-Gegner-Definition
+--- (MaxHP/MoveSpeed/ScaleMultiplier multipliziert gemäß ZONE_SCALING[zoneId],
+--- alles andere unverändert). `ContactDamage` wird laut Abschnitt 3.1 bewusst
+--- NICHT skaliert (DEFEAT_ENEMY_REACH_COUNT bleibt der Schwierigkeits-Hebel
+--- für Durchbrüche). Unbekannte/nil `zoneId` fällt auf 1.0x (SunZone-
+--- Werte) zurück. Liefert nil, falls `enemyId` selbst unbekannt ist.
+function RaidConfig.GetScaledEnemy(enemyId: string, zoneId: string?): EnemyDefinition?
+	local base = ENEMIES[enemyId :: EnemyId]
+	if not base then
+		return nil
+	end
+
+	local scaling = (zoneId and ZONE_SCALING[zoneId]) or ZONE_SCALING.SunZone
+
+	return {
+		Id = base.Id,
+		DisplayName = base.DisplayName,
+		MaxHP = base.MaxHP * scaling.MaxHPMultiplier,
+		MoveSpeed = base.MoveSpeed * scaling.MoveSpeedMultiplier,
+		ContactDamage = base.ContactDamage,
+		ScaleMultiplier = base.ScaleMultiplier * scaling.ScaleMultiplier,
+		BodyColor = base.BodyColor,
+		EyeColor = base.EyeColor,
+		IsBoss = base.IsBoss,
+		TemplateName = base.TemplateName,
+	}
 end
 
 -- // Wellen-Zusammensetzung -----------------------------------------------------
@@ -193,9 +247,42 @@ local TOWER_STATS: { [string]: TowerCombatStats } = {
 		Damage = 18,
 		FireRate = 1.5, -- Schüsse/Sekunde -> 27 DPS pro Turm
 	},
+	-- Content Update 1, Abschnitt 4.1: Flächen-Slow/Tank statt reinem
+	-- Einzelziel-Schaden - niedrigere Basis-DPS (20 statt 27) wird über
+	-- BlockRadius/CORAL_BARRIER_SLOW_FRACTION ausgeglichen (siehe
+	-- RaidService.computeSpeedMultiplier).
+	CoralBarrier = {
+		Range = 14,
+		Damage = 8,
+		FireRate = 2.5, -- -> 20 DPS pro Turm
+		BlockRadius = 10,
+	},
+	-- Content Update 1, Abschnitt 4.2: Ketten-Schaden - Hauptziel volle
+	-- Damage, bis zu ChainCount weitere Gegner im ChainRadius erhalten
+	-- RaidService.CHAIN_DAMAGE_FRACTION (50 %) davon.
+	ElectricEelTrap = {
+		Range = 22,
+		Damage = 14,
+		FireRate = 1.2, -- -> ~16.8 DPS auf das Hauptziel
+		ChainCount = 2,
+		ChainRadius = 10,
+	},
 }
 
 RaidConfig.TOWER_STATS = TOWER_STATS
+
+--- Content Update 1, Abschnitt 4.1: Anteil, um den `CoralBarrier.BlockRadius`
+--- die MoveSpeed betroffener Gegner reduziert, solange sie im Radius stehen
+--- (kein Stack mit mehreren Barrieren - RaidService nimmt den stärksten
+--- einzelnen Effekt, siehe dort). Als eigene Konstante geführt statt als
+--- TowerCombatStats-Feld, da aktuell nur ein Turmtyp diesen Mechanismus
+--- nutzt - eine spätere zweite "Slow"-Quelle könnte dies bei Bedarf zu
+--- einem TowerCombatStats.SlowFraction-Feld erweitern.
+RaidConfig.CORAL_BARRIER_SLOW_FRACTION = 0.4
+
+--- Content Update 1, Abschnitt 4.2: Schadens-Anteil (relativ zu
+--- TowerCombatStats.Damage), den ElectricEelTrap-Kettenziele erhalten.
+RaidConfig.CHAIN_DAMAGE_FRACTION = 0.5
 
 --- Liefert die Kampfwerte für einen platzierten Turm-`buildingId`, oder nil,
 --- falls dieser BuildingId keine Kampfrolle hat (z. B. Produktionsgebäude).

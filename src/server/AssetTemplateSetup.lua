@@ -69,11 +69,29 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local TERRAIN_TEMPLATE_NAMES = { "HabitatPlotBase" }
-local BUILDING_TEMPLATE_NAMES = { "BroodPool_Basic", "GlowBuoyStation", "FilterPlant", "AnglerfishTower" }
--- Trench-Raid-System (RaidService): aktuell nur EIN Gegnermodell (siehe
--- RaidConfig-Kopfkommentar zur bewussten MVP-Vereinfachung), das für alle
--- Gegnertypen + Boss wiederverwendet wird.
-local ENEMY_TEMPLATE_NAMES = { "ShadowKraken" }
+-- Content Update 1, Abschnitt 4/7b: CoralBarrier + ElectricEelTrap ergänzt
+-- (siehe BuildingConfig.DEFINITIONS/RaidConfig.TOWER_STATS). ShadowKraken
+-- bleibt bewusst NICHT in dieser Liste (es ist kein Gebäude) - siehe
+-- ENEMY_TEMPLATE_NAMES unten.
+local BUILDING_TEMPLATE_NAMES =
+	{ "BroodPool_Basic", "GlowBuoyStation", "FilterPlant", "AnglerfishTower", "CoralBarrier", "ElectricEelTrap" }
+-- Trench-Raid-System (RaidService): Content Update 1, Abschnitt 3 ersetzt
+-- den früheren "ein Modell für alle Gegnertypen"-Platzhalter durch 4 eigene
+-- Modelle (siehe RaidConfig.ENEMIES.*.TemplateName). ShadowKraken bleibt
+-- zusätzlich in der Liste (nicht mehr von RaidConfig referenziert, aber
+-- weiterhin der Fail-Soft-Fallback für GetEnemyTemplate unten, falls ein
+-- neues Gegnermodell zur Laufzeit fehlt).
+local ENEMY_TEMPLATE_NAMES = { "ShadowKraken", "SpineDrifter", "ThornSwarmer", "IronMawBrute", "TrenchWardenBoss" }
+
+-- Fail-Soft-Fallback-Namen (siehe Auftrag: "warn + fall back to ShadowKraken
+-- / AnglerfishTower template", falls ein spezifisches Template zur Laufzeit
+-- fehlt, z. B. weil das entsprechende Buildscript noch nicht in Studio
+-- ausgeführt wurde). Nur EINMAL pro fehlendem Namen gewarnt (siehe
+-- warnedMissingTemplate unten), damit ein dauerhaft fehlendes Template
+-- nicht bei jedem Raid-/Bau-Aufruf erneut spammt.
+local ENEMY_TEMPLATE_FALLBACK_NAME = "ShadowKraken"
+local BUILDING_TEMPLATE_FALLBACK_NAME = "AnglerfishTower"
+local warnedMissingTemplate: { [string]: boolean } = {}
 
 local function getOrCreateFolder(parent: Instance, name: string): Folder
 	local folder = parent:FindFirstChild(name)
@@ -156,23 +174,68 @@ function AssetTemplateSetup.GetPlotTemplate(): Model?
 	return nil
 end
 
+--- Warnt höchstens EINMAL pro `templateName`, dass auf `fallbackName`
+--- ausgewichen wird (siehe warnedMissingTemplate oben).
+local function warnFallbackOnce(kind: string, templateName: string, fallbackName: string)
+	local key = kind .. ":" .. templateName
+	if warnedMissingTemplate[key] then
+		return
+	end
+	warnedMissingTemplate[key] = true
+	warn(
+		("[AssetTemplateSetup] %s-Vorlage '%s' fehlt - weiche auf Fallback '%s' aus (siehe assets/models/README.md, betroffenes Buildscript einmal in Studio ausführen, um den echten Look zu bekommen)."):format(
+			kind,
+			templateName,
+			fallbackName
+		)
+	)
+end
+
 --- Liefert die Gebäude-Vorlage für `templateName`
---- (siehe BuildingConfig.TemplateName je Gebäude).
+--- (siehe BuildingConfig.TemplateName je Gebäude). Fail-soft: fehlt das
+--- spezifische Template (z. B. CoralBarrier/ElectricEelTrap-Buildscript noch
+--- nicht in Studio ausgeführt), wird EINMALIG gewarnt und auf
+--- BUILDING_TEMPLATE_FALLBACK_NAME ("AnglerfishTower") ausgewichen, statt
+--- die Platzierung mit "TemplateMissing" hart abzulehnen. Liefert nil nur,
+--- wenn selbst der Fallback fehlt (z. B. ganz frischer Server ohne jedes
+--- Buildscript-Ergebnis).
 function AssetTemplateSetup.GetBuildingTemplate(templateName: string): Model?
 	local model = buildingTemplatesFolder:FindFirstChild(templateName)
 	if model and model:IsA("Model") then
 		return model
 	end
+
+	if templateName ~= BUILDING_TEMPLATE_FALLBACK_NAME then
+		local fallback = buildingTemplatesFolder:FindFirstChild(BUILDING_TEMPLATE_FALLBACK_NAME)
+		if fallback and fallback:IsA("Model") then
+			warnFallbackOnce("Gebäude", templateName, BUILDING_TEMPLATE_FALLBACK_NAME)
+			return fallback
+		end
+	end
+
 	return nil
 end
 
 --- Liefert die Raid-Gegner-Vorlage für `templateName` (siehe
---- RaidConfig.EnemyDefinition.TemplateName, aktuell immer "ShadowKraken").
+--- RaidConfig.EnemyDefinition.TemplateName, z. B. "SpineDrifter"). Fail-
+--- soft: fehlt das spezifische Gegnermodell, wird EINMALIG gewarnt und auf
+--- ENEMY_TEMPLATE_FALLBACK_NAME ("ShadowKraken") ausgewichen, statt den
+--- betroffenen Spawn zu überspringen (siehe RaidService.spawnWave). Liefert
+--- nil nur, wenn selbst der Fallback fehlt.
 function AssetTemplateSetup.GetEnemyTemplate(templateName: string): Model?
 	local model = enemyTemplatesFolder:FindFirstChild(templateName)
 	if model and model:IsA("Model") then
 		return model
 	end
+
+	if templateName ~= ENEMY_TEMPLATE_FALLBACK_NAME then
+		local fallback = enemyTemplatesFolder:FindFirstChild(ENEMY_TEMPLATE_FALLBACK_NAME)
+		if fallback and fallback:IsA("Model") then
+			warnFallbackOnce("Gegner", templateName, ENEMY_TEMPLATE_FALLBACK_NAME)
+			return fallback
+		end
+	end
+
 	return nil
 end
 

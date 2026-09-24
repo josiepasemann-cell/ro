@@ -70,20 +70,18 @@ GachaConfig.DROP_TABLE = {
 
 -- // Kreaturen-Pool je Rarity ---------------------------------------------
 -- Model-Namen exakt wie unter assets/models/creatures/*.lua vergeben.
--- HINWEIS: Für "Mythic" existiert im aktuellen Kreaturen-Set (siehe
--- assets/models/README.md, Tabelle "creatures/") noch KEIN dediziertes
--- Modell (das MVP-Set deckt nur Common..Legendary ab). GachaService fällt
--- in diesem Fall bewusst auf den nächstniedrigeren, nicht-leeren Pool
--- zurück (siehe GachaService._pickCreatureForRarity) und loggt das als
--- Warnung. Sobald ein echtes Mythic-Kreaturen-Asset existiert, hier
--- einfach den entsprechenden Model-Namen eintragen.
+-- Content Update 1, Abschnitt 6: die zuvor leere Mythic-Lücke ist jetzt mit
+-- CrystalLeviathan (HadalDepths, assets/models/creatures/CrystalLeviathan.lua)
+-- gefüllt - GachaService._pickCreatureForRarity's "nächstniedrigerer Pool"-
+-- Fallback greift dadurch für Mythic-Rolls nicht mehr, es sei denn ein
+-- künftiger Pool wird wieder leer.
 GachaConfig.CREATURE_POOL = {
 	Common = { "GlowJelly", "GlowShrimp" },
 	Uncommon = { "GlowRay" },
 	Rare = { "Anglerfish" },
 	Epic = { "BioluminescentEel" },
 	Legendary = { "CrystalKraken" },
-	Mythic = {}, -- bewusst leer, siehe Hinweis oben
+	Mythic = { "CrystalLeviathan" },
 } :: { [Rarity]: { string } }
 
 -- // Anzeigenamen-Fallback je Kreatur --------------------------------------
@@ -100,6 +98,7 @@ GachaConfig.CREATURE_DISPLAY_NAME_FALLBACK = {
 	Anglerfish = "Anglerfisch",
 	BioluminescentEel = "Biolumineszenz-Aal",
 	CrystalKraken = "Kristallkrake",
+	CrystalLeviathan = "Kristall-Leviathan",
 } :: { [string]: string }
 
 -- // Pity-Mechanik ---------------------------------------------------------

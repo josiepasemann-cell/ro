@@ -140,11 +140,16 @@ local function rollWeightedRarity(tier: BreedingConfig.BreedingTier): Rarity
 	return BreedingConfig.RARITY_ORDER[#BreedingConfig.RARITY_ORDER]
 end
 
---- Wählt zufällig eine Kreatur aus dem Zucht-Pool der übergebenen Rarity.
-local function pickCreatureForRarity(rarity: Rarity): string
-	local pool = BreedingConfig.CREATURE_POOL[rarity]
+--- Wählt zufällig eine Kreatur aus dem Zucht-Pool der übergebenen Rarity UND
+--- BroodPool-Stufe (Content Update 1, Abschnitt 6: MidnightZone-Kreaturen ab
+--- Tier 2, HadalDepths-Kreaturen ab Tier 3 - siehe
+--- BreedingConfig.GetCreaturePool für die eigentliche Gating-Logik; dieses
+--- Modul ruft nur noch den tier-bewussten Pool statt CREATURE_POOL direkt
+--- ab).
+local function pickCreatureForRarity(rarity: Rarity, tierLevel: number): string
+	local pool = BreedingConfig.GetCreaturePool(rarity, tierLevel)
 	if not pool or #pool == 0 then
-		error(("[BreedingService] Kein Zucht-Kreaturen-Pool für Rarity '%s' vorhanden."):format(rarity))
+		error(("[BreedingService] Kein Zucht-Kreaturen-Pool für Rarity '%s' (Tier %d) vorhanden."):format(rarity, tierLevel))
 	end
 	return pool[rng:NextInteger(1, #pool)]
 end
@@ -276,7 +281,24 @@ function BreedingService.RequestStartBreeding(player: Player, placementId: any):
 	-- BEVOR Kosten abgezogen werden - ein Fehler danach (Persistenz) kann so
 	-- risikofrei ohne Rollback des Rolls abgebrochen werden.
 	local rarity = rollWeightedRarity(tier)
-	local creatureId = pickCreatureForRarity(rarity)
+
+	-- Live-Event-Einhängepunkt (docs/content-update-1.md Abschnitt 1.3,
+	-- Spooky Tide "haunted incubation"-Flavor-Bonus): BEWUSST ein LAZY
+	-- require() (Funktionskörper statt Modul-Kopf), identische Begründung
+	-- wie beim MonetizationService-Lazy-require unten. Reine additive
+	-- Ziehungs-Korrektur NACH dem eigentlichen Rarity-Roll (keine
+	-- BreedingConfig-Mutation, siehe LiveEventService-Kopfkommentar).
+	local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
+	local rareOrBetterBonus = LiveEventService.GetModifier("BreedingRareOrBetterBonus", 0)
+	if type(rareOrBetterBonus) == "number" and rareOrBetterBonus > 0 and rng:NextNumber() < rareOrBetterBonus then
+		local rareIndex = table.find(BreedingConfig.RARITY_ORDER, "Rare")
+		local currentIndex = table.find(BreedingConfig.RARITY_ORDER, rarity)
+		if rareIndex and currentIndex and currentIndex < rareIndex then
+			rarity = "Rare"
+		end
+	end
+
+	local creatureId = pickCreatureForRarity(rarity, tier.Level)
 
 	local chargeOk, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", -tier.FeedCostTideCoins)
 	if not chargeOk then
@@ -299,6 +321,10 @@ function BreedingService.RequestStartBreeding(player: Player, placementId: any):
 	if MonetizationService.PlayerOwnsGamepass(player, "VIPDiver") then
 		incubationMinutes = incubationMinutes / MonetizationService.GetVipBreedingSpeedMultiplier()
 	end
+
+	-- Live-Event-Einhängepunkt (Bioluminescent Bloom: "-20% Inkubationszeit").
+	-- Multipliziert sich mit dem VIP-Gamepass-Bonus oben statt ihn zu ersetzen.
+	incubationMinutes = incubationMinutes * LiveEventService.GetModifier("BreedingIncubationTimeMultiplier", 1)
 
 	local now = os.time()
 	local readyAt = now + (incubationMinutes * 60)

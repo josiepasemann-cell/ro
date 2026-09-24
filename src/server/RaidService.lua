@@ -87,6 +87,7 @@ local ProgressionService = require(script.Parent:WaitForChild("ProgressionServic
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
+local ZoneEconomyConfig = require(ReplicatedStorage:WaitForChild("ZoneEconomyConfig"))
 
 local RaidService = {}
 
@@ -118,6 +119,7 @@ type RaidRuntime = {
 	WaveIndex: number,
 	EnemiesReachedCenter: number,
 	Finished: boolean,
+	Zone: string, -- Content Update 1, Abschnitt 3.1: ZoneEconomyConfig.GetZoneForLevel(Spieler-Level) zum Raid-Start, siehe RaidConfig.GetScaledEnemy
 }
 
 local activeRaids: { [number]: RaidRuntime } = {} -- keyed by UserId
@@ -143,10 +145,37 @@ local function applyDoubleCoinsGamepass(player: Player, baseAmount: number): num
 	return baseAmount
 end
 
---- Färbt/skaliert das (einzige, wiederverwendete) ShadowKraken-Modell gemäß
---- der Gegnertyp-Definition ein - siehe RaidConfig-Kopfkommentar zur
---- bewussten MVP-Vereinfachung "ein Gegnermodell für alle Typen".
-local function applyEnemyVisual(model: Model, definition: RaidConfig.EnemyDefinition)
+--- Skaliert das geklonte Gegner-Modell gemäß der (ggf. bereits zonen-
+--- skalierten, siehe RaidConfig.GetScaledEnemy) Gegnertyp-Definition und
+--- setzt die Gameplay-Attribute.
+---
+--- GEÄNDERT (Content Update 1, Abschnitt 3): Body/Mantle/Eye1/Eye2 werden
+--- NICHT MEHR fest auf definition.BodyColor/EyeColor eingefärbt. Das war nur
+--- nötig, solange alle 4 Gegnertypen + Boss dasselbe ShadowKraken-Modell
+--- wiederverwendet haben (siehe RaidConfig-Kopfkommentar zur früheren
+--- MVP-Vereinfachung) - jetzt hat jeder EnemyId sein eigenes, bereits
+--- passend eingefärbtes Modell (SpineDrifter/ThornSwarmer/IronMawBrute/
+--- TrenchWardenBoss, siehe assets/models/enemies/*.lua), ein Overwrite
+--- würde nur die absichtlich unterschiedliche Optik jedes Modells wieder
+--- einebnen. RaidConfig.EnemyDefinition.BodyColor/EyeColor bleiben trotzdem
+--- als Daten bestehen (Fallback-Referenzwerte, decken sich mit den
+--- Modell-Farben, UND vorbereitet für künftige LiveEventService-
+--- Farbvarianten wie "Venom-Slick"/"Wraith-Touched", die laut
+--- Content-Update-Dokument Abschnitt 1.3 einen ZUSÄTZLICHEN, temporären
+--- Farb-Override pro Event ergänzen sollen - das ist bewusst nicht Teil
+--- dieses Auftrags/dieser Funktion).
+--- `transparencyOverride`/`bodyColorOverride` sind die Live-Event-
+--- Einhängepunkte, die der Kopfkommentar oben ankündigt (Abschnitt 1.3:
+--- "Wraith-Touched" Transparency+10%HP, "Magma-Forged" Farb-Tönung+15%HP) -
+--- modell-agnostisch umgesetzt (JEDER BasePart-Nachfahre, nicht feste
+--- Part-Namen wie Eye1/Eye2), damit es unabhängig vom jeweiligen
+--- Gegnermodell funktioniert. `nil` = kein Override (Normalfall).
+local function applyEnemyVisual(
+	model: Model,
+	definition: RaidConfig.EnemyDefinition,
+	transparencyOverride: number?,
+	bodyColorOverride: Color3?
+)
 	local ok = pcall(function()
 		model:ScaleTo(definition.ScaleMultiplier)
 	end)
@@ -154,18 +183,17 @@ local function applyEnemyVisual(model: Model, definition: RaidConfig.EnemyDefini
 		warn("[RaidService] Model:ScaleTo() fehlgeschlagen (evtl. ältere Engine-Version) - Gegner bleibt unskaliert.")
 	end
 
-	local body = model:FindFirstChild("Body")
-	if body and body:IsA("BasePart") then
-		body.Color = definition.BodyColor
+	if type(transparencyOverride) == "number" then
+		for _, descendant in ipairs(model:GetDescendants()) do
+			if descendant:IsA("BasePart") then
+				descendant.Transparency = math.max(descendant.Transparency, transparencyOverride)
+			end
+		end
 	end
-	local mantle = model:FindFirstChild("Mantle")
-	if mantle and mantle:IsA("BasePart") then
-		mantle.Color = definition.BodyColor
-	end
-	for i = 1, 2 do
-		local eye = model:FindFirstChild("Eye" .. i)
-		if eye and eye:IsA("BasePart") then
-			eye.Color = definition.EyeColor
+	if typeof(bodyColorOverride) == "Color3" then
+		local body = model:FindFirstChild("Body")
+		if body and body:IsA("BasePart") then
+			body.Color = bodyColorOverride
 		end
 	end
 
@@ -219,27 +247,41 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 		return 0
 	end
 
+	-- Live-Event-Einhängepunkt (docs/content-update-1.md Abschnitt 1.3:
+	-- Venom-Slick/Wraith-Touched/Magma-Forged-Gegnervarianten) - EINMAL pro
+	-- Welle aufgelöst (nicht pro Gegner), BEWUSST ein LAZY require(),
+	-- identische Begründung wie applyDoubleCoinsGamepass oben.
+	local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
+	local enemyMoveSpeedMultiplier = LiveEventService.GetModifier("RaidEnemyMoveSpeedMultiplier", 1)
+	local enemyMaxHPMultiplier = LiveEventService.GetModifier("RaidEnemyMaxHPMultiplier", 1)
+	local enemyTransparencyOverride = LiveEventService.GetModifier("RaidEnemyTransparency", nil)
+	local enemyBodyColorOverride = LiveEventService.GetModifier("RaidEnemyBodyColor", nil)
+
 	local spawnedCount = 0
 	for _, spawnSpec in ipairs(wave.Enemies) do
-		local definition = RaidConfig.GetEnemy(spawnSpec.EnemyId)
+		-- Content Update 1, Abschnitt 3.1: zonen-skalierte Definition statt
+		-- der rohen Basis-Werte - raid.Zone wurde einmalig beim Raid-Start
+		-- bestimmt (siehe startRaid), bleibt für die gesamte Raid-Dauer fix.
+		local definition = RaidConfig.GetScaledEnemy(spawnSpec.EnemyId, raid.Zone)
 		if definition then
 			local template = AssetTemplateSetup.GetEnemyTemplate(definition.TemplateName)
 			if template then
 				for _ = 1, spawnSpec.Count do
 					local model = template:Clone()
 					model.Name = definition.Id .. "_" .. tostring(spawnedCount + 1)
-					applyEnemyVisual(model, definition)
+					applyEnemyVisual(model, definition, enemyTransparencyOverride, enemyBodyColorOverride)
 					model.Parent = raid.EnemiesFolder
 
 					local spawnPos = randomSpawnPosition(raid.CenterPosition)
 					model:PivotTo(CFrame.new(spawnPos, raid.CenterPosition))
 
+					local scaledMaxHP = definition.MaxHP * enemyMaxHPMultiplier
 					table.insert(raid.Enemies, {
 						EnemyId = definition.Id,
 						Model = model,
-						CurrentHP = definition.MaxHP,
-						MaxHP = definition.MaxHP,
-						MoveSpeed = definition.MoveSpeed,
+						CurrentHP = scaledMaxHP,
+						MaxHP = scaledMaxHP,
+						MoveSpeed = definition.MoveSpeed * enemyMoveSpeedMultiplier,
 					})
 					spawnedCount += 1
 				end
@@ -276,8 +318,14 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 	destroyRaidWorkspaceState(raid)
 	activeRaids[player.UserId] = nil
 
+	-- Live-Event-Einhängepunkt (docs/content-update-1.md Abschnitt 1.3,
+	-- Volcanic Vent "-30% Raid-Intervall") - BEWUSST ein LAZY require(),
+	-- identische Begründung wie applyDoubleCoinsGamepass oben.
+	local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
+	local raidIntervalMultiplier = LiveEventService.GetModifier("RaidIntervalMultiplier", 1)
+
 	local now = os.time()
-	local nextRaidAt = now + RaidConfig.RAID_INTERVAL_SECONDS
+	local nextRaidAt = now + math.floor(RaidConfig.RAID_INTERVAL_SECONDS * raidIntervalMultiplier)
 	PlayerDataService.SetNextRaidAt(player, nextRaidAt)
 
 	local resultPayload: { [string]: any } = {
@@ -287,7 +335,11 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 	}
 
 	if won then
-		local tideCoinReward = applyDoubleCoinsGamepass(player, RaidConfig.VICTORY_REWARD_TIDE_COINS)
+		-- Treasure Tide "Raid-Sieg-Tide-Coin-Belohnung ×1.5" (Abschnitt 1.3).
+		local tideCoinReward = applyDoubleCoinsGamepass(
+			player,
+			math.floor(RaidConfig.VICTORY_REWARD_TIDE_COINS * LiveEventService.GetModifier("RaidVictoryCoinMultiplier", 1) + 0.5)
+		)
 		local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", tideCoinReward)
 		resultPayload.RewardTideCoins = tideCoinReward
 		resultPayload.NewTideCoinBalance = newBalance
@@ -345,8 +397,12 @@ local function startRaid(player: Player)
 	if not plot or not plot.PrimaryPart then
 		-- Kein Plot (noch) vorhanden (z. B. Buildscript-Vorlage fehlt, siehe
 		-- AssetTemplateSetup-Warnung) - Timer trotzdem fortschreiben, damit
-		-- nicht jeden Scheduler-Tick erneut versucht wird.
-		PlayerDataService.SetNextRaidAt(player, os.time() + RaidConfig.RAID_INTERVAL_SECONDS)
+		-- nicht jeden Scheduler-Tick erneut versucht wird. Live-Event-
+		-- Einhängepunkt siehe finishRaid oben (identischer Intervall-
+		-- Multiplikator, BEWUSST ein LAZY require()).
+		local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
+		local raidIntervalMultiplier = LiveEventService.GetModifier("RaidIntervalMultiplier", 1)
+		PlayerDataService.SetNextRaidAt(player, os.time() + math.floor(RaidConfig.RAID_INTERVAL_SECONDS * raidIntervalMultiplier))
 		return
 	end
 
@@ -363,6 +419,11 @@ local function startRaid(player: Player)
 		WaveIndex = 1,
 		EnemiesReachedCenter = 0,
 		Finished = false,
+		-- Content Update 1, Abschnitt 3.1 + ZoneEconomyConfig-Kopfkommentar:
+		-- "Zone des Spielers" = tiefste per Level freigeschaltete Zone,
+		-- einmalig beim Raid-Start bestimmt (bleibt für die gesamte
+		-- Raid-Dauer stabil, auch falls der Spieler währenddessen levelt).
+		Zone = ZoneEconomyConfig.GetZoneForLevel(PlayerDataService.GetLevel(player)),
 	}
 
 	activeRaids[player.UserId] = raid
@@ -378,6 +439,55 @@ local function startRaid(player: Player)
 end
 
 -- // Gemeinsamer Kampf-Tick-Loop (EIN Loop für ALLE Raids/Gegner/Türme) ---------
+
+--- Liefert den Schuss-/Effekt-Ursprungspunkt eines Turm-Modells. Content
+--- Update 1 führt 2 weitere Turmtypen ein, deren namensgebender "Muzzle"-Part
+--- NICHT "LureOrb" heißt (CoralBarrier: "SlowPulseCore", ElectricEelTrap:
+--- "EelHead") - alle 3 Turmmodelle tragen aber laut assets/models/README.md
+--- einheitlich ein Attachment "MuzzlePoint" genau an diesem Part. Reihenfolge
+--- daher bewusst generisch: 1) MuzzlePoint-Attachment (deckt alle 3 Türme +
+--- künftige Turmtypen ab, ohne dass diese Funktion je wieder angepasst
+--- werden muss), 2) bekannte Part-Namen als Fallback (ältere/unvollständige
+--- Modelle), 3) Modell-Pivot als letzter Fallback.
+local KNOWN_TOWER_ORIGIN_PART_NAMES = { "LureOrb", "SlowPulseCore", "EelHead" }
+
+local function getTowerOriginPosition(model: Model): Vector3
+	local muzzle = model:FindFirstChild("MuzzlePoint", true)
+	if muzzle and muzzle:IsA("Attachment") then
+		return muzzle.WorldPosition
+	end
+
+	for _, partName in ipairs(KNOWN_TOWER_ORIGIN_PART_NAMES) do
+		local part = model:FindFirstChild(partName)
+		if part and part:IsA("BasePart") then
+			return part.Position
+		end
+	end
+
+	return model:GetPivot().Position
+end
+
+--- Content Update 1, Abschnitt 4.1 (CoralBarrier): liefert den stärksten
+--- (= niedrigsten) Geschwindigkeits-Multiplikator für einen Gegner an
+--- `enemyPosition`, basierend auf allen eigenen CoralBarrier-Türmen, in
+--- deren BlockRadius er gerade steht. Mehrere Barrieren stacken NICHT
+--- (bewusste Vereinfachung - ein Gegner ist "verlangsamt" oder nicht, keine
+--- kumulative Verlangsamung), da RaidConfig.CORAL_BARRIER_SLOW_FRACTION als
+--- einzelner, fester Effekt dokumentiert ist. Rein lesend, keine
+--- Zustandsänderung - billig genug, um pro Gegner/Tick zu laufen (kleine
+--- Turm-/Gegner-Anzahl pro Raid, siehe Performance-Kopfkommentar).
+local function computeSpeedMultiplier(raid: RaidRuntime, enemyPosition: Vector3): number
+	local multiplier = 1
+	for _, tower in ipairs(raid.Towers) do
+		if tower.Model.Parent and tower.Stats.BlockRadius then
+			local towerPosition = getTowerOriginPosition(tower.Model)
+			if (enemyPosition - towerPosition).Magnitude <= tower.Stats.BlockRadius then
+				multiplier = math.min(multiplier, 1 - RaidConfig.CORAL_BARRIER_SLOW_FRACTION)
+			end
+		end
+	end
+	return multiplier
+end
 
 local function tickEnemyMovement(raid: RaidRuntime, deltaSeconds: number)
 	local i = 1
@@ -401,7 +511,8 @@ local function tickEnemyMovement(raid: RaidRuntime, deltaSeconds: number)
 			continue
 		end
 
-		local step = math.min(distance, enemy.MoveSpeed * deltaSeconds)
+		local effectiveSpeed = enemy.MoveSpeed * computeSpeedMultiplier(raid, currentPosition)
+		local step = math.min(distance, effectiveSpeed * deltaSeconds)
 		local direction = toCenter.Unit
 		local newPosition = currentPosition + direction * step
 		enemy.Model:PivotTo(CFrame.new(newPosition, raid.CenterPosition))
@@ -410,22 +521,76 @@ local function tickEnemyMovement(raid: RaidRuntime, deltaSeconds: number)
 	end
 end
 
+-- // ElectricEelTrap: "Ladezustand"-Blitz-Feedback (Content Update 1, Abschnitt 4.2) --
+-- Rein visuell (ChargeCore/ChargeLight, siehe assets/models/buildings/
+-- ElectricEelTrap.lua) - kein Gameplay-Effekt. Fail-soft: Modelle ohne
+-- ChargeCore (AnglerfishTower/CoralBarrier, oder ein Fallback-Modell nach
+-- AssetTemplateSetup-Fail-Soft) überspringen dies einfach.
+local CHARGE_FLASH_SECONDS = 0.15
+local CHARGE_FLASH_BRIGHTNESS = 4
+
+local function flashChargeCore(model: Model)
+	local core = model:FindFirstChild("ChargeCore")
+	if not core or not core:IsA("BasePart") then
+		return
+	end
+
+	local light = core:FindFirstChildWhichIsA("PointLight")
+	local originalTransparency = core.Transparency
+	local originalBrightness = light and light.Brightness or nil
+
+	core.Transparency = 0
+	if light then
+		light.Brightness = CHARGE_FLASH_BRIGHTNESS
+	end
+
+	task.delay(CHARGE_FLASH_SECONDS, function()
+		if core.Parent then
+			core.Transparency = originalTransparency
+		end
+		if light and light.Parent and originalBrightness then
+			light.Brightness = originalBrightness
+		end
+	end)
+end
+
+--- Entfernt alle Gegner mit CurrentHP <= 0 aus `raid.Enemies` (zerstört das
+--- Modell, feuert kein Remote selbst - EnemyHit wurde bereits pro Treffer
+--- gefeuert). Rückwärts iteriert, damit table.remove keine noch zu
+--- prüfenden Indizes verschiebt.
+local function removeDeadEnemies(raid: RaidRuntime)
+	for index = #raid.Enemies, 1, -1 do
+		local enemy = raid.Enemies[index]
+		if enemy.CurrentHP <= 0 then
+			if enemy.Model.Parent then
+				enemy.Model:Destroy()
+			end
+			table.remove(raid.Enemies, index)
+		end
+	end
+end
+
 --- WICHTIG: `now` muss `os.clock()` sein (hochauflösend, Sekunden als Float),
 --- NICHT `os.time()` (nur ganzzahlige Sekunden-Auflösung) - bei FireRate-
---- Werten > 1 Schuss/Sekunde (siehe RaidConfig.TOWER_STATS, aktuell 1.5)
---- würde `os.time()` jeden Turm faktisch auf maximal 1 Schuss/Sekunde
---- deckeln, da sich der Zeitstempel innerhalb einer Sekunde gar nicht
---- ändert. `os.clock()` wird hier rein für die Intra-Session-Taktung
---- verwendet (nicht persistiert), daher unproblematisch.
+--- Werten > 1 Schuss/Sekunde (siehe RaidConfig.TOWER_STATS) würde
+--- `os.time()` jeden Turm faktisch auf maximal 1 Schuss/Sekunde deckeln, da
+--- sich der Zeitstempel innerhalb einer Sekunde gar nicht ändert.
+--- `os.clock()` wird hier rein für die Intra-Session-Taktung verwendet
+--- (nicht persistiert), daher unproblematisch.
+---
+--- GEÄNDERT (Content Update 1, Abschnitt 4): bleibt EIN gemeinsamer Loop für
+--- ALLE Türme/Raids (kein Loop pro Turm/Tower-Typ, siehe Performance-
+--- Kopfkommentar) - CoralBarriers Slow-Effekt läuft komplett außerhalb
+--- dieser Funktion (siehe computeSpeedMultiplier in tickEnemyMovement, kein
+--- eigenes Feuerintervall nötig, da er kein "Schuss" ist). ElectricEelTraps
+--- Kettenschaden hängt sich direkt in den bestehenden Ziel-/Feuer-Ablauf
+--- dieser Funktion ein.
 local function tickTowers(raid: RaidRuntime, now: number)
 	for _, tower in ipairs(raid.Towers) do
 		if tower.Model.Parent then
 			local fireInterval = 1 / tower.Stats.FireRate
 			if now - tower.LastFireTime >= fireInterval then
-				local lureOrb = tower.Model:FindFirstChild("LureOrb")
-				local towerPosition = if lureOrb and lureOrb:IsA("BasePart")
-					then lureOrb.Position
-					else tower.Model:GetPivot().Position
+				local towerPosition = getTowerOriginPosition(tower.Model)
 
 				local targetIndex: number? = nil
 				local targetDistance = math.huge
@@ -449,10 +614,38 @@ local function tickTowers(raid: RaidRuntime, now: number)
 						EnemyPosition = target.Model:GetPivot().Position,
 					})
 
-					if target.CurrentHP <= 0 then
-						target.Model:Destroy()
-						table.remove(raid.Enemies, targetIndex)
+					-- Content Update 1, Abschnitt 4.2: ElectricEelTrap-Kettenschaden -
+					-- bis zu ChainCount weitere, dem Hauptziel am nächsten stehende
+					-- Gegner im ChainRadius erhalten CHAIN_DAMAGE_FRACTION Schaden.
+					if tower.Stats.ChainCount and tower.Stats.ChainCount > 0 and tower.Stats.ChainRadius then
+						local targetPosition = target.Model:GetPivot().Position
+						local candidates: { { Enemy: EnemyRuntime, Distance: number } } = {}
+						for index, enemy in ipairs(raid.Enemies) do
+							if index ~= targetIndex and enemy.Model.Parent then
+								local dist = (enemy.Model:GetPivot().Position - targetPosition).Magnitude
+								if dist <= tower.Stats.ChainRadius then
+									table.insert(candidates, { Enemy = enemy, Distance = dist })
+								end
+							end
+						end
+						table.sort(candidates, function(a, b)
+							return a.Distance < b.Distance
+						end)
+
+						local chainDamage = tower.Stats.Damage * RaidConfig.CHAIN_DAMAGE_FRACTION
+						for chainIndex = 1, math.min(tower.Stats.ChainCount, #candidates) do
+							local chained = candidates[chainIndex].Enemy
+							chained.CurrentHP -= chainDamage
+							RaidRemotes.EnemyHit:FireClient(raid.Player, {
+								TowerPosition = towerPosition,
+								EnemyPosition = chained.Model:GetPivot().Position,
+							})
+						end
+
+						flashChargeCore(tower.Model)
 					end
+
+					removeDeadEnemies(raid)
 				end
 			end
 		end

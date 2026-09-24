@@ -61,6 +61,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local IdleIncomeRemotes = require(ReplicatedStorage:WaitForChild("IdleIncomeRemotes"))
+local ZoneEconomyConfig = require(ReplicatedStorage:WaitForChild("ZoneEconomyConfig"))
 
 local IdleIncomeService = {}
 
@@ -92,10 +93,12 @@ local JOIN_DATA_TIMEOUT_SECONDS = 15
 --- Summiert die Tide-Coin-Produktion/Minute aller aktuell platzierten
 --- Gebäude eines Spielers (nur Gebäude mit BuildingConfig.IncomeRate > 0
 --- zählen - BroodPool/AnglerfishTower liefern laut BuildingConfig 0), und
---- wendet den Prestige-Einkommensmultiplikator sowie (falls vorhanden) den
---- "2x Tide Coins"-Gamepass-Multiplikator an (GDD Abschnitt 5 + 6).
---- Unbekannte BuildingIds (z. B. aus künftig entfernten Gebäudetypen) werden
---- übersprungen statt den Server abstürzen zu lassen.
+--- wendet den Prestige-Einkommensmultiplikator, den Content-Update-1-
+--- Zonen-Multiplikator (siehe ZoneEconomyConfig-Kopfkommentar: "Zone des
+--- Spielers" = tiefste per Level freigeschaltete Zone) sowie (falls
+--- vorhanden) den "2x Tide Coins"-Gamepass-Multiplikator an (GDD Abschnitt 5
+--- + 6). Unbekannte BuildingIds (z. B. aus künftig entfernten Gebäudetypen)
+--- werden übersprungen statt den Server abstürzen zu lassen.
 ---
 --- BEWUSST ein LAZY require() von MonetizationService (Funktionskörper statt
 --- Modul-Kopf) - identische Begründung wie in BreedingService.
@@ -105,15 +108,33 @@ local JOIN_DATA_TIMEOUT_SECONDS = 15
 local function computeIncomePerMinute(player: Player): number
 	local layout = PlayerDataService.GetHabitatLayout(player)
 
+	-- Live-Event-Einhängepunkt (docs/content-update-1.md Abschnitt 1.3 + 7b):
+	-- BEWUSST ein LAZY require() (Funktionskörper statt Modul-Kopf), analog
+	-- zum bereits bestehenden MonetizationService-Lazy-require unten - bricht
+	-- einen potenziellen zirkulären require-Zyklus, falls LiveEventService
+	-- irgendwann (z. B. über ein künftiges Modul) IdleIncomeService
+	-- referenziert. Je-Gebäude-Multiplikator statt eines pauschalen Faktors,
+	-- da einzelne Events (Toxic Tide/Bloom) nur EINEN Gebäudetyp verstärken,
+	-- andere (Frozen Current/Treasure Tide) ALLE Gebäude gleichermaßen
+	-- beeinflussen - siehe LiveEventService.GetBuildingIncomeMultiplier.
+	local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
+
 	local totalPerMinute = 0
 	for _, placement in ipairs(layout) do
 		local definition = BuildingConfig.Get(placement.BuildingId)
 		if definition and definition.IncomeRate and definition.IncomeRate > 0 then
-			totalPerMinute += definition.IncomeRate
+			totalPerMinute += definition.IncomeRate * LiveEventService.GetBuildingIncomeMultiplier(placement.BuildingId)
 		end
 	end
 
 	local multiplier = PlayerDataService.GetIncomeMultiplier(player)
+
+	-- Content Update 1, Abschnitt 6: "tiefere Zonen zahlen sich besser aus" -
+	-- siehe ZoneEconomyConfig-Kopfkommentar für die volle Begründung, warum
+	-- "Zone des Spielers" hier rein aus dem Level abgeleitet wird statt aus
+	-- einer physischen Position.
+	local zone = ZoneEconomyConfig.GetZoneForLevel(PlayerDataService.GetLevel(player))
+	multiplier *= ZoneEconomyConfig.GetIncomeMultiplier(zone)
 
 	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 	if MonetizationService.PlayerOwnsGamepass(player, "DoubleCoins") then
