@@ -1,0 +1,416 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Model preview renderer</title>
+<script type="importmap">
+{ "imports": { "three": "/three/build/three.module.js", "three/addons/": "/three/examples/jsm/" } }
+</script>
+<style>body { margin: 0; background: #02060d; }</style>
+</head>
+<body>
+<script type="module">
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const data = await (await fetch("/models.json")).json();
+const byName = new Map(data.models.map((m) => [m.name, m]));
+
+// ---------------------------------------------------------------- renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: false });
+renderer.setPixelRatio(1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envTex = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+function bgTexture() {
+  const c = document.createElement("canvas");
+  c.width = 4; c.height = 256;
+  const g = c.getContext("2d");
+  const grad = g.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0, "#0d2f4a");
+  grad.addColorStop(0.55, "#06182b");
+  grad.addColorStop(1, "#020812");
+  g.fillStyle = grad; g.fillRect(0, 0, 4, 256);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const BG = bgTexture();
+
+// ---------------------------------------------------------------- geometry
+const geoCache = new Map();
+function wedgeGeometry() {
+  // Roblox WedgePart: unit cube with the slope rising from front-bottom (-Z) to back-top (+Z)
+  const v = [
+    [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, -0.5, 0.5], [-0.5, -0.5, 0.5], // bottom
+    [-0.5, 0.5, 0.5], [0.5, 0.5, 0.5], // top back edge
+  ];
+  const tris = [
+    [0, 1, 2], [0, 2, 3], // bottom (facing -y)
+    [3, 2, 5], [3, 5, 4], // back (+z)
+    [0, 4, 5], [0, 5, 1], // slope
+    [0, 3, 4], // left (-x)
+    [1, 5, 2], // right (+x)
+  ];
+  const pos = [];
+  for (const t of tris) for (const i of t) pos.push(...v[i]);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  // fix winding so that normals face outward
+  const n = g.getAttribute("normal");
+  const p = g.getAttribute("position");
+  const arr = g.getIndex();
+  for (let f = 0; f < p.count; f += 3) {
+    const a = new THREE.Vector3().fromBufferAttribute(p, f), b = new THREE.Vector3().fromBufferAttribute(p, f + 1), c = new THREE.Vector3().fromBufferAttribute(p, f + 2);
+    const nn = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+    const centroid = a.clone().add(b).add(c).divideScalar(3);
+    if (nn.dot(centroid) < 0) { // flip
+      p.setXYZ(f + 1, c.x, c.y, c.z); p.setXYZ(f + 2, b.x, b.y, b.z);
+    }
+  }
+  g.computeVertexNormals();
+  return g;
+}
+function cornerWedgeGeometry() {
+  // approximate CornerWedgePart: pyramid with apex above the (+x, -z) corner
+  const v = [[-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, -0.5, 0.5], [-0.5, -0.5, 0.5], [0.5, 0.5, -0.5]];
+  const tris = [[0, 1, 2], [0, 2, 3], [0, 4, 1], [1, 4, 2], [2, 4, 3], [3, 4, 0]];
+  const pos = [];
+  for (const t of tris) for (const i of t) pos.push(...v[i]);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  const p = g.getAttribute("position");
+  for (let f = 0; f < p.count; f += 3) {
+    const a = new THREE.Vector3().fromBufferAttribute(p, f), b = new THREE.Vector3().fromBufferAttribute(p, f + 1), c = new THREE.Vector3().fromBufferAttribute(p, f + 2);
+    const nn = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+    const centroid = a.clone().add(b).add(c).divideScalar(3).sub(new THREE.Vector3(0.1, -0.2, -0.1));
+    if (nn.dot(centroid) < 0) { p.setXYZ(f + 1, c.x, c.y, c.z); p.setXYZ(f + 2, b.x, b.y, b.z); }
+  }
+  g.computeVertexNormals();
+  return g;
+}
+function unitGeometry(shape) {
+  if (geoCache.has(shape)) return geoCache.get(shape);
+  let g;
+  if (shape === "Ball") g = new THREE.SphereGeometry(0.5, 40, 24);
+  else if (shape === "Cylinder") { g = new THREE.CylinderGeometry(0.5, 0.5, 1, 48, 1); g.rotateZ(Math.PI / 2); } // Roblox cylinders run along X
+  else if (shape === "Wedge") g = wedgeGeometry();
+  else if (shape === "CornerWedge") g = cornerWedgeGeometry();
+  else g = new THREE.BoxGeometry(1, 1, 1);
+  geoCache.set(shape, g);
+  return g;
+}
+// Roblox forces balls to be round (smallest axis) and cylinders to be circular
+function effectiveScale(shape, s) {
+  if (shape === "Ball") { const d = Math.min(s[0], s[1], s[2]); return [d, d, d]; }
+  if (shape === "Cylinder") { const d = Math.min(s[1], s[2]); return [s[0], d, d]; }
+  return s;
+}
+function cfMatrix(cf) {
+  const m = new THREE.Matrix4();
+  m.set(cf[3], cf[4], cf[5], cf[0], cf[6], cf[7], cf[8], cf[1], cf[9], cf[10], cf[11], cf[2], 0, 0, 0, 1);
+  return m;
+}
+
+// ---------------------------------------------------------------- CSG (per-pixel)
+// flatten a CSG tree into renderable leaves with inside/outside constraints
+function volumesOf(node) {
+  if (!node.csg) return [node];
+  const solids = node.csg.op === "subtract" ? [node.csg.operands[0]] : node.csg.operands;
+  if (node.csg.op === "intersect") return volumesOf(node.csg.operands[0]); // approximation
+  return solids.flatMap(volumesOf);
+}
+function flatten(node) {
+  if (!node.csg) return [{ part: node, cons: [], flip: false }];
+  const ops = node.csg.operands;
+  if (node.csg.op === "union") return ops.flatMap(flatten);
+  if (node.csg.op === "subtract") {
+    const base = ops[0], cutters = ops.slice(1);
+    const cutVols = cutters.flatMap(volumesOf);
+    const out = flatten(base).map((l) => ({ ...l, cons: [...l.cons, { mode: "out", vols: cutVols }] }));
+    const baseVols = volumesOf(base);
+    cutters.forEach((c, ci) => {
+      const others = cutters.filter((_, j) => j !== ci).flatMap(volumesOf);
+      for (const l of flatten(c)) {
+        const cons = [{ mode: "inStrict", vols: baseVols }];
+        if (others.length) cons.push({ mode: "out", vols: others });
+        out.push({ part: { ...l.part, color: base.color ?? l.part.color }, cons, flip: !l.flip, cutter: true });
+      }
+    });
+    return out;
+  }
+  if (node.csg.op === "intersect") {
+    const out = [];
+    ops.forEach((o, i) => {
+      const cons = ops.filter((_, j) => j !== i).map((x) => ({ mode: "inLoose", vols: volumesOf(x) }));
+      for (const l of flatten(o)) out.push({ ...l, cons: [...l.cons, ...cons] });
+    });
+    return out;
+  }
+  return ops.flatMap(flatten);
+}
+const f = (x) => (Number.isFinite(x) ? x : 0).toFixed(5);
+function insideExpr(vol, grow) {
+  const inv = cfMatrix(vol.cf).invert().elements; // column-major
+  const [sx, sy, sz] = effectiveScale(vol.shape, vol.size);
+  const h = [sx / 2 + grow, sy / 2 + grow, sz / 2 + grow];
+  const q = `(mat4(${inv.map(f).join(",")}) * vec4(p, 1.0)).xyz`;
+  if (vol.shape === "Ball") return `(length(${q}) <= ${f(Math.min(sx, sy, sz) / 2 + grow)})`;
+  if (vol.shape === "Cylinder") return `csgCyl(${q}, ${f(h[0])}, ${f(Math.min(sy, sz) / 2 + grow)})`;
+  if (vol.shape === "Wedge") return `csgWedge(${q}, vec3(${h.map(f).join(",")}), ${f(grow)})`;
+  return `csgBox(${q}, vec3(${h.map(f).join(",")}))`;
+}
+const EPS = 0.03;
+function csgShader(cons) {
+  const lines = [];
+  for (const c of cons) {
+    const grow = c.mode === "inStrict" ? -EPS : EPS;
+    const any = c.vols.map((v) => insideExpr(v, grow)).join(" || ") || "false";
+    if (c.mode === "out") lines.push(`if (${any}) return false;`);
+    else lines.push(`if (!(${any})) return false;`);
+  }
+  return `
+bool csgBox(vec3 q, vec3 h) { return all(lessThanEqual(abs(q), h)); }
+bool csgCyl(vec3 q, float hx, float r) { return abs(q.x) <= hx && length(q.yz) <= r; }
+bool csgWedge(vec3 q, vec3 h, float g) { return all(lessThanEqual(abs(q), h)) && (q.y / h.y) <= (q.z / h.z) + g; }
+bool csgKeep(vec3 p) { ${lines.join("\n")} return true; }
+`;
+}
+function applyCsg(material, cons) {
+  if (!cons.length) return;
+  const code = csgShader(cons);
+  material.onBeforeCompile = (sh) => {
+    sh.vertexShader = "varying vec3 vCsgWorld;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\nvCsgWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+    sh.fragmentShader = "varying vec3 vCsgWorld;\n" + code + sh.fragmentShader.replace("void main() {", "void main() {\nif (!csgKeep(vCsgWorld)) discard;");
+  };
+  material.customProgramCacheKey = () => code;
+}
+
+// ---------------------------------------------------------------- materials
+const MAT = {
+  Neon: { neon: true },
+  Glass: { roughness: 0.05, metalness: 0.1, glass: true },
+  Metal: { roughness: 0.35, metalness: 0.75 },
+  DiamondPlate: { roughness: 0.4, metalness: 0.7 },
+  SmoothPlastic: { roughness: 0.38, metalness: 0 },
+  Plastic: { roughness: 0.55, metalness: 0 },
+  Ice: { roughness: 0.12, metalness: 0.05, ice: true },
+  ForceField: { neon: true },
+};
+function makeMaterial(p, flip) {
+  const col = new THREE.Color().setRGB(p.color[0], p.color[1], p.color[2], THREE.SRGBColorSpace);
+  const spec = MAT[p.material] || { roughness: 0.9, metalness: 0 };
+  let opacity = 1 - (p.transparency || 0);
+  let m;
+  if (spec.neon) {
+    m = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 1.25, roughness: 0.5 });
+  } else {
+    m = new THREE.MeshStandardMaterial({ color: col, roughness: spec.roughness, metalness: spec.metalness, envMapIntensity: 0.8 });
+    if (spec.glass) opacity *= 0.5;
+    if (spec.ice) opacity *= 0.92;
+  }
+  if (opacity < 0.999) { m.transparent = true; m.opacity = Math.max(opacity, 0.04); m.depthWrite = opacity > 0.6; }
+  m.side = flip ? THREE.BackSide : THREE.FrontSide;
+  if (m.transparent) m.side = flip ? THREE.BackSide : THREE.DoubleSide;
+  return m;
+}
+
+// ---------------------------------------------------------------- scene building
+function buildModel(model, group, lights, bbox) {
+  for (const part of model.parts) {
+    const leaves = flatten(part);
+    for (const leaf of leaves) {
+      const p = leaf.part;
+      if ((p.transparency || 0) >= 0.999) continue;
+      const mat = makeMaterial(p, leaf.flip);
+      applyCsg(mat, leaf.cons);
+      // selective bloom: only Neon parts glow, everything else renders black in the bloom pass
+      const glow = p.material === "Neon" && !leaf.flip;
+      const bloomMat = glow ? mat : new THREE.MeshBasicMaterial({ color: 0x000000, side: mat.side, transparent: mat.transparent, opacity: mat.opacity, depthWrite: mat.depthWrite });
+      if (!glow) applyCsg(bloomMat, leaf.cons);
+      const mesh = new THREE.Mesh(unitGeometry(p.shape), mat);
+      const s = effectiveScale(p.shape, p.size);
+      mesh.matrixAutoUpdate = false;
+      mesh.matrix.copy(cfMatrix(p.cf)).multiply(new THREE.Matrix4().makeScale(s[0], s[1], s[2]));
+      mesh.renderOrder = mat.transparent ? 2 : 0;
+      mesh.userData.mat = mat;
+      mesh.userData.bloomMat = bloomMat;
+      group.add(mesh);
+      if (!leaf.cutter) {
+        const b = new THREE.Box3().setFromBufferAttribute(mesh.geometry.getAttribute("position")).applyMatrix4(mesh.matrix);
+        bbox.union(b);
+      }
+    }
+    // point lights (also on invisible anchor parts)
+    for (const fx of part.effects || []) {
+      if (fx.type === "light") lights.push({ pos: new THREE.Vector3(part.cf[0], part.cf[1], part.cf[2]), color: fx.color, range: fx.range, brightness: fx.brightness, r: Math.max(0.6, Math.max(...part.size) / 2) });
+    }
+  }
+}
+
+function addLights(scene, bbox, lights, maxLights) {
+  const size = bbox.getSize(new THREE.Vector3()).length();
+  scene.add(new THREE.HemisphereLight(0x9fd8ff, 0x0a1a2a, 1.05));
+  const key = new THREE.DirectionalLight(0xdff4ff, 1.8);
+  key.position.set(0.6, 1.4, -0.9).multiplyScalar(size);
+  key.target.position.copy(bbox.getCenter(new THREE.Vector3()));
+  key.position.add(key.target.position);
+  scene.add(key, key.target);
+  const rim = new THREE.DirectionalLight(0x5fb4ff, 1.3);
+  rim.position.set(-1, 0.4, 1).multiplyScalar(size).add(key.target.position);
+  rim.target = key.target;
+  scene.add(rim);
+  lights.sort((a, b) => b.brightness * b.range - a.brightness * a.range);
+  for (const l of lights.slice(0, maxLights)) {
+    const c = new THREE.Color().setRGB(l.color[0], l.color[1], l.color[2], THREE.SRGBColorSpace);
+    // scale by the emitting part's size so small glowing parts light their surroundings without blowing out
+    const pl = new THREE.PointLight(c, Math.min(l.brightness, 3) * 5 * l.r * l.r, l.range * 1.5, 2);
+    pl.position.copy(l.pos);
+    scene.add(pl);
+  }
+}
+
+// ---------------------------------------------------------------- framing
+function frameCamera(camera, group, bbox, view, aspect) {
+  const center = view.focus ? new THREE.Vector3(...view.focus.center) : bbox.getCenter(new THREE.Vector3());
+  const size = view.focus ? new THREE.Vector3(1, 1, 1).multiplyScalar(view.focus.radius) : bbox.getSize(new THREE.Vector3());
+  // pick the azimuth: broadside to the longest horizontal axis (or explicit)
+  let az = view.az;
+  if (az === undefined) az = size.x >= size.z ? -35 : 55; // degrees, 0 = looking from -Z (Roblox front)
+  const el = view.el ?? 24;
+  const a = THREE.MathUtils.degToRad(az), e = THREE.MathUtils.degToRad(el);
+  const dir = new THREE.Vector3(Math.sin(a) * Math.cos(e), Math.sin(e), -Math.cos(a) * Math.cos(e));
+  camera.aspect = aspect;
+  camera.fov = view.fov ?? 30;
+  camera.near = 0.01; camera.far = 1e5;
+  camera.updateProjectionMatrix();
+  // gather corner points of every mesh for tight framing
+  const pts = [];
+  group.traverse((o) => {
+    if (!o.isMesh || o.material.side === THREE.BackSide) return;
+    const b = new THREE.Box3().setFromBufferAttribute(o.geometry.getAttribute("position"));
+    if (view.focus) {
+      const c = new THREE.Vector3().setFromMatrixPosition(o.matrix);
+      if (c.distanceTo(new THREE.Vector3(...view.focus.center)) > view.focus.radius) return;
+      const sz = new THREE.Vector3().setFromMatrixScale(o.matrix);
+      if (Math.max(sz.x, sz.z) > view.focus.radius) return; // ignore the huge ground slab
+    }
+    for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).applyMatrix4(o.matrix));
+  });
+  let target = center.clone();
+  let dist = size.length() * 1.6 + 0.1;
+  const margin = view.margin ?? 0.84;
+  for (let iter = 0; iter < 6; iter++) {
+    camera.position.copy(target).addScaledVector(dir, dist);
+    camera.lookAt(target);
+    camera.updateMatrixWorld();
+    let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+    for (const p of pts) {
+      const v = p.clone().project(camera);
+      minX = Math.min(minX, v.x); maxX = Math.max(maxX, v.x); minY = Math.min(minY, v.y); maxY = Math.max(maxY, v.y);
+    }
+    const ext = Math.max((maxX - minX) / 2, (maxY - minY) / 2);
+    // shift target to centre the projection
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+    const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * dist;
+    target.addScaledVector(right, cx * halfH * aspect).addScaledVector(up, cy * halfH);
+    dist *= ext / margin;
+  }
+  camera.position.copy(target).addScaledVector(dir, dist);
+  camera.lookAt(target);
+}
+
+function renderCell(cell, w, h) {
+  const scene = new THREE.Scene();
+  scene.background = BG;
+  scene.environment = envTex;
+  const group = new THREE.Group();
+  const bbox = new THREE.Box3();
+  const lights = [];
+  for (const name of cell.models) {
+    const m = byName.get(name);
+    if (!m) throw new Error("unknown model " + name);
+    buildModel(m, group, lights, bbox);
+  }
+  scene.add(group);
+  addLights(scene, bbox, lights, cell.maxLights ?? 6);
+  const camera = new THREE.PerspectiveCamera();
+  frameCamera(camera, group, bbox, cell.view || {}, w / h);
+  scene.fog = new THREE.Fog(0x041222, camera.position.distanceTo(bbox.getCenter(new THREE.Vector3())) * 1.2, camera.position.distanceTo(bbox.getCenter(new THREE.Vector3())) * 4);
+
+  renderer.setSize(w, h, false);
+  // pass 1: bloom of Neon parts only
+  const bloomComposer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType }));
+  bloomComposer.renderToScreen = false;
+  bloomComposer.addPass(new RenderPass(scene, camera));
+  bloomComposer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.55, 0.25, 0.0));
+  const bg = scene.background, fog = scene.fog;
+  scene.background = null; scene.fog = null;
+  group.traverse((o) => { if (o.isMesh) o.material = o.userData.bloomMat; });
+  bloomComposer.render();
+  group.traverse((o) => { if (o.isMesh) o.material = o.userData.mat; });
+  scene.background = bg; scene.fog = fog;
+  // pass 2: normal render + additive bloom, then tone mapping
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: 4 }));
+  composer.addPass(new RenderPass(scene, camera));
+  const mix = new ShaderPass(new THREE.ShaderMaterial({
+    uniforms: { tDiffuse: { value: null }, bloomTexture: { value: bloomComposer.readBuffer.texture } },
+    vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform sampler2D tDiffuse; uniform sampler2D bloomTexture; varying vec2 vUv; void main() { gl_FragColor = texture2D(tDiffuse, vUv) + vec4(texture2D(bloomTexture, vUv).rgb, 0.0); }",
+  }), "tDiffuse");
+  composer.addPass(mix);
+  composer.addPass(new OutputPass());
+  composer.render();
+  composer.dispose();
+  bloomComposer.dispose();
+  return renderer.domElement;
+}
+
+// ---------------------------------------------------------------- sheet
+window.renderSheet = async (spec) => {
+  const cols = spec.cols, rows = Math.ceil(spec.cells.length / cols);
+  const pad = 14, header = spec.title ? 84 : 0, labelH = spec.labelH ?? 46, footer = 30;
+  const W = spec.width, cw = Math.floor((W - pad * (cols + 1)) / cols), ch = spec.cellH ?? Math.round(cw * (spec.cellAspect ?? 0.8));
+  const H = header + rows * (ch + labelH + pad) + pad + footer;
+  const out = document.createElement("canvas");
+  out.width = W; out.height = H;
+  const g = out.getContext("2d");
+  g.fillStyle = "#040b14"; g.fillRect(0, 0, W, H);
+  if (spec.title) {
+    g.fillStyle = "#e8f6ff"; g.font = "600 34px 'DejaVu Sans', sans-serif";
+    g.fillText(spec.title, pad + 4, 46);
+    g.fillStyle = "#7fa6c2"; g.font = "16px 'DejaVu Sans', sans-serif";
+    g.fillText(spec.subtitle || "", pad + 4, 72);
+  }
+  spec.cells.forEach((cell, i) => {
+    const cx = pad + (i % cols) * (cw + pad), cy = header + pad + Math.floor(i / cols) * (ch + labelH + pad);
+    if (cell.models && cell.models.length) {
+      const canvas = renderCell(cell, cw, ch);
+      g.drawImage(canvas, cx, cy, cw, ch);
+    }
+    g.strokeStyle = "#16324a"; g.lineWidth = 1; g.strokeRect(cx + 0.5, cy + 0.5, cw - 1, ch + labelH - 1);
+    g.fillStyle = "#081624"; g.fillRect(cx, cy + ch, cw, labelH);
+    g.fillStyle = "#e8f6ff"; g.font = "600 17px 'DejaVu Sans', sans-serif";
+    g.fillText(cell.label || "", cx + 10, cy + ch + 20, cw - 20);
+    g.fillStyle = "#7fa6c2"; g.font = "13px 'DejaVu Sans', sans-serif";
+    g.fillText(cell.sub || "", cx + 10, cy + ch + 38, cw - 20);
+  });
+  g.fillStyle = "#4d6b82"; g.font = "12px 'DejaVu Sans', sans-serif";
+  g.fillText("Rendered from assets/models/**/*.lua via tools/model-preview (Roblox API shim + three.js). Not a Roblox Studio screenshot; particles/animation not shown.", pad + 4, H - 11);
+  return out.toDataURL("image/png");
+};
+window.ready = true;
+</script>
+</body>
+</html>
