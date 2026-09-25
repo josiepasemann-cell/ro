@@ -101,6 +101,8 @@ local GAMEPASS_GLYPH: { [string]: string } = {
 	ExtraPlot = "🏝️",
 	VIPDiver = "👑",
 	TrenchRunner = "🏃",
+	SporeMagnet = "🧲",
+	ExtraBuddySlot = "🐾",
 }
 
 local DEV_PRODUCT_GLYPH: { [string]: string } = {
@@ -110,6 +112,9 @@ local DEV_PRODUCT_GLYPH: { [string]: string } = {
 	MysteryEgg = "🥚",
 	RaidSkip = "⏭️",
 	InstantBreeding = "⚡",
+	SporeShower = "🌟",
+	TidalSurge = "🌊",
+	DepthCharge = "💣",
 }
 
 local COSMETIC_GLYPH: { [string]: string } = {

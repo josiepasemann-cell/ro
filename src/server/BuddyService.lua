@@ -108,8 +108,18 @@ local buddyFolder: Folder = (function()
 	return folder :: Folder
 end)()
 
-local buddyModelByUserId: { [number]: Model } = {}
+local buddyModelByUserId: { [number]: Model } = {} -- slot 1
+-- Extra Buddy Slot gamepass (Auftrag "purchasable abilities/boosts", 149
+-- Robux): a SECOND, independent buddy slot. Kept as its own parallel table
+-- (instead of e.g. buddyModelByUserId[userId] = {slot1, slot2}) to keep
+-- every EXISTING slot-1 line above/below untouched - a minimal, additive
+-- change on top of the pre-existing one-buddy system.
+local buddyModelByUserId2: { [number]: Model } = {} -- slot 2
 local warnedMissingTemplate: { [string]: boolean } = {}
+
+local function modelTableForSlot(slot: number): { [number]: Model }
+	return if slot == 2 then buddyModelByUserId2 else buddyModelByUserId
+end
 
 -- // Hilfsfunktionen --------------------------------------------------------
 
@@ -141,10 +151,13 @@ local function ownsCreatureId(player: Player, creatureId: string): boolean
 	return false
 end
 
-local function destroyBuddyModel(player: Player)
-	local model = buddyModelByUserId[player.UserId]
+--- `slot` defaults to 1 (the original, always-available buddy) - `slot == 2`
+--- is the Extra Buddy Slot gamepass' second slot, see modelTableForSlot.
+local function destroyBuddyModel(player: Player, slot: number?)
+	local table_ = modelTableForSlot(slot or 1)
+	local model = table_[player.UserId]
 	if model then
-		buddyModelByUserId[player.UserId] = nil
+		table_[player.UserId] = nil
 		model:Destroy()
 	end
 end
@@ -153,17 +166,23 @@ end
 --- neben dem Besitzer-Charakter, falls vorhanden, sonst ein harmloser
 --- Weltpunkt (der Client zieht den Buddy beim nächsten Follow-Tick ohnehin
 --- sofort zur echten Zielposition, siehe BuddyClient-Kopfkommentar).
-local function initialSpawnCFrame(player: Player): CFrame
+--- Slot 2 spawnt auf der GEGENÜBERLIEGENDEN Seite (Auftrag: "follows on the
+--- other side") - BuddyClient spiegelt denselben Seitenwechsel dauerhaft im
+--- eigentlichen Follow-Offset, dies ist nur der initiale, harmlose Startpunkt.
+local function initialSpawnCFrame(player: Player, slot: number?): CFrame
+	local localOffset = if slot == 2 then Vector3.new(3, 0, 3) else Vector3.new(-3, 0, 3)
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") then
-		return (root :: BasePart).CFrame * CFrame.new(-3, 0, 3)
+		return (root :: BasePart).CFrame * CFrame.new(localOffset)
 	end
 	return CFrame.new(0, 5, 0)
 end
 
-local function spawnBuddyModel(player: Player, creatureId: string)
-	destroyBuddyModel(player)
+--- `slot` defaults to 1 (see destroyBuddyModel/modelTableForSlot).
+local function spawnBuddyModel(player: Player, creatureId: string, slot: number?)
+	local resolvedSlot = slot or 1
+	destroyBuddyModel(player, resolvedSlot)
 
 	local template = findCreatureTemplate(creatureId)
 	if not template then
@@ -179,7 +198,7 @@ local function spawnBuddyModel(player: Player, creatureId: string)
 	end
 
 	local clone = template:Clone()
-	clone.Name = "Buddy_" .. tostring(player.UserId)
+	clone.Name = "Buddy_" .. tostring(player.UserId) .. (if resolvedSlot == 2 then "_2" else "")
 	hardenLightsForPhone(clone)
 
 	-- Vollständig anchored + nicht kollidierend/nicht anfragbar (Auftrag:
@@ -198,14 +217,18 @@ local function spawnBuddyModel(player: Player, creatureId: string)
 	-- (BuddyClient.client.lua) - Rarity/CreatureName kommen bereits vom
 	-- Kreaturen-Buildscript-Template (identische Attribut-Konvention wie
 	-- CodexService.GetCatalog liest), hier nur um Besitzer-Bezug ergänzt.
+	-- `BuddySlot` (Auftrag "Extra Buddy Slot"-Gamepass): BuddyClient nutzt
+	-- dies ausschließlich, um Slot 2 auf der ANDEREN Seite folgen zu lassen
+	-- (gespiegelter Follow-Offset) - fehlt das Attribut, gilt Slot 1.
 	clone:SetAttribute("OwnerUserId", player.UserId)
 	clone:SetAttribute("CreatureId", creatureId)
+	clone:SetAttribute("BuddySlot", resolvedSlot)
 	CollectionService:AddTag(clone, BUDDY_TAG)
 
-	clone:PivotTo(initialSpawnCFrame(player))
+	clone:PivotTo(initialSpawnCFrame(player, resolvedSlot))
 	clone.Parent = buddyFolder
 
-	buddyModelByUserId[player.UserId] = clone
+	modelTableForSlot(resolvedSlot)[player.UserId] = clone
 end
 
 -- // Öffentliche API ----------------------------------------------------------
@@ -245,6 +268,54 @@ function BuddyService.GetBuddyCreatureId(player: Player): string?
 	return PlayerDataService.GetBuddyCreatureId(player)
 end
 
+export type SetBuddy2Failure = "DataNotLoaded" | "NotOwned" | "InvalidPayload" | "NoExtraSlot"
+
+--- SCHEMA_VERSION 8 / Extra Buddy Slot Gamepass (149 Robux, see
+--- AbilityConfig.lua): identical validation to BuddyService.SetBuddy above,
+--- for the SECOND buddy slot - ADDITIONALLY requires gamepass ownership
+--- (checked server-side, never trusting the client). Clearing (`creatureId
+--- == nil`) is always allowed, even without the gamepass (e.g. a player who
+--- refunds/loses the pass elsewhere shouldn't get stuck unable to clear a
+--- stale slot - RefreshForPlayer below also proactively clears it).
+--- BEWUSST ein LAZY require() von MonetizationService (Funktionskörper statt
+--- Modul-Kopf) - identische Begründung wie überall sonst in diesem Projekt
+--- (BuddyService selbst wird nicht von MonetizationService benötigt, aber
+--- die Projekt-Konvention ist, jeden MonetizationService-Zugriff konsequent
+--- lazy zu halten, um künftige Zyklen zu vermeiden).
+function BuddyService.SetBuddy2(player: Player, creatureId: any): (boolean, SetBuddy2Failure?, string?)
+	if not PlayerDataService.IsDataLoaded(player) then
+		return false, "DataNotLoaded", nil
+	end
+
+	if creatureId == nil then
+		PlayerDataService.SetBuddyCreatureId2(player, nil)
+		destroyBuddyModel(player, 2)
+		return true, nil, nil
+	end
+
+	if typeof(creatureId) ~= "string" or creatureId == "" then
+		return false, "InvalidPayload", nil
+	end
+
+	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+	if not MonetizationService.PlayerOwnsGamepass(player, "ExtraBuddySlot") then
+		return false, "NoExtraSlot", nil
+	end
+
+	if not ownsCreatureId(player, creatureId) then
+		return false, "NotOwned", nil
+	end
+
+	PlayerDataService.SetBuddyCreatureId2(player, creatureId)
+	spawnBuddyModel(player, creatureId, 2)
+	return true, nil, creatureId
+end
+
+--- Aktuell gewählte Buddy-CreatureId für Slot 2 (oder nil).
+function BuddyService.GetBuddyCreatureId2(player: Player): string?
+	return PlayerDataService.GetBuddyCreatureId2(player)
+end
+
 --- Revalidiert die persistierte Buddy-Wahl gegen das aktuelle Inventar
 --- (z. B. nach einer Raid-Entführung, die die letzte Instanz einer
 --- favorisierten Buddy-Art wegnimmt) und stellt sicher, dass ein gültig
@@ -259,40 +330,55 @@ function BuddyService.RefreshForPlayer(player: Player)
 	local creatureId = PlayerDataService.GetBuddyCreatureId(player)
 	if not creatureId then
 		destroyBuddyModel(player)
-		return
-	end
-
-	if not ownsCreatureId(player, creatureId) then
+	elseif not ownsCreatureId(player, creatureId) then
 		-- Letzte Instanz dieser Art nicht mehr besessen (z. B. entführt) -
 		-- Buddy automatisch löschen statt eine ungültige Wahl zu behalten.
 		PlayerDataService.SetBuddyCreatureId(player, nil)
 		destroyBuddyModel(player)
-		return
+	elseif not buddyModelByUserId[player.UserId] then
+		spawnBuddyModel(player, creatureId)
 	end
 
-	if not buddyModelByUserId[player.UserId] then
-		spawnBuddyModel(player, creatureId)
+	-- Slot 2 (Extra Buddy Slot Gamepass) - identisches Revalidierungsmuster,
+	-- ZUSÄTZLICH gated auf Gamepass-Besitz (siehe SetBuddy2 oben).
+	local creatureId2 = PlayerDataService.GetBuddyCreatureId2(player)
+	if creatureId2 then
+		local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+		if not MonetizationService.PlayerOwnsGamepass(player, "ExtraBuddySlot") or not ownsCreatureId(player, creatureId2) then
+			PlayerDataService.SetBuddyCreatureId2(player, nil)
+			destroyBuddyModel(player, 2)
+		elseif not buddyModelByUserId2[player.UserId] then
+			spawnBuddyModel(player, creatureId2, 2)
+		end
+	elseif buddyModelByUserId2[player.UserId] then
+		destroyBuddyModel(player, 2)
 	end
 end
 
---- Setzt das Buddy-Modell knapp neben den (neuen) Besitzer-Charakter zurück
---- - aufgerufen bei CharacterAdded (Respawn), damit es nicht an der Stelle
---- des vorherigen (toten) Charakters "hängen bleibt". Reine Bequemlichkeit:
+--- Setzt die Buddy-Modelle knapp neben den (neuen) Besitzer-Charakter zurück
+--- - aufgerufen bei CharacterAdded (Respawn), damit sie nicht an der Stelle
+--- des vorherigen (toten) Charakters "hängen bleiben". Reine Bequemlichkeit:
 --- der Client zieht die tatsächliche Zielposition ohnehin selbst nach
 --- (siehe Kopfkommentar "Bewegungs-Architektur"), dies vermeidet nur einen
---- unnötig langen sichtbaren Anlauf-Weg direkt nach dem Respawn.
+--- unnötig langen sichtbaren Anlauf-Weg direkt nach dem Respawn. Deckt BEIDE
+--- Slots ab (Slot 2 nur, falls ein zweiter Buddy tatsächlich existiert).
 function BuddyService.ResetPositionForRespawn(player: Player)
 	local model = buddyModelByUserId[player.UserId]
 	if model and model.Parent then
-		model:PivotTo(initialSpawnCFrame(player))
+		model:PivotTo(initialSpawnCFrame(player, 1))
+	end
+	local model2 = buddyModelByUserId2[player.UserId]
+	if model2 and model2.Parent then
+		model2:PivotTo(initialSpawnCFrame(player, 2))
 	end
 end
 
---- Entfernt das Buddy-Modell + Laufzeit-Zustand von `player` (PlayerRemoving).
---- Die persistierte Wahl selbst bleibt erhalten (Wiederherstellung beim
---- nächsten Join über RefreshForPlayer).
+--- Entfernt BEIDE Buddy-Modelle + Laufzeit-Zustand von `player`
+--- (PlayerRemoving). Die persistierte Wahl selbst bleibt erhalten
+--- (Wiederherstellung beim nächsten Join über RefreshForPlayer).
 function BuddyService.CleanupPlayer(player: Player)
-	destroyBuddyModel(player)
+	destroyBuddyModel(player, 1)
+	destroyBuddyModel(player, 2)
 end
 
 -- // Join/Leave/Respawn-Verdrahtung ---------------------------------------------

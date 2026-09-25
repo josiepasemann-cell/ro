@@ -24,7 +24,10 @@ local BuddyService = require(script.Parent:WaitForChild("BuddyService"))
 local BuddyRemotes = require(ReplicatedStorage:WaitForChild("BuddyRemotes"))
 
 BuddyRemotes.GetBuddyState.OnServerInvoke = function(player: Player)
-	return { CreatureId = BuddyService.GetBuddyCreatureId(player) }
+	return {
+		CreatureId = BuddyService.GetBuddyCreatureId(player),
+		CreatureId2 = BuddyService.GetBuddyCreatureId2(player),
+	}
 end
 
 BuddyRemotes.RequestSetBuddy.OnServerEvent:Connect(function(player: Player, creatureId: any)
@@ -36,4 +39,16 @@ BuddyRemotes.RequestSetBuddy.OnServerEvent:Connect(function(player: Player, crea
 	})
 end)
 
-print("[Abyssara] BuddyServer ready (GetBuddyState / RequestSetBuddy wired up).")
+-- Extra Buddy Slot Gamepass (Auftrag "purchasable abilities/boosts") -
+-- identisches Verdrahtungsmuster wie RequestSetBuddy oben, für den ZWEITEN
+-- Buddy-Slot (siehe BuddyService.SetBuddy2 für die Gamepass-Validierung).
+BuddyRemotes.RequestSetBuddy2.OnServerEvent:Connect(function(player: Player, creatureId: any)
+	local ok, failure, finalCreatureId = BuddyService.SetBuddy2(player, creatureId)
+	BuddyRemotes.SetBuddy2Result:FireClient(player, {
+		Success = ok,
+		Reason = failure,
+		CreatureId = finalCreatureId,
+	})
+end)
+
+print("[Abyssara] BuddyServer ready (GetBuddyState / RequestSetBuddy / RequestSetBuddy2 wired up).")

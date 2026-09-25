@@ -514,6 +514,22 @@ local function applyDevProductEffect(player: Player, definition: DevProductDefin
 			return true, true
 		end
 		return false, reason == "DataNotLoaded"
+
+	elseif definition.EffectKey == "SporeShower" or definition.EffectKey == "TidalSurge" or definition.EffectKey == "DepthCharge" then
+		-- Purchasable abilities/boosts (see AbilityService.lua). BEWUSST ein
+		-- LAZY require() (Funktionskörper statt Modul-Kopf) - AbilityService
+		-- selbst lazy-requiret MonetizationService zurück (Spore Magnet/Extra
+		-- Buddy Slot Gamepass-Besitz-Checks), ein Top-Level-require hier würde
+		-- also einen zirkulären require-Zyklus erzeugen (identische
+		-- Begründung wie beim BreedingService/RaidService-Lazy-require oben).
+		local AbilityService = require(script.Parent:WaitForChild("AbilityService"))
+		if definition.EffectKey == "SporeShower" then
+			return AbilityService.GrantSporeShower(player)
+		elseif definition.EffectKey == "TidalSurge" then
+			return AbilityService.ExtendTidalSurge(player)
+		else
+			return AbilityService.GrantDepthCharges(player)
+		end
 	end
 
 	warn(("[MonetizationService] Unknown EffectKey '%s' for product '%s'."):format(definition.EffectKey, definition.Key))

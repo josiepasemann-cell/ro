@@ -38,6 +38,7 @@
 		EggOpened        (player, { Rarity: string, CreatureId: string, ResultType: "New" | "Duplicate", Purchased: boolean })
 		SporeDelivered   (player, { Amount: number })
 		CoinsEarned      (player, { Amount: number, NewLifetimeTotal: number })
+		DepthChargeUsed  (player, { EnemiesHit: number }) -- purchasable ability, see AbilityService.RequestDepthCharge
 
 	Rojo-Einhängepunkt:
 		src/server/GameEvents.lua -> ServerScriptService.GameEvents
@@ -52,6 +53,7 @@ export type EventName =
 	| "EggOpened"
 	| "SporeDelivered"
 	| "CoinsEarned"
+	| "DepthChargeUsed"
 
 local GameEvents = {}
 
@@ -65,6 +67,7 @@ GameEvents.Events = {
 	EggOpened = "EggOpened" :: EventName,
 	SporeDelivered = "SporeDelivered" :: EventName,
 	CoinsEarned = "CoinsEarned" :: EventName,
+	DepthChargeUsed = "DepthChargeUsed" :: EventName,
 }
 
 local registry: { [string]: BindableEvent } = {}

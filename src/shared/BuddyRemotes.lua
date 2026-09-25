@@ -30,7 +30,17 @@
 			Payload: { Success: boolean, Reason: string?, CreatureId: string? }
 		GetBuddyState (RemoteFunction, Client -> Server -> Client)
 			Liefert den Buddy-Zustand DES anfragenden Spielers (niemals
-			eines anderen Spielers). Payload: { CreatureId: string? }
+			eines anderen Spielers). Payload: { CreatureId: string?,
+			CreatureId2: string? }
+		RequestSetBuddy2 (RemoteEvent, Client -> Server)
+			Auftrag "Extra Buddy Slot"-Gamepass (149 Robux): identisch zu
+			RequestSetBuddy, aber für den ZWEITEN Buddy-Slot. Payload:
+			creatureId (string) ODER nil. Server validiert vollständig neu
+			(Besitz DER Kreatur UND Besitz des "Extra Buddy Slot"-Gamepasses,
+			siehe BuddyService.SetBuddy2) - ein Kauf-Umgehungsversuch über
+			diesen Kanal schlägt serverseitig fehl.
+		SetBuddy2Result (RemoteEvent, Server -> Client)
+			Payload: { Success: boolean, Reason: string?, CreatureId: string? }
 
 	Zusätzlich exportiert dieses Modul `BuddyRemotes.BUDDY_TAG` - die
 	`CollectionService`-Tag-Konstante, mit der BuddyService jedes
@@ -77,10 +87,14 @@ if RunService:IsServer() then
 	BuddyRemotes.RequestSetBuddy = getOrCreateRemoteEvent(script, "RequestSetBuddy")
 	BuddyRemotes.SetBuddyResult = getOrCreateRemoteEvent(script, "SetBuddyResult")
 	BuddyRemotes.GetBuddyState = getOrCreateRemoteFunction(script, "GetBuddyState")
+	BuddyRemotes.RequestSetBuddy2 = getOrCreateRemoteEvent(script, "RequestSetBuddy2")
+	BuddyRemotes.SetBuddy2Result = getOrCreateRemoteEvent(script, "SetBuddy2Result")
 else
 	BuddyRemotes.RequestSetBuddy = script:WaitForChild("RequestSetBuddy") :: RemoteEvent
 	BuddyRemotes.SetBuddyResult = script:WaitForChild("SetBuddyResult") :: RemoteEvent
 	BuddyRemotes.GetBuddyState = script:WaitForChild("GetBuddyState") :: RemoteFunction
+	BuddyRemotes.RequestSetBuddy2 = script:WaitForChild("RequestSetBuddy2") :: RemoteEvent
+	BuddyRemotes.SetBuddy2Result = script:WaitForChild("SetBuddy2Result") :: RemoteEvent
 end
 
 return BuddyRemotes

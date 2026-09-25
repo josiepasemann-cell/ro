@@ -326,6 +326,14 @@ function BreedingService.RequestStartBreeding(player: Player, placementId: any):
 	-- Multipliziert sich mit dem VIP-Gamepass-Bonus oben statt ihn zu ersetzen.
 	incubationMinutes = incubationMinutes * LiveEventService.GetModifier("BreedingIncubationTimeMultiplier", 1)
 
+	-- Purchasable ability hook (Tidal Surge Developer Product, "2x breeding
+	-- speed" for up to 3h, see AbilityService.lua) - a single, BEWUSST
+	-- LAZY-required call at the exact point of use (identical lazy-require
+	-- principle as MonetizationService above), multiplies rather than
+	-- replaces so it stacks fairly with the VIP Diver bonus.
+	local AbilityService = require(script.Parent:WaitForChild("AbilityService"))
+	incubationMinutes = incubationMinutes / AbilityService.GetBreedingSpeedMultiplier(player)
+
 	local now = os.time()
 	local readyAt = now + (incubationMinutes * 60)
 

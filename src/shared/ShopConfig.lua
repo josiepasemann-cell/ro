@@ -60,7 +60,7 @@ local ShopConfig = {}
 
 -- // Gamepasses (GDD Abschnitt 5, "Gamepasses (einmalig, Robux)") -------------
 
-export type GamepassKey = "AutoCollector" | "DoubleCoins" | "ExtraPlot" | "VIPDiver" | "TrenchRunner"
+export type GamepassKey = "AutoCollector" | "DoubleCoins" | "ExtraPlot" | "VIPDiver" | "TrenchRunner" | "SporeMagnet" | "ExtraBuddySlot"
 
 export type GamepassDefinition = {
 	Key: GamepassKey,
@@ -118,16 +118,48 @@ ShopConfig.GAMEPASSES = {
 		IconAssetId = "rbxassetid://0",
 		EffectKey = "TrenchRunner",
 	},
+	-- Auftrag "Add purchasable abilities and boosts": zwei zusätzliche
+	-- Gamepasses (siehe AbilityConfig.lua/AbilityService.lua für die
+	-- eigentliche Effekt-Umsetzung - dieses Modul bleibt reine Datenhaltung,
+	-- identisches Prinzip wie die 5 GDD-Gamepasses oben).
+	SporeMagnet = {
+		Key = "SporeMagnet",
+		Id = 0,
+		Name = "Spore Magnet",
+		Description = "Glow Spores near you fly straight to you and are auto-collected - no more walking up to each one.",
+		PriceRobuxDisplay = 199,
+		IconAssetId = "rbxassetid://0",
+		EffectKey = "SporeMagnet",
+	},
+	ExtraBuddySlot = {
+		Key = "ExtraBuddySlot",
+		Id = 0,
+		Name = "Extra Buddy Slot",
+		Description = "Pick a SECOND buddy that follows you on your other side.",
+		PriceRobuxDisplay = 149,
+		IconAssetId = "rbxassetid://0",
+		EffectKey = "ExtraBuddySlot",
+	},
 } :: { [GamepassKey]: GamepassDefinition }
 
 --- Feste Anzeige-Reihenfolge (identisch zur GDD-Tabellenreihenfolge) -
 --- `pairs()` über GAMEPASSES garantiert keine stabile Reihenfolge.
-ShopConfig.GAMEPASS_ORDER = { "AutoCollector", "DoubleCoins", "ExtraPlot", "VIPDiver", "TrenchRunner" } :: { GamepassKey }
+ShopConfig.GAMEPASS_ORDER =
+	{ "AutoCollector", "DoubleCoins", "ExtraPlot", "VIPDiver", "TrenchRunner", "SporeMagnet", "ExtraBuddySlot" } :: { GamepassKey }
 
 -- // Entwicklerprodukte (GDD Abschnitt 5, "Entwicklerprodukte (wiederholt
 -- kaufbar, Robux)") -----------------------------------------------------------
 
-export type DevProductKey = "Coins500" | "Coins3000" | "RescueToken" | "MysteryEgg" | "RaidSkip" | "InstantBreeding"
+export type DevProductKey =
+	"Coins500"
+	| "Coins3000"
+	| "RescueToken"
+	| "MysteryEgg"
+	| "RaidSkip"
+	| "InstantBreeding"
+	| "SporeShower"
+	| "TidalSurge"
+	| "DepthCharge"
 
 export type DevProductDefinition = {
 	Key: DevProductKey,
@@ -235,9 +267,56 @@ ShopConfig.DEV_PRODUCTS = {
 		FallbackCompensationTideCoins = 150,
 		RequiresTarget = true,
 	},
+
+	-- Auftrag "Add purchasable abilities and boosts": drei zusätzliche
+	-- Entwicklerprodukte (siehe AbilityConfig.lua/AbilityService.lua für die
+	-- eigentliche Effekt-Umsetzung - dieses Modul bleibt reine Datenhaltung).
+	-- Alle drei Effekte können praktisch nur TECHNISCH fehlschlagen
+	-- (DataNotLoaded, siehe AbilityService) - die FallbackCompensation-Werte
+	-- unten sind daher ein reines Sicherheitsnetz, kein erwarteter Regelfall.
+	SporeShower = {
+		Key = "SporeShower",
+		Id = 0,
+		Name = "Spore Shower",
+		Description = "Instantly spawns 10 Glow Spores scattered around you on your own plot - even above the usual per-plot limit.",
+		PriceRobuxDisplay = 9,
+		IconAssetId = "rbxassetid://0",
+		EffectKey = "SporeShower",
+		FallbackCompensationTideCoins = 60,
+	},
+	TidalSurge = {
+		Key = "TidalSurge",
+		Id = 0,
+		Name = "Tidal Surge",
+		Description = "30 minutes of 2x idle income and 2x breeding speed. Buying again while active extends it (up to 3 hours total).",
+		PriceRobuxDisplay = 49,
+		IconAssetId = "rbxassetid://0",
+		EffectKey = "TidalSurge",
+		FallbackCompensationTideCoins = 150,
+	},
+	DepthCharge = {
+		Key = "DepthCharge",
+		Id = 0,
+		Name = "Depth Charge",
+		Description = "Grants 3 Depth Charges - use one during a raid on your plot for heavy damage to all enemies (bosses take reduced damage).",
+		PriceRobuxDisplay = 29,
+		IconAssetId = "rbxassetid://0",
+		EffectKey = "DepthCharge",
+		FallbackCompensationTideCoins = 100,
+	},
 } :: { [DevProductKey]: DevProductDefinition }
 
-ShopConfig.DEV_PRODUCT_ORDER = { "Coins500", "Coins3000", "RescueToken", "MysteryEgg", "RaidSkip", "InstantBreeding" } :: { DevProductKey }
+ShopConfig.DEV_PRODUCT_ORDER = {
+	"Coins500",
+	"Coins3000",
+	"RescueToken",
+	"MysteryEgg",
+	"RaidSkip",
+	"InstantBreeding",
+	"SporeShower",
+	"TidalSurge",
+	"DepthCharge",
+} :: { DevProductKey }
 
 -- // Gamepass-Effekt-Konstanten -------------------------------------------------
 -- Zentrale Balancing-Werte für die Gamepass-Effekte (siehe

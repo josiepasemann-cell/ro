@@ -17,7 +17,7 @@ there is no crash.
 
 ## 2. Create gamepasses
 
-For each of the following 5 gamepasses:
+For each of the following 7 gamepasses:
 
 1. On [create.roblox.com](https://create.roblox.com) → open your game →
    "Monetization" → "Passes" → "Create a Pass".
@@ -37,10 +37,12 @@ For each of the following 5 gamepasses:
 | `ExtraPlot` | Extra Habitat Plot | 199 | **Placeholder only, see deviation below** |
 | `VIPDiver` | VIP Diver | 449 | Daily bonus chest, 1.5x breeding speed, chat tag |
 | `TrenchRunner` | Trench Runner | 99 | +Movement speed (WalkSpeed) |
+| `SporeMagnet` | Spore Magnet | 199 | Nearby Glow Spores auto-collect (see `docs/abilities.md`) |
+| `ExtraBuddySlot` | Extra Buddy Slot | 149 | A second buddy follows on your other side |
 
 ## 3. Create developer products
 
-For each of the following 6 developer products:
+For each of the following 9 developer products:
 
 1. "Monetization" → "Developer Products" → "New Developer Product".
 2. Set name, description, price (see table), and icon.
@@ -55,6 +57,9 @@ For each of the following 6 developer products:
 | `MysteryEgg` | Mystery Egg | 89 | **Gacha – see compliance note below** |
 | `RaidSkip` | Raid Skip | 59 | Instantly win the current raid (1x/day) |
 | `InstantBreeding` | Instant Breeding Complete | 39 (suggested) | **Not in the GDD, see deviation below** |
+| `SporeShower` | Spore Shower | 9 | Instantly spawns 10 Glow Spores on your plot (see `docs/abilities.md`) |
+| `TidalSurge` | Tidal Surge | 49 | 30 min 2x idle income/breeding speed, stacks up to 3h |
+| `DepthCharge` | Depth Charge | 29 | Grants 3 in-raid "Depth Charge" defense charges |
 
 After entering all IDs: run `default.project.json`/Rojo sync or Studio
 publish again so `ShopConfig.lua` goes live with the real values.
@@ -139,6 +144,16 @@ RequestInstantComplete` (see the comment there: "an analogous product is
 plausible for the Brood Pool"). The suggested price (39 Robux) is a
 placeholder — please finalize it yourself before going live (Step 3
 above).
+
+### 6.5 Purchasable abilities/boosts (Spore Shower/Tidal Surge/Depth Charge/Spore Magnet/Extra Buddy Slot)
+
+These 5 products are a later addition on top of the GDD's Section 5 list
+(explicitly requested, not a deviation from anything). Full design,
+balancing constants, and the Spore Magnet "auto-deliver coins directly"
+delivery-behavior decision are documented in `docs/abilities.md` — please
+read that before finalizing prices/wording. The suggested prices in the
+tables above (9/49/29/199/149 Robux) are placeholders like everywhere else
+in this project — finalize them yourself before going live (Step 2/3 above).
 
 ## 7. Studio test mode (no Robux needed)
 

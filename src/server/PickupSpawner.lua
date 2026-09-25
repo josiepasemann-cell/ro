@@ -427,6 +427,59 @@ local function spawnGlowSporeForPlayer(player: Player, plot: Model)
 	table.insert(list, spore)
 end
 
+-- // Spore Shower (purchasable ability, see AbilityService.GrantSporeShower) ---
+-- Spawns `count` NORMAL Glow Spores scattered on `player`'s own plot,
+-- reusing the exact same reachable, "not inside buildings" scatter geometry
+-- as spawnGlowSporeForPlayer above (same radius range around the plot's
+-- platform center) - but BYPASSES HeldItemConfig.Pickup.MaxPerPlot on
+-- purpose (Auftrag: "even above the normal per-plot spore cap, then the cap
+-- applies again as they get collected" - the cap is only enforced going
+-- FORWARD by spawnGlowSporeForPlayer's own countLivePickups check, it never
+-- retroactively removes already-spawned spores). Always the plain "Normal"
+-- variant (no event-variant roll) - a paid convenience shouldn't depend on
+-- live-event RNG. Returns the number actually spawned (0 if the plot/
+-- template isn't ready, e.g. the buildscript was never run in Studio).
+function PickupSpawner.SpawnBonusSpores(player: Player, count: number): number
+	local plot = PlotRegistry.GetPlot(player)
+	if not plot then
+		return 0
+	end
+
+	local platform = plot.PrimaryPart
+	local template = getGlowSporeTemplate()
+	if not platform or not template then
+		return 0
+	end
+
+	local userId = player.UserId
+	local list = livePickupsByUser[userId]
+	if not list then
+		list = {}
+		livePickupsByUser[userId] = list
+	end
+
+	local pickupsFolder = getOrCreatePickupsFolder(plot)
+	local spawnedCount = 0
+
+	for _ = 1, count do
+		local angle = rng:NextNumber() * math.pi * 2
+		local radius = rng:NextNumber(HeldItemConfig.Pickup.MinSpawnRadiusStuds, HeldItemConfig.Pickup.SpawnRadiusStuds)
+		local localOffset = Vector3.new(math.cos(angle) * radius, platform.Size.Y / 2 + 1.5, math.sin(angle) * radius)
+
+		local spore = template:Clone()
+		spore.Name = "GlowSporePickup"
+		spore:SetAttribute("OwnerUserId", userId)
+		spore.Parent = pickupsFolder
+		spore:PivotTo(platform.CFrame * CFrame.new(localOffset))
+
+		attachPickupPrompt(spore)
+		table.insert(list, spore)
+		spawnedCount += 1
+	end
+
+	return spawnedCount
+end
+
 -- // GlowBuoyStation: Abgabe --------------------------------------------------
 
 -- Sowohl die normale/Toxic-Tide-Spore (ItemKind GLOW_SPORE_KIND, siehe

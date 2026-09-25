@@ -60,6 +60,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CodexRemotes = require(ReplicatedStorage:WaitForChild("CodexRemotes"))
 local BuddyRemotes = require(ReplicatedStorage:WaitForChild("BuddyRemotes"))
+-- Extra Buddy Slot Gamepass (Auftrag "purchasable abilities/boosts"): only
+-- used here to know whether the SECOND "Set Buddy 2" button should even be
+-- offered - AbilityService.GetStatus is the single source of truth for
+-- gamepass ownership, no second, redundant ownership lookup added here.
+local AbilityRemotes = require(ReplicatedStorage:WaitForChild("AbilityRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
@@ -188,6 +193,29 @@ local function fetchBuddyCreatureId(): string?
 	return nil
 end
 
+--- Second buddy slot's current creature (or nil) - see fetchBuddyCreatureId.
+local function fetchBuddyCreatureId2(): string?
+	local ok, result = pcall(function()
+		return BuddyRemotes.GetBuddyState:InvokeServer()
+	end)
+	if ok and typeof(result) == "table" then
+		return result.CreatureId2
+	end
+	return nil
+end
+
+--- Whether the local player owns the "Extra Buddy Slot" gamepass - gates
+--- whether the "Set Buddy 2" button appears on owned cards at all.
+local function fetchHasExtraBuddySlot(): boolean
+	local ok, result = pcall(function()
+		return AbilityRemotes.GetAbilityStatus:InvokeServer()
+	end)
+	if ok and typeof(result) == "table" then
+		return result.HasExtraBuddySlot == true
+	end
+	return false
+end
+
 -- // Panel-Grundgerüst (einmalig gebaut) ----------------------------------------
 
 local panel = Panel.new({
@@ -203,6 +231,9 @@ local currentFavorites: { string } = {}
 local pendingFavoriteRequest = false
 local currentBuddyCreatureId: string? = nil
 local pendingBuddyRequest = false
+local currentBuddyCreatureId2: string? = nil
+local pendingBuddyRequest2 = false
+local currentHasExtraBuddySlot = false
 
 local function destroyCurrentTabs()
 	if currentTabsHandle then
@@ -223,7 +254,9 @@ local function buildCard(
 	isBuddy: boolean,
 	layoutOrder: number,
 	onFavoriteToggle: (() -> ())?,
-	onBuddyToggle: (() -> ())?
+	onBuddyToggle: (() -> ())?,
+	isBuddy2: boolean?,
+	onBuddyToggle2: (() -> ())?
 )
 	local card = Instance.new("Frame")
 	card.Name = entry.CreatureId
@@ -280,6 +313,22 @@ local function buildCard(
 		buddyButton.Instance.AnchorPoint = Vector2.new(0, 0)
 		buddyButton.Instance.Position = UDim2.new(0, 4, 0, 4)
 		buddyButton.Clicked:Connect(onBuddyToggle)
+	end
+
+	-- Second buddy slot (Extra Buddy Slot gamepass, 149 Robux) - identical
+	-- placement idea as "Set Buddy" above, stacked directly below it so no
+	-- existing card layout needs to change. Only ever passed when the local
+	-- player actually owns the gamepass (see rebuildPanel).
+	if owned and onBuddyToggle2 then
+		local buddyButton2 = Button.new({
+			Parent = iconArea,
+			Text = isBuddy2 and "✓ Buddy 2" or "Set Buddy 2",
+			Variant = isBuddy2 and "Success" or "Ghost",
+			Size = UDim2.fromOffset(isBuddy2 and 72 or 78, 26),
+		})
+		buddyButton2.Instance.AnchorPoint = Vector2.new(0, 0)
+		buddyButton2.Instance.Position = UDim2.new(0, 4, 0, 34)
+		buddyButton2.Clicked:Connect(onBuddyToggle2)
 	end
 
 	local nameLabel = Instance.new("TextLabel")
@@ -345,6 +394,7 @@ end
 
 local requestFavoritesUpdate: (({ string }) -> ())? = nil
 local requestBuddyUpdate: ((string?) -> ())? = nil
+local requestBuddyUpdate2: ((string?) -> ())? = nil
 
 --- Baut den kompletten Panel-Inhalt (Tabs + Karten) frisch auf. Wird beim
 --- Öffnen sowie nach jeder erfolgreichen Favoriten-/Belohnungs-/Buddy-
@@ -359,6 +409,8 @@ local function rebuildPanel(preferredTabId: string?)
 
 	currentFavorites = state.Favorites
 	currentBuddyCreatureId = fetchBuddyCreatureId()
+	currentBuddyCreatureId2 = fetchBuddyCreatureId2()
+	currentHasExtraBuddySlot = fetchHasExtraBuddySlot()
 
 	destroyCurrentTabs()
 
@@ -442,6 +494,20 @@ local function rebuildPanel(preferredTabId: string?)
 		end
 	end
 
+	--- Second buddy slot (Extra Buddy Slot gamepass) - identical toggle
+	--- principle as onBuddyToggleFactory above, its own independent slot.
+	local function onBuddyToggleFactory2(creatureId: string): () -> ()
+		return function()
+			if pendingBuddyRequest2 then
+				return
+			end
+			local newBuddyCreatureId2: string? = if currentBuddyCreatureId2 == creatureId then nil else creatureId
+			if requestBuddyUpdate2 then
+				requestBuddyUpdate2(newBuddyCreatureId2)
+			end
+		end
+	end
+
 	for _, zoneId in ipairs(catalog.ZoneOrder) do
 		local contentFrame = tabsHandle:GetContentFrame(zoneId)
 		local completion = state.ZoneCompletion[zoneId]
@@ -515,6 +581,7 @@ local function rebuildPanel(preferredTabId: string?)
 			local owned = state.OwnedCreatureIds[entry.CreatureId] == true
 			local isFavorite = table.find(currentFavorites, entry.CreatureId) ~= nil
 			local isBuddy = currentBuddyCreatureId == entry.CreatureId
+			local isBuddy2 = currentBuddyCreatureId2 == entry.CreatureId
 			buildCard(
 				grid,
 				entry,
@@ -523,7 +590,9 @@ local function rebuildPanel(preferredTabId: string?)
 				isBuddy,
 				index,
 				owned and onFavoriteToggleFactory(entry.CreatureId) or nil,
-				owned and onBuddyToggleFactory(entry.CreatureId) or nil
+				owned and onBuddyToggleFactory(entry.CreatureId) or nil,
+				isBuddy2,
+				(owned and currentHasExtraBuddySlot) and onBuddyToggleFactory2(entry.CreatureId) or nil
 			)
 		end
 	end
@@ -538,6 +607,7 @@ local function rebuildPanel(preferredTabId: string?)
 			local owned = state.OwnedCreatureIds[entry.CreatureId] == true
 			local isFavorite = table.find(currentFavorites, entry.CreatureId) ~= nil
 			local isBuddy = currentBuddyCreatureId == entry.CreatureId
+			local isBuddy2 = currentBuddyCreatureId2 == entry.CreatureId
 			buildCard(
 				grid,
 				entry,
@@ -546,7 +616,9 @@ local function rebuildPanel(preferredTabId: string?)
 				isBuddy,
 				index,
 				owned and onFavoriteToggleFactory(entry.CreatureId) or nil,
-				owned and onBuddyToggleFactory(entry.CreatureId) or nil
+				owned and onBuddyToggleFactory(entry.CreatureId) or nil,
+				isBuddy2,
+				(owned and currentHasExtraBuddySlot) and onBuddyToggleFactory2(entry.CreatureId) or nil
 			)
 		end
 	end
@@ -560,6 +632,11 @@ end
 requestBuddyUpdate = function(newBuddyCreatureId: string?)
 	pendingBuddyRequest = true
 	BuddyRemotes.RequestSetBuddy:FireServer(newBuddyCreatureId)
+end
+
+requestBuddyUpdate2 = function(newBuddyCreatureId2: string?)
+	pendingBuddyRequest2 = true
+	BuddyRemotes.RequestSetBuddy2:FireServer(newBuddyCreatureId2)
 end
 
 -- // Server-Antworten -----------------------------------------------------------
@@ -594,6 +671,26 @@ local setBuddyConnection = BuddyRemotes.SetBuddyResult.OnClientEvent:Connect(fun
 	end
 	if panel.ScreenGui.Enabled then
 		-- Panel noch offen: Karten-Buddy-Zustände synchron halten.
+		rebuildPanel(nil)
+	end
+end)
+
+--- Second buddy slot result - same wording/behavior as setBuddyConnection
+--- above, plus the gamepass-specific "NoExtraSlot" rejection reason.
+local setBuddy2Connection = BuddyRemotes.SetBuddy2Result.OnClientEvent:Connect(function(payload: { [string]: any })
+	pendingBuddyRequest2 = false
+	if payload.Success then
+		if payload.CreatureId then
+			Toast.Show({ Text = "Second buddy set! It will follow you on your other side.", Type = "Success", Duration = 2.5 })
+		else
+			Toast.Show({ Text = "Second buddy removed.", Type = "Info", Duration = 2 })
+		end
+	elseif payload.Reason == "NoExtraSlot" then
+		Toast.Show({ Text = "You need the Extra Buddy Slot gamepass for a second buddy.", Type = "Warning", Duration = 3.5 })
+	else
+		Toast.Show({ Text = "Could not set second buddy (" .. tostring(payload.Reason) .. ").", Type = "Error" })
+	end
+	if panel.ScreenGui.Enabled then
 		rebuildPanel(nil)
 	end
 end)
@@ -634,6 +731,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	openConnection:Disconnect()
 	setFavoritesConnection:Disconnect()
 	setBuddyConnection:Disconnect()
+	setBuddy2Connection:Disconnect()
 	claimResultConnection:Disconnect()
 	destroyCurrentTabs()
 	panel:Destroy()

@@ -1010,6 +1010,49 @@ function RaidService.RequestRaidSkip(player: Player): (boolean, string?)
 	return true, nil
 end
 
+-- // EINHÄNGEPUNKT: Robux-"Depth Charge" (Entwicklerprodukt, purchasable ability) --
+-- Applies heavy damage to every currently alive enemy in `player`'s OWN
+-- active raid (charge-count/cooldown/"is there even an active raid on your
+-- plot" gating is the CALLER's job, see AbilityService.RequestDepthCharge -
+-- this function only knows raid combat, not purchasable-ability bookkeeping,
+-- identical separation-of-concerns principle to
+-- RaidService.RequestRescueWithToken vs. MonetizationService above).
+-- Bosses (Model attribute "IsBoss", see applyEnemyVisual) take REDUCED
+-- damage (a fraction of their OWN max HP) so a single charge never
+-- trivializes a boss fight; regular enemies take `nonBossDamage` (a
+-- deliberately huge flat value that always defeats them outright). Returns
+-- (false, "NoActiveRaid") if there is no active, unfinished raid on the
+-- player's plot, else (true, nil, raid.CenterPosition, enemiesHit) for the
+-- caller to relay a client-side FX trigger.
+function RaidService.ApplyDepthChargeDamage(player: Player, nonBossDamage: number, bossDamageFraction: number): (boolean, string?, Vector3?, number?)
+	local raid = activeRaids[player.UserId]
+	if not raid or raid.Finished then
+		return false, "NoActiveRaid", nil, nil
+	end
+
+	local enemiesHit = 0
+	for _, enemy in ipairs(raid.Enemies) do
+		if enemy.Model.Parent then
+			local isBoss = enemy.Model:GetAttribute("IsBoss") == true
+			local damage = if isBoss then enemy.MaxHP * bossDamageFraction else nonBossDamage
+			enemy.CurrentHP -= damage
+			enemiesHit += 1
+
+			RaidRemotes.EnemyHit:FireClient(player, {
+				TowerPosition = raid.CenterPosition,
+				EnemyPosition = enemy.Model:GetPivot().Position,
+			})
+		end
+	end
+
+	removeDeadEnemies(raid)
+	-- May advance the wave or finish the raid outright if this cleared all
+	-- remaining enemies - identical progression path as regular tower kills.
+	tickWaveProgress(raid)
+
+	return true, nil, raid.CenterPosition, enemiesHit
+end
+
 --- Räumt den rein transienten Laufzeit-Zustand eines Spielers auf
 --- (PlayerRemoving). Ein aktiver Raid wird dabei bewusst NEUTRAL abgebrochen
 --- (kein Sieg/keine Niederlage gewertet, keine Belohnung/Entführung) - ein

@@ -148,6 +148,13 @@ local function computeIncomePerMinute(player: Player): number
 		multiplier *= MonetizationService.GetDoubleCoinsMultiplier()
 	end
 
+	-- Purchasable ability hook (Tidal Surge Developer Product, "2x idle
+	-- income" for up to 3h, see AbilityService.lua) - a single, BEWUSST
+	-- LAZY-required call at the exact point of use, identical lazy-require
+	-- principle as MonetizationService above (avoids a load-time cycle).
+	local AbilityService = require(script.Parent:WaitForChild("AbilityService"))
+	multiplier *= AbilityService.GetIdleIncomeMultiplier(player)
+
 	return totalPerMinute * multiplier
 end
 

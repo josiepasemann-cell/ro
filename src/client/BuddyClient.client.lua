@@ -201,6 +201,7 @@ type BuddyEntry = {
 	Model: Model,
 	PrimaryPart: BasePart,
 	OwnerUserId: number,
+	Slot: number, -- 1 (default) or 2 (Extra Buddy Slot gamepass, see BuddyService "BuddySlot" attribute) - mirrors the follow offset to the OTHER side
 	Position: Vector3,
 	Yaw: number,
 	BobPhase: number,
@@ -330,11 +331,13 @@ local function createEntry(model: Model)
 	end
 
 	local startPosition = model:GetPivot().Position
+	local slotAttribute = model:GetAttribute("BuddySlot")
 
 	local entry: BuddyEntry = {
 		Model = model,
 		PrimaryPart = primaryPart,
 		OwnerUserId = ownerUserId,
+		Slot = if slotAttribute == 2 then 2 else 1,
 		Position = startPosition,
 		Yaw = 0,
 		BobPhase = rng:NextNumber() * math.pi * 2,
@@ -403,7 +406,10 @@ local function updateEntry(entry: BuddyEntry, dt: number)
 		return
 	end
 
-	local offset = FOLLOW_OFFSET_LOCAL
+	-- Extra Buddy Slot gamepass (Auftrag "purchasable abilities/boosts"):
+	-- Slot 2 follows on the OTHER side - mirror the X offset only (Y/Z stay
+	-- identical, "hinter/neben der Schulter" on the opposite shoulder).
+	local offset = if entry.Slot == 2 then Vector3.new(-FOLLOW_OFFSET_LOCAL.X, FOLLOW_OFFSET_LOCAL.Y, FOLLOW_OFFSET_LOCAL.Z) else FOLLOW_OFFSET_LOCAL
 	local carryPose = (character :: Model):GetAttribute("CarryPose")
 	if carryPose == "TwoHand" then
 		offset = offset + Vector3.new(0, 0, TWO_HAND_EXTRA_BACK_OFFSET)

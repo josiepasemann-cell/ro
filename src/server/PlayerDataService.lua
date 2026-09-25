@@ -231,8 +231,33 @@ export type CodexState = {
 --- CreatureInstance.InstanceId - identische Begründung: eine Raid-
 --- Entführung einer einzelnen Instanz soll den Buddy nicht invalidieren,
 --- solange noch eine andere Instanz derselben Art besessen wird.
+--- SCHEMA_VERSION 8 addition: `CreatureId2` is a SECOND buddy slot, only
+--- ever populated for owners of the "Extra Buddy Slot" gamepass (GDD-style
+--- purchasable ability/boost, see ShopConfig.GAMEPASSES.ExtraBuddySlot).
+--- Same "creature ART, not InstanceId" convention as `CreatureId` above.
+--- Ownership/gamepass-gating is validated entirely in BuddyService, NOT
+--- here (identical principle to the rest of this file).
 export type BuddyState = {
 	CreatureId: string?,
+	CreatureId2: string?,
+}
+
+--- SCHEMA_VERSION 8 addition: purchasable abilities/boosts state (Spore
+--- Shower/Tidal Surge/Depth Charge Developer Products, see
+--- AbilityConfig.lua + AbilityService.lua). Pure data storage, identical
+--- principle to BuddyState/AchievementState above - validation/effect
+--- application lives entirely in AbilityService.
+--- `TidalSurgeActiveUntil`: absolute os.time() the 2x idle income/breeding
+--- speed boost expires, or nil if inactive. Repeat purchases EXTEND this
+--- (capped at AbilityConfig.TidalSurge.MaxRemainingSeconds total remaining)
+--- instead of resetting it - see AbilityService.ExtendTidalSurge.
+--- `DepthChargeCount`: persisted, purchasable raid-defense charges (Depth
+--- Charge Developer Product grants +3 per purchase) - consumed one at a
+--- time via AbilityService.RequestDepthCharge, server-validated against an
+--- active raid on the player's OWN plot.
+export type AbilityState = {
+	TidalSurgeActiveUntil: number?,
+	DepthChargeCount: number,
 }
 
 --- Achievements/rewards/titles state (assignment: "Achievements with
@@ -361,6 +386,7 @@ export type PlayerData = {
 	LiveEventState: LiveEventState,
 	BuddyState: BuddyState,
 	AchievementState: AchievementState,
+	AbilityState: AbilityState,
 
 	OnboardingCompleted: boolean,
 
@@ -404,7 +430,13 @@ export type PlayerData = {
 -- Roblox badges system, see AchievementState type comment above). Again a
 -- pure top-level field ADDITION, no dedicated MIGRATIONS[6] function
 -- needed.
-local SCHEMA_VERSION = 7
+--
+-- SCHEMA_VERSION 8: AbilityState added (purchasable abilities/boosts: Spore
+-- Shower/Tidal Surge/Depth Charge Developer Products, see AbilityState type
+-- comment above) + BuddyState.CreatureId2 added (Extra Buddy Slot
+-- gamepass). Both are pure top-level/nested field ADDITIONS, no dedicated
+-- MIGRATIONS[7] function needed (identical reasoning as versions 2-7 above).
+local SCHEMA_VERSION = 8
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -578,6 +610,7 @@ local function createDefaultData(userId: number): PlayerData
 
 		BuddyState = {
 			CreatureId = nil,
+			CreatureId2 = nil,
 		},
 
 		AchievementState = {
@@ -586,6 +619,11 @@ local function createDefaultData(userId: number): PlayerData
 			Claimed = {},
 			EquippedTitle = nil,
 			BackfillCompleted = false,
+		},
+
+		AbilityState = {
+			TidalSurgeActiveUntil = nil,
+			DepthChargeCount = 0,
 		},
 
 		OnboardingCompleted = false,
@@ -1701,6 +1739,23 @@ function PlayerDataService.SetBuddyCreatureId(player: Player, creatureId: string
 	return true
 end
 
+--- SCHEMA_VERSION 8: zweiter, optionaler Buddy-Slot (Extra Buddy Slot
+--- Gamepass). Analog zu GetBuddyCreatureId/SetBuddyCreatureId - Besitz-
+--- Validierung (Kreatur UND Gamepass) bleibt vollständig in BuddyService.
+function PlayerDataService.GetBuddyCreatureId2(player: Player): string?
+	local data = dataCache[player.UserId]
+	return data and data.BuddyState.CreatureId2 or nil
+end
+
+function PlayerDataService.SetBuddyCreatureId2(player: Player, creatureId: string?): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.BuddyState.CreatureId2 = creatureId
+	return true
+end
+
 --- Trägt `title` in UnlockedTitles ein (nur einmal, Duplikate übersprungen) -
 --- generischer Gegenstück zu SetCodexZoneRewardClaimed's Titel-Vergabe oben,
 --- für Aufrufer, die KEINE Zonen-Sammel-Belohnung meinen (z. B.
@@ -1795,6 +1850,53 @@ end
 function PlayerDataService.GetUnlockedTitles(player: Player): { string }
 	local data = dataCache[player.UserId]
 	return data and data.CodexState.UnlockedTitles or {}
+end
+
+-- // Purchasable abilities/boosts (AbilityState) ------------------------------
+-- Pure data storage - validation/effect application (Tidal Surge multiplier,
+-- Depth Charge raid-damage, Spore Shower spawn) lives entirely in
+-- AbilityService, NOT here (identical principle to BuddyState/QuestState).
+
+--- Returns the absolute os.time() Tidal Surge expires, or nil if inactive/
+--- never purchased/not loaded. Live value - AbilityService itself decides
+--- whether `os.time() < this` still counts as "active" (this getter never
+--- auto-clears an expired timestamp, that's rendered harmless because every
+--- consumer already compares against the current time).
+function PlayerDataService.GetTidalSurgeActiveUntil(player: Player): number?
+	local data = dataCache[player.UserId]
+	return data and data.AbilityState.TidalSurgeActiveUntil or nil
+end
+
+--- Raw setter WITHOUT validation/capping - AbilityService.ExtendTidalSurge
+--- computes the new, already-capped absolute timestamp BEFORE calling this.
+--- Returns false if the player's data isn't loaded.
+function PlayerDataService.SetTidalSurgeActiveUntil(player: Player, activeUntil: number?): boolean
+	local data = dataCache[player.UserId]
+	if not data then
+		return false
+	end
+	data.AbilityState.TidalSurgeActiveUntil = activeUntil
+	return true
+end
+
+--- Persisted Depth Charge count (raid-defense charges, see
+--- AbilityService.RequestDepthCharge). 0 if not loaded.
+function PlayerDataService.GetDepthChargeCount(player: Player): number
+	local data = dataCache[player.UserId]
+	return data and data.AbilityState.DepthChargeCount or 0
+end
+
+--- Adds (or, with a negative amount, subtracts - clamped at 0) charges to
+--- the persisted Depth Charge count. Returns (false, nil) if not loaded,
+--- else (true, newCount).
+function PlayerDataService.AddDepthCharges(player: Player, amount: number): (boolean, number?)
+	local data = dataCache[player.UserId]
+	if not data or type(amount) ~= "number" then
+		return false, nil
+	end
+	local newCount = math.max(0, data.AbilityState.DepthChargeCount + amount)
+	data.AbilityState.DepthChargeCount = newCount
+	return true, newCount
 end
 
 return PlayerDataService
