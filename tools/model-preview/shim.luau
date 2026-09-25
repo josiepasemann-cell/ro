@@ -474,6 +474,7 @@ local CLASS_PARENTS = {
 	UICorner = "UIComponent", UIStroke = "UIComponent", UIListLayout = "UIComponent", UIPadding = "UIComponent",
 	UIGradient = "UIComponent", UIAspectRatioConstraint = "UIComponent", UIGridLayout = "UIComponent", UIComponent = "Instance",
 	Decal = "FaceInstance", Texture = "Decal", FaceInstance = "Instance", SpecialMesh = "FileMesh", FileMesh = "DataModelMesh", DataModelMesh = "Instance",
+	BlockMesh = "BevelMesh", CylinderMesh = "BevelMesh", BevelMesh = "DataModelMesh",
 	Weld = "JointInstance", WeldConstraint = "Instance", Motor6D = "JointInstance", JointInstance = "Instance",
 	Humanoid = "Instance", ProximityPrompt = "Instance", ClickDetector = "Instance", Sound = "Instance", Highlight = "Instance",
 	StringValue = "ValueBase", NumberValue = "ValueBase", IntValue = "ValueBase", BoolValue = "ValueBase", ObjectValue = "ValueBase",
@@ -509,6 +510,13 @@ local function defaultProps(cls)
 		if cls == "Part" or cls == "SpawnLocation" then p.Shape = Enum.PartType.Block end
 	elseif cls == "Attachment" then
 		p.CFrame = CFrame.new()
+	elseif cls == "SpecialMesh" or cls == "BlockMesh" or cls == "CylinderMesh" or cls == "FileMesh" then
+		if cls == "SpecialMesh" then p.MeshType = Enum.MeshType.Head end -- Roblox default
+		p.Scale = v3(1, 1, 1)
+		p.Offset = v3(0, 0, 0)
+		p.MeshId = ""
+		p.TextureId = ""
+		p.VertexColor = v3(1, 1, 1)
 	elseif cls == "PointLight" or cls == "SpotLight" or cls == "SurfaceLight" then
 		p.Brightness = 1
 		p.Range = 8
@@ -1098,6 +1106,29 @@ partJson = function(p, worldCF, override, role)
 		'"effects":' .. effectsJson(p),
 	}
 	if role then table.insert(parts, '"role":"' .. role .. '"') end
+	-- first DataModelMesh child replaces the part's rendered shape (CSG ignores meshes, so skip operands)
+	if not role and not p._csg then
+		for _, c in ipairs(p._children) do
+			local mt
+			if c._class == "SpecialMesh" then
+				mt = enumName(c._props.MeshType)
+				if mt == "" then mt = "Head" end
+			elseif c._class == "FileMesh" then mt = "FileMesh"
+			elseif c._class == "BlockMesh" then mt = "Brick"
+			elseif c._class == "CylinderMesh" then mt = "CylinderMesh"
+			end
+			if mt then
+				local sc = c._props.Scale or v3(1, 1, 1)
+				local of = c._props.Offset or v3(0, 0, 0)
+				if typeOf(sc) ~= "Vector3" then sc = v3(1, 1, 1) end
+				if typeOf(of) ~= "Vector3" then of = v3(0, 0, 0) end
+				table.insert(parts, '"meshType":' .. jstr(mt))
+				table.insert(parts, '"meshScale":[' .. num(sc.x) .. "," .. num(sc.y) .. "," .. num(sc.z) .. "]")
+				table.insert(parts, '"meshOffset":[' .. num(of.x) .. "," .. num(of.y) .. "," .. num(of.z) .. "]")
+				break
+			end
+		end
+	end
 	if p._csg then
 		-- nested CSG results carry their own override chain
 		local ov = override
