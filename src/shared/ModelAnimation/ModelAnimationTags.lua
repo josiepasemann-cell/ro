@@ -30,6 +30,20 @@ ModelAnimationTags.RAID_ENEMY = "RaidEnemyMotion"
 -- unabhängig vom Raid-Status getaggt (idle-pulst auch außerhalb eines Raids).
 ModelAnimationTags.RAID_TOWER = "RaidTower"
 
+-- Weltpickups (Glow Spore/Toxic Spore/Frozen Spore/Sunken Chest, siehe
+-- PickupSpawner) - rein kosmetischer Idle-Bob/Spin/Puls der DEKORATIVEN
+-- Kind-Parts (NICHT des PrimaryPart "Body", der das serverseitig
+-- angebrachte ProximityPrompt trägt - siehe IdleSway.ApplyStationary /
+-- docs/animation-system.md "ProximityPrompt bleibt ortsfest").
+ModelAnimationTags.PICKUP_IDLE = "PickupIdle"
+
+-- Platzierte Gebäude (PlacementService) - Pop-in-Skalierung beim Platzieren,
+-- Flash beim Upgrade-Modell-Tausch, Schrumpfen beim Verkauf.
+ModelAnimationTags.BUILDING_PLACED = "BuildingPlacedAnim"
+
+-- Mystery-Eggs an der Hub-Station (GachaServer) - sanftes Idle-Wobble.
+ModelAnimationTags.HUB_EGG = "HubEggIdle"
+
 -- // Attribut-Namen (auf dem jeweiligen Model gesetzt) -------------------------
 
 -- Gemeinsam von DISPLAY_CREATURE + RAID_ENEMY: die aktuelle serverseitige
@@ -56,5 +70,28 @@ ModelAnimationTags.ATTR_DYING_AT = "DyingAt"
 -- Verlangsamungszone steht (siehe RaidService.computeSpeedMultiplier) -
 -- treibt eine sichtbar langsamere/"eingefrorenere" Idle-Wobble-Animation.
 ModelAnimationTags.ATTR_SLOWED = "Slowed"
+
+-- PICKUP_IDLE (Sunken Chest, Spore-Magnet-Auto-Collect): Server-Zeitstempel,
+-- ab dem dieses Pickup bereits eingesammelt wurde (Belohnung schon
+-- gewertet) - treibt die client-seitige "fliegt zum Sammler + schrumpft"-
+-- Animation, bevor der Server das Modell nach HeldItemConfig.
+-- CollectFxSeconds tatsächlich zerstört (siehe PickupSpawner/AbilityService
+-- scheduleCollectDestroy).
+ModelAnimationTags.ATTR_COLLECTED_AT = "CollectedAt"
+
+-- PICKUP_IDLE: UserId des Spielers, zu dem das Pickup während der
+-- Collect-Animation hinfliegt (der Client folgt live dessen Charakter-
+-- Position, falls dieser sich währenddessen weiterbewegt).
+ModelAnimationTags.ATTR_COLLECTOR_USER_ID = "CollectorUserId"
+
+-- BUILDING_PLACED: Server-Zeitstempel des Platzierens/Upgrades - treibt die
+-- client-seitige Pop-in-Skalierung bzw. den Upgrade-Flash.
+ModelAnimationTags.ATTR_PLACED_AT = "PlacedAt"
+
+-- BUILDING_PLACED: Server-Zeitstempel, ab dem das Gebäude verkauft wurde
+-- (Modell soll noch kurz sichtbar schrumpfen, bevor der Server es nach
+-- kurzer Karenzzeit zerstört) - identisches Karenzzeit-Prinzip wie
+-- ATTR_DYING_AT/ATTR_COLLECTED_AT.
+ModelAnimationTags.ATTR_SOLD_AT = "SoldAt"
 
 return ModelAnimationTags

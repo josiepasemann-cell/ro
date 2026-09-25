@@ -44,6 +44,8 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
+local Workspace = game:GetService("Workspace")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
@@ -52,6 +54,7 @@ local ProgressionService = require(script.Parent:WaitForChild("ProgressionServic
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
+local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 type BuildField = PlotRegistry.BuildField
 
@@ -172,6 +175,22 @@ local function tagModel(model: Model, placementId: string, buildingId: string, f
 	model:SetAttribute("Level", level or 1)
 end
 
+--- Seamless-Animation-System (docs/animation-system.md): idempotentes Tag +
+--- Zeitstempel für den Client-Renderer (ModelAnimator.client.lua) - bewusst
+--- NICHT Teil von `tagModel` selbst, da `tagModel` auch beim reinen
+--- Layout-Restore beim Join läuft (RestorePlayerLayout), wo KEINE Pop-in-/
+--- Flash-Animation gewünscht ist (die Gebäude sollen beim Join einfach
+--- "schon da" sein, nicht jedes Mal neu einpoppen). Nur an den drei
+--- tatsächlichen Ereignissen aufgerufen: frische Platzierung (RequestPlace),
+--- Modell-Tausch beim Upgrade UND Fail-Soft-Akzent-Update beim Upgrade
+--- (beide in applyStageToModel) - der Client unterscheidet "brandneue
+--- Modell-Instanz" (Pop-in) von "bereits bekannte Instanz, Attribut ändert
+--- sich erneut" (kurzer Flash) selbst.
+local function markPlacementFx(model: Model)
+	CollectionService:AddTag(model, ModelAnimationTags.BUILDING_PLACED)
+	model:SetAttribute(ModelAnimationTags.ATTR_PLACED_AT, Workspace:GetServerTimeNow())
+end
+
 -- // Gebäude-Upgrade-System: Modell-Wechsel bzw. Fail-Soft-Akzent -----------
 -- (siehe docs/building-upgrades.md + AssetTemplateSetup.GetBuildingStageTemplate-
 -- Kopfkommentar zur Fail-Soft-Design-Entscheidung).
@@ -268,6 +287,7 @@ local function applyStageToModel(
 		newModel.Parent = parent
 		newModel:PivotTo(pivot)
 		tagModel(newModel, placementId, meta.BuildingId, meta.FieldIndex, targetStage)
+		markPlacementFx(newModel)
 
 		meta.Model = newModel
 		return
@@ -277,6 +297,7 @@ local function applyStageToModel(
 	-- nur Attribute + Fail-Soft-Akzent aktualisieren (siehe Kopfkommentar).
 	tagModel(oldModel, placementId, meta.BuildingId, meta.FieldIndex, targetStage)
 	applyStageAccent(oldModel, targetStage)
+	markPlacementFx(oldModel)
 end
 
 -- // Öffentliche API ------------------------------------------------------
@@ -380,6 +401,7 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 	local model = template:Clone()
 	model.Name = "Building_" .. placement.PlacementId
 	tagModel(model, placement.PlacementId, buildingId, field.Index, placement.Level)
+	markPlacementFx(model)
 	model.Parent = buildingsFolder
 	model:PivotTo(field.Attachment.WorldCFrame * CFrame.Angles(0, math.rad(snappedRotation), 0))
 
@@ -448,8 +470,21 @@ function PlacementService.RequestRemove(player: Player, placementId: any): Remov
 	-- SellRefundFraction-Anteil der Baukosten erstattet.
 	PlayerDataService.RemoveIncubation(player, placementId)
 
+	-- Seamless-Animation-System (docs/animation-system.md): Refund wird
+	-- unten wie gewohnt sofort berechnet/gutgeschrieben - nur das
+	-- tatsächliche `:Destroy()` verzögert sich, damit der Client
+	-- (ModelAnimator.client.lua) das Gebäude sichtbar schrumpfen lassen kann
+	-- statt es instant verschwinden zu lassen (identisches Karenzzeit-
+	-- Prinzip wie RaidService.scheduleDeathDestroy).
 	if meta.Model and meta.Model.Parent then
-		meta.Model:Destroy()
+		local soldModel = meta.Model
+		CollectionService:AddTag(soldModel, ModelAnimationTags.BUILDING_PLACED)
+		soldModel:SetAttribute(ModelAnimationTags.ATTR_SOLD_AT, Workspace:GetServerTimeNow())
+		task.delay(BuildingConfig.SELL_FX_SECONDS, function()
+			if soldModel.Parent then
+				soldModel:Destroy()
+			end
+		end)
 	end
 
 	userPlacements[placementId] = nil

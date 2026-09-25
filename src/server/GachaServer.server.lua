@@ -25,9 +25,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
+local CollectionService = game:GetService("CollectionService")
+
 local GachaService = require(script.Parent:WaitForChild("GachaService"))
 local GachaConfig = require(script.Parent:WaitForChild("GachaConfig"))
 local GachaRemotes = require(ReplicatedStorage:WaitForChild("GachaRemotes"))
+local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 -- Die Ei-Buildscripts bauen die Eier nebeneinander nahe dem Weltursprung.
 -- Klickbar sollen sie aber an der Mystery-Egg-Station im Hub stehen: drei
@@ -77,6 +80,12 @@ local function arrangeEggsAtStation()
 			if slot and slot:IsA("Attachment") then
 				local height = child:GetExtentsSize().Y
 				child:PivotTo(CFrame.new(slot.WorldPosition + Vector3.new(0, height / 2, 0)))
+				-- Seamless-Animation-System (docs/animation-system.md): rein
+				-- kosmetisches Idle-Wobble am Client (ModelAnimator.client.lua)
+				-- - diese 3 Schau-Eier stehen fest auf ihrem Slot und werden vom
+				-- Server nie wieder bewegt, also genügt ein einmaliges Tag ohne
+				-- weitere Zeitstempel-Attribute.
+				CollectionService:AddTag(child, ModelAnimationTags.HUB_EGG)
 			else
 				child.Parent = gachaTemplates
 			end

@@ -287,6 +287,14 @@ local DEFINITIONS: { [string]: BuildingDefinition } = {
 BuildingConfig.ORDER =
 	{ "GlowBuoyStation", "BroodPool", "FilterPlant", "AnglerfishTower", "CoralBarrier", "ElectricEelTrap" } :: { BuildingId }
 
+-- Seamless-Animation-System (docs/animation-system.md): wie lange a sold
+-- building's model still exists in the Workspace AFTER PlacementService.
+-- RequestRemove already granted the refund, purely so the client
+-- (ModelAnimator.client.lua) can play a shrink-out instead of an instant
+-- pop - identical grace-period principle to RaidConfig.DEATH_FX_SECONDS /
+-- HeldItemConfig.CollectFxSeconds.
+BuildingConfig.SELL_FX_SECONDS = 0.35
+
 --- Liefert die Definition für `buildingId`, oder nil bei unbekannter Id.
 --- Nimmt bewusst `string` (nicht `BuildingId`) entgegen, da Aufrufer
 --- (insbesondere PlacementService bei Remote-Eingaben) einen ungeprüften

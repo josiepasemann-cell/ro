@@ -48,6 +48,13 @@ local ROLL_SPEED = 0.5
 local PART_SWAY_ANGLE = math.rad(14)
 local PART_SWAY_SPEED_MIN, PART_SWAY_SPEED_MAX = 1.0, 2.2
 
+-- Stationary-Modus-Tuning (siehe BuildStationaryState/ApplyStationary
+-- weiter unten) - kleiner als der normale Bob, da hier NUR die dekorativen
+-- Kind-Parts bewegt werden, nicht das gesamte Modell.
+local STATIONARY_BOB_STUDS = 0.22
+local STATIONARY_SPIN_SPEED_SCALE = 0.5
+local STATIONARY_LIGHT_PULSE_SPEED = 1.6
+
 -- Namensbasierte Erkennung schwenkbarer Anhang-Parts (siehe Kopfkommentar) -
 -- Präfix-Match (z. B. deckt "Tentacle1".."Tentacle6" ab), reine
 -- Kleinbuchstaben-Vergleiche.
@@ -148,6 +155,119 @@ function IdleSway.Apply(state: SwayState, basePivot: CFrame, now: number, allowF
 			local angle = math.sin(now * swayPart.Speed * scale + state.Seed + swayPart.PhaseOffset) * PART_SWAY_ANGLE * scale
 			part.CFrame = currentPivot * swayPart.RestOffset * CFrame.Angles(0, angle, angle * 0.4)
 		end
+	end
+end
+
+--- Wendet NUR die Flossen-/Tentakel-Sway-Anhang-Parts an, OHNE das Modell
+--- selbst zu bewegen/zu bobben (der Aufrufer hat `currentPivot` bereits
+--- SELBST vollständig berechnet, inkl. eigener Bob-/Follow-Logik, und ruft
+--- `Model:PivotTo(currentPivot)` selbst auf - siehe BuddyClient.client.lua,
+--- das seine bereits bewährte Follow-/Bob-Berechnung unverändert behält und
+--- hierüber nur zusätzlich konsistente Flossen-Sway-Optik bekommt).
+function IdleSway.ApplyPartsOnly(state: SwayState, currentPivot: CFrame, now: number, allowFX: boolean, intensityScale: number?)
+	if not allowFX then
+		return
+	end
+	local scale = intensityScale or 1
+	for _, swayPart in ipairs(state.SwayParts) do
+		local part = swayPart.Part
+		if part.Parent then
+			local angle = math.sin(now * swayPart.Speed * scale + state.Seed + swayPart.PhaseOffset) * PART_SWAY_ANGLE * scale
+			part.CFrame = currentPivot * swayPart.RestOffset * CFrame.Angles(0, angle, angle * 0.4)
+		end
+	end
+end
+
+-- // "Stationary"-Modus (Weltpickups mit ProximityPrompt am PrimaryPart) ------
+-- Auftrag: "ProximityPrompts sit on parts: don't move the prompt part
+-- client-side" - Glow-Spore/Sunken-Chest/Frozen-Spore-Pickups tragen ihr
+-- ProximityPrompt direkt am PrimaryPart "Body" (siehe
+-- assets/models/pickups/*.lua). Dieser Modus bewegt daher NIE
+-- `state.PrimaryPart`/`state.Model`'s Pivot - nur die dekorativen Kind-Parts
+-- (alles außer PrimaryPart, z. B. "OuterShell"/"GlimmerSpeck1..N") kreisen/
+-- bobben um ihre EIGENE, einmalig eingefrorene Ruheposition relativ zu
+-- `RestPivot`, plus ein optionales PointLight-Helligkeits-Pulsieren
+-- (verändert nur `.Brightness`, keine Position) - beides lässt das Pickup
+-- "lebendig" wirken, ohne dass der Interaktionspunkt (und damit die
+-- serverseitige Distanzprüfung, siehe PickupSpawner.onPickupTriggered) sich
+-- vom tatsächlichen, servergehaltenen Ort entfernt.
+export type StationaryState = {
+	Model: Model,
+	PrimaryPart: BasePart,
+	RestPivot: CFrame,
+	Seed: number,
+	SwayParts: { SwayPart },
+	Light: PointLight?,
+	BaseBrightness: number,
+}
+
+--- Baut den Stationary-Sway-Zustand: ANDERS als `BuildState`, hier gilt
+--- JEDER direkte Kind-BasePart außer dem PrimaryPart als schwenkbar (keine
+--- Namens-Filterliste nötig - Pickup-Buildscripts sind einfache, rein
+--- dekorative Geometrie, siehe assets/models/pickups/*.lua).
+function IdleSway.BuildStationaryState(model: Model, seed: number?): StationaryState?
+	local primaryPart = model.PrimaryPart
+	if not primaryPart then
+		return nil
+	end
+
+	local restPivot = model:GetPivot()
+	local swayParts: { SwayPart } = {}
+	for index, descendant in ipairs(model:GetChildren()) do
+		if descendant:IsA("BasePart") and descendant ~= primaryPart then
+			table.insert(swayParts, {
+				Part = descendant,
+				RestOffset = restPivot:ToObjectSpace(descendant.CFrame),
+				Speed = PART_SWAY_SPEED_MIN + (index % 5) / 5 * (PART_SWAY_SPEED_MAX - PART_SWAY_SPEED_MIN),
+				PhaseOffset = index * 0.9,
+			})
+		end
+	end
+
+	local light = primaryPart:FindFirstChildWhichIsA("PointLight")
+
+	return {
+		Model = model,
+		PrimaryPart = primaryPart,
+		RestPivot = restPivot,
+		Seed = seed or (math.random() * 1000),
+		SwayParts = swayParts,
+		Light = light,
+		BaseBrightness = if light then light.Brightness else 0,
+	}
+end
+
+--- Wendet die Stationary-Idle-Animation an - NIEMALS `Model:PivotTo()`, siehe
+--- Kopfkommentar. `allowFX == false` (UIKit.Settings-Reduzierte-Effekte)
+--- setzt alles sauber auf die eingefrorene Ruhepose zurück statt einfach
+--- nichts zu tun (verhindert, dass ein Pickup mitten in der Bewegung
+--- "einfriert", wenn der Spieler reduzierte Effekte erst währenddessen
+--- aktiviert).
+function IdleSway.ApplyStationary(state: StationaryState, now: number, allowFX: boolean)
+	if not allowFX then
+		for _, swayPart in ipairs(state.SwayParts) do
+			if swayPart.Part.Parent then
+				swayPart.Part.CFrame = state.RestPivot * swayPart.RestOffset
+			end
+		end
+		if state.Light then
+			state.Light.Brightness = state.BaseBrightness
+		end
+		return
+	end
+
+	for _, swayPart in ipairs(state.SwayParts) do
+		local part = swayPart.Part
+		if part.Parent then
+			local bob = math.sin(now * swayPart.Speed + state.Seed + swayPart.PhaseOffset) * STATIONARY_BOB_STUDS
+			local spin = now * swayPart.Speed * STATIONARY_SPIN_SPEED_SCALE + state.Seed + swayPart.PhaseOffset
+			part.CFrame = state.RestPivot * swayPart.RestOffset * CFrame.new(0, bob, 0) * CFrame.Angles(0, spin, 0)
+		end
+	end
+
+	if state.Light then
+		local pulse = 0.5 + 0.5 * math.sin(now * STATIONARY_LIGHT_PULSE_SPEED + state.Seed)
+		state.Light.Brightness = state.BaseBrightness * (0.7 + 0.3 * pulse)
 	end
 end
 

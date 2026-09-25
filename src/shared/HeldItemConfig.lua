@@ -119,4 +119,14 @@ HeldItemConfig.Deposit = {
 	TideCoinsReward = 25, -- Bonus-Tide-Coins pro abgegebener Glow Spore, siehe PlayerDataService.AddCurrency
 }
 
+-- Seamless-Animation-System (docs/animation-system.md): wie lange ein
+-- "sofort konsumiertes" Pickup (Sunken Chest beim Öffnen, Spore-Magnet-
+-- Auto-Collect) nach der (bereits sofort gewerteten) Belohnung noch als
+-- Model im Workspace bestehen bleibt, damit der Client
+-- (ModelAnimator.client.lua) eine "fliegt zum Sammler + schrumpft"-
+-- Animation statt eines sofortigen Verschwindens zeigen kann - identisches
+-- Karenzzeit-Prinzip wie `RaidConfig.DEATH_FX_SECONDS`. Rein kosmetisch,
+-- ändert NICHTS an Belohnungs-/Quest-Zeitpunkten.
+HeldItemConfig.CollectFxSeconds = 0.45
+
 return HeldItemConfig

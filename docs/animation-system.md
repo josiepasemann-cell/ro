@@ -134,14 +134,61 @@ path.
   — it is cheap and already correct; only the *movement* stutter was worth
   moving off the server in this pass.
 
+### Pickups (`PickupSpawner`, `AbilityService` + `ModelAnimator`)
+
+Glow/Toxic/Frozen Spores and Sunken Chests carry their `ProximityPrompt`
+directly on their `PrimaryPart` ("Body") — per the task's explicit
+constraint, that part is **never** moved client-side while the pickup is
+still interactable, since that's the server-validated interaction point.
+`IdleSway.BuildStationaryState`/`ApplyStationary` instead sway/bob only the
+*decorative* sibling parts (`OuterShell`, `GlimmerSpeck1..N`, etc. — any
+child `BasePart` except the `PrimaryPart`) around their own frozen rest
+offset, plus a `PointLight` brightness pulse, all tagged
+`ModelAnimationTags.PICKUP_IDLE`.
+
+Once a pickup is actually collected (Sunken Chest open, Spore Magnet
+auto-collect in `AbilityService`) the reward is granted immediately as
+before, but the model isn't destroyed on the spot: `ATTR_COLLECTED_AT` +
+`ATTR_COLLECTOR_USER_ID` are set and the real `:Destroy()` is delayed by
+`HeldItemConfig.CollectFxSeconds` (same grace-period pattern as raid enemy
+death). The client eases the whole model toward the collecting player's
+live `HumanoidRootPart` position and shrinks it to zero over that window —
+by this point the prompt has already fired/been consumed, so moving the
+model is safe.
+
+### Buildings (`PlacementService` + `ModelAnimator`)
+
+`tagModel`'s existing single choke point (called on placement, both
+upgrade paths, and layout restore-on-join) now has a sibling helper,
+`markPlacementFx`, called **only** from the three real placement/upgrade
+events — deliberately *not* from `RestorePlayerLayout`, so buildings don't
+"pop in" again on every login. It tags the model `BUILDING_PLACED` and
+stamps `ATTR_PLACED_AT`. The client distinguishes a brand-new model
+instance (real upgrade model swap or fresh placement → eased pop-in scale)
+from an attribute change on an already-known instance (fail-soft
+accent-only upgrade, no model swap → short `Highlight` flash) purely from
+whether `CollectionService`'s `InstanceAdded` fired for that instance this
+session. Selling delays destroy via `ATTR_SOLD_AT` +
+`BuildingConfig.SELL_FX_SECONDS` and shrinks the model instead of popping
+it out; the refund/persistence removal already happens immediately as
+before.
+
+### Hub mystery eggs (`GachaServer` + `ModelAnimator`)
+
+The three showcase eggs are tagged `ModelAnimationTags.HUB_EGG` right after
+`arrangeEggsAtStation` pivots them onto their display slot. They never
+move server-side, so the client just captures that pivot once and layers
+the normal `IdleSway.Apply` bob/roll on top of it (reduced intensity) —
+no chase/target logic needed.
+
 ### Buddies
 
-`BuddyClient.client.lua` was already fully client-driven and smooth
-(exponential chase + snap, identical pattern this system now reuses
-elsewhere) — left untouched. `IdleSway` is written so a future pass can
-plug it into `BuddyClient` for fin/tentacle sway consistency without
-touching the follow logic; not done in this pass to avoid destabilizing
-an already-solid, tested system.
+`BuddyClient.client.lua`'s exponential chase/bob follow logic is
+unchanged. It now additionally builds an `IdleSway.SwayState` per buddy
+and calls the new `IdleSway.ApplyPartsOnly` (bob/roll-free — only the
+named fin/tentacle child parts, layered on top of the already-computed
+follow pivot) each frame at "Full" LOD, so buddies visually match display
+creatures/raid enemies without touching the follow/bob math itself.
 
 ## Files
 
@@ -163,16 +210,24 @@ an already-solid, tested system.
 - `src/shared/RaidConfig.lua` — added `DEATH_FX_SECONDS`,
   `SPAWN_FX_SECONDS` (shared constants, server sets the timestamps, client
   reads the durations).
+- `src/shared/HeldItemConfig.lua` — added `CollectFxSeconds` (pickup
+  collect-fly grace period).
+- `src/shared/BuildingConfig.lua` — added `SELL_FX_SECONDS` (building sell
+  grace period).
+- `src/server/PickupSpawner.lua` — tags pickups `PICKUP_IDLE`; Sunken Chest
+  open uses `scheduleCollectDestroy` instead of an instant `:Destroy()`.
+- `src/server/AbilityService.lua` — Spore Magnet auto-collect uses the same
+  delayed-destroy + collected-at/collector attributes.
+- `src/server/PlacementService.lua` — `markPlacementFx` tags/stamps models
+  on place/upgrade (not on join-restore); sell delays destroy via
+  `ATTR_SOLD_AT`.
+- `src/server/GachaServer.server.lua` — tags the 3 hub showcase eggs
+  `HUB_EGG`.
+- `src/client/BuddyClient.client.lua` — layers `IdleSway.ApplyPartsOnly`
+  fin/tentacle sway on top of its unchanged follow logic.
 
 ## Known remaining limits (not covered by this pass)
 
-- Pickups (Glow Spores, Sunken Chest, Frozen Spore thaw), building
-  placement/upgrade/sell pop animations, and mystery-egg idle wobble at
-  the hub were **not** converted in this pass — they still use their
-  previous (already server-file-owned) spawn/despawn behavior. They are
-  good candidates for a follow-up pass using the same `IdleSway` module
-  and the same tag-discovery pattern established here.
 - Held-item weld/CarryPose follow was verified conceptually via
   `CharacterAnimator`/`PoseLibrary` but not re-tested end-to-end in this
   pass.
-- `IdleSway` is not yet wired into `BuddyClient.client.lua` (see above).

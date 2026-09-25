@@ -32,6 +32,23 @@
 		   (PointLight-Brightness-Wobble) + Muzzle-Flash/Recoil, ausgelöst
 		   über `RaidRemotes.EnemyHit` (trägt jetzt ein `Tower`-Modell-Feld,
 		   siehe RaidService-Änderung).
+		4) `ModelAnimationTags.PICKUP_IDLE` (PickupSpawner/AbilityService):
+		   Weltpickups (Glow/Toxic/Frozen Spore, Sunken Chest). Idle-Bob/Spin
+		   NUR der dekorativen Kind-Parts (IdleSway.ApplyStationary - der
+		   PrimaryPart, der das ProximityPrompt trägt, bleibt ortsfest, siehe
+		   Auftrag). Sobald `ATTR_COLLECTED_AT` gesetzt ist (Sunken-Chest-
+		   Öffnen/Spore-Magnet-Auto-Collect, Belohnung bereits gewertet),
+		   fliegt das GANZE Modell zum Sammler (`ATTR_COLLECTOR_USER_ID`) und
+		   schrumpft, statt einfach zu verschwinden - zu diesem Zeitpunkt ist
+		   das Prompt bereits verbraucht/deaktiviert, ein Bewegen ist sicher.
+		5) `ModelAnimationTags.BUILDING_PLACED` (PlacementService): Pop-in
+		   beim Platzieren/Modell-Tausch-Upgrade (neue Modell-Instanz), kurzer
+		   Highlight-Flash bei einem reinen Attribut-Update auf derselben
+		   Instanz (Fail-Soft-Akzent-Upgrade), Schrumpfen beim Verkauf
+		   (`ATTR_SOLD_AT`).
+		6) `ModelAnimationTags.HUB_EGG` (GachaServer): die 3 Schau-Eier an der
+		   Mystery-Egg-Station - rein statisches Idle-Wobble (IdleSway) um
+		   ihre feste Slot-Position, der Server bewegt sie nie.
 
 		EIN gemeinsamer `RunService.PreSimulation`-Loop für ALLE drei
 		Kategorien (Auftrag: "no per-model connections") + Distanz-LOD
@@ -56,11 +73,14 @@ local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
 local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 local IdleSway = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("IdleSway"))
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
+local HeldItemConfig = require(ReplicatedStorage:WaitForChild("HeldItemConfig"))
+local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Settings = UIKit.Settings
@@ -100,6 +120,15 @@ local TOWER_PULSE_SPEED = 1.4
 local RECOIL_DISTANCE_STUDS = 0.35
 local RECOIL_DURATION_SECONDS = 0.12
 local FLASH_DURATION_SECONDS = 0.1
+
+local PICKUP_COLLECT_FX_SECONDS = HeldItemConfig.CollectFxSeconds
+local PICKUP_COLLECT_TARGET_HEIGHT_OFFSET = 2 -- studs above the collector's HumanoidRootPart
+
+local BUILDING_POP_FX_SECONDS = 0.3
+local BUILDING_FLASH_FX_SECONDS = 0.25
+local BUILDING_SELL_FX_SECONDS = BuildingConfig.SELL_FX_SECONDS
+
+local HUB_EGG_INTENSITY_SCALE = 0.6 -- gentler wobble than a free-swimming creature
 
 -- // Gemeinsamer Chase-Zustand (DISPLAY_CREATURE + RAID_ENEMY) -----------------
 
@@ -435,6 +464,301 @@ local function updateTowerEntry(entry: TowerEntry, dt: number, now: number, allo
 	entry.MuzzlePart.CFrame = rootPivot * entry.RestOffset * recoilOffset
 end
 
+-- // Pickups: Stationary-Idle-Bob/Spin + "fliegt zum Sammler + schrumpft" ------
+
+type PickupEntry = {
+	Model: Model,
+	PrimaryPart: BasePart,
+	Sway: IdleSway.StationaryState?,
+	Collecting: boolean,
+	FlyStartPosition: Vector3?,
+	FlyStartClock: number?,
+}
+
+local pickupEntries: { [Model]: PickupEntry } = {}
+
+local function registerPickup(model: Model)
+	if pickupEntries[model] then
+		return
+	end
+	if not model.PrimaryPart then
+		task.defer(function()
+			if model.Parent and model.PrimaryPart and not pickupEntries[model] then
+				registerPickup(model)
+			end
+		end)
+		return
+	end
+
+	pickupEntries[model] = {
+		Model = model,
+		PrimaryPart = model.PrimaryPart,
+		Sway = IdleSway.BuildStationaryState(model),
+		Collecting = false,
+		FlyStartPosition = nil,
+		FlyStartClock = nil,
+	}
+	model.AncestryChanged:Connect(function(_, parent)
+		if not parent then
+			pickupEntries[model] = nil
+		end
+	end)
+end
+
+local function unregisterPickup(model: Model)
+	pickupEntries[model] = nil
+end
+
+local function resolveCollectorTargetPosition(model: Model, fallback: Vector3): Vector3
+	local collectorUserId = model:GetAttribute(ModelAnimationTags.ATTR_COLLECTOR_USER_ID)
+	if typeof(collectorUserId) ~= "number" then
+		return fallback
+	end
+	local collector = Players:GetPlayerByUserId(collectorUserId)
+	local character = collector and collector.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if root and (root :: BasePart):IsA("BasePart") then
+		return (root :: BasePart).Position + Vector3.new(0, PICKUP_COLLECT_TARGET_HEIGHT_OFFSET, 0)
+	end
+	return fallback
+end
+
+local function updatePickupEntry(entry: PickupEntry, now: number, allowFX: boolean)
+	local model = entry.Model
+	local collectedAt = model:GetAttribute(ModelAnimationTags.ATTR_COLLECTED_AT)
+
+	if typeof(collectedAt) == "number" then
+		if not entry.Collecting then
+			entry.Collecting = true
+			entry.FlyStartPosition = entry.PrimaryPart.Position
+			entry.FlyStartClock = now
+		end
+
+		local elapsed = now - (entry.FlyStartClock :: number)
+		local t = math.clamp(elapsed / PICKUP_COLLECT_FX_SECONDS, 0, 1)
+		local eased = t * t -- ease-in: langsam los, schneller Richtung Sammler
+
+		local target = resolveCollectorTargetPosition(model, entry.FlyStartPosition :: Vector3)
+		local newPosition = (entry.FlyStartPosition :: Vector3):Lerp(target, eased)
+		model:PivotTo(CFrame.new(newPosition))
+
+		pcall(function()
+			(model :: any):ScaleTo(math.max(1 - eased, 0.05))
+		end)
+		return
+	end
+
+	if entry.Sway then
+		IdleSway.ApplyStationary(entry.Sway, now, allowFX)
+	end
+end
+
+CollectionService:GetInstanceAddedSignal(ModelAnimationTags.PICKUP_IDLE):Connect(function(instance)
+	if instance:IsA("Model") then
+		registerPickup(instance)
+	end
+end)
+CollectionService:GetInstanceRemovedSignal(ModelAnimationTags.PICKUP_IDLE):Connect(function(instance)
+	if instance:IsA("Model") then
+		unregisterPickup(instance)
+	end
+end)
+for _, instance in ipairs(CollectionService:GetTagged(ModelAnimationTags.PICKUP_IDLE)) do
+	if instance:IsA("Model") then
+		registerPickup(instance)
+	end
+end
+
+-- // Gebäude: Pop-in beim Platzieren/Upgrade-Modell-Tausch, Flash beim Fail-
+-- Soft-Akzent-Upgrade, Schrumpfen beim Verkauf --------------------------------
+
+local function easeOutBack(t: number): number
+	local c1 = 1.70158
+	local c3 = c1 + 1
+	local x = t - 1
+	return 1 + c3 * x * x * x + c1 * x * x
+end
+
+type BuildingEntry = {
+	Model: Model,
+	BaseScale: number,
+	PopStartClock: number,
+	LastPlacedAt: number?,
+	FlashUntilClock: number,
+	Highlight: Highlight?,
+	SoldStartClock: number?,
+}
+
+local buildingEntries: { [Model]: BuildingEntry } = {}
+
+local function ensureBuildingHighlight(model: Model): Highlight
+	local existing = model:FindFirstChild("__AnimHighlight")
+	if existing and existing:IsA("Highlight") then
+		return existing
+	end
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "__AnimHighlight"
+	highlight.FillColor = Color3.fromRGB(255, 255, 255)
+	highlight.FillTransparency = 1
+	highlight.OutlineTransparency = 1
+	highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+	highlight.Enabled = false
+	highlight.Parent = model
+	return highlight
+end
+
+local function registerBuilding(model: Model)
+	if buildingEntries[model] then
+		return
+	end
+	local baseScale = 1
+	pcall(function()
+		baseScale = (model :: any):GetScale()
+	end)
+	buildingEntries[model] = {
+		Model = model,
+		BaseScale = baseScale,
+		PopStartClock = os.clock(),
+		LastPlacedAt = model:GetAttribute(ModelAnimationTags.ATTR_PLACED_AT) :: number?,
+		FlashUntilClock = 0,
+		Highlight = nil,
+		SoldStartClock = nil,
+	}
+	model.AncestryChanged:Connect(function(_, parent)
+		if not parent then
+			buildingEntries[model] = nil
+		end
+	end)
+end
+
+local function unregisterBuilding(model: Model)
+	buildingEntries[model] = nil
+end
+
+local function updateBuildingEntry(entry: BuildingEntry, now: number, allowFX: boolean)
+	local model = entry.Model
+
+	local soldAt = model:GetAttribute(ModelAnimationTags.ATTR_SOLD_AT)
+	if typeof(soldAt) == "number" then
+		if not entry.SoldStartClock then
+			entry.SoldStartClock = os.clock()
+		end
+		local soldStartClock = entry.SoldStartClock :: number
+		local t = math.clamp((os.clock() - soldStartClock) / BUILDING_SELL_FX_SECONDS, 0, 1)
+		pcall(function()
+			(model :: any):ScaleTo(entry.BaseScale * (1 - t))
+		end)
+		return
+	end
+
+	-- Pop-in: rein client-lokal getaktet (ab dem Moment, in dem DIESER
+	-- Client das Tag entdeckt hat) statt über den Server-Zeitstempel - so
+	-- spielt die Animation für jeden Client sauber ab seinem eigenen
+	-- Entdeckungszeitpunkt, unabhängig von Replikations-/Streaming-Latenz.
+	local popElapsed = os.clock() - entry.PopStartClock
+	if popElapsed < BUILDING_POP_FX_SECONDS then
+		local t = math.clamp(popElapsed / BUILDING_POP_FX_SECONDS, 0, 1)
+		local factor = if allowFX then easeOutBack(t) else t
+		pcall(function()
+			(model :: any):ScaleTo(entry.BaseScale * math.max(factor, 0.05))
+		end)
+	else
+		local placedAt = model:GetAttribute(ModelAnimationTags.ATTR_PLACED_AT)
+		if typeof(placedAt) == "number" and placedAt ~= entry.LastPlacedAt then
+			entry.LastPlacedAt = placedAt
+			if allowFX then
+				entry.FlashUntilClock = os.clock() + BUILDING_FLASH_FX_SECONDS
+			end
+		end
+	end
+
+	if allowFX then
+		if not entry.Highlight then
+			entry.Highlight = ensureBuildingHighlight(model)
+		end
+		local highlight = entry.Highlight :: Highlight
+		if entry.FlashUntilClock > os.clock() then
+			highlight.Enabled = true
+			highlight.FillTransparency = 0.45
+			highlight.OutlineTransparency = 0.2
+		elseif highlight.Enabled then
+			highlight.Enabled = false
+		end
+	elseif entry.Highlight then
+		entry.Highlight.Enabled = false
+	end
+end
+
+CollectionService:GetInstanceAddedSignal(ModelAnimationTags.BUILDING_PLACED):Connect(function(instance)
+	if instance:IsA("Model") then
+		registerBuilding(instance)
+	end
+end)
+CollectionService:GetInstanceRemovedSignal(ModelAnimationTags.BUILDING_PLACED):Connect(function(instance)
+	if instance:IsA("Model") then
+		unregisterBuilding(instance)
+	end
+end)
+for _, instance in ipairs(CollectionService:GetTagged(ModelAnimationTags.BUILDING_PLACED)) do
+	if instance:IsA("Model") then
+		registerBuilding(instance)
+	end
+end
+
+-- // Hub-Mystery-Eggs: statisches Idle-Wobble ----------------------------------
+
+type HubEggEntry = {
+	Model: Model,
+	Sway: IdleSway.SwayState?,
+	RestPivot: CFrame,
+}
+
+local hubEggEntries: { [Model]: HubEggEntry } = {}
+
+local function registerHubEgg(model: Model)
+	if hubEggEntries[model] then
+		return
+	end
+	if not model.PrimaryPart then
+		task.defer(function()
+			if model.Parent and model.PrimaryPart and not hubEggEntries[model] then
+				registerHubEgg(model)
+			end
+		end)
+		return
+	end
+	hubEggEntries[model] = {
+		Model = model,
+		Sway = IdleSway.BuildState(model),
+		RestPivot = model:GetPivot(),
+	}
+	model.AncestryChanged:Connect(function(_, parent)
+		if not parent then
+			hubEggEntries[model] = nil
+		end
+	end)
+end
+
+local function unregisterHubEgg(model: Model)
+	hubEggEntries[model] = nil
+end
+
+CollectionService:GetInstanceAddedSignal(ModelAnimationTags.HUB_EGG):Connect(function(instance)
+	if instance:IsA("Model") then
+		registerHubEgg(instance)
+	end
+end)
+CollectionService:GetInstanceRemovedSignal(ModelAnimationTags.HUB_EGG):Connect(function(instance)
+	if instance:IsA("Model") then
+		unregisterHubEgg(instance)
+	end
+end)
+for _, instance in ipairs(CollectionService:GetTagged(ModelAnimationTags.HUB_EGG)) do
+	if instance:IsA("Model") then
+		registerHubEgg(instance)
+	end
+end
+
 -- // Haupt-Loop -------------------------------------------------------------------
 
 local lodTimer = 0
@@ -474,12 +798,39 @@ RunService.PreSimulation:Connect(function(dt: number)
 		end
 	end
 
-	local allowTowerFX = not Settings.ShouldSkipFX()
+	local allowFX = not Settings.ShouldSkipFX()
+
 	for model, entry in pairs(towerEntries) do
 		if not model.Parent then
 			unregisterTower(model)
 			continue
 		end
-		updateTowerEntry(entry, dt, now, allowTowerFX)
+		updateTowerEntry(entry, dt, now, allowFX)
+	end
+
+	for model, entry in pairs(pickupEntries) do
+		if not model.Parent then
+			unregisterPickup(model)
+			continue
+		end
+		updatePickupEntry(entry, now, allowFX)
+	end
+
+	for model, entry in pairs(buildingEntries) do
+		if not model.Parent then
+			unregisterBuilding(model)
+			continue
+		end
+		updateBuildingEntry(entry, now, allowFX)
+	end
+
+	for model, entry in pairs(hubEggEntries) do
+		if not model.Parent then
+			unregisterHubEgg(model)
+			continue
+		end
+		if entry.Sway then
+			IdleSway.Apply(entry.Sway, entry.RestPivot, now, allowFX, HUB_EGG_INTENSITY_SCALE)
+		end
 	end
 end)

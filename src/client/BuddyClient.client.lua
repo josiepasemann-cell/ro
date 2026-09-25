@@ -71,6 +71,13 @@ local Workspace = game:GetService("Workspace")
 
 local BuddyRemotes = require(ReplicatedStorage:WaitForChild("BuddyRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
+-- Seamless-Animation-System (docs/animation-system.md): dasselbe Idle-Sway-
+-- Modul wie CreatureDisplayService/RaidService-Modelle, NUR für die
+-- Flossen-/Tentakel-Anhang-Parts (siehe IdleSway.ApplyPartsOnly-Kopf-
+-- kommentar) - die bereits bewährte Follow-/Bob-Logik unten bleibt
+-- unverändert, Buddys bekommen dadurch nur zusätzlich dieselbe optische
+-- Flossen-Sway-Konsistenz wie Plot-Anzeige-Kreaturen/Raid-Gegner.
+local IdleSway = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("IdleSway"))
 
 local Theme = UIKit.Theme
 local Settings = UIKit.Settings
@@ -213,6 +220,7 @@ type BuddyEntry = {
 	SparkleTimer: number,
 	Billboard: BillboardGui?,
 	Trail: Trail?,
+	Sway: IdleSway.SwayState?,
 }
 
 local activeEntries: { [Model]: BuddyEntry } = {}
@@ -349,6 +357,7 @@ local function createEntry(model: Model)
 		SparkleTimer = rng:NextNumber() * SPARKLE_EMIT_INTERVAL_SECONDS,
 		Billboard = nil,
 		Trail = nil,
+		Sway = IdleSway.BuildState(model),
 	}
 
 	activeEntries[model] = entry
@@ -439,7 +448,16 @@ local function updateEntry(entry: BuddyEntry, dt: number)
 		entry.Yaw += yawDelta * math.clamp(YAW_TURN_RATE * dt, 0, 1)
 	end
 
-	entry.Model:PivotTo(CFrame.new(entry.Position) * CFrame.Angles(0, entry.Yaw, 0))
+	local currentPivot = CFrame.new(entry.Position) * CFrame.Angles(0, entry.Yaw, 0)
+	entry.Model:PivotTo(currentPivot)
+
+	-- Seamless-Animation-System: Flossen-/Tentakel-Sway ON TOP der bereits
+	-- oben berechneten Follow-/Bob-Pivot (siehe Kopfkommentar dieses
+	-- Requires) - NUR bei "Full"-LOD (identisches Sparsamkeitsprinzip wie
+	-- der Sparkle-Effekt unten), respektiert reduzierte Effekte.
+	if entry.Sway and entry.LOD == "Full" and not Settings.GetReducedEffects() then
+		IdleSway.ApplyPartsOnly(entry.Sway, currentPivot, os.clock(), true)
+	end
 
 	if entry.IsRareFlair and entry.LOD == "Full" then
 		entry.SparkleTimer += dt

@@ -53,12 +53,14 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local AbilityConfig = require(ReplicatedStorage:WaitForChild("AbilityConfig"))
 local AbilityRemotes = require(ReplicatedStorage:WaitForChild("AbilityRemotes"))
 local HeldItemConfig = require(ReplicatedStorage:WaitForChild("HeldItemConfig"))
+local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 local AbilityService = {}
 
@@ -290,7 +292,17 @@ local function collectSporeForMagnet(player: Player, model: Model)
 	end
 	local reward = math.floor(HeldItemConfig.Deposit.TideCoinsReward * multiplier + 0.5)
 
-	model:Destroy()
+	-- Seamless-Animation-System (docs/animation-system.md): identisches
+	-- Karenzzeit-Prinzip zu PickupSpawner.scheduleCollectDestroy - Belohnung
+	-- wird SOFORT gewertet (unten), das Modell fliegt clientseitig noch kurz
+	-- zum Sammler + schrumpft, bevor der Server es wirklich zerstört.
+	model:SetAttribute(ModelAnimationTags.ATTR_COLLECTED_AT, Workspace:GetServerTimeNow())
+	model:SetAttribute(ModelAnimationTags.ATTR_COLLECTOR_USER_ID, player.UserId)
+	task.delay(HeldItemConfig.CollectFxSeconds, function()
+		if model.Parent then
+			model:Destroy()
+		end
+	end)
 
 	local ok = PlayerDataService.AddCurrency(player, "TideCoins", reward)
 	if ok then

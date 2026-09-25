@@ -54,6 +54,7 @@
 
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
@@ -61,6 +62,7 @@ local HeldItemService = require(script.Parent:WaitForChild("HeldItemService"))
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
 local HeldItemConfig = require(ReplicatedStorage:WaitForChild("HeldItemConfig"))
+local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 local PickupSpawner = {}
 
@@ -155,6 +157,25 @@ end
 local activeUsers: { [number]: boolean } = {}
 local livePickupsByUser: { [number]: { Model } } = {}
 
+--- Seamless-Animation-System (docs/animation-system.md): markiert `model`
+--- als "bereits eingesammelt" (ATTR_COLLECTED_AT-Zeitstempel + der
+--- sammelnde Spieler, siehe ModelAnimationTags) und zerstört es erst
+--- `HeldItemConfig.CollectFxSeconds` SPÄTER wirklich - der Client
+--- (ModelAnimator.client.lua) spielt in dieser Karenzzeit eine "fliegt zum
+--- Sammler + schrumpft"-Animation statt eines sofortigen Verschwindens.
+--- Rein kosmetisch: der Aufrufer hat die Belohnung bereits VORHER gewertet,
+--- diese Funktion beeinflusst keine Gameplay-Zeitpunkte. Identisches Prinzip
+--- zu RaidService.scheduleDeathDestroy.
+local function scheduleCollectDestroy(model: Model, player: Player)
+	model:SetAttribute(ModelAnimationTags.ATTR_COLLECTED_AT, Workspace:GetServerTimeNow())
+	model:SetAttribute(ModelAnimationTags.ATTR_COLLECTOR_USER_ID, player.UserId)
+	task.delay(HeldItemConfig.CollectFxSeconds, function()
+		if model.Parent then
+			model:Destroy()
+		end
+	end)
+end
+
 local function countLivePickups(userId: number): number
 	local list = livePickupsByUser[userId]
 	if not list then
@@ -246,6 +267,11 @@ local function attachPickupPrompt(pickup: Model)
 	if not part then
 		return
 	end
+	-- Seamless-Animation-System: idempotentes Tag für den client-seitigen
+	-- Idle-Bob/Spin auf den DEKORATIVEN Kind-Parts (siehe
+	-- IdleSway.BuildStationaryState) - der PrimaryPart selbst (trägt das
+	-- ProximityPrompt) bleibt dabei ortsfest.
+	CollectionService:AddTag(pickup, ModelAnimationTags.PICKUP_IDLE)
 	if part:FindFirstChild("PickupPrompt") then
 		return
 	end
@@ -309,6 +335,11 @@ local function attachFrozenSporePrompt(pickup: Model)
 	if not part then
 		return
 	end
+	-- Seamless-Animation-System: siehe attachPickupPrompt-Kommentar - nested
+	-- Thaw-State-Models (IcyShellState/CrackedState/OpenState) sind keine
+	-- BaseParts und werden von IdleSway.BuildStationaryState automatisch
+	-- ignoriert, nur der Body-Glow pulsiert idle mit.
+	CollectionService:AddTag(pickup, ModelAnimationTags.PICKUP_IDLE)
 	if part:FindFirstChild("ThawPrompt") then
 		return
 	end
@@ -670,7 +701,13 @@ local function onSunkenChestTriggered(player: Player, chest: Model, prompt: Prox
 		LiveEventService.AdvanceEventQuest(player, "SunkenChestOpened", 1)
 	end
 
-	chest:Destroy()
+	-- Seamless-Animation-System (docs/animation-system.md): Belohnung ist
+	-- bereits gewertet - Destroy verzögert sich, damit der Client eine
+	-- "fliegt zum Spieler + schrumpft"-Animation zeigen kann statt eines
+	-- sofortigen Verschwindens. `liveSunkenChestByUser` wird SOFORT
+	-- freigegeben (nicht erst nach der Karenzzeit), damit eine neue Truhe
+	-- schon während der kurzen Collect-Animation nachbestückt werden kann.
+	scheduleCollectDestroy(chest, player)
 	liveSunkenChestByUser[player.UserId] = nil
 end
 
@@ -679,6 +716,8 @@ local function attachSunkenChestPrompt(chest: Model)
 	if not part then
 		return
 	end
+	-- Seamless-Animation-System: siehe attachPickupPrompt-Kommentar.
+	CollectionService:AddTag(chest, ModelAnimationTags.PICKUP_IDLE)
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "OpenPrompt"
