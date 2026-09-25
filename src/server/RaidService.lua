@@ -79,6 +79,8 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
+local Workspace = game:GetService("Workspace")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
@@ -89,6 +91,7 @@ local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local RaidRemotes = require(ReplicatedStorage:WaitForChild("RaidRemotes"))
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local ZoneEconomyConfig = require(ReplicatedStorage:WaitForChild("ZoneEconomyConfig"))
+local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 local RaidService = {}
 
@@ -102,6 +105,15 @@ type EnemyRuntime = {
 	CurrentHP: number,
 	MaxHP: number,
 	MoveSpeed: number,
+	-- Seamless-Animation-System (docs/animation-system.md): DIE serverseitige
+	-- logische Position - ab jetzt die einzige Quelle der Wahrheit für
+	-- Distanz-/Ziel-Berechnungen (Tower-Targeting, CoralBarrier-Slow-Radius,
+	-- Center-Reach). Das Model selbst wird NICHT mehr jeden Tick per PivotTo
+	-- bewegt (das verursachte sichtbares Ruckeln bei anchored Parts, siehe
+	-- Auftrag) - stattdessen publiziert der Server diese Position nur noch
+	-- als `ModelAnimationTags.ATTR_TARGET_POSITION`-Attribut, der Client
+	-- (ModelAnimator.client.lua) interpoliert selbst dorthin.
+	Position: Vector3,
 }
 
 type TowerRuntime = {
@@ -251,6 +263,12 @@ local function collectTowerRuntimes(player: Player): { TowerRuntime }
 			if type(buildingId) == "string" then
 				local stats = RaidConfig.GetTowerStats(buildingId)
 				if stats then
+					-- Seamless-Animation-System (docs/animation-system.md):
+					-- idempotentes Tag - der Client-Renderer
+					-- (ModelAnimator.client.lua) macht darüber jeden eigenen Turm
+					-- idle-glow-pulsierend + Muzzle-Flash/Recoil bei Treffern,
+					-- unabhängig davon ob gerade ein Raid läuft.
+					CollectionService:AddTag(model, ModelAnimationTags.RAID_TOWER)
 					table.insert(towers, {
 						PlacementId = model:GetAttribute("PlacementId"),
 						Model = model,
@@ -306,6 +324,17 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 					local spawnPos = randomSpawnPosition(raid.CenterPosition)
 					model:PivotTo(CFrame.new(spawnPos, raid.CenterPosition))
 
+					-- Seamless-Animation-System (docs/animation-system.md): Tag +
+					-- Startattribute für den Client-Renderer. Der Server bewegt
+					-- dieses Model ab jetzt NIE MEHR direkt per PivotTo (siehe
+					-- tickEnemyMovement) - nur noch ATTR_TARGET_POSITION-Updates,
+					-- der Client interpoliert selbst (kein Ruckeln bei anchored
+					-- Parts, siehe Auftrag).
+					CollectionService:AddTag(model, ModelAnimationTags.RAID_ENEMY)
+					model:SetAttribute(ModelAnimationTags.ATTR_TARGET_POSITION, spawnPos)
+					model:SetAttribute(ModelAnimationTags.ATTR_CENTER_POSITION, raid.CenterPosition)
+					model:SetAttribute(ModelAnimationTags.ATTR_SPAWNED_AT, Workspace:GetServerTimeNow())
+
 					local scaledMaxHP = definition.MaxHP * enemyMaxHPMultiplier
 					table.insert(raid.Enemies, {
 						EnemyId = definition.Id,
@@ -313,6 +342,7 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 						CurrentHP = scaledMaxHP,
 						MaxHP = scaledMaxHP,
 						MoveSpeed = definition.MoveSpeed * enemyMoveSpeedMultiplier,
+						Position = spawnPos,
 					})
 					spawnedCount += 1
 				end
@@ -520,6 +550,23 @@ local function computeSpeedMultiplier(raid: RaidRuntime, enemyPosition: Vector3)
 	return multiplier
 end
 
+--- Seamless-Animation-System (docs/animation-system.md): markiert `model` als
+--- "stirbt gerade" (ATTR_DYING_AT-Zeitstempel, siehe ModelAnimationTags) und
+--- zerstört es erst RaidConfig.DEATH_FX_SECONDS SPÄTER wirklich - der Client
+--- (ModelAnimator.client.lua) spielt in dieser Karenzzeit eine Auflöse-/
+--- Schrumpf-Animation statt eines sofortigen "Pop". Rein kosmetisch: der
+--- Aufrufer hat das Model bereits VORHER aus `raid.Enemies`
+--- entfernt/gameplay-seitig gewertet (Sieg/Wellen-Fortschritt), diese
+--- Funktion beeinflusst also KEINE Gameplay-Zeitpunkte.
+local function scheduleDeathDestroy(model: Model)
+	model:SetAttribute(ModelAnimationTags.ATTR_DYING_AT, Workspace:GetServerTimeNow())
+	task.delay(RaidConfig.DEATH_FX_SECONDS, function()
+		if model.Parent then
+			model:Destroy()
+		end
+	end)
+end
+
 local function tickEnemyMovement(raid: RaidRuntime, deltaSeconds: number)
 	local i = 1
 	while i <= #raid.Enemies do
@@ -531,22 +578,30 @@ local function tickEnemyMovement(raid: RaidRuntime, deltaSeconds: number)
 			continue
 		end
 
-		local currentPosition = enemy.Model:GetPivot().Position
+		local currentPosition = enemy.Position
 		local toCenter = raid.CenterPosition - currentPosition
 		local distance = toCenter.Magnitude
 
 		if distance <= RaidConfig.CENTER_REACH_RADIUS then
-			enemy.Model:Destroy()
+			scheduleDeathDestroy(enemy.Model)
 			table.remove(raid.Enemies, i)
 			raid.EnemiesReachedCenter += 1
 			continue
 		end
 
-		local effectiveSpeed = enemy.MoveSpeed * computeSpeedMultiplier(raid, currentPosition)
+		local speedMultiplier = computeSpeedMultiplier(raid, currentPosition)
+		local effectiveSpeed = enemy.MoveSpeed * speedMultiplier
 		local step = math.min(distance, effectiveSpeed * deltaSeconds)
 		local direction = toCenter.Unit
 		local newPosition = currentPosition + direction * step
-		enemy.Model:PivotTo(CFrame.new(newPosition, raid.CenterPosition))
+		enemy.Position = newPosition
+
+		-- Seamless-Animation-System: NUR noch das Ziel-Attribut publizieren
+		-- (kein PivotTo mehr) - der Client interpoliert selbst dorthin, siehe
+		-- ModelAnimator.client.lua. `ATTR_SLOWED` treibt die sichtbare
+		-- CoralBarrier-Verlangsamungs-Optik (trägere Idle-Wobble).
+		enemy.Model:SetAttribute(ModelAnimationTags.ATTR_TARGET_POSITION, newPosition)
+		enemy.Model:SetAttribute(ModelAnimationTags.ATTR_SLOWED, speedMultiplier < 1)
 
 		i += 1
 	end
@@ -594,7 +649,7 @@ local function removeDeadEnemies(raid: RaidRuntime)
 		local enemy = raid.Enemies[index]
 		if enemy.CurrentHP <= 0 then
 			if enemy.Model.Parent then
-				enemy.Model:Destroy()
+				scheduleDeathDestroy(enemy.Model)
 			end
 			table.remove(raid.Enemies, index)
 		end
@@ -627,7 +682,7 @@ local function tickTowers(raid: RaidRuntime, now: number)
 				local targetDistance = math.huge
 				for index, enemy in ipairs(raid.Enemies) do
 					if enemy.Model.Parent then
-						local dist = (enemy.Model:GetPivot().Position - towerPosition).Magnitude
+						local dist = (enemy.Position - towerPosition).Magnitude
 						if dist <= tower.Stats.Range and dist < targetDistance then
 							targetDistance = dist
 							targetIndex = index
@@ -640,20 +695,26 @@ local function tickTowers(raid: RaidRuntime, now: number)
 					local target = raid.Enemies[targetIndex]
 					target.CurrentHP -= tower.Stats.Damage
 
+					-- `Tower` (Content Update: seamless animation system, siehe
+					-- ModelAnimator.client.lua) - zusätzliches, rein additives Feld
+					-- (Instanz-Referenzen dürfen über RemoteEvents an Clients
+					-- repliziert werden) für client-seitigen Muzzle-Flash/Recoil auf
+					-- dem TATSÄCHLICH feuernden Turm-Modell, statt nur Positionen.
 					RaidRemotes.EnemyHit:FireClient(raid.Player, {
 						TowerPosition = towerPosition,
-						EnemyPosition = target.Model:GetPivot().Position,
+						EnemyPosition = target.Position,
+						Tower = tower.Model,
 					})
 
 					-- Content Update 1, Abschnitt 4.2: ElectricEelTrap-Kettenschaden -
 					-- bis zu ChainCount weitere, dem Hauptziel am nächsten stehende
 					-- Gegner im ChainRadius erhalten CHAIN_DAMAGE_FRACTION Schaden.
 					if tower.Stats.ChainCount and tower.Stats.ChainCount > 0 and tower.Stats.ChainRadius then
-						local targetPosition = target.Model:GetPivot().Position
+						local targetPosition = target.Position
 						local candidates: { { Enemy: EnemyRuntime, Distance: number } } = {}
 						for index, enemy in ipairs(raid.Enemies) do
 							if index ~= targetIndex and enemy.Model.Parent then
-								local dist = (enemy.Model:GetPivot().Position - targetPosition).Magnitude
+								local dist = (enemy.Position - targetPosition).Magnitude
 								if dist <= tower.Stats.ChainRadius then
 									table.insert(candidates, { Enemy = enemy, Distance = dist })
 								end
@@ -669,7 +730,8 @@ local function tickTowers(raid: RaidRuntime, now: number)
 							chained.CurrentHP -= chainDamage
 							RaidRemotes.EnemyHit:FireClient(raid.Player, {
 								TowerPosition = towerPosition,
-								EnemyPosition = chained.Model:GetPivot().Position,
+								EnemyPosition = chained.Position,
+								Tower = tower.Model,
 							})
 						end
 
@@ -1040,7 +1102,7 @@ function RaidService.ApplyDepthChargeDamage(player: Player, nonBossDamage: numbe
 
 			RaidRemotes.EnemyHit:FireClient(player, {
 				TowerPosition = raid.CenterPosition,
-				EnemyPosition = enemy.Model:GetPivot().Position,
+				EnemyPosition = enemy.Position,
 			})
 		end
 	end

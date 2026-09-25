@@ -331,6 +331,22 @@ RaidConfig.SPAWN_RING_RADIUS = 34
 --- Spawn-Höhe relativ zum Plot-PrimaryPart (Studs über der Plattform).
 RaidConfig.SPAWN_HEIGHT_OFFSET = 3
 
+--- Seamless-Animation-System (docs/animation-system.md): wie lange ein
+--- besiegter/durchgebrochener Gegner nach Erreichen von CurrentHP<=0 bzw. des
+--- Plot-Zentrums noch als Model im Workspace bestehen bleibt, BEVOR
+--- RaidService ihn tatsächlich `:Destroy()`t - reine Karenzzeit, damit der
+--- Client (ModelAnimator.client.lua) eine Auflöse-/Schrumpf-Animation statt
+--- eines sofortigen "Pop" zeigen kann. Rein kosmetisch, ändert NICHTS an
+--- Gameplay-Zeitpunkten (Wellen-/Sieg-Fortschritt wertet weiterhin sofort
+--- beim Erreichen von CurrentHP<=0/Zentrum, siehe RaidService.removeDeadEnemies/
+--- tickEnemyMovement - nur das `:Destroy()` des Modells selbst verzögert sich).
+RaidConfig.DEATH_FX_SECONDS = 0.4
+
+--- Seamless-Animation-System: wie lange die client-seitige Spawn-Einblend-/
+--- Einwachs-Animation eines neu gespawnten Raid-Gegners dauert (ab
+--- `ATTR_SPAWNED_AT`, siehe ModelAnimationTags) - rein kosmetisch.
+RaidConfig.SPAWN_FX_SECONDS = 0.35
+
 -- // Offline-Auswertung (deterministische Formel, siehe RaidService) -------------
 -- Kein Zufall: verpasste Raids werden rein anhand der Turmstärke des
 -- Spielers gegen die volle Gegner-HP-Summe (GetTotalEnemyHP) entschieden.

@@ -22,41 +22,42 @@
 		  siehe PlayerDataService.CodexState-Kopfkommentar für die
 		  Begründung.
 
-	BEWEGUNGS-PERFORMANCE (Abschnitt 5.1, "Handy-Performance"):
-		EIN gemeinsamer, gedrosselter Loop (WANDER_TICK_SECONDS, identisches
-		Muster zu RaidService.runRaidTickLoop/RaidConfig.RAID_TICK_SECONDS)
-		bewegt ALLE angezeigten Kreaturen aller Plots - kein Loop pro
-		Kreatur/Plot. Modelle sind vollständig `Anchored` (siehe Kreaturen-
-		Buildscripts, assets/models/creatures/*.lua) und werden rein per
-		`Model:PivotTo()` bewegt - keine Physik/Kollision.
+	BEWEGUNGS-ARCHITEKTUR (GEÄNDERT - Seamless-Animation-System, siehe
+	docs/animation-system.md):
+		Server bleibt AUTORITATIV für die Wander-LOGIK (welches Ziel eine
+		Kreatur ansteuert, wann sie "ankommt" und ein neues Ziel bekommt) -
+		EIN gemeinsamer, gedrosselter Loop (WANDER_TICK_SECONDS) prüft dafür
+		ALLE angezeigten Kreaturen aller Plots, kein Loop pro Kreatur/Plot.
 
-		ENTSCHEIDUNG "Server- statt Client-getriebene Bewegung" (Auftrag:
-		"consider driving motion on clients instead if cheaper, document
-		the choice"): bewusst SERVERSEITIG gehalten, nicht client-getrieben.
-		Begründung: (1) Server bleibt bei JEDER Positionsangabe alleinige
-		Autorität (Projekt-Grundsatz "kein Client-Trust" - eine client-
-		seitige Wander-Simulation würde entweder pro Client eigene,
-		divergierende Positionen zeigen (andere Spieler sehen fremde Plots
-		leicht unterschiedlich) oder exakt denselben RNG-Seed/Zeitbasis
-		client-seitig nachbilden müssen, was fragiler ist als eine einzige
-		Server-Quelle. (2) Der Teil-/Update-Budget ist ohnehin klein (<=6
-		Kreaturen a 2-15 Parts je sichtbarem Plot, `WANDER_TICK_SECONDS` =
-		5 Hz statt RaidConfig's 10 Hz) - die zusätzliche CPU-Last ist
-		trigonometrisch trivial, die Netzwerk-Replikation (CFrame-Deltas,
-		nur für tatsächlich gestreamte/nahe Plots dank
-		`Workspace.StreamingEnabled`) ist kleiner als die für Gebäude-
-		Platzierung bereits bestehende Replikationslast. Ein Umstieg auf
-		client-seitige Interpolation wäre nur bei deutlich höherer
-		Kreaturenzahl/-frequenz gerechtfertigt.
+		NEU: der Server bewegt das Model dabei NICHT MEHR direkt per
+		`Model:PivotTo()` (das ließ anchored Parts auf Clients bei 5 Hz
+		sichtbar ruckeln - Roblox interpoliert CFrame-Änderungen anchored
+		Teile NICHT). Stattdessen publiziert der Server nur noch die
+		Ziel-Weltposition als `ModelAnimationTags.ATTR_TARGET_POSITION`-
+		Attribut (CollectionService-Tag `ModelAnimationTags.DISPLAY_CREATURE`,
+		siehe ModelAnimationTags-Kopfkommentar) - der Client
+		(`src/client/ModelAnimator.client.lua`) interpoliert selbst jeden
+		Frame flüssig dorthin (Chase/Lerp-Pattern, identisch zu
+		`BuddyClient.client.lua`s bereits bewährtem Follow-Ansatz) UND legt
+		die Idle-Bob-/Flossen-Sway-Animation (`IdleSway`-Modul) client-seitig
+		on top. Das ist bewusst KEIN Bruch des "kein Client-Trust"-Prinzips:
+		diese Kreaturen haben keinerlei Gameplay-Gewicht (keine Kollision,
+		keine Treffer-/Prompt-Logik hängt an ihrer exakten Position) - nur
+		die vom Server gewählten WERTE (welche Kreatur, welches ungefähre
+		Wander-Ziel) sind relevant, nicht die exakte Bild-für-Bild-Position.
+		Andere Spieler, die dasselbe fremde Plot sehen, sehen dieselbe
+		Server-Zielposition und interpolieren mit demselben Chase-Verfahren
+		dorthin - keine divergierenden Positionen.
 
-	PULSE-/BOB-ANIMATION:
-		Jede Kreatur besitzt bereits ein Attachment "PulseAttachment" am
-		PrimaryPart "Body" (Buildscript-Konvention, siehe
-		assets/models/README.md) als vorgesehenen Ansatzpunkt für die
-		Idle-Puls-/Schwebe-Animation. Da dieses System die gesamte Modell-
-		Pivot (inkl. `Body`, also inkl. `PulseAttachment`) jeden Tick per
-		`PivotTo` neu setzt, "bobt" das Attachment automatisch mit - kein
-		zusätzlicher, zweiter Animationskanal nötig.
+	PULSE-/BOB-ANIMATION (GEÄNDERT):
+		Läuft jetzt komplett client-seitig über `IdleSway`
+		(`src/shared/ModelAnimation/IdleSway.lua`) - dieselbe Idle-Logik wie
+		bei Buddys (`BuddyClient.client.lua`) und Raid-Gegnern
+		(`RaidService.lua` + `ModelAnimator.client.lua`), für optische
+		Konsistenz. Das Attachment "PulseAttachment" am PrimaryPart "Body"
+		(Buildscript-Konvention, siehe assets/models/README.md) bleibt als
+		dokumentierter Marker bestehen, wird von `IdleSway` aber nicht mehr
+		zwingend vorausgesetzt (jedes Modell mit PrimaryPart bobbt).
 
 	Rojo-Einhängepunkt:
 		src/server/CreatureDisplayService.lua ->
@@ -78,11 +79,14 @@
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local CollectionService = game:GetService("CollectionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local GachaConfig = require(script.Parent:WaitForChild("GachaConfig"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
+local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 type CreatureInstance = PlayerDataService.CreatureInstance
 
@@ -95,9 +99,8 @@ local SWIM_HEIGHT_MAX = 13
 local SPEED_STUDS_PER_SECOND_MIN = 2.5
 local SPEED_STUDS_PER_SECOND_MAX = 5.5
 local ARRIVE_DISTANCE_STUDS = 1.5
-local BOB_AMPLITUDE_STUDS = 0.6
-local BOB_SPEED_MIN = 0.6
-local BOB_SPEED_MAX = 1.3
+-- Bob-/Puls-Idle-Animation läuft seit dem Seamless-Animation-System
+-- komplett client-seitig (IdleSway-Modul) - hier kein Bob-Tuning mehr nötig.
 
 -- Gedrosselter gemeinsamer Tick (siehe Kopfkommentar) - bewusst langsamer
 -- als RaidConfig.RAID_TICK_SECONDS (0.1s/10 Hz), da reine Ambiente-
@@ -126,9 +129,6 @@ type DisplaySlot = {
 	TargetX: number,
 	TargetZ: number,
 	Speed: number,
-	BobPhase: number,
-	BobSpeed: number,
-	LastYaw: number,
 }
 
 type PlotDisplay = {
@@ -277,12 +277,16 @@ local function spawnSlot(display: PlotDisplay, instance: CreatureInstance): Disp
 		TargetX = targetX,
 		TargetZ = targetZ,
 		Speed = rng:NextNumber(SPEED_STUDS_PER_SECOND_MIN, SPEED_STUDS_PER_SECOND_MAX),
-		BobPhase = rng:NextNumber() * math.pi * 2,
-		BobSpeed = rng:NextNumber(BOB_SPEED_MIN, BOB_SPEED_MAX),
-		LastYaw = rng:NextNumber() * math.pi * 2,
 	}
 
 	clone:PivotTo(CFrame.new(baseX, swimHeight, baseZ))
+
+	-- Seamless-Animation-System (docs/animation-system.md): Tag + initiales
+	-- Ziel-Attribut für den Client-Renderer (ModelAnimator.client.lua). Der
+	-- Server ruft `PivotTo` ab hier NIE WIEDER auf dieses Model auf (siehe
+	-- tickSlot) - nur noch ATTR_TARGET_POSITION-Updates.
+	CollectionService:AddTag(clone, ModelAnimationTags.DISPLAY_CREATURE)
+	clone:SetAttribute(ModelAnimationTags.ATTR_TARGET_POSITION, Vector3.new(baseX, swimHeight, baseZ))
 
 	return slot
 end
@@ -382,15 +386,17 @@ local function tickSlot(slot: DisplaySlot, display: PlotDisplay, dt: number, now
 		local nx, nz = dx / distance, dz / distance
 		slot.BaseX += nx * step
 		slot.BaseZ += nz * step
-		slot.LastYaw = math.atan2(nx, nz)
 	end
 
-	local bobY = math.sin(now * slot.BobSpeed + slot.BobPhase) * BOB_AMPLITUDE_STUDS
-	local position = Vector3.new(slot.BaseX, slot.SwimHeight + bobY, slot.BaseZ)
-	local cframe = CFrame.new(position) * CFrame.Angles(0, slot.LastYaw, 0)
-
+	-- Seamless-Animation-System: NUR die logische Zielposition publizieren
+	-- (ohne Bob - der Client legt Bob/Idle-Sway selbst on top, siehe
+	-- IdleSway-Modul) - kein PivotTo mehr auf dem Server, siehe
+	-- Kopfkommentar "Bewegungs-Architektur".
 	if slot.Model.Parent then
-		slot.Model:PivotTo(cframe)
+		slot.Model:SetAttribute(
+			ModelAnimationTags.ATTR_TARGET_POSITION,
+			Vector3.new(slot.BaseX, slot.SwimHeight, slot.BaseZ)
+		)
 	end
 end
 
