@@ -170,6 +170,28 @@ function insideExpr(vol, grow) {
   return `csgBox(${q}, vec3(${h.map(f).join(",")}))`;
 }
 const EPS = 0.03;
+// JS mirror of the shader inside tests, used for framing clipped CSG leaves
+function insideJS(vol, p, grow) {
+  const q = p.clone().applyMatrix4(cfMatrix(vol.cf).invert());
+  const [sx, sy, sz] = effectiveScale(vol.shape, vol.size);
+  const h = [sx / 2 + grow, sy / 2 + grow, sz / 2 + grow];
+  if (vol.shape === "Ball") return q.length() <= Math.min(sx, sy, sz) / 2 + grow;
+  if (vol.shape === "Cylinder") return Math.abs(q.x) <= h[0] && Math.hypot(q.y, q.z) <= Math.min(sy, sz) / 2 + grow;
+  return Math.abs(q.x) <= h[0] && Math.abs(q.y) <= h[1] && Math.abs(q.z) <= h[2];
+}
+function sampleInside(matrix, cons) {
+  const out = [], N = 16;
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) for (let k = 0; k <= N; k++) {
+    if (i % N && j % N && k % N) continue; // surface samples only
+    const p = new THREE.Vector3(i / N - 0.5, j / N - 0.5, k / N - 0.5).applyMatrix4(matrix);
+    const ok = cons.every((c) => {
+      const any = c.vols.some((v) => insideJS(v, p, c.mode === "inStrict" ? -EPS : EPS));
+      return c.mode === "out" ? !any : any;
+    });
+    if (ok) out.push(p);
+  }
+  return out;
+}
 function csgShader(cons) {
   const lines = [];
   for (const c of cons) {
@@ -246,8 +268,14 @@ function buildModel(model, group, lights, bbox) {
       mesh.userData.bloomMat = bloomMat;
       group.add(mesh);
       if (!leaf.cutter) {
-        const b = new THREE.Box3().setFromBufferAttribute(mesh.geometry.getAttribute("position")).applyMatrix4(mesh.matrix);
-        bbox.union(b);
+        const clipped = leaf.cons.some((c) => c.mode !== "out");
+        if (clipped) {
+          // intersect operands are oversized: frame on sample points that survive the constraints
+          mesh.userData.framePts = sampleInside(mesh.matrix, leaf.cons);
+          for (const q of mesh.userData.framePts) bbox.expandByPoint(q);
+        } else {
+          bbox.union(new THREE.Box3().setFromBufferAttribute(mesh.geometry.getAttribute("position")).applyMatrix4(mesh.matrix));
+        }
       }
     }
     // point lights (also on invisible anchor parts)
@@ -304,6 +332,7 @@ function frameCamera(camera, group, bbox, view, aspect) {
       const sz = new THREE.Vector3().setFromMatrixScale(o.matrix);
       if (Math.max(sz.x, sz.z) > view.focus.radius) return; // ignore the huge ground slab
     }
+    if (o.userData.framePts) { pts.push(...o.userData.framePts); return; }
     for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).applyMatrix4(o.matrix));
   });
   let target = center.clone();

@@ -97,7 +97,7 @@ const sheets = {
     width: 1600, cols: 1, cellAspect: 0.6,
     cells: [
       { models: [...hub.map((m) => m.name), ...npcs.map((m) => m.name)], label: "TidalMarketHub + NPCs — full footprint", sub: `${hub.reduce((a, m) => a + m.parts.length, 0)} hub parts · ${npcs.length} NPCs`, view: { az: -30, el: 38, margin: 0.95 }, maxLights: 12 },
-      { models: [...hub.map((m) => m.name), ...npcs.map((m) => m.name)], label: "Central plaza close-up", sub: "same scene, camera focused on the landmark and stands", view: { az: -30, el: 30, margin: 0.95, focus: { center: hub[0]?.primary ? hub[0].primary.slice(0, 3) : [0, 0, 0], radius: 45 } }, maxLights: 16 },
+      { models: [...hub.map((m) => m.name), ...npcs.map((m) => m.name)], label: "Central plaza close-up", sub: "same scene, camera focused on the landmark and stands", view: { az: -30, el: 30, margin: 0.86, focus: { center: hub[0]?.primary ? hub[0].primary.slice(0, 3) : [0, 0, 0], radius: 55 } }, maxLights: 16 },
     ],
   },
   terrain: {

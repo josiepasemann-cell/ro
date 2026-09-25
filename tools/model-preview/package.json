@@ -1,0 +1,14 @@
+{
+  "name": "model-preview",
+  "private": true,
+  "type": "module",
+  "description": "Render preview PNGs of the Luau buildscripts in assets/models",
+  "scripts": {
+    "export": "node export.mjs",
+    "render": "node render.mjs",
+    "all": "node export.mjs && node render.mjs"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  }
+}
