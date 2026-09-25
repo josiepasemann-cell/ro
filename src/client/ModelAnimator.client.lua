@@ -231,7 +231,7 @@ end
 
 -- // Raid-Gegner: Spawn-Einwachs + Sterbe-Auflösung (Transparency/Scale) -------
 
-local raidVisualState: { [Model]: { BaseTransparency: { [BasePart]: number } } } = {}
+local raidVisualState: { [Model]: { BaseTransparency: { [BasePart]: number }, BaseScale: number } } = {}
 
 local function captureBaseTransparency(model: Model): { [BasePart]: number }
 	local map: { [BasePart]: number } = {}
@@ -256,7 +256,11 @@ local function updateRaidEnemyVisualFx(entry: ChaseEntry, now: number)
 	local model = entry.Model
 	local state = raidVisualState[model]
 	if not state then
-		state = { BaseTransparency = captureBaseTransparency(model) }
+		local baseScale = 1
+		pcall(function()
+			baseScale = (model :: any):GetScale()
+		end)
+		state = { BaseTransparency = captureBaseTransparency(model), BaseScale = baseScale }
 		raidVisualState[model] = state
 	end
 
@@ -265,10 +269,8 @@ local function updateRaidEnemyVisualFx(entry: ChaseEntry, now: number)
 		local elapsed = now - dyingAt
 		local t = math.clamp(elapsed / DEATH_FX_SECONDS, 0, 1)
 		applyUniformFade(model, state.BaseTransparency, 1 - t)
-		local shrink = 1 - 0.5 * t
-		model:PivotTo(model:GetPivot() * CFrame.new())
 		pcall(function()
-			model:ScaleTo(shrink)
+			(model :: any):ScaleTo(state.BaseScale * (1 - 0.5 * t))
 		end)
 		return
 	end

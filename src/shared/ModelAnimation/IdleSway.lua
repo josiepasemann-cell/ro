@@ -78,12 +78,14 @@ local function isSwayablePartName(name: string): boolean
 	return false
 end
 
+export type SwayPart = { Part: BasePart, RestOffset: CFrame, Speed: number, PhaseOffset: number }
+
 export type SwayState = {
 	Model: Model,
 	PrimaryPart: BasePart,
 	Seed: number,
 	BobSpeed: number,
-	SwayParts: { { Part: BasePart, RestOffset: CFrame, Speed: number, PhaseOffset: number } },
+	SwayParts: { SwayPart },
 	HasBob: boolean,
 }
 
@@ -97,7 +99,7 @@ function IdleSway.BuildState(model: Model, seed: number?): SwayState?
 	end
 
 	local restPivot = model:GetPivot()
-	local swayParts: SwayState["SwayParts"] = {}
+	local swayParts: { SwayPart } = {}
 	for index, descendant in ipairs(model:GetChildren()) do
 		if descendant:IsA("BasePart") and descendant ~= primaryPart and isSwayablePartName(descendant.Name) then
 			table.insert(swayParts, {
