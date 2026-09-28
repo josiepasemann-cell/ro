@@ -134,6 +134,21 @@ local function newPart(name: string, size: Vector3, cframe: CFrame, color: Color
 	return part
 end
 
+local function newWedge(name: string, size: Vector3, cframe: CFrame, color: Color3, material: Enum.Material, parent: Instance): WedgePart
+	local wedge = Instance.new("WedgePart")
+	wedge.Name = name
+	wedge.Size = size
+	wedge.CFrame = cframe
+	wedge.Color = color
+	wedge.Material = material
+	wedge.Anchored = true
+	wedge.CanCollide = false
+	wedge.TopSurface = Enum.SurfaceType.Smooth
+	wedge.BottomSurface = Enum.SurfaceType.Smooth
+	wedge.Parent = parent
+	return wedge
+end
+
 -- // Root setup ---------------------------------------------------------------
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local npcsFolder = getOrCreateFolder(assetsFolder, "Npcs")
@@ -207,14 +222,14 @@ for index, offset in ipairs(legOffsets) do
 end
 
 -- 5) Merchant satchel + coin props slung on the shell (readable "shop" prop) -----
-local satchel = newPart("Satchel", Vector3.new(1.0, 0.9, 0.5), rootCFrame * CFrame.new(0, -0.3, -1.55), Color3.fromRGB(120, 88, 52), Enum.Material.SmoothPlastic, model)
-newPart("SatchelFlap", Vector3.new(1.02, 0.4, 0.1), rootCFrame * CFrame.new(0, 0.1, -1.82), Color3.fromRGB(150, 112, 68), Enum.Material.SmoothPlastic, model)
-newPart("SatchelBuckle", Vector3.new(0.2, 0.2, 0.1), rootCFrame * CFrame.new(0, -0.1, -1.85), NEON_ORANGE, Enum.Material.Neon, model)
+local satchel = newPart("Satchel", Vector3.new(1.0, 0.9, 0.5), rootCFrame * CFrame.new(0, -0.3, -1.25), Color3.fromRGB(120, 88, 52), Enum.Material.SmoothPlastic, model)
+newPart("SatchelFlap", Vector3.new(1.02, 0.4, 0.1), rootCFrame * CFrame.new(0, 0.1, -1.45), Color3.fromRGB(150, 112, 68), Enum.Material.SmoothPlastic, model)
+newPart("SatchelBuckle", Vector3.new(0.2, 0.2, 0.1), rootCFrame * CFrame.new(0, -0.1, -1.42), NEON_ORANGE, Enum.Material.Neon, model)
 for i = 1, 3 do
 	local coin = newPart(
 		"SatchelCoin" .. i,
 		Vector3.new(0.28, 0.28, 0.06),
-		rootCFrame * CFrame.new(-0.3 + (i - 1) * 0.3, -0.75, -1.75) * CFrame.Angles(0, math.rad(15 * i), math.rad(90)),
+		rootCFrame * CFrame.new(-0.3 + (i - 1) * 0.3, -0.75, -1.4) * CFrame.Angles(0, math.rad(15 * i), math.rad(90)),
 		Color3.fromRGB(255, 215, 90),
 		Enum.Material.Neon,
 		model

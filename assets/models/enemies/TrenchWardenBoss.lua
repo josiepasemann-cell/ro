@@ -118,6 +118,32 @@ for c = 1, 5 do
 	end
 end
 
+-- 4b) Gepanzerte Brustplatten (überlappende Blöcke, brechen die reine Kugelform auf) -
+for p = 1, 3 do
+	local x = (p - 2) * 1.6
+	newPart(
+		"ChestPlate" .. p,
+		Vector3.new(1.5 - math.abs(p - 2) * 0.3, 2.6, 0.9),
+		ORIGIN * CFrame.new(x, -0.3, 3.4) * CFrame.Angles(math.rad(6 * (p - 2)), 0, 0),
+		ACCENT_COLOR,
+		Enum.Material.Slate,
+		model
+	)
+end
+
+-- 4c) Hakenschnabel unterhalb der Augen -------------------------------------------
+local beak = Instance.new("WedgePart")
+beak.Name = "Beak"
+beak.Size = Vector3.new(1.4, 1.1, 1.4)
+beak.CFrame = ORIGIN * CFrame.new(0, -1.0, 3.6) * CFrame.Angles(math.rad(-90), 0, 0)
+beak.Color = Color3.fromRGB(35, 25, 32)
+beak.Material = Enum.Material.Slate
+beak.Anchored = true
+beak.CanCollide = false
+beak.TopSurface = Enum.SurfaceType.Smooth
+beak.BottomSurface = Enum.SurfaceType.Smooth
+beak.Parent = model
+
 -- 5) 8 lange, dicke, peitschenartige Tentakel (je 3 Segmente, radial verteilt) -----
 for t = 1, TENTACLE_COUNT do
 	local angle = math.rad(360 / TENTACLE_COUNT * (t - 1))

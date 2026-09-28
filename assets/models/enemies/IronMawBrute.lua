@@ -150,6 +150,45 @@ local legOffsets = {
 }
 for i, offset in ipairs(legOffsets) do
 	newPart("Leg" .. i, Vector3.new(0.7, 0.9, 0.7), ORIGIN * CFrame.new(offset), ACCENT_COLOR, Enum.Material.Slate, model)
+	-- Stumpfe Klauenfüße (überlappen das jeweilige Bein)
+	local footOffset = offset + Vector3.new(0, -0.55, offset.Z > 0 and 0.35 or -0.35)
+	local foot = Instance.new("WedgePart")
+	foot.Name = "Foot" .. i
+	foot.Size = Vector3.new(0.65, 0.4, 0.7)
+	foot.CFrame = ORIGIN * CFrame.new(footOffset)
+	foot.Color = ARMOR_COLOR
+	foot.Material = Enum.Material.Metal
+	foot.Anchored = true
+	foot.CanCollide = false
+	foot.TopSurface = Enum.SurfaceType.Smooth
+	foot.BottomSurface = Enum.SurfaceType.Smooth
+	foot.Parent = model
+end
+
+-- 6b) Rückendornreihe auf dem Nacken-Buckel (Mantle) für mehr Bedrohlichkeit -------
+for s = 1, 3 do
+	local x = (s - 2) * 0.9
+	newPart(
+		"BackSpike" .. s,
+		Vector3.new(0.35, 0.9 - math.abs(s - 2) * 0.2, 0.45),
+		ORIGIN * CFrame.new(x, 2.3, 0.9) * CFrame.Angles(math.rad(-12), 0, 0),
+		ARMOR_COLOR,
+		Enum.Material.Metal,
+		model
+	)
+end
+
+-- 6c) Sichtbare untere Zahnreihe im überdimensionierten Kiefer ---------------------
+for tth = 1, 4 do
+	local x = (tth - 2.5) * 0.55
+	newPart(
+		"Tooth" .. tth,
+		Vector3.new(0.22, 0.35, 0.22),
+		ORIGIN * CFrame.new(x, -1.15, -2.2),
+		Color3.fromRGB(225, 220, 205),
+		Enum.Material.SmoothPlastic,
+		model
+	)
 end
 
 -- 7) Idle-/Bedrohungs-Puls-Attachment -------------------------------------------------

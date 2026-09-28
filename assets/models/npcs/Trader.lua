@@ -173,9 +173,14 @@ body.Shape = Enum.PartType.Ball
 newPart("StripeWhite1", Vector3.new(2.65, 0.4, 0.3), rootCFrame * CFrame.new(0, 0, 0.6), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
 newPart("StripeWhite2", Vector3.new(2.5, 0.4, 0.3), rootCFrame * CFrame.new(0, 0.05, -0.4), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
 
--- Dorsal + tail fins (static decoration), neon-trimmed to match the dock
+-- Dorsal fin (static decoration), neon-trimmed to match the dock
 newWedge("DorsalFin", Vector3.new(0.9, 0.14, 0.8), rootCFrame * CFrame.new(0, 1.05, -0.3) * CFrame.Angles(0, math.rad(90), 0), NEON_GREEN, Enum.Material.Neon, model)
-newWedge("TailFin", Vector3.new(0.8, 1.1, 0.14), rootCFrame * CFrame.new(0, 0, -1.55) * CFrame.Angles(0, 0, math.rad(90)), NEON_GREEN, Enum.Material.Neon, model)
+
+-- Tail stalk bridges the body -> tail fin gap (the round body's collision
+-- radius is smaller than its visual Z extent, so the fin needs a connector)
+newPart("TailStalk", Vector3.new(0.7, 0.7, 1.0), rootCFrame * CFrame.new(0, 0, -1.15), BODY_ORANGE, Enum.Material.SmoothPlastic, model)
+newWedge("TailFin", Vector3.new(0.8, 1.1, 0.14), rootCFrame * CFrame.new(0, 0, -1.6) * CFrame.Angles(0, 0, math.rad(90)), NEON_GREEN, Enum.Material.Neon, model)
+newWedge("TailFinTip", Vector3.new(0.55, 0.7, 0.12), rootCFrame * CFrame.new(0, 0, -1.7) * CFrame.Angles(0, 0, math.rad(90)), STRIPE_WHITE, Enum.Material.Neon, model)
 
 -- 2) Head: small nose bump at the front ------------------------------------
 local head = newPart("Head", Vector3.new(0.9, 1.0, 0.7), rootCFrame * CFrame.new(0, 0.05, 1.3), BODY_ORANGE_LIGHT, Enum.Material.SmoothPlastic, model)
@@ -190,6 +195,11 @@ eye2.Shape = Enum.PartType.Ball
 -- 3) Pectoral fins (named, movable for waving) -----------------------------
 local armL = newPart("ArmL", Vector3.new(0.14, 0.6, 0.9), rootCFrame * CFrame.new(-1.3, -0.2, 0.3) * CFrame.Angles(0, 0, math.rad(20)), NEON_GREEN, Enum.Material.Neon, model)
 local armR = newPart("ArmR", Vector3.new(0.14, 0.6, 0.9), rootCFrame * CFrame.new(1.3, -0.2, 0.3) * CFrame.Angles(0, 0, math.rad(-20)), NEON_GREEN, Enum.Material.Neon, model)
+
+-- 4) Small trade crate resting against the body (readable "trader" prop) --------
+newPart("TradeCrate", Vector3.new(0.9, 0.85, 0.9), rootCFrame * CFrame.new(0, -0.85, 0.9), Color3.fromRGB(150, 108, 60), Enum.Material.Wood, model)
+newPart("TradeCrateBandX", Vector3.new(0.95, 0.14, 0.95), rootCFrame * CFrame.new(0, -0.85, 0.9), Color3.fromRGB(90, 62, 32), Enum.Material.Wood, model)
+newPart("TradeCrateGem", Vector3.new(0.3, 0.3, 0.3), rootCFrame * CFrame.new(0, -0.45, 0.9), NEON_GREEN, Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 
 model.PrimaryPart = body
 model:SetAttribute("NpcId", NPC_ID)

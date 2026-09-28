@@ -103,6 +103,20 @@ for i, spec in ipairs(spikeOffsets) do
 	core.Transparency = 0.1
 end
 
+-- 2b) Kleine Frostkristall-Splitter rund um den Sockel für mehr Detail -----------
+for i = 1, 4 do
+	local angle = math.rad(90 * i + 45)
+	local shard = newPart(
+		"FrostShard" .. i,
+		Vector3.new(0.35, 0.7, 0.35),
+		ORIGIN * CFrame.new(math.cos(angle) * 1.7, 0.35, math.sin(angle) * 1.7) * CFrame.Angles(0, math.rad(20 * i), math.rad(15)),
+		Color3.fromRGB(170, 220, 250),
+		Enum.Material.Glass,
+		model
+	)
+	shard.Transparency = 0.3
+end
+
 -- 3) Ambient-Glühlicht -------------------------------------------------------------
 local light = Instance.new("PointLight")
 light.Name = "IceGlow"

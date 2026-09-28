@@ -116,6 +116,19 @@ for i = 1, 10 do
 	coin.Shape = Enum.PartType.Cylinder
 end
 
+-- 3b) Kleine goldene Ringe/Schmuckstücke, die aus dem Münzhaufen ragen -----------
+for i = 1, 2 do
+	local ring = newPart(
+		"JewelRing" .. i,
+		Vector3.new(0.35, 0.35, 0.1),
+		ORIGIN * CFrame.new(1.3 + i * 0.35, 0.15, -0.3 + i * 0.5) * CFrame.Angles(math.rad(70), math.rad(20 * i), 0),
+		Color3.fromRGB(255, 225, 130),
+		Enum.Material.Metal,
+		model
+	)
+	ring.Shape = Enum.PartType.Cylinder
+end
+
 -- 4) Glänzende Neon-Akzente (Funkeln aus der Truhe) ------------------------------
 for i = 1, 3 do
 	local sparkle = newPart(

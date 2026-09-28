@@ -176,6 +176,15 @@ for index, offset in ipairs(tentacleOffsets) do
 	)
 end
 
+-- 5) Small welcome lantern held near the tip of the right tentacle ---------------
+-- Reuses ArmR's own CFrame chain so the lantern sits exactly at (and
+-- overlaps) the tentacle tip regardless of its tilt.
+local armRTipCFrame = rootCFrame * CFrame.new(1.4, -2.4, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -1.35, 0)
+local lantern = newPart("Lantern", Vector3.new(0.45, 0.55, 0.45), armRTipCFrame, Color3.fromRGB(255, 225, 150), Enum.Material.Glass, model)
+lantern.Transparency = 0.15
+newPart("LanternGlow", Vector3.new(0.24, 0.3, 0.24), armRTipCFrame, Color3.fromRGB(255, 235, 180), Enum.Material.Neon, model)
+newPart("LanternHandle", Vector3.new(0.08, 0.32, 0.08), armRTipCFrame * CFrame.new(0, 0.35, 0), Color3.fromRGB(200, 190, 170), Enum.Material.Metal, model)
+
 model.PrimaryPart = body
 model:SetAttribute("NpcId", NPC_ID)
 model:SetAttribute("DisplayName", DISPLAY_NAME)

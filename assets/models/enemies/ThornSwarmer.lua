@@ -111,6 +111,40 @@ for t = 1, 6 do
 	thorn.Parent = model
 end
 
+-- 4b) Zweiter, kürzerer Dornenring (versetzt) für mehr Silhouetten-Dichte --------
+for t = 1, 6 do
+	local angle = math.rad(360 / 6 * (t - 1) + 30)
+	local dir = Vector3.new(math.cos(angle), math.sin(angle) * 0.4, math.sin(angle))
+	local thornCFrame = ORIGIN * CFrame.new(dir * 0.95) * CFrame.new(0, 0.35, 0) * CFrame.Angles(0, angle, math.rad(90))
+	local thorn = Instance.new("WedgePart")
+	thorn.Name = "SmallThorn" .. t
+	thorn.Size = Vector3.new(0.14, 0.55, 0.2)
+	thorn.CFrame = thornCFrame
+	thorn.Color = EYE_COLOR
+	thorn.Material = Enum.Material.Neon
+	thorn.Anchored = true
+	thorn.CanCollide = false
+	thorn.TopSurface = Enum.SurfaceType.Smooth
+	thorn.BottomSurface = Enum.SurfaceType.Smooth
+	thorn.Parent = model
+end
+
+-- 4c) Kleine Kiefer-/Mundplatte vorn, gut sichtbar unter den Augen -----------------
+local jaw = newPart("Jaw", Vector3.new(0.7, 0.35, 0.4), ORIGIN * CFrame.new(0, -0.3, -1.05), ACCENT_COLOR, Enum.Material.SmoothPlastic, model)
+
+-- 4d) Kleine Heckflosse (stabilisiert die Schwarm-Silhouette von hinten) ----------
+local tailFin = Instance.new("WedgePart")
+tailFin.Name = "TailFin"
+tailFin.Size = Vector3.new(0.15, 0.9, 0.7)
+tailFin.CFrame = ORIGIN * CFrame.new(0, 0.1, 1.0) * CFrame.Angles(0, math.rad(90), 0)
+tailFin.Color = ACCENT_COLOR
+tailFin.Material = Enum.Material.SmoothPlastic
+tailFin.Anchored = true
+tailFin.CanCollide = false
+tailFin.TopSurface = Enum.SurfaceType.Smooth
+tailFin.BottomSurface = Enum.SurfaceType.Smooth
+tailFin.Parent = model
+
 -- 5) Idle-/Bedrohungs-Puls-Attachment -------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"

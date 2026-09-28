@@ -66,6 +66,21 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Oval/egg-shaped "ball" helper: a Part with Shape=Ball only ever renders as
+-- a sphere using its SMALLEST axis as diameter (Roblox does not stretch
+-- balls). For elongated shapes we use a plain Block with a child SpecialMesh
+-- (MeshType=Sphere), which Roblox stretches to Size * Scale - this keeps the
+-- part's own Size/CFrame as the true collision/connectivity footprint while
+-- letting the mesh render the intended ellipsoid.
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local decorationsFolder = getOrCreateFolder(assetsFolder, "Decorations")
 
@@ -106,21 +121,47 @@ for i = 1, 3 do
 		clusterModel
 	)
 
-	-- 3 kleine Fronds pro Cluster (Neon-Kegelform via WedgePart-Stapel)
+	-- 3 kleine Fronds pro Cluster: je 2 gestapelte, sich überlappende
+	-- Kugelsegmente, die sich zur Spitze hin verjüngen (kein Cylinder-
+	-- Achsen-Bug mehr, jedes Segment überlappt das darunterliegende UND
+	-- die ClusterBase direkt).
 	for j = 1, 3 do
 		local angle = math.rad(120 * (j - 1))
-		local height = 1.0 + (j % 2) * 0.5
-		local frond = newPart(
+		local baseHeight = 0.55 + (j % 2) * 0.3
+		local frondX = math.cos(angle) * 0.35
+		local frondZ = math.sin(angle) * 0.35
+
+		newOvalPart(
 			"Frond" .. j,
-			Vector3.new(0.3, height, 0.3),
-			clusterCFrame * CFrame.new(math.cos(angle) * 0.35, height / 2 + 0.2, math.sin(angle) * 0.35)
-				* CFrame.Angles(math.rad(10), 0, 0),
+			Vector3.new(0.34, baseHeight, 0.34),
+			clusterCFrame * CFrame.new(frondX, baseHeight / 2 + 0.05, frondZ),
 			color,
 			Enum.Material.Neon,
 			clusterModel
 		)
-		frond.Shape = Enum.PartType.Cylinder
-		frond.CFrame = frond.CFrame * CFrame.Angles(0, 0, math.rad(90))
+
+		local tipHeight = baseHeight * 0.75
+		newOvalPart(
+			"Frond" .. j .. "Tip",
+			Vector3.new(0.22, tipHeight, 0.22),
+			clusterCFrame * CFrame.new(frondX, baseHeight + tipHeight / 2 - 0.12, frondZ) * CFrame.Angles(math.rad(8 * j), math.rad(angle * 20), 0),
+			color,
+			Enum.Material.Neon,
+			clusterModel
+		)
+	end
+
+	-- Ein paar kleine Kiesel/Polypen am Fuß jedes Clusters für mehr Lebendigkeit
+	for k = 1, 2 do
+		local angle = math.rad(120 * k + 40)
+		newPart(
+			"Pebble" .. k,
+			Vector3.new(0.22, 0.16, 0.22),
+			clusterCFrame * CFrame.new(math.cos(angle) * 0.42, 0.1, math.sin(angle) * 0.42),
+			Color3.fromRGB(190, 178, 150),
+			Enum.Material.Slate,
+			clusterModel
+		).Shape = Enum.PartType.Ball
 	end
 
 	local light = Instance.new("PointLight")

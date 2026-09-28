@@ -82,6 +82,34 @@ local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, -0.4)
 newPart("Mantle", Vector3.new(3.2, 2.2, 3.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Slate, model).Shape =
 	Enum.PartType.Ball
 
+-- 2b) Kronendorn-Reihe auf dem Mantel (mehr Silhouette/Detail) ---------------------
+for c = 1, 5 do
+	local angle = math.rad(-70 + (c - 1) * 35)
+	local spikeCFrame = mantleCFrame * CFrame.new(0, 1.0, 0) * CFrame.Angles(0, angle, 0) * CFrame.new(0, 0.5, 0.3)
+	newPart("CrownRidge" .. c, Vector3.new(0.35, 1.1, 0.35), spikeCFrame, ACCENT_COLOR, Enum.Material.Slate, model)
+end
+
+-- 2c) Barnacle-/Warzen-Höcker auf dem Körper für mehr Oberflächen-Detail -----------
+for b = 1, 6 do
+	local angle = math.rad(60 * b)
+	local bumpCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.7, math.sin(angle) * 0.6 - 0.4, math.sin(angle) * 1.4)
+	local bump = newPart("Barnacle" .. b, Vector3.new(0.45, 0.45, 0.45), bumpCFrame, ACCENT_COLOR, Enum.Material.Slate, model)
+	bump.Shape = Enum.PartType.Ball
+end
+
+-- 2d) Hakenschnabel (Beak) am unteren Kopfansatz, zwischen den Augen -----------------
+local beakUpper = Instance.new("WedgePart")
+beakUpper.Name = "BeakUpper"
+beakUpper.Size = Vector3.new(0.9, 0.7, 0.9)
+beakUpper.CFrame = ORIGIN * CFrame.new(0, -0.1, 1.9) * CFrame.Angles(math.rad(-90), 0, 0)
+beakUpper.Color = Color3.fromRGB(45, 40, 50)
+beakUpper.Material = Enum.Material.Slate
+beakUpper.Anchored = true
+beakUpper.CanCollide = false
+beakUpper.TopSurface = Enum.SurfaceType.Smooth
+beakUpper.BottomSurface = Enum.SurfaceType.Smooth
+beakUpper.Parent = model
+
 -- 3) Bedrohliche Glow-Augen ---------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1

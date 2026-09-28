@@ -168,6 +168,11 @@ eye1.Shape = Enum.PartType.Ball
 local eye2 = newPart("Eye2", Vector3.new(0.55, 0.55, 0.3), rootCFrame * CFrame.new(0.4, 1.4, 1.55), EYE_COLOR, Enum.Material.Neon, model)
 eye2.Shape = Enum.PartType.Ball
 
+-- Wise old spectacles (readable "elder" prop): two thin lens rims + a bridge
+newPart("SpecsLensL", Vector3.new(0.55, 0.55, 0.06), rootCFrame * CFrame.new(-0.4, 1.4, 1.62), Color3.fromRGB(230, 225, 210), Enum.Material.Glass, model).Shape = Enum.PartType.Ball
+newPart("SpecsLensR", Vector3.new(0.55, 0.55, 0.06), rootCFrame * CFrame.new(0.4, 1.4, 1.62), Color3.fromRGB(230, 225, 210), Enum.Material.Glass, model).Shape = Enum.PartType.Ball
+newPart("SpecsBridge", Vector3.new(0.35, 0.08, 0.08), rootCFrame * CFrame.new(0, 1.4, 1.63), Color3.fromRGB(210, 200, 180), Enum.Material.Metal, model)
+
 -- 3) Two primary tentacles (named, movable for waving) -------------------
 local armL = newPart("ArmL", Vector3.new(0.55, 2.6, 0.55), rootCFrame * CFrame.new(-1.6, -2.0, 0.4) * CFrame.Angles(math.rad(10), 0, math.rad(14)), TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
 local armR = newPart("ArmR", Vector3.new(0.55, 2.6, 0.55), rootCFrame * CFrame.new(1.6, -2.0, 0.4) * CFrame.Angles(math.rad(10), 0, math.rad(-14)), TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
@@ -185,6 +190,11 @@ for index, offset in ipairs(tentacleOffsets) do
 		model
 	)
 end
+
+-- 5) A guarded mystery egg cradled between the front tentacles -------------------
+local egg = newPart("GuardedEgg", Vector3.new(0.75, 0.95, 0.75), rootCFrame * CFrame.new(0, -1.5, 1.0), Color3.fromRGB(220, 200, 255), Enum.Material.SmoothPlastic, model)
+egg.Shape = Enum.PartType.Ball
+newPart("GuardedEggBand", Vector3.new(0.78, 0.16, 0.78), rootCFrame * CFrame.new(0, -1.35, 1.0), NEON_VIOLET, Enum.Material.Neon, model)
 
 model.PrimaryPart = body
 model:SetAttribute("NpcId", NPC_ID)

@@ -107,6 +107,19 @@ for i = 1, 4 do
 	rock.CanCollide = true
 end
 
+-- 3b) Kleine Glut-Kiesel entlang des Risses für mehr Detail ----------------------
+for i = 1, 3 do
+	local ember = newPart(
+		"EmberPebble" .. i,
+		Vector3.new(0.22, 0.14, 0.22),
+		ORIGIN * CFrame.new(-1.0 + i * 0.7, 0.3, 0.15 * (i % 2 == 0 and 1 or -1)),
+		Color3.fromRGB(255, 150, 50),
+		Enum.Material.Neon,
+		model
+	)
+	ember.Shape = Enum.PartType.Ball
+end
+
 -- 4) Ember-Partikelemitter (aufsteigende Glut) -----------------------------------
 local emberAttachment = Instance.new("Attachment")
 emberAttachment.Name = "EmberPoint"

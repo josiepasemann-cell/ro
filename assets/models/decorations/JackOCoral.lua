@@ -71,6 +71,24 @@ model.Parent = decorationsFolder
 local base = newPart("Base", Vector3.new(3.5, 0.6, 3.5), ORIGIN, Color3.fromRGB(40, 55, 45), Enum.Material.Slate, model)
 base.CanCollide = true
 
+-- 1b) Korallenstamm: verbindet Base (endet bei y=1.8) mit dem Kopf (beginnt
+-- bei y=2.0) - schließt die Lücke und liefert zusätzliche Silhouette --------
+local stalk = newPart("Stalk", Vector3.new(1.6, 0.9, 1.6), ORIGIN * CFrame.new(0, 0.5, 0), Color3.fromRGB(230, 120, 30), Enum.Material.SmoothPlastic, model)
+
+-- Kleine Basis-Polypen rund um den Sockel für mehr Lebendigkeit -------------------
+for i = 1, 4 do
+	local angle = math.rad(90 * (i - 1) + 30)
+	local polyp = newPart(
+		"BasePolyp" .. i,
+		Vector3.new(0.5, 0.5, 0.5),
+		ORIGIN * CFrame.new(math.cos(angle) * 1.55, -0.15, math.sin(angle) * 1.55),
+		Color3.fromRGB(255, 150, 50),
+		Enum.Material.SmoothPlastic,
+		model
+	)
+	polyp.Shape = Enum.PartType.Ball
+end
+
 -- 2) Korallenkopf (CSG-Union aus Kugel + Höckern) ------------------------------
 local headParts = {}
 local headBall = Instance.new("Part")

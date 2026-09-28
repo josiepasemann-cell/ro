@@ -131,6 +131,20 @@ for i = 1, 3 do
 	drip.Shape = Enum.PartType.Ball
 end
 
+-- 5b) Kleine Ranken/Blasen am Sockel für mehr Lebendigkeit ------------------------
+for i = 1, 3 do
+	local angle = math.rad(120 * i + 15)
+	local bubble = newPart(
+		"VenomBubble" .. i,
+		Vector3.new(0.3, 0.3, 0.3),
+		ORIGIN * CFrame.new(math.cos(angle) * 1.7, 0.3, math.sin(angle) * 1.7),
+		Color3.fromRGB(160, 255, 80),
+		Enum.Material.Neon,
+		model
+	)
+	bubble.Shape = Enum.PartType.Ball
+end
+
 -- 6) Glow-Licht ------------------------------------------------------------------
 local light = Instance.new("PointLight")
 light.Name = "VenomGlow"
