@@ -97,9 +97,10 @@ local model = Instance.new("Model")
 model.Name = "IceSpire"
 model.Parent = decorationsFolder
 
--- 1) Vereister Sockel ------------------------------------------------------------
-local base = newPart("Base", Vector3.new(4, 0.6, 4), ORIGIN, Color3.fromRGB(200, 220, 235), Enum.Material.Ice, model)
+-- 1) Vereister Sockel: rundlicher, toy-like Eisfelsen -----------------------------
+local base = newOvalPart("Base", Vector3.new(4, 1.0, 4), ORIGIN, Color3.fromRGB(200, 220, 235), Enum.Material.Ice, model)
 base.CanCollide = true
+newTexture("IceFrost", Enum.NormalId.Top, base, { studsU = 1.2, studsV = 1.2, color = Color3.fromRGB(225, 240, 250), transparency = 0.3 })
 
 -- 2) Kristallspitzen-Cluster (5 Spikes unterschiedlicher Höhe/Position) ---------
 local spikeOffsets = {
@@ -111,9 +112,9 @@ local spikeOffsets = {
 }
 
 for i, spec in ipairs(spikeOffsets) do
-	local spike = newPart(
+	local spike = newOvalPart(
 		"IceSpike" .. i,
-		Vector3.new(spec.width, spec.height, spec.width),
+		Vector3.new(spec.width * 1.3, spec.height, spec.width * 1.3),
 		ORIGIN * CFrame.new(spec.pos.X, spec.height / 2 + 0.3, spec.pos.Z) * CFrame.Angles(math.rad((i % 2 == 0) and 4 or -4), math.rad(15 * i), 0),
 		Color3.fromRGB(150, 210, 245),
 		Enum.Material.Glass,
@@ -121,9 +122,9 @@ for i, spec in ipairs(spikeOffsets) do
 	)
 	spike.Transparency = 0.35
 
-	local core = newPart(
+	local core = newOvalPart(
 		"IceSpikeCore" .. i,
-		Vector3.new(spec.width * 0.35, spec.height * 0.8, spec.width * 0.35),
+		Vector3.new(spec.width * 0.5, spec.height * 0.8, spec.width * 0.5),
 		spike.CFrame,
 		Color3.fromRGB(200, 245, 255),
 		Enum.Material.Neon,
@@ -131,13 +132,14 @@ for i, spec in ipairs(spikeOffsets) do
 	)
 	core.Transparency = 0.1
 end
+newTexture("CrystalFacets", Enum.NormalId.Front, base, { studsU = 1, studsV = 1, color = Color3.fromRGB(180, 225, 250), transparency = 0.35 })
 
--- 2b) Kleine Frostkristall-Splitter rund um den Sockel für mehr Detail -----------
+-- 2b) Kleine, rundliche Frostkristall-Splitter rund um den Sockel für mehr Detail --
 for i = 1, 4 do
 	local angle = math.rad(90 * i + 45)
-	local shard = newPart(
+	local shard = newOvalPart(
 		"FrostShard" .. i,
-		Vector3.new(0.35, 0.7, 0.35),
+		Vector3.new(0.4, 0.7, 0.4),
 		ORIGIN * CFrame.new(math.cos(angle) * 1.7, 0.35, math.sin(angle) * 1.7) * CFrame.Angles(0, math.rad(20 * i), math.rad(15)),
 		Color3.fromRGB(170, 220, 250),
 		Enum.Material.Glass,

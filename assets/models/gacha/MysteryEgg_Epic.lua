@@ -100,33 +100,24 @@ local TIP_COLOR = Color3.fromRGB(225, 180, 255)
 local shell = newMeshBall("Shell", SHELL_SIZE, ORIGIN, SHELL_COLOR, Enum.Material.Glass, model)
 shell.Transparency = 0.1
 
--- 2) Kristallschübe (angewinkelte Keile, dichter als Rare), eingesenkt in die Schale -
+-- 2) Kristall-Gems (glänzende Ellipsoide statt Keile), dichter als Rare, eingesenkt
+--    in die Schale -> toy-artige Candy-Gem-Studs ------------------------------------
 for i = 1, SHARD_COUNT do
 	local angle = math.rad(360 / SHARD_COUNT * (i - 1))
 	local y = 0.15 + 0.35 * math.sin(i)
 	local r = eggRadiusAt(y) - 0.18
 	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
-	local shard = Instance.new("WedgePart")
-	shard.Name = "Shard" .. i
-	shard.Size = Vector3.new(0.6, 0.75, 0.45)
-	shard.CFrame = ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0) * CFrame.Angles(0, 0, math.rad(90))
-	shard.Color = SHELL_COLOR
-	shard.Material = Enum.Material.Glass
+	local shard = newMeshBall("Shard" .. i, Vector3.new(0.45, 0.5, 0.35), ORIGIN * pos * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
 	shard.Transparency = 0.05
-	shard.Anchored = true
-	shard.CanCollide = false
-	shard.TopSurface = Enum.SurfaceType.Smooth
-	shard.BottomSurface = Enum.SurfaceType.Smooth
-	shard.Parent = model
 end
 
--- 3) Pulsierende Ader-Linien (dünne Neon-Streifen von oben nach unten) --------------
+-- 3) Pulsierende Ader-Bänder (dünne, hohe Neon-Ellipsoide statt Boxen) --------------
 for i = 1, VEIN_COUNT do
 	local angle = math.rad(360 / VEIN_COUNT * (i - 1))
 	local r = eggRadiusAt(0) - 0.04
-	local vein = newPart(
+	newMeshBall(
 		"Vein" .. i,
-		Vector3.new(0.12, HALF_Y * 1.5, 0.12),
+		Vector3.new(0.18, HALF_Y * 1.5, 0.18),
 		ORIGIN * CFrame.new(math.cos(angle) * r, 0, math.sin(angle) * r) * CFrame.Angles(0, angle, 0),
 		VEIN_COLOR,
 		Enum.Material.Neon,
@@ -149,18 +140,8 @@ do
 	footRing.Shape = Enum.PartType.Cylinder
 end
 
--- 5) Leuchtende Kronenspitze oben, überlappt die Schale ------------------------------
-local tip = Instance.new("WedgePart")
-tip.Name = "CrownTip"
-tip.Size = Vector3.new(0.5, 0.7, 0.5)
-tip.CFrame = ORIGIN * CFrame.new(0, HALF_Y - 0.25, 0) * CFrame.Angles(0, 0, math.rad(180))
-tip.Color = TIP_COLOR
-tip.Material = Enum.Material.Neon
-tip.Anchored = true
-tip.CanCollide = false
-tip.TopSurface = Enum.SurfaceType.Smooth
-tip.BottomSurface = Enum.SurfaceType.Smooth
-tip.Parent = model
+-- 5) Leuchtender Gem-Stud oben (Ellipsoid statt Kronenspitze), überlappt die Schale --
+local tip = newMeshBall("CrownTip", Vector3.new(0.55, 0.6, 0.55), ORIGIN * CFrame.new(0, HALF_Y - 0.25, 0), TIP_COLOR, Enum.Material.Neon, model)
 
 -- 6) Idle-Puls-Attachment ---------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")

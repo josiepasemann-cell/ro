@@ -105,28 +105,18 @@ local CRACK_COLOR = Color3.fromRGB(255, 245, 255)
 local shell = newMeshBall("Shell", SHELL_SIZE, ORIGIN, SHELL_COLOR, Enum.Material.Glass, model)
 shell.Transparency = 0.08
 
--- 2) Kristallschübe (facettierte Oberfläche, zahlreicher als Epic), eingesenkt ------
+-- 2) Kristall-Gems (glänzende Ellipsoide, zahlreicher als Epic), eingesenkt --------
 for i = 1, SHARD_COUNT do
 	local angle = math.rad(360 / SHARD_COUNT * (i - 1))
 	local y = 0.1 + 0.4 * math.sin(i * 1.3)
 	local r = eggRadiusAt(y) - 0.2
 	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
-	local shard = Instance.new("WedgePart")
-	shard.Name = "Shard" .. i
-	shard.Size = Vector3.new(0.65, 0.8, 0.5)
-	shard.CFrame = ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0) * CFrame.Angles(0, 0, math.rad(90))
-	shard.Color = SHELL_COLOR
-	shard.Material = Enum.Material.Glass
+	local shard = newMeshBall("Shard" .. i, Vector3.new(0.5, 0.55, 0.4), ORIGIN * pos * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
 	shard.Transparency = 0.05
-	shard.Anchored = true
-	shard.CanCollide = false
-	shard.TopSurface = Enum.SurfaceType.Smooth
-	shard.BottomSurface = Enum.SurfaceType.Smooth
-	shard.Parent = model
 end
 
--- 3) Dornenkrone oben (radial angeordnete, sich verjüngende Cyan-Spitzen), Basis
---    im oberen Schalenbereich eingesenkt ------------------------------------------
+-- 3) Dornenkrone oben (radial angeordnete, sich verjüngende Cyan-Ellipsoid-Spitzen),
+--    Basis im oberen Schalenbereich eingesenkt ------------------------------------
 for i = 1, SPIKE_COUNT do
 	local angle = math.rad(360 / SPIKE_COUNT * (i - 1))
 	local y = HALF_Y - 0.55
@@ -135,7 +125,7 @@ for i = 1, SPIKE_COUNT do
 		* CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r)
 		* CFrame.Angles(0, angle, 0)
 		* CFrame.Angles(math.rad(-20), 0, 0)
-	newPart("CrownSpike" .. i, Vector3.new(0.28, 1.0, 0.28), spikeCFrame * CFrame.new(0, 0.3, 0), CROWN_COLOR, Enum.Material.Neon, model)
+	newMeshBall("CrownSpike" .. i, Vector3.new(0.3, 0.85, 0.3), spikeCFrame * CFrame.new(0, 0.3, 0), CROWN_COLOR, Enum.Material.Neon, model)
 end
 
 -- 4) Leuchtender Runenring, eng um den Äquator anliegend (kein freischwebendes CSG-

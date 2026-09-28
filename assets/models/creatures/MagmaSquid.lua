@@ -101,8 +101,10 @@ newBall("MantleBelly", Vector3.new(1.7, 1.2, 2.0), ORIGIN * CFrame.new(0, -0.95,
 -- 1c) Zwei seitliche, fächerartige Flossen (flache, überlappende Ellipsen) ---
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newBall("Wing" .. i, Vector3.new(0.28, 1.15, 1.35), ORIGIN * CFrame.new(side * 1.4, 0.4, -0.3) * CFrame.Angles(0, 0, math.rad(side * -18)), MANTLE_LIGHT, Enum.Material.SmoothPlastic, model)
-	newBall("Wing" .. i .. "Tip", Vector3.new(0.2, 0.7, 0.85), ORIGIN * CFrame.new(side * 2.0, 0.5, -0.55) * CFrame.Angles(0, 0, math.rad(side * -24)), VEIN_COLOR, Enum.Material.Neon, model).Transparency = 0.4
+	local wingCFrame = ORIGIN * CFrame.new(side * 1.4, 0.4, -0.3) * CFrame.Angles(0, 0, math.rad(side * -18))
+	newBall("Wing" .. i, Vector3.new(0.28, 1.15, 1.35), wingCFrame, MANTLE_LIGHT, Enum.Material.SmoothPlastic, model)
+	local tip = newBall("Wing" .. i .. "Tip", Vector3.new(0.2, 0.7, 0.85), wingCFrame * CFrame.new(side * 0.5, -0.1, 0), VEIN_COLOR, Enum.Material.Neon, model)
+	tip.Transparency = 0.4
 end
 
 -- 2) Großes, ausdrucksstarkes Augenpaar ---------------------------------------------

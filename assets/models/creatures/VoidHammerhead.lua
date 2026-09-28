@@ -135,7 +135,7 @@ for i = 1, 2 do
 	newBall(
 		"SideFin" .. i,
 		Vector3.new(0.2, 0.55, 1.7),
-		ORIGIN * CFrame.new(side * 1.45, -0.2, -0.8) * CFrame.Angles(0, 0, math.rad(side * -70)),
+		ORIGIN * CFrame.new(side * 1.1, -0.2, -0.8) * CFrame.Angles(0, 0, math.rad(side * -70)),
 		BODY_COLOR,
 		Enum.Material.SmoothPlastic,
 		model

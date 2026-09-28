@@ -228,8 +228,9 @@ coreGem.Transparency = 0.05
 -- 2e) Brustflossen-Paar am Kopfsegment (fächerartig, überlappende flache Ellipsen) -------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newBall("SideFin" .. i, Vector3.new(0.24, 1.0, 1.8), headCFrame * CFrame.new(side * 1.65, -0.2, 0.4) * CFrame.Angles(0, 0, math.rad(side * -80)), BASE_COLOR, Enum.Material.Glass, model).Transparency = 0.2
-	newBall("SideFin" .. i .. "Tip", Vector3.new(0.16, 0.6, 1.0), headCFrame * CFrame.new(side * 2.35, -0.35, 0.7) * CFrame.Angles(0, 0, math.rad(side * -70)), SEAM_COLOR_B, Enum.Material.Neon, model).Transparency = 0.35
+	local finCFrame = headCFrame * CFrame.new(side * 1.65, -0.2, 0.4) * CFrame.Angles(0, 0, math.rad(side * -80))
+	newBall("SideFin" .. i, Vector3.new(0.24, 1.0, 1.8), finCFrame, BASE_COLOR, Enum.Material.Glass, model).Transparency = 0.2
+	newBall("SideFin" .. i .. "Tip", Vector3.new(0.16, 0.6, 1.0), finCFrame * CFrame.new(0, 0.75, 0), SEAM_COLOR_B, Enum.Material.Neon, model).Transparency = 0.35
 end
 
 -- 3) Große, dramatische Schwanzflossen-Fächer-Spitze (statt kleinem Keil) -----------------------------------
