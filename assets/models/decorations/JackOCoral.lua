@@ -21,6 +21,7 @@
 		Reine Geometrie-Erzeugung, keine Gameplay-Logik. Idempotent.
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -55,6 +56,34 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes, toy-like Ellipsoid statt Kiste.
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local decorationsFolder = getOrCreateFolder(assetsFolder, "Decorations")
 
@@ -67,20 +96,20 @@ local model = Instance.new("Model")
 model.Name = "JackOCoral"
 model.Parent = decorationsFolder
 
--- 1) Sockel-Base --------------------------------------------------------------
-local base = newPart("Base", Vector3.new(3.5, 0.6, 3.5), ORIGIN, Color3.fromRGB(40, 55, 45), Enum.Material.Slate, model)
+-- 1) Sockel-Base: rundlicher, toy-like Fels ------------------------------------
+local base = newOvalPart("Base", Vector3.new(3.5, 1.0, 3.5), ORIGIN, Color3.fromRGB(40, 55, 45), Enum.Material.Basalt, model)
 base.CanCollide = true
+newTexture("StoneTiles", Enum.NormalId.Top, base, { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(50, 65, 55), transparency = 0.2 })
 
--- 1b) Korallenstamm: verbindet Base (endet bei y=1.8) mit dem Kopf (beginnt
--- bei y=2.0) - schließt die Lücke und liefert zusätzliche Silhouette --------
-local stalk = newPart("Stalk", Vector3.new(1.6, 0.9, 1.6), ORIGIN * CFrame.new(0, 0.5, 0), Color3.fromRGB(230, 120, 30), Enum.Material.SmoothPlastic, model)
+-- 1b) Korallenstamm: verbindet Base mit dem Kopf, rundlich-organisch -------------
+local stalk = newOvalPart("Stalk", Vector3.new(1.7, 1.0, 1.7), ORIGIN * CFrame.new(0, 0.5, 0), Color3.fromRGB(230, 120, 30), Enum.Material.SmoothPlastic, model)
 
 -- Kleine Basis-Polypen rund um den Sockel für mehr Lebendigkeit -------------------
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 30)
 	local polyp = newPart(
 		"BasePolyp" .. i,
-		Vector3.new(0.5, 0.5, 0.5),
+		Vector3.new(0.55, 0.55, 0.55),
 		ORIGIN * CFrame.new(math.cos(angle) * 1.55, -0.15, math.sin(angle) * 1.55),
 		Color3.fromRGB(255, 150, 50),
 		Enum.Material.SmoothPlastic,
@@ -128,10 +157,10 @@ for _, part in ipairs(headParts) do
 end
 
 -- 3) Kürbis-Gesicht: 2 dreieckige Neon-Augen + Zickzack-Mund -------------------
-for i, xOffset in ipairs({ -0.7, 0.7 }) do
+for i, xOffset in ipairs({ -0.8, 0.8 }) do
 	local eye = newPart(
 		"Eye" .. i,
-		Vector3.new(0.6, 0.6, 0.4),
+		Vector3.new(0.75, 0.75, 0.45),
 		ORIGIN * CFrame.new(xOffset, 2.3, 1.45) * CFrame.Angles(0, 0, math.rad(45)),
 		Color3.fromRGB(190, 255, 210),
 		Enum.Material.Neon,
@@ -140,9 +169,9 @@ for i, xOffset in ipairs({ -0.7, 0.7 }) do
 	eye.Shape = Enum.PartType.Wedge
 end
 
-local mouth = newPart(
+local mouth = newOvalPart(
 	"Mouth",
-	Vector3.new(1.6, 0.5, 0.4),
+	Vector3.new(1.8, 0.55, 0.45),
 	ORIGIN * CFrame.new(0, 1.5, 1.5),
 	Color3.fromRGB(190, 255, 210),
 	Enum.Material.Neon,

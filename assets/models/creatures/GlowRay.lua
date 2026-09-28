@@ -111,9 +111,9 @@ for i = 1, 2 do
 end
 
 -- 3) Vier abgerundete Randbuckel an den Rochen-"Ecken" (cartoony statt spitz) -
-local tipOffsets = { { 1.35, 0 }, { -1.35, 0 }, { 0, 2.15 }, { 0, -2.0 } }
+local tipOffsets = { { 1.35, 0 }, { -1.35, 0 }, { 0, 1.55 }, { 0, -1.45 } }
 for i, off in ipairs(tipOffsets) do
-	newBall("EdgeBump" .. i, Vector3.new(0.55, 0.24, 0.7), ORIGIN * CFrame.new(off[1] * 0.85, -0.02, off[2] * 0.85), RAY_COLOR, Enum.Material.SmoothPlastic, model)
+	newBall("EdgeBump" .. i, Vector3.new(0.55, 0.24, 0.7), ORIGIN * CFrame.new(off[1] * 0.85, -0.02, off[2] * 0.78), RAY_COLOR, Enum.Material.SmoothPlastic, model)
 end
 
 -- 4) Rückenzeichnung: helle Neon-Sprenkel ---------------------------------------
@@ -129,7 +129,7 @@ for i = 1, 5 do
 end
 
 -- 6) Peitschenschwanz: 3 sich verjüngende, überlappende Ellipsen-Segmente ------
-local currentCFrame = ORIGIN * CFrame.new(0, 0, -2.2)
+local currentCFrame = ORIGIN * CFrame.new(0, 0, -1.15)
 local prevHalfZ = 0.28
 for i = 1, 3 do
 	local segLength = 1.1 - i * 0.12

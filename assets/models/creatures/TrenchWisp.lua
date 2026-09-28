@@ -4,10 +4,13 @@
 	Name: TrenchWisp ("Grabenwisp")
 	Rarity (Platzhalter): Uncommon
 	Beschreibung:
-		Kleiner, tropfenförmiger Körper, fast transluzent (Glass), mit
-		blassem cyanfarbenem Innen-Glow-Kern (Neon), umgebender äußerer
-		Glimm-Aura und mehreren kleinen umlaufenden Lichtpartikeln. Keine
-		sichtbaren Flossen - wirkt wie ein treibendes Licht. Zone: HadalDepths.
+		Kleiner, cartoonhaft niedlicher Irrlicht-Geist: tropfenförmiger
+		Hauptkörper (fast transluzentes Glass) mit einem sich verjüngenden
+		Kometenschweif aus 3 Ellipsen-Segmenten, großen leuchtenden
+		Kulleraugen und kleinem Lächeln, blassem cyanfarbenem Innen-Glow-
+		Kern, umgebender äußerer Glimm-Aura, 3 dünnen, geschwungenen
+		Wisp-Schweif-Tentakeln (je 2 Ellipsen-Segmente) und mehreren kleinen
+		umlaufenden Lichtpartikeln. Zone: HadalDepths.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" -> für Bewegungssteuerung (langsamer
@@ -65,6 +68,12 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
+local function newCartoonEye(name, cframe, eyeSize, pupilColor, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
+	newBall(name .. "Pupil", eyeSize * 0.5, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -80,39 +89,59 @@ model.Parent = creaturesFolder
 local BODY_COLOR = Color3.fromRGB(140, 220, 235)
 local GLOW_COLOR = Color3.fromRGB(150, 255, 240)
 
--- 1) Tropfenförmiger Körper (Glass, halbtransparent, Ellipsoid) -------------------
-local body = newBall("Body", Vector3.new(1.3, 1.5, 1.3), ORIGIN, BODY_COLOR, Enum.Material.Glass, model)
-body.Transparency = 0.4
+-- 1) Tropfenförmiger Hauptkörper (Glass, halbtransparent, cartoonhaft rund) ----
+local body = newBall("Body", Vector3.new(1.5, 1.6, 1.5), ORIGIN, BODY_COLOR, Enum.Material.Glass, model)
+body.Transparency = 0.35
 
--- Verjüngte Spitze unten (Tropfenform), tief in den Körper eingebettet
-local tip = Instance.new("WedgePart")
-tip.Name = "Tip"
-tip.Size = Vector3.new(0.5, 0.8, 1.3)
-tip.CFrame = ORIGIN * CFrame.new(0, -0.75, 0) * CFrame.Angles(math.rad(-90), 0, 0)
-tip.Color = BODY_COLOR
-tip.Material = Enum.Material.Glass
-tip.Transparency = 0.4
-tip.Anchored = true
-tip.CanCollide = false
-tip.Parent = model
+-- 1b) Sich verjüngender Kometenschweif unten (3 Ellipsen-Segmente statt
+--     einem einzelnen Keil - bricht die reine Kugelsilhouette auf) ------------
+local tailCFrame = ORIGIN * CFrame.new(0, -0.8, 0)
+local prevHalf = 0.15
+for i = 1, 3 do
+	local h = 0.42 - i * 0.08
+	tailCFrame = tailCFrame * CFrame.new(0, -(prevHalf + h - 0.14), 0)
+	local tailPart = newBall("Tip" .. (i == 1 and "" or i), Vector3.new(0.7 - i * 0.14, h * 2, 0.7 - i * 0.14), tailCFrame, BODY_COLOR, Enum.Material.Glass, model)
+	tailPart.Transparency = 0.4
+	prevHalf = h
+end
 
 -- 2) Innerer Glow-Kern -----------------------------------------------------------------
-local core = newBall("GlowCore", Vector3.new(0.55, 0.55, 0.55), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
+newBall("GlowCore", Vector3.new(0.65, 0.65, 0.65), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
+
+-- 2b) Niedliches Cartoon-Gesicht: große leuchtende Kulleraugen + Lächeln -----------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(side * 0.32, 0.15, -0.62), Vector3.new(0.32, 0.32, 0.2), Color3.fromRGB(20, 60, 60), model)
+end
+newBall("Smile", Vector3.new(0.32, 0.08, 0.14), ORIGIN * CFrame.new(0, -0.18, -0.68) * CFrame.Angles(0, 0, math.rad(180)), Color3.fromRGB(30, 60, 65), Enum.Material.SmoothPlastic, model)
 
 -- 3) Äußere Glimm-Aura (großzügig um den Körper, sehr transparent) ---------------------
-local aura = newBall("GlimmerAura", Vector3.new(1.9, 2.1, 1.9), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
-aura.Transparency = 0.75
+local aura = newBall("GlimmerAura", Vector3.new(2.1, 2.3, 2.1), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
+aura.Transparency = 0.78
 aura.CanCollide = false
 
--- 4) Kleine umlaufende Lichtpartikel (Glow-Fünkchen) -----------------------------------
+-- 4) 3 dünne, geschwungene Wisp-Schweif-Tentakel (je 2 sich verjüngende
+--    Ellipsen-Segmente), trailen locker nach hinten/unten ---------------------------
+for i = 1, 3 do
+	local angle = math.rad(120 * (i - 1) + 30)
+	local radius = 0.55
+	local baseCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, -0.3, math.sin(angle) * radius) * CFrame.Angles(math.rad(35), angle, 0)
+	local seg1 = newBall("Tentacle" .. i, Vector3.new(0.16, 0.55, 0.16), baseCFrame * CFrame.new(0, -0.24, 0), GLOW_COLOR, Enum.Material.Neon, model)
+	seg1.Transparency = 0.2
+	local seg2CFrame = baseCFrame * CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(14 * ((i % 2 == 0) and 1 or -1)), 0, 0)
+	local seg2 = newBall("TentacleTip" .. i, Vector3.new(0.1, 0.5, 0.1), seg2CFrame * CFrame.new(0, -0.22, 0), GLOW_COLOR, Enum.Material.Neon, model)
+	seg2.Transparency = 0.15
+end
+
+-- 5) Kleine umlaufende Lichtpartikel (Glow-Fünkchen) -----------------------------------
 for i = 1, 5 do
 	local angle = math.rad(72 * (i - 1))
-	local radius = 0.85
+	local radius = 0.9
 	local speckCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.15 * ((i % 2 == 0) and 1 or -1), math.sin(angle) * radius)
 	newBall("GlimmerSpeck" .. i, Vector3.new(0.14, 0.14, 0.14), speckCFrame, GLOW_COLOR, Enum.Material.Neon, model)
 end
 
--- 5) Idle-Puls-Attachment ----------------------------------------------------------------
+-- 6) Idle-Puls-Attachment ----------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body

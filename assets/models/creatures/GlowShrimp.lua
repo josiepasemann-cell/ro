@@ -140,10 +140,11 @@ for i = 1, 4 do
 	end
 end
 
--- 6) Leuchtpunkte entlang des Rückens (direkt auf der Panzeroberfläche) -----
-local dotX = { 0.7, 0.25, -0.2, -0.65, -1.05 }
-for i = 1, #dotX do
-	newBall("GlowSpot" .. i, Vector3.new(0.2, 0.2, 0.2), ORIGIN * CFrame.new(dotX[i], 0.4, 0), GLOW_COLOR, Enum.Material.Neon, model)
+-- 6) Leuchtpunkte entlang des Rückens (direkt auf der jeweiligen
+--    Segment-Panzeroberfläche, Höhe pro Segment angepasst) -------------------
+local dots = { { 0.75, 0.52 }, { 0.3, 0.4 }, { 0, 0.32 }, { -0.72, 0.14 }, { -1.2, -0.08 } }
+for i, d in ipairs(dots) do
+	newBall("GlowSpot" .. i, Vector3.new(0.2, 0.2, 0.2), ORIGIN * CFrame.new(d[1], d[2], 0), GLOW_COLOR, Enum.Material.Neon, model)
 end
 
 -- 7) Idle-Puls-Attachment -----------------------------------------------------

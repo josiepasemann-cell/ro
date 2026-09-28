@@ -22,6 +22,7 @@
 		Reine Geometrie-Erzeugung, keine Gameplay-Logik. Idempotent.
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -54,6 +55,34 @@ local function newPart(name, size, cframe, color, material, parent)
 	part.BottomSurface = Enum.SurfaceType.Smooth
 	part.Parent = parent
 	return part
+end
+
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes, toy-like Ellipsoid statt Kiste.
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")

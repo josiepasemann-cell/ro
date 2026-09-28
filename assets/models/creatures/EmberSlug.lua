@@ -89,7 +89,7 @@ local GLOW_COLOR = Color3.fromRGB(255, 130, 30)
 local CRACK_COLOR = Color3.fromRGB(255, 90, 20)
 
 -- 1) Gedrungener Körper: echtes Ellipsoid (Block + SpecialMesh Sphere) --------------
-local body = newMeshBall("Body", Vector3.new(2.5, 1.5, 3.5), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
+local body = newMeshBall("Body", Vector3.new(2.5, 1.5, 3.5), ORIGIN, BODY_COLOR, Enum.Material.CrackedLava, model)
 
 -- 1b) Helleres Unterbauch-Detail, überlappt den Körper -------------------------------
 local belly = newMeshBall(
@@ -113,10 +113,11 @@ for i = 1, 4 do
 		model
 	)
 
-	-- feine Riss-Ader neben jedem Rippensegment, überlappt Segment + Körper
-	newPart(
+	-- feine Riss-Ader (flaches Ellipsoid statt Box) neben jedem Rippensegment,
+	-- überlappt Segment + Körper
+	newMeshBall(
 		"EmberCrack" .. i,
-		Vector3.new(0.06, 0.1, 0.5),
+		Vector3.new(0.1, 0.14, 0.5),
 		ORIGIN * CFrame.new(0.3, 0.3, zOffset) * CFrame.Angles(0, 0, math.rad(15)),
 		CRACK_COLOR,
 		Enum.Material.Neon,
@@ -153,9 +154,9 @@ end
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	local baseCFrame = ORIGIN * CFrame.new(side * 0.35, 0.55, 1.85) * CFrame.Angles(math.rad(-20), 0, 0)
-	newPart(
+	newMeshBall(
 		"Antenna" .. i,
-		Vector3.new(0.12, 0.5, 0.12),
+		Vector3.new(0.14, 0.45, 0.14),
 		baseCFrame * CFrame.new(0, 0.22, 0),
 		BODY_COLOR,
 		Enum.Material.SmoothPlastic,

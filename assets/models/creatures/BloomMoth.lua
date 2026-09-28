@@ -118,50 +118,29 @@ local belly = newMeshBall(
 	model
 )
 
--- 2) Zwei Flügel (WedgePart-Paare) mit Regenbogen-Neon-Kante, direkt am Körper -------
+-- 2) Zwei Flügel: je 2 überlappende, flache, aufgefächerte Ellipsoide statt
+--    WedgeParts, mit Regenbogen-Neon-Kante, direkt am Körper -----------------------
 local wingRoots = {}
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	-- Wurzel liegt AUF der Körperoberfläche (x-Halbachse 0.5), Flügel wächst
-	-- von dort nach außen -> stets überlappend mit dem Rumpf.
+	-- Wurzel liegt AUF der Körperoberfläche, Flügel wächst von dort nach außen
+	-- -> stets überlappend mit dem Rumpf.
 	local rootCFrame = ORIGIN * CFrame.new(side * 0.4, 0.12, 0.05) * CFrame.Angles(0, 0, math.rad(side * 16))
+	local wingName = (i == 1) and "WingRight" or "WingLeft"
 
-	local wing = Instance.new("WedgePart")
-	wing.Name = (i == 1) and "WingRight" or "WingLeft"
-	wing.Size = Vector3.new(1.15, 0.08, 1.0)
-	wing.CFrame = rootCFrame * CFrame.new(side * 0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
-	wing.Color = BODY_COLOR
-	wing.Material = Enum.Material.SmoothPlastic
-	wing.Anchored = true
-	wing.CanCollide = false
-	wing.TopSurface = Enum.SurfaceType.Smooth
-	wing.BottomSurface = Enum.SurfaceType.Smooth
-	wing.Parent = model
-	wingRoots[i] = { cframe = wing.CFrame, side = side }
+	local wingMain = newMeshBall(wingName, Vector3.new(0.9, 0.1, 1.0), rootCFrame * CFrame.new(side * 0.42, 0, 0.05), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+	newMeshBall(wingName .. "Fore", Vector3.new(0.6, 0.08, 0.7), rootCFrame * CFrame.new(side * 0.78, 0.02, -0.35) * CFrame.Angles(0, 0, math.rad(side * -10)), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+	wingRoots[i] = { cframe = wingMain.CFrame, side = side }
 
 	-- Innerer Flügel-Fleck (Musterdetail), überlappt den Flügel selbst
-	local spot = newMeshBall(
-		"WingSpot" .. i,
-		Vector3.new(0.22, 0.04, 0.22),
-		wing.CFrame * CFrame.new(side * 0.08, 0.05, -0.06),
-		RAINBOW_COLORS[2],
-		Enum.Material.Neon,
-		model
-	)
+	newMeshBall("WingSpot" .. i, Vector3.new(0.22, 0.08, 0.22), wingMain.CFrame * CFrame.new(side * 0.08, 0.05, -0.06), RAINBOW_COLORS[2], Enum.Material.Neon, model)
 
-	-- Regenbogen-Kante: 3 kleine Neon-Segmente ENTLANG der äußeren Flügelkante,
-	-- jedes überlappt den WedgePart selbst statt frei daneben zu schweben.
+	-- Regenbogen-Kante: 3 kleine Neon-Ellipsoide ENTLANG der äußeren Flügelkante,
+	-- jedes überlappt den Flügel selbst statt frei daneben zu schweben.
 	for c = 1, 3 do
 		local along = -0.32 + (c - 1) * 0.32
-		local edgeCFrame = wing.CFrame * CFrame.new(side * 0.52, 0, along)
-		newPart(
-			("WingEdge%d_%d"):format(i, c),
-			Vector3.new(0.26, 0.07, 0.24),
-			edgeCFrame,
-			RAINBOW_COLORS[c],
-			Enum.Material.Neon,
-			model
-		)
+		local edgeCFrame = wingMain.CFrame * CFrame.new(side * 0.42, 0, along)
+		newMeshBall(("WingEdge%d_%d"):format(i, c), Vector3.new(0.22, 0.09, 0.24), edgeCFrame, RAINBOW_COLORS[c], Enum.Material.Neon, model)
 	end
 end
 
@@ -175,15 +154,16 @@ local head = newMeshBall(
 	model
 )
 
--- 3b) Zwei Augen mit Glanzpunkt ------------------------------------------------------
+-- 3b) Große Cartoon-Augen: übergroße weiße Ellipsoide + Pupille + Glanzpunkt -------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.24, 0.15, 1.32)
-	local eye = newMeshBall("Eye" .. i, Vector3.new(0.18, 0.18, 0.18), eyeCFrame, Color3.fromRGB(30, 20, 25), Enum.Material.SmoothPlastic, model)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.26, 0.17, 1.3)
+	newMeshBall("EyeWhite" .. i, Vector3.new(0.3, 0.3, 0.24), eyeCFrame, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, model)
+	newMeshBall("Eye" .. i, Vector3.new(0.17, 0.17, 0.14), eyeCFrame * CFrame.new(0, -0.01, 0.08), Color3.fromRGB(35, 25, 30), Enum.Material.SmoothPlastic, model)
 	newMeshBall(
 		"EyeHighlight" .. i,
-		Vector3.new(0.06, 0.06, 0.06),
-		eyeCFrame * CFrame.new(0.05, 0.05, 0.09),
+		Vector3.new(0.06, 0.06, 0.05),
+		eyeCFrame * CFrame.new(0.05, 0.05, 0.14),
 		Color3.fromRGB(255, 255, 255),
 		Enum.Material.Neon,
 		model
@@ -194,9 +174,9 @@ end
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	local baseCFrame = ORIGIN * CFrame.new(side * 0.18, 0.35, 1.15) * CFrame.Angles(math.rad(-30 * side), 0, math.rad(-10 * side))
-	newPart(
+	newMeshBall(
 		"Antenna" .. i,
-		Vector3.new(0.09, 0.55, 0.09),
+		Vector3.new(0.1, 0.5, 0.1),
 		baseCFrame * CFrame.new(0, 0.25, 0),
 		Color3.fromRGB(255, 220, 240),
 		Enum.Material.Neon,

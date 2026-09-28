@@ -4,10 +4,11 @@
 	Name: AbyssalIsopod ("Abgrund-Assel")
 	Rarity (Platzhalter): Rare
 	Beschreibung:
-		Segmentierter, ovaler Körper aus 5 leicht versetzten, gewölbten
-		Panzersegmenten (blass graviolett), mit 7 Beinpaaren, 2 kurzen
-		Antennen, 2 kleinen Augen und einer leuchtenden Unterseiten-Naht
-		(Neon, cyan). Zone: HadalDepths.
+		Segmentierter, cartoonhaft rundlicher, ovaler Körper aus 5 leicht
+		versetzten, gewölbten Panzersegmenten (blass graviolett), mit 7
+		kurzen, stummeligen Beinpaaren (Ellipsoide statt dünner Stäbe), 2
+		kurzen Antennen-Ellipsen, großen Kulleraugen und einer leuchtenden,
+		flach abgerundeten Unterseiten-Naht (Neon, cyan). Zone: HadalDepths.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (mittleres Hauptsegment) -> für
@@ -66,6 +67,12 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
+local function newCartoonEye(name, cframe, eyeSize, pupilColor, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.55, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -78,19 +85,21 @@ local model = Instance.new("Model")
 model.Name = "AbyssalIsopod"
 model.Parent = creaturesFolder
 
-local BODY_COLOR = Color3.fromRGB(90, 80, 110)
-local BODY_LIGHT = Color3.fromRGB(120, 110, 140)
+local BODY_COLOR = Color3.fromRGB(95, 84, 115)
+local BODY_LIGHT = Color3.fromRGB(128, 116, 150)
+local BODY_BELLY = Color3.fromRGB(150, 138, 170)
 local SEAM_COLOR = Color3.fromRGB(120, 200, 255)
 
--- 1) 5 gestapelte, leicht überlappende, gewölbte Panzersegmente -----------------------
+-- 1) 5 gestapelte, leicht überlappende, gewölbte, cartoonhaft dicke
+--    Panzersegmente -----------------------------------------------------------------
 local body
-local segmentZ = { -1.6, -0.75, 0.1, 0.95, 1.7 }
-local segmentWidth = { 2.1, 2.7, 2.9, 2.6, 2.0 }
-local segmentHeight = { 1.2, 1.45, 1.5, 1.4, 1.1 }
+local segmentZ = { -1.55, -0.72, 0.1, 0.92, 1.65 }
+local segmentWidth = { 2.15, 2.75, 2.95, 2.65, 2.05 }
+local segmentHeight = { 1.3, 1.55, 1.6, 1.5, 1.2 }
 for i = 1, SEGMENT_COUNT do
 	local segment = newBall(
 		"Segment" .. i,
-		Vector3.new(segmentWidth[i], segmentHeight[i], 1.05),
+		Vector3.new(segmentWidth[i], segmentHeight[i], 1.1),
 		ORIGIN * CFrame.new(0, segmentHeight[i] * 0.15, segmentZ[i]),
 		(i % 2 == 0) and BODY_LIGHT or BODY_COLOR,
 		Enum.Material.SmoothPlastic,
@@ -102,37 +111,41 @@ for i = 1, SEGMENT_COUNT do
 	end
 end
 
--- 2) 2 kurze Antennen am Kopf-Segment --------------------------------------------------
+-- 1b) Hellere Bauchunterseite (Countershading) über die ganze Länge ---------------
+newBall("Belly", Vector3.new(1.9, 0.5, 3.4), ORIGIN * CFrame.new(0, -0.55, 0), BODY_BELLY, Enum.Material.SmoothPlastic, model)
+
+-- 2) 2 kurze Antennen-Ellipsen am Kopf-Segment --------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newPart(
+	newBall(
 		"Antenna" .. i,
-		Vector3.new(0.08, 0.08, 0.65),
-		ORIGIN * CFrame.new(side * 0.3, 0.25, -2.15) * CFrame.Angles(math.rad(-20 * side), 0, 0),
+		Vector3.new(0.14, 0.14, 0.6),
+		ORIGIN * CFrame.new(side * 0.32, 0.28, -2.1) * CFrame.Angles(math.rad(-20 * side), 0, 0),
 		BODY_LIGHT,
 		Enum.Material.SmoothPlastic,
 		model
 	)
 end
 
--- 3) 2 kleine Augen ----------------------------------------------------------------------
+-- 3) Große Kulleraugen ----------------------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newBall("Eye" .. i, Vector3.new(0.18, 0.18, 0.18), ORIGIN * CFrame.new(side * 0.55, 0.15, -1.95), Color3.fromRGB(20, 15, 30), Enum.Material.SmoothPlastic, model)
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(side * 0.55, 0.18, -1.95), Vector3.new(0.32, 0.32, 0.2), Color3.fromRGB(20, 15, 30), model)
 end
 
--- 4) 7 Beinpaare unter den Segmenten -------------------------------------------------------
+-- 4) 7 kurze, stummelige Beinpaare unter den Segmenten (Ellipsoide statt Stäbe) -----------
 local legZ = { -1.5, -1.0, -0.5, 0, 0.5, 1.0, 1.5 }
 for i = 1, 7 do
 	for j = 1, 2 do
 		local side = (j == 1) and 1 or -1
-		local legCFrame = ORIGIN * CFrame.new(side * 1.15, -0.35, legZ[i]) * CFrame.Angles(0, 0, math.rad(side * -25))
-		newPart("Leg" .. i .. "_" .. j, Vector3.new(0.1, 0.5, 0.14), legCFrame * CFrame.new(0, -0.22, 0), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+		local legCFrame = ORIGIN * CFrame.new(side * 1.2, -0.4, legZ[i]) * CFrame.Angles(0, 0, math.rad(side * -28))
+		newBall("Leg" .. i .. "_" .. j, Vector3.new(0.18, 0.4, 0.22), legCFrame * CFrame.new(0, -0.16, 0), BODY_COLOR, Enum.Material.SmoothPlastic, model)
 	end
 end
 
--- 5) Leuchtende Unterseiten-Naht (durchgehender Neon-Streifen) ------------------------
-newPart("UndersideSeam", Vector3.new(2.0, 0.18, 3.5), ORIGIN * CFrame.new(0, -0.62, 0), SEAM_COLOR, Enum.Material.Neon, model)
+-- 5) Leuchtende Unterseiten-Naht (flach abgerundeter, durchgehender Neon-Streifen) --------
+local seam = newBall("UndersideSeam", Vector3.new(1.8, 0.2, 3.4), ORIGIN * CFrame.new(0, -0.68, 0), SEAM_COLOR, Enum.Material.Neon, model)
+seam.Transparency = 0.05
 
 -- 6) Idle-Puls-Attachment -----------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")

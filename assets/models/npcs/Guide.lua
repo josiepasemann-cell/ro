@@ -119,6 +119,17 @@ local function newPart(name: string, size: Vector3, cframe: CFrame, color: Color
 	return part
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes Ellipsoid statt Kiste (weiche, kartoonig runde Qualle).
+local function newOvalPart(name: string, size: Vector3, cframe: CFrame, color: Color3, material: Enum.Material, parent: Instance): Part
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
 -- // Root setup ---------------------------------------------------------------
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local npcsFolder = getOrCreateFolder(assetsFolder, "Npcs")
@@ -149,41 +160,42 @@ local head = newPart("Head", Vector3.new(1.1, 0.6, 1.1), rootCFrame * CFrame.new
 head.Shape = Enum.PartType.Ball
 head.Transparency = 0.1
 
--- Big cute eyes (named, movable for blink)
-local eye1 = newPart("Eye1", Vector3.new(0.4, 0.4, 0.2), rootCFrame * CFrame.new(-0.32, -1.05, 1.2), EYE_COLOR, Enum.Material.Neon, model)
+-- Big cute eyes with pupil + highlight (named, movable for blink)
+local eye1 = newPart("Eye1", Vector3.new(0.48, 0.48, 0.22), rootCFrame * CFrame.new(-0.34, -1.05, 1.25), EYE_COLOR, Enum.Material.Neon, model)
 eye1.Shape = Enum.PartType.Ball
-local eye2 = newPart("Eye2", Vector3.new(0.4, 0.4, 0.2), rootCFrame * CFrame.new(0.32, -1.05, 1.2), EYE_COLOR, Enum.Material.Neon, model)
+local eye2 = newPart("Eye2", Vector3.new(0.48, 0.48, 0.22), rootCFrame * CFrame.new(0.34, -1.05, 1.25), EYE_COLOR, Enum.Material.Neon, model)
 eye2.Shape = Enum.PartType.Ball
-newPart("Eye1Pupil", Vector3.new(0.16, 0.16, 0.08), rootCFrame * CFrame.new(-0.32, -1.05, 1.28), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model)
-newPart("Eye2Pupil", Vector3.new(0.16, 0.16, 0.08), rootCFrame * CFrame.new(0.32, -1.05, 1.28), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model)
+newPart("Eye1Pupil", Vector3.new(0.2, 0.2, 0.09), rootCFrame * CFrame.new(-0.34, -1.05, 1.34), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
+newPart("Eye2Pupil", Vector3.new(0.2, 0.2, 0.09), rootCFrame * CFrame.new(0.34, -1.05, 1.34), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
+newPart("Eye1Glint", Vector3.new(0.08, 0.08, 0.05), rootCFrame * CFrame.new(-0.27, -0.98, 1.4), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+newPart("Eye2Glint", Vector3.new(0.08, 0.08, 0.05), rootCFrame * CFrame.new(0.41, -0.98, 1.4), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 
--- 3) Two primary tentacles (named, movable for the welcome wave) ----------
-local armL = newPart("ArmL", Vector3.new(0.5, 3.0, 0.5), rootCFrame * CFrame.new(-1.4, -2.4, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)), NEON_CYAN, Enum.Material.Neon, model)
-local armR = newPart("ArmR", Vector3.new(0.5, 3.0, 0.5), rootCFrame * CFrame.new(1.4, -2.4, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)), NEON_CYAN, Enum.Material.Neon, model)
+-- 3) Two primary tentacles: tapering chains of overlapping ellipsoids (movable) --
+local armL = newOvalPart("ArmL", Vector3.new(0.6, 1.6, 0.6), rootCFrame * CFrame.new(-1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)), NEON_CYAN, Enum.Material.Neon, model)
+newOvalPart("ArmLTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(-1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)) * CFrame.new(0, -1.5, 0), NEON_CYAN, Enum.Material.Neon, model)
+local armR = newOvalPart("ArmR", Vector3.new(0.6, 1.6, 0.6), rootCFrame * CFrame.new(1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)), NEON_CYAN, Enum.Material.Neon, model)
+newOvalPart("ArmRTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -1.5, 0), NEON_CYAN, Enum.Material.Neon, model)
 
--- 4) Four more hanging tentacles in a rainbow of neon colors (static) -----
+-- 4) Four more hanging tentacles in a rainbow of neon colors: tapering pairs -----
 local tentacleColors = { NEON_MAGENTA, NEON_VIOLET, NEON_MAGENTA, NEON_VIOLET }
-local tentacleOffsets = { Vector3.new(-0.7, -2.2, -0.8), Vector3.new(0.7, -2.2, -0.8), Vector3.new(-1.0, -2.15, 0.6), Vector3.new(1.0, -2.15, 0.6) }
+local tentacleOffsets = { Vector3.new(-0.7, -2.0, -0.8), Vector3.new(0.7, -2.0, -0.8), Vector3.new(-1.0, -1.95, 0.6), Vector3.new(1.0, -1.95, 0.6) }
 for index, offset in ipairs(tentacleOffsets) do
 	local sign = offset.X < 0 and -1 or 1
-	newPart(
-		"Tentacle" .. index,
-		Vector3.new(0.4, 2.4, 0.4),
-		rootCFrame * CFrame.new(offset) * CFrame.Angles(math.rad(6), 0, math.rad(sign * 8)),
-		tentacleColors[index],
-		Enum.Material.Neon,
-		model
-	)
+	local segCFrame = rootCFrame * CFrame.new(offset) * CFrame.Angles(math.rad(6), 0, math.rad(sign * 8))
+	newOvalPart("Tentacle" .. index, Vector3.new(0.45, 1.3, 0.45), segCFrame, tentacleColors[index], Enum.Material.Neon, model)
+	newOvalPart("Tentacle" .. index .. "Tip", Vector3.new(0.3, 1.2, 0.3), segCFrame * CFrame.new(0, -1.15, 0), tentacleColors[index], Enum.Material.Neon, model)
 end
 
--- 5) Small welcome lantern held near the tip of the right tentacle ---------------
+-- 5) Oversized welcome lantern held near the tip of the right tentacle -----------
 -- Reuses ArmR's own CFrame chain so the lantern sits exactly at (and
 -- overlaps) the tentacle tip regardless of its tilt.
-local armRTipCFrame = rootCFrame * CFrame.new(1.4, -2.4, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -1.35, 0)
-local lantern = newPart("Lantern", Vector3.new(0.45, 0.55, 0.45), armRTipCFrame, Color3.fromRGB(255, 225, 150), Enum.Material.Glass, model)
+local armRTipCFrame = rootCFrame * CFrame.new(1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -2.9, 0)
+local lantern = newPart("Lantern", Vector3.new(0.6, 0.72, 0.6), armRTipCFrame, Color3.fromRGB(255, 225, 150), Enum.Material.Glass, model)
+lantern.Shape = Enum.PartType.Ball
 lantern.Transparency = 0.15
-newPart("LanternGlow", Vector3.new(0.24, 0.3, 0.24), armRTipCFrame, Color3.fromRGB(255, 235, 180), Enum.Material.Neon, model)
-newPart("LanternHandle", Vector3.new(0.08, 0.32, 0.08), armRTipCFrame * CFrame.new(0, 0.35, 0), Color3.fromRGB(200, 190, 170), Enum.Material.Metal, model)
+local lanternGlow = newPart("LanternGlow", Vector3.new(0.32, 0.4, 0.32), armRTipCFrame, Color3.fromRGB(255, 235, 180), Enum.Material.Neon, model)
+lanternGlow.Shape = Enum.PartType.Ball
+newOvalPart("LanternHandle", Vector3.new(0.1, 0.4, 0.1), armRTipCFrame * CFrame.new(0, 0.45, 0), Color3.fromRGB(200, 190, 170), Enum.Material.Foil, model)
 
 model.PrimaryPart = body
 model:SetAttribute("NpcId", NPC_ID)

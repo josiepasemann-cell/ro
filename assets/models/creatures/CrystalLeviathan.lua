@@ -5,20 +5,25 @@
 	Rarity (Platzhalter): Mythic
 	Beschreibung:
 		Die Signatur-Kreatur der Hadal-Tiefe und das erste Mythic-Kreatur-
-		Asset des Spiels. Langgestreckter, aalartiger Körper aus eckigen,
-		facettierten "Kristall"-Segmenten (Mix aus Part/WedgePart), alle
-		lückenlos ineinander verschachtelt, tiefviolett-schwarze Basis mit
-		hell leuchtenden Multi-Neon-Nähten (abwechselnd violett/cyan je
-		Segment), kleinen kristallinen Flossen-Zacken entlang des Rückens,
-		Brustflossen-Paar und einem facettierten Kopf mit Kieferzacken.
-		Größtes Kreatur-Modell im Spiel. Zone: HadalDepths.
+		Asset des Spiels - soll deutlich beeindruckender wirken als alle
+		anderen Kreaturen. Langgestreckter, aalartiger Körper aus 9 sich
+		verjüngenden, überlappenden ELLIPSOID-Segmenten (organisch rund,
+		keine kantigen Blöcke), tiefviolett-schwarze Basis mit hell
+		leuchtenden Multi-Neon-Nähten (abwechselnd violett/cyan je
+		Segment), kleinen Kristallfacetten-Zacken (WedgePart, bewusst
+		spärlich als "hartes" Detail) entlang des Rückens, einem
+		übergroßen, cartoonhaft ausdrucksstarken Kopf mit Kristallkrone,
+		leuchtendem Brust-Kernjuwel, großen Kulleraugen, sichtbaren
+		Fangzähnen, einem fächerartigen Brustflossen-Paar und einer
+		großen, dramatischen Schwanzflossen-Fächer-Spitze. Größtes und
+		aufwendigstes Kreatur-Modell im Spiel. Zone: HadalDepths.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (Kopf-/Hauptsegment) -> für
 		  Bewegungssteuerung (langsame, schwere Sinuswellen-Schwimmbewegung
 		  mit langer Wellenlänge wird vom Code-Agenten ergänzt).
 		- Attachment "PulseAttachment" an Body -> Ansatzpunkt für die
-		  Idle-Puls-Animation. Teile "Segment1".."Segment8" (Kopf zu
+		  Idle-Puls-Animation. Teile "Segment1".."Segment9" (Kopf zu
 		  Schwanz) markieren die Körperkette; ihre jeweiligen
 		  "SeamN"-Neon-Teile sollen sequenziell Kopf->Schwanz aufleuchten
 		  ("Lauflicht"-Effekt).
@@ -37,7 +42,7 @@ local Workspace = game:GetService("Workspace")
 local ORIGIN = CFrame.new(15, 8, 90) -- Vor Ausführung anpassen für gewünschte Position
 local RARITY = "Mythic"
 local ZONE = "HadalDepths"
-local SEGMENT_COUNT = 8
+local SEGMENT_COUNT = 9
 -- // ----------------------------------------------------------------------
 
 local function getOrCreateFolder(parent, name)
@@ -73,6 +78,27 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
+local function newWedge(name, size, cframe, color, material, parent)
+	local part = Instance.new("WedgePart")
+	part.Name = name
+	part.Size = size
+	part.CFrame = cframe
+	part.Color = color
+	part.Material = material
+	part.Anchored = true
+	part.CanCollide = false
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	part.Parent = parent
+	return part
+end
+
+local function newCartoonEye(name, cframe, eyeSize, pupilColor, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.55, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.Neon, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -85,31 +111,32 @@ local model = Instance.new("Model")
 model.Name = "CrystalLeviathan"
 model.Parent = creaturesFolder
 
-local BASE_COLOR = Color3.fromRGB(30, 15, 45)
-local BASE_LIGHT = Color3.fromRGB(50, 28, 70)
-local SEAM_COLOR_A = Color3.fromRGB(190, 80, 255)
+local BASE_COLOR = Color3.fromRGB(32, 16, 48)
+local BASE_TOP = Color3.fromRGB(20, 9, 32)
+local BASE_LIGHT = Color3.fromRGB(56, 30, 78)
+local SEAM_COLOR_A = Color3.fromRGB(195, 85, 255)
 local SEAM_COLOR_B = Color3.fromRGB(90, 220, 255)
 
--- 1) Langgestreckter Körper aus 8 sich verjüngenden, eckigen, überlappenden
+-- 1) Langgestreckter Körper aus 9 sich verjüngenden, ORGANISCHEN Ellipsoid-
 --    Segmenten (Kette entlang lokaler Z-Achse mit garantierter Überlappung) -----
 local body
-local SEG_OVERLAP = 0.3
+local SEG_OVERLAP = 0.32
 local prevCFrame = ORIGIN
 local prevHalfZ = 0.05
 local segCenters = {}
 local segHeights = {}
 for i = 1, SEGMENT_COUNT do
 	local t = (i - 1) / (SEGMENT_COUNT - 1) -- 0 (Kopf) .. 1 (Schwanz)
-	local width = 3.0 - t * 2.0
-	local height = 2.6 - t * 1.7
-	local segLength = 1.35
+	local width = 3.2 - t * 2.3
+	local height = 2.8 - t * 1.9
+	local segLength = 1.3
 	local halfZ = segLength / 2
 
 	local jointCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfZ + halfZ - SEG_OVERLAP))
 
-	local segment = newPart(
+	local segment = newBall(
 		"Segment" .. i,
-		Vector3.new(width, height, segLength),
+		Vector3.new(width, height, segLength * 1.6),
 		jointCFrame,
 		BASE_COLOR,
 		Enum.Material.SmoothPlastic,
@@ -121,39 +148,42 @@ for i = 1, SEGMENT_COUNT do
 		body.Name = "Body"
 	end
 
-	-- Facettierter Kristall-Akzent (WedgePart oben auf jedem Segment, tief eingebettet)
-	local facet = Instance.new("WedgePart")
-	facet.Name = "Facet" .. i
-	facet.Size = Vector3.new(width * 0.6, 0.7, segLength * 1.0)
-	facet.CFrame = jointCFrame * CFrame.new(0, height / 2 + 0.05, 0) * CFrame.Angles(0, math.rad(90), 0)
-	facet.Color = BASE_LIGHT
-	facet.Material = Enum.Material.Glass
-	facet.Transparency = 0.15
-	facet.Anchored = true
-	facet.CanCollide = false
-	facet.Parent = model
+	-- Countershading: dunklere Rückenzeichnung, tief eingebettet
+	newBall("SegmentShade" .. i, Vector3.new(width * 0.55, height * 0.4, segLength * 1.3), jointCFrame * CFrame.new(0, height * 0.28, 0), BASE_TOP, Enum.Material.SmoothPlastic, model)
 
-	-- Alternierende Neon-Naht (violett/cyan je Segment), auf der Seitenfläche
+	-- Kleine Kristallfacette (hartes Detail, bewusst spärlich: WedgePart)
+	local facet = newWedge(
+		"Facet" .. i,
+		Vector3.new(width * 0.45, 0.55, segLength * 0.9),
+		jointCFrame * CFrame.new(0, height / 2 + 0.02, 0) * CFrame.Angles(0, math.rad(90), 0),
+		BASE_LIGHT,
+		Enum.Material.Glass,
+		model
+	)
+	facet.Transparency = 0.15
+
+	-- Alternierende Neon-Naht (violett/cyan je Segment), als flacher,
+	-- eingebetteter Ellipsoid-Streifen auf der Seitenfläche statt Block
 	local seamColor = (i % 2 == 1) and SEAM_COLOR_A or SEAM_COLOR_B
-	newPart(
+	local seam = newBall(
 		"Seam" .. i,
-		Vector3.new(width * 0.12, height * 0.4, segLength * 0.95),
-		jointCFrame * CFrame.new(width / 2 - 0.05, 0, 0),
+		Vector3.new(width * 0.16, height * 0.42, segLength * 1.4),
+		jointCFrame * CFrame.new(width / 2 - 0.08, 0, 0),
 		seamColor,
 		Enum.Material.Neon,
 		model
 	)
+	seam.Transparency = 0.05
 
-	-- Kleiner kristalliner Flossen-Zacken entlang des Rückens, in Segment eingebettet
-	local spike = Instance.new("WedgePart")
-	spike.Name = "SpineSpike" .. i
-	spike.Size = Vector3.new(0.3, 0.75, segLength * 0.75)
-	spike.CFrame = jointCFrame * CFrame.new(0, height / 2 + 0.35, 0) * CFrame.Angles(0, math.rad(90), math.rad(180))
-	spike.Color = seamColor
-	spike.Material = Enum.Material.Neon
-	spike.Anchored = true
-	spike.CanCollide = false
-	spike.Parent = model
+	-- Kleiner kristalliner Flossen-Zacken entlang des Rückens (WedgePart)
+	local spike = newWedge(
+		"SpineSpike" .. i,
+		Vector3.new(0.32, 0.8, segLength * 0.8),
+		jointCFrame * CFrame.new(0, height / 2 + 0.4, 0) * CFrame.Angles(0, math.rad(90), math.rad(180)),
+		seamColor,
+		Enum.Material.Neon,
+		model
+	)
 
 	segCenters[i] = jointCFrame
 	segHeights[i] = height
@@ -162,59 +192,59 @@ for i = 1, SEGMENT_COUNT do
 	prevHalfZ = halfZ
 end
 
--- 2) Kopf-Details: facettierte Kieferzacken + 2 leuchtende Augen ------------------------------------
+-- 2) Kopf-Details: übergroßer, ausdrucksstarker Kopf mit Kristallkrone,
+--    sichtbaren Fangzähnen, großen Kulleraugen und Brust-Kernjuwel --------------------
 local headCFrame = segCenters[1]
-for i = 1, 4 do
-	local x = -0.75 + (i - 1) * 0.5
-	local tooth = Instance.new("WedgePart")
-	tooth.Name = "HeadTooth" .. i
-	tooth.Size = Vector3.new(0.2, 0.4, 0.2)
-	tooth.CFrame = headCFrame * CFrame.new(x, -1.1, -0.55) * CFrame.Angles(math.rad(180), 0, 0)
-	tooth.Color = Color3.fromRGB(220, 220, 230)
-	tooth.Material = Enum.Material.SmoothPlastic
-	tooth.Anchored = true
-	tooth.CanCollide = false
-	tooth.Parent = model
-end
 
-for i = 1, 2 do
-	local side = (i == 1) and 1 or -1
-	newBall(
-		"Eye" .. i,
-		Vector3.new(0.4, 0.4, 0.4),
-		headCFrame * CFrame.new(side * 0.9, 0.3, -0.55),
-		SEAM_COLOR_B,
+-- 2a) Kristallkrone auf dem Kopf (5 kleine, hart facettierte Zacken) -----------------
+for i = 1, 5 do
+	local x = -1.1 + (i - 1) * 0.55
+	local crown = newWedge(
+		"Crown" .. i,
+		Vector3.new(0.24, 0.5 + (i == 3 and 0.25 or 0), 0.3),
+		headCFrame * CFrame.new(x, 1.55, -0.2) * CFrame.Angles(0, 0, math.rad(6 * (i - 3))),
+		(i % 2 == 1) and SEAM_COLOR_A or SEAM_COLOR_B,
 		Enum.Material.Neon,
 		model
 	)
 end
 
--- 2b) Brustflossen-Paar am Kopfsegment -----------------------------------------------------------------
-for i = 1, 2 do
-	local side = (i == 1) and 1 or -1
-	local fin = Instance.new("WedgePart")
-	fin.Name = "SideFin" .. i
-	fin.Size = Vector3.new(0.2, 0.9, 1.6)
-	fin.CFrame = headCFrame * CFrame.new(side * 1.55, -0.2, 0.4) * CFrame.Angles(0, 0, math.rad(side * -90))
-	fin.Color = BASE_COLOR
-	fin.Material = Enum.Material.Glass
-	fin.Transparency = 0.2
-	fin.Anchored = true
-	fin.CanCollide = false
-	fin.Parent = model
+-- 2b) Fangzähne (kleine weiche Ellipsoide statt harter Keile) ------------------------
+for i = 1, 4 do
+	local x = -0.75 + (i - 1) * 0.5
+	newBall("HeadTooth" .. i, Vector3.new(0.2, 0.4, 0.2), headCFrame * CFrame.new(x, -1.1, -0.55) * CFrame.Angles(math.rad(180), 0, 0), Color3.fromRGB(225, 225, 232), Enum.Material.SmoothPlastic, model)
 end
 
--- 3) Schwanz-Kristallspitze, tief im letzten Segment eingebettet -----------------------------------------
-local tailCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfZ + 0.4 - SEG_OVERLAP))
-local tailTip = Instance.new("WedgePart")
-tailTip.Name = "TailTip"
-tailTip.Size = Vector3.new(0.4, 0.4, 0.8)
-tailTip.CFrame = tailCFrame * CFrame.Angles(0, math.rad(90), 0)
-tailTip.Color = SEAM_COLOR_A
-tailTip.Material = Enum.Material.Neon
-tailTip.Anchored = true
-tailTip.CanCollide = false
-tailTip.Parent = model
+-- 2c) Große, leuchtende Kulleraugen -------------------------------------------------------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	newCartoonEye("Eye" .. i, headCFrame * CFrame.new(side * 0.95, 0.35, -0.6), Vector3.new(0.55, 0.55, 0.32), SEAM_COLOR_B, model)
+end
+
+-- 2d) Leuchtendes Brust-Kernjuwel (Mythic-Flair), tief in den Hals eingebettet -----------
+local coreGem = newBall("CoreGem", Vector3.new(0.85, 0.85, 0.6), headCFrame * CFrame.new(0, -0.6, 0.7), SEAM_COLOR_A, Enum.Material.Neon, model)
+coreGem.Transparency = 0.05
+
+-- 2e) Brustflossen-Paar am Kopfsegment (fächerartig, überlappende flache Ellipsen) -------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	newBall("SideFin" .. i, Vector3.new(0.24, 1.0, 1.8), headCFrame * CFrame.new(side * 1.65, -0.2, 0.4) * CFrame.Angles(0, 0, math.rad(side * -80)), BASE_COLOR, Enum.Material.Glass, model).Transparency = 0.2
+	newBall("SideFin" .. i .. "Tip", Vector3.new(0.16, 0.6, 1.0), headCFrame * CFrame.new(side * 2.35, -0.35, 0.7) * CFrame.Angles(0, 0, math.rad(side * -70)), SEAM_COLOR_B, Enum.Material.Neon, model).Transparency = 0.35
+end
+
+-- 3) Große, dramatische Schwanzflossen-Fächer-Spitze (statt kleinem Keil) -----------------------------------
+local tailCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfZ + 0.5 - SEG_OVERLAP))
+for i = 1, 3 do
+	local spread = math.rad(20 * (i - 2))
+	newBall(
+		"TailTip" .. (i == 2 and "" or i),
+		Vector3.new(0.22, 1.3 - math.abs(i - 2) * 0.4, 1.0),
+		tailCFrame * CFrame.Angles(0, spread, 0),
+		(i == 2) and SEAM_COLOR_A or BASE_LIGHT,
+		Enum.Material.Neon,
+		model
+	)
+end
 
 -- 4) Idle-Puls-Attachment ----------------------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")

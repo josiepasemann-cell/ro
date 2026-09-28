@@ -4,9 +4,12 @@
 	Name: GhostFinTuna ("Geisterflossen-Thun")
 	Rarity (Platzhalter): Epic
 	Beschreibung:
-		Stromlinienförmiger, torpedoartiger Ellipsoid-Körper, blass blau-weiß,
-		mit spitzer Kopf-Verjüngung, Kiemenlinien, Rücken-, Bauch-, Seiten-
-		und Schwanzflossen (alle halbtransparent, Glass). Zone: HadalDepths.
+		Stromlinienförmiger, cartoonhaft rundlicher, torpedoartiger
+		Ellipsoid-Körper, blass blau-weiß, mit sanft verjüngter
+		Kopf-Schnauze (Ellipsoid statt Keil), sanften Kiemen-Punkten,
+		fächerartigen Rücken-, Bauch-, Seiten- und Schwanzflossen (alle
+		halbtransparent, Glass, aus überlappenden flachen Ellipsen) und
+		großen Kulleraugen. Zone: HadalDepths.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" -> für Bewegungssteuerung. Laut
@@ -65,19 +68,10 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
-local function newWedge(name, size, cframe, color, material, parent)
-	local part = Instance.new("WedgePart")
-	part.Name = name
-	part.Size = size
-	part.CFrame = cframe
-	part.Color = color
-	part.Material = material
-	part.Anchored = true
-	part.CanCollide = false
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	part.Parent = parent
-	return part
+local function newCartoonEye(name, cframe, eyeSize, pupilColor, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.55, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -94,63 +88,67 @@ model.Parent = creaturesFolder
 
 local BODY_COLOR = Color3.fromRGB(200, 220, 235)
 local BODY_DARK = Color3.fromRGB(150, 175, 200)
+local BODY_BELLY = Color3.fromRGB(230, 240, 250)
 
--- 1) Torpedoförmiger Körper (Ellipsoid) ---------------------------------------------
-local body = newBall("Body", Vector3.new(1.8, 1.8, 5.4), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
+-- 1) Torpedoförmiger, cartoonhaft rundlicher Körper (Ellipsoid) ---------------------
+local body = newBall("Body", Vector3.new(1.9, 1.85, 5.2), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 1b) Dunklere Rückenzeichnung -------------------------------------------------------
-newBall("BackStripe", Vector3.new(1.0, 0.6, 4.6), ORIGIN * CFrame.new(0, 0.65, 0), BODY_DARK, Enum.Material.SmoothPlastic, model)
+-- 1b) Countershading: dunklere Rückenzeichnung, hellere Bauchunterseite --------------
+newBall("BackStripe", Vector3.new(1.05, 0.65, 4.4), ORIGIN * CFrame.new(0, 0.68, 0), BODY_DARK, Enum.Material.SmoothPlastic, model)
+newBall("Belly", Vector3.new(1.3, 0.5, 3.8), ORIGIN * CFrame.new(0, -0.72, 0.2), BODY_BELLY, Enum.Material.SmoothPlastic, model)
 
--- 2) Kopf-Verjüngung (spitzer nach vorne), tief im Körper eingebettet -----------------------
-local nose = newWedge("Nose", Vector3.new(1.4, 1.2, 1.0), ORIGIN * CFrame.new(0, 0, -2.75) * CFrame.Angles(0, math.rad(90), 0), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+-- 2) Sanft verjüngte Kopf-Schnauze (Ellipsoid statt Keil), tief eingebettet -----------------
+newBall("Nose", Vector3.new(1.3, 1.15, 1.1), ORIGIN * CFrame.new(0, 0, -2.65), BODY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2b) Kiemenlinien -----------------------------------------------------------------------
+-- 2b) Sanfte Kiemen-Punkte -----------------------------------------------------------------
 for i = 1, 3 do
 	local x = -0.2 + (i - 1) * 0.2
-	newPart("GillLine" .. i, Vector3.new(0.05, 0.7, 0.05), ORIGIN * CFrame.new(x, 0.1, -2.0), BODY_DARK, Enum.Material.SmoothPlastic, model)
+	newBall("GillLine" .. i, Vector3.new(0.07, 0.55, 0.07), ORIGIN * CFrame.new(x, 0.1, -2.0), BODY_DARK, Enum.Material.SmoothPlastic, model)
 end
 
--- 3) Rückenflosse ---------------------------------------------------------------------------
-local dorsalFin = newWedge("DorsalFin", Vector3.new(0.9, 1.3, 1.1), ORIGIN * CFrame.new(0, 1.15, 0.3) * CFrame.Angles(0, math.rad(90), 0), BODY_COLOR, Enum.Material.Glass, model)
-dorsalFin.Transparency = 0.35
+-- 3) Rückenflosse (2 überlappende flache Ellipsen, fächerartig) ---------------------------------
+local dorsalFin = newBall("DorsalFin", Vector3.new(0.24, 1.35, 1.0), ORIGIN * CFrame.new(0, 1.15, 0.3), BODY_COLOR, Enum.Material.Glass, model)
+dorsalFin.Transparency = 0.3
+local dorsalTip = newBall("DorsalFinTip", Vector3.new(0.16, 0.7, 0.6), ORIGIN * CFrame.new(0, 1.75, 0.55), BODY_DARK, Enum.Material.Glass, model)
+dorsalTip.Transparency = 0.35
 
 -- 3b) Bauchflosse --------------------------------------------------------------------------
-local ventralFin = newWedge("VentralFin", Vector3.new(0.7, 0.8, 0.8), ORIGIN * CFrame.new(0, -1.05, 0.5) * CFrame.Angles(0, math.rad(90), math.rad(180)), BODY_COLOR, Enum.Material.Glass, model)
-ventralFin.Transparency = 0.35
+local ventralFin = newBall("VentralFin", Vector3.new(0.2, 0.8, 0.7), ORIGIN * CFrame.new(0, -1.05, 0.5), BODY_COLOR, Enum.Material.Glass, model)
+ventralFin.Transparency = 0.3
 
--- 4) Zwei Seitenflossen (halbtransparent) ------------------------------------------------------
+-- 4) Zwei Seitenflossen (halbtransparent, flache Ellipsen) ------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local fin = newPart(
+	local fin = newBall(
 		"SideFin" .. i,
-		Vector3.new(0.15, 0.6, 1.2),
-		ORIGIN * CFrame.new(side * 0.85, -0.1, 0.4) * CFrame.Angles(0, 0, math.rad(side * 20)),
+		Vector3.new(0.18, 0.6, 1.15),
+		ORIGIN * CFrame.new(side * 0.9, -0.1, 0.4) * CFrame.Angles(0, 0, math.rad(side * 22)),
 		BODY_COLOR,
 		Enum.Material.Glass,
 		model
 	)
-	fin.Transparency = 0.4
+	fin.Transparency = 0.35
 end
 
--- 5) Schwanzstiel + Schwanzflosse (2 Wedges) ------------------------------------------------------
-local peduncle = newPart("TailPeduncle", Vector3.new(0.5, 0.7, 0.9), ORIGIN * CFrame.new(0, 0, 2.55), BODY_DARK, Enum.Material.SmoothPlastic, model)
+-- 5) Schwanzstiel + fächerartige Schwanzflosse (überlappende Ellipsen) ------------------------------------
+newBall("TailPeduncle", Vector3.new(0.5, 0.65, 0.9), ORIGIN * CFrame.new(0, 0, 2.5), BODY_DARK, Enum.Material.SmoothPlastic, model)
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local tailFin = newWedge(
+	local tailFin = newBall(
 		"TailFin" .. i,
-		Vector3.new(0.15, 1.1, 1.1),
-		ORIGIN * CFrame.new(0, side * 0.3, 3.35) * CFrame.Angles(0, 0, math.rad(side * 90)),
+		Vector3.new(0.18, 1.1, 1.05),
+		ORIGIN * CFrame.new(0, side * 0.35, 3.3) * CFrame.Angles(0, 0, math.rad(side * 58)),
 		BODY_COLOR,
 		Enum.Material.Glass,
 		model
 	)
-	tailFin.Transparency = 0.35
+	tailFin.Transparency = 0.3
 end
 
--- 6) Zwei kleine Augen -----------------------------------------------------------------------------
+-- 6) Große Kulleraugen -----------------------------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newBall("Eye" .. i, Vector3.new(0.3, 0.3, 0.3), ORIGIN * CFrame.new(side * 0.65, 0.2, -2.35), Color3.fromRGB(20, 30, 45), Enum.Material.SmoothPlastic, model)
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(side * 0.65, 0.22, -2.3), Vector3.new(0.4, 0.4, 0.24), Color3.fromRGB(20, 30, 45), model)
 end
 
 -- 7) Idle-Puls-Attachment -----------------------------------------------------------------------

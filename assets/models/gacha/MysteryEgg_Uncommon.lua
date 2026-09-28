@@ -128,18 +128,9 @@ do
 	footRing.Shape = Enum.PartType.Cylinder
 end
 
--- 4) Kleine facettierte Spitze oben, überlappt die Schale ----------------------------
-local tip = Instance.new("WedgePart")
-tip.Name = "TopTip"
-tip.Size = Vector3.new(0.4, 0.5, 0.4)
-tip.CFrame = ORIGIN * CFrame.new(0, HALF_Y - 0.2, 0) * CFrame.Angles(0, 0, math.rad(180))
-tip.Color = SPOT_COLOR
-tip.Material = Enum.Material.Neon
-tip.Anchored = true
-tip.CanCollide = false
-tip.TopSurface = Enum.SurfaceType.Smooth
-tip.BottomSurface = Enum.SurfaceType.Smooth
-tip.Parent = model
+-- 4) Kleiner Gem-Stud oben (glänzendes Ellipsoid statt Wedge-Spitze), überlappt
+--    die Schale - toy-artiger Candy-Egg-Look ----------------------------------------
+local tip = newMeshBall("TopTip", Vector3.new(0.45, 0.4, 0.45), ORIGIN * CFrame.new(0, HALF_Y - 0.2, 0), SPOT_COLOR, Enum.Material.Neon, model)
 
 -- 5) Gesprenkeltes Muster aus kleinen Leuchtpunkten, ringförmig auf der Schale ------
 for i = 1, SPOT_COUNT do

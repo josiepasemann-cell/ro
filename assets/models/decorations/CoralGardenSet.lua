@@ -26,6 +26,7 @@
 		Reine Geometrie-Erzeugung, keine Gameplay-Logik. Idempotent.
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -81,6 +82,23 @@ local function newOvalPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local decorationsFolder = getOrCreateFolder(assetsFolder, "Decorations")
 
@@ -96,6 +114,7 @@ model.Parent = decorationsFolder
 -- 1) Gemeinsamer Sockel ---------------------------------------------------------
 local base = newPart("Base", Vector3.new(5, 0.5, 5), ORIGIN, Color3.fromRGB(210, 200, 160), Enum.Material.Sand, model)
 base.CanCollide = true
+newTexture("SandRipples", Enum.NormalId.Top, base, { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(190, 178, 140), transparency = 0.25 })
 
 -- 2) Drei kleine Korallen-Cluster ------------------------------------------------
 local clusterOffsets = {
@@ -112,14 +131,17 @@ for i = 1, 3 do
 	local clusterCFrame = ORIGIN * CFrame.new(clusterOffsets[i])
 	local color = CLUSTER_COLORS[i]
 
-	local clusterBase = newPart(
+	local clusterBase = newOvalPart(
 		"ClusterBase",
-		Vector3.new(0.8, 0.4, 0.8),
+		Vector3.new(0.85, 0.45, 0.85),
 		clusterCFrame,
 		Color3.fromRGB(150, 130, 100),
-		Enum.Material.Slate,
+		Enum.Material.Pebble,
 		clusterModel
 	)
+	if i == 1 then
+		newTexture("CoralPorous", Enum.NormalId.Top, clusterBase, { studsU = 0.8, studsV = 0.8, color = color, transparency = 0.3 })
+	end
 
 	-- 3 kleine Fronds pro Cluster: je 2 gestapelte, sich überlappende
 	-- Kugelsegmente, die sich zur Spitze hin verjüngen (kein Cylinder-

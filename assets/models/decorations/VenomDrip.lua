@@ -26,6 +26,7 @@
 		Ausführen ist sicher (idempotent).
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -60,6 +61,34 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Organisches, ovales/kapselförmiges Teil: Block-Part + SpecialMesh(Sphere),
+-- non-uniform Size -> gestrecktes, toy-like Ellipsoid statt Kiste.
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local decorationsFolder = getOrCreateFolder(assetsFolder, "Decorations")
 
@@ -72,44 +101,46 @@ local model = Instance.new("Model")
 model.Name = "VenomDrip"
 model.Parent = decorationsFolder
 
--- 1) Sockel-Base --------------------------------------------------------------
-local base = newPart("Base", Vector3.new(4, 0.6, 4), ORIGIN, Color3.fromRGB(45, 55, 30), Enum.Material.Slate, model)
+-- 1) Sockel-Base: rundlicher, toy-like Fels ------------------------------------
+local base = newOvalPart("Base", Vector3.new(4, 1.0, 4), ORIGIN, Color3.fromRGB(45, 55, 30), Enum.Material.Basalt, model)
 base.CanCollide = true
+newTexture("ToxicBlotches", Enum.NormalId.Top, base, { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(90, 200, 40), transparency = 0.25 })
 
--- 2) Hauptspitze (verjüngter Kristallstamm aus 3 gestapelten Segmenten) -------
+-- 2) Hauptspitze: bulböser, kartoonig-runder Kristallstamm aus 3 gestapelten,
+-- überlappenden Ellipsoid-Segmenten (statt eckiger Kegel) ----------------------
 local segmentHeights = { 2.6, 2.0, 1.4 }
-local segmentWidths = { 2.2, 1.5, 0.9 }
+local segmentWidths = { 2.4, 1.7, 1.1 }
 local stackY = 0.3
 for i, height in ipairs(segmentHeights) do
 	local width = segmentWidths[i]
-	local segment = newPart(
+	local segment = newOvalPart(
 		"SpikeSegment" .. i,
 		Vector3.new(width, height, width),
-		ORIGIN * CFrame.new(0, stackY + height / 2, 0),
+		ORIGIN * CFrame.new(0, stackY + height / 2 - 0.3, 0),
 		Color3.fromRGB(90, 200, 40),
 		Enum.Material.Glass,
 		model
 	)
 	segment.Transparency = 0.15
-	stackY += height
+	stackY += height * 0.75
 end
 
--- 3) Leuchtender Kern innerhalb der Spitze -------------------------------------
-local core = newPart(
+-- 3) Leuchtender Kern innerhalb der Spitze (gestrecktes Ellipsoid) -------------
+local core = newOvalPart(
 	"GlowCore",
-	Vector3.new(0.6, 4.8, 0.6),
+	Vector3.new(0.7, 4.8, 0.7),
 	ORIGIN * CFrame.new(0, 3.1, 0),
 	Color3.fromRGB(150, 255, 60),
 	Enum.Material.Neon,
 	model
 )
 
--- 4) Zwei kleine Nebenspitzen ---------------------------------------------------
+-- 4) Zwei kleine, rundliche Nebenspitzen -----------------------------------------
 for i, angle in ipairs({ 55, -70 }) do
 	local rad = math.rad(angle)
-	local sub = newPart(
+	local sub = newOvalPart(
 		"MinorSpike" .. i,
-		Vector3.new(0.7, 1.8, 0.7),
+		Vector3.new(0.8, 1.8, 0.8),
 		ORIGIN * CFrame.new(math.cos(rad) * 1.2, 1.2, math.sin(rad) * 1.2) * CFrame.Angles(0, 0, math.rad(15 * (i == 1 and 1 or -1))),
 		Color3.fromRGB(110, 220, 50),
 		Enum.Material.Glass,
@@ -118,11 +149,11 @@ for i, angle in ipairs({ 55, -70 }) do
 	sub.Transparency = 0.2
 end
 
--- 5) Dripping-Tropfen (kleine Neon-Kugeln unterhalb der Spitze) ---------------
+-- 5) Dripping-Tropfen (kleine, runde Neon-Kugeln unterhalb der Spitze) --------
 for i = 1, 3 do
 	local drip = newPart(
 		"VenomDrop" .. i,
-		Vector3.new(0.35, 0.35, 0.35),
+		Vector3.new(0.4, 0.4, 0.4),
 		ORIGIN * CFrame.new(0.4 * (i - 2), stackY - i * 0.9, 0.3 * (i - 2)),
 		Color3.fromRGB(170, 255, 70),
 		Enum.Material.Neon,
@@ -136,7 +167,7 @@ for i = 1, 3 do
 	local angle = math.rad(120 * i + 15)
 	local bubble = newPart(
 		"VenomBubble" .. i,
-		Vector3.new(0.3, 0.3, 0.3),
+		Vector3.new(0.32, 0.32, 0.32),
 		ORIGIN * CFrame.new(math.cos(angle) * 1.7, 0.3, math.sin(angle) * 1.7),
 		Color3.fromRGB(160, 255, 80),
 		Enum.Material.Neon,
