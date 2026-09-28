@@ -1,7 +1,7 @@
 --[[
 	Abyssara – Deep Tide Tycoon
 	Asset-Typ: Raid-Gegner (Platzhalter-Modell)
-	Name: ShadowKraken ("Schattenkrake")
+	Name: ShadowKraken ("Shadow Kraken")
 	Beschreibung:
 		Bedrohlicher, deutlich größerer Trench-Raid-Gegner: dunkler,
 		schattiger Körper mit bedrohlichen roten Glow-Augen und 8 langen,
@@ -197,6 +197,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("EnemyName", "Schattenkrake")
+model:SetAttribute("EnemyName", "Shadow Kraken")
 
 print("[Abyssara] ShadowKraken created under Workspace.Assets.Enemies")

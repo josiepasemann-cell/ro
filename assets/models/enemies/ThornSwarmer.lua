@@ -1,7 +1,7 @@
 --[[
 	Abyssara – Deep Tide Tycoon
 	Asset-Typ: Raid-Gegner
-	Name: ThornSwarmer ("Dornschwarmer")
+	Name: ThornSwarmer ("Thorn Swarmer")
 	Ersetzt ShadowKraken als TemplateName für RaidConfig.EnemyId "Swarmer".
 	Beschreibung:
 		Kleiner, kompakter Seeigel-Fisch-Hybrid mit radial abstehenden
@@ -161,6 +161,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("EnemyName", "Dornschwarmer")
+model:SetAttribute("EnemyName", "Thorn Swarmer")
 
 print("[Abyssara] ThornSwarmer created under Workspace.Assets.Enemies")

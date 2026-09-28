@@ -1,7 +1,7 @@
 --[[
 	Abyssara – Deep Tide Tycoon
 	Asset-Typ: Raid-Gegner
-	Name: SpineDrifter ("Stachel-Treiber")
+	Name: SpineDrifter ("Spine Drifter")
 	Ersetzt ShadowKraken als TemplateName für RaidConfig.EnemyId "Drifter".
 	Beschreibung:
 		Schlanker, spindeldürrer aalartiger Körper, dunkles Schiefer-Blau,
@@ -173,6 +173,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("EnemyName", "Stachel-Treiber")
+model:SetAttribute("EnemyName", "Spine Drifter")
 
 print("[Abyssara] SpineDrifter created under Workspace.Assets.Enemies")

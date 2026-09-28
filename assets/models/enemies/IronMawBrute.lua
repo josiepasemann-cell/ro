@@ -1,7 +1,7 @@
 --[[
 	Abyssara – Deep Tide Tycoon
 	Asset-Typ: Raid-Gegner
-	Name: IronMawBrute ("Eisenmaul-Brute")
+	Name: IronMawBrute ("Iron Maw Brute")
 	Ersetzt ShadowKraken als TemplateName für RaidConfig.EnemyId "Brute".
 	Beschreibung:
 		Schwerer, gedrungener Körper mit überdimensioniertem Kiefer,
@@ -228,6 +228,6 @@ pulseAttachment.Parent = body
 model.PrimaryPart = body
 model:SetAttribute("EnemyTier", ENEMY_TIER)
 model:SetAttribute("Zone", ZONE)
-model:SetAttribute("EnemyName", "Eisenmaul-Brute")
+model:SetAttribute("EnemyName", "Iron Maw Brute")
 
 print("[Abyssara] IronMawBrute created under Workspace.Assets.Enemies")
