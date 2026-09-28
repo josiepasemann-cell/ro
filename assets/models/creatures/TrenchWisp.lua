@@ -69,8 +69,8 @@ local function newBall(name, size, cframe, color, material, parent)
 end
 
 local function newCartoonEye(name, cframe, eyeSize, pupilColor, parent)
-	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
-	newBall(name .. "Pupil", eyeSize * 0.5, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.SmoothPlastic, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.5, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.Neon, parent)
 	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
 end
 
@@ -91,7 +91,7 @@ local GLOW_COLOR = Color3.fromRGB(150, 255, 240)
 
 -- 1) Tropfenförmiger Hauptkörper (Glass, halbtransparent, cartoonhaft rund) ----
 local body = newBall("Body", Vector3.new(1.5, 1.6, 1.5), ORIGIN, BODY_COLOR, Enum.Material.Glass, model)
-body.Transparency = 0.35
+body.Transparency = 0.2
 
 -- 1b) Sich verjüngender Kometenschweif unten (3 Ellipsen-Segmente statt
 --     einem einzelnen Keil - bricht die reine Kugelsilhouette auf) ------------
@@ -106,7 +106,7 @@ for i = 1, 3 do
 end
 
 -- 2) Innerer Glow-Kern -----------------------------------------------------------------
-newBall("GlowCore", Vector3.new(0.65, 0.65, 0.65), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
+newBall("GlowCore", Vector3.new(0.5, 0.5, 0.5), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
 
 -- 2b) Niedliches Cartoon-Gesicht: große leuchtende Kulleraugen + Lächeln -----------
 for i = 1, 2 do
@@ -116,8 +116,8 @@ end
 newBall("Smile", Vector3.new(0.32, 0.08, 0.14), ORIGIN * CFrame.new(0, -0.18, -0.68) * CFrame.Angles(0, 0, math.rad(180)), Color3.fromRGB(30, 60, 65), Enum.Material.SmoothPlastic, model)
 
 -- 3) Äußere Glimm-Aura (großzügig um den Körper, sehr transparent) ---------------------
-local aura = newBall("GlimmerAura", Vector3.new(2.1, 2.3, 2.1), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
-aura.Transparency = 0.78
+local aura = newBall("GlimmerAura", Vector3.new(1.8, 1.95, 1.8), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
+aura.Transparency = 0.88
 aura.CanCollide = false
 
 -- 4) 3 dünne, geschwungene Wisp-Schweif-Tentakel (je 2 sich verjüngende
