@@ -178,12 +178,12 @@ newOvalPart("ArmRTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(1.4, 
 
 -- 4) Four more hanging tentacles in a rainbow of neon colors: tapering pairs -----
 local tentacleColors = { NEON_MAGENTA, NEON_VIOLET, NEON_MAGENTA, NEON_VIOLET }
-local tentacleOffsets = { Vector3.new(-0.7, -2.0, -0.8), Vector3.new(0.7, -2.0, -0.8), Vector3.new(-1.0, -1.95, 0.6), Vector3.new(1.0, -1.95, 0.6) }
+local tentacleOffsets = { Vector3.new(-0.7, -1.7, -0.8), Vector3.new(0.7, -1.7, -0.8), Vector3.new(-1.0, -1.7, 0.6), Vector3.new(1.0, -1.7, 0.6) }
 for index, offset in ipairs(tentacleOffsets) do
 	local sign = offset.X < 0 and -1 or 1
 	local segCFrame = rootCFrame * CFrame.new(offset) * CFrame.Angles(math.rad(6), 0, math.rad(sign * 8))
-	newOvalPart("Tentacle" .. index, Vector3.new(0.45, 1.3, 0.45), segCFrame, tentacleColors[index], Enum.Material.Neon, model)
-	newOvalPart("Tentacle" .. index .. "Tip", Vector3.new(0.3, 1.2, 0.3), segCFrame * CFrame.new(0, -1.15, 0), tentacleColors[index], Enum.Material.Neon, model)
+	newOvalPart("Tentacle" .. index, Vector3.new(0.55, 1.3, 0.55), segCFrame, tentacleColors[index], Enum.Material.Neon, model)
+	newOvalPart("Tentacle" .. index .. "Tip", Vector3.new(0.36, 1.2, 0.36), segCFrame * CFrame.new(0, -1.1, 0), tentacleColors[index], Enum.Material.Neon, model)
 end
 
 -- 5) Oversized welcome lantern held near the tip of the right tentacle -----------

@@ -99,9 +99,10 @@ local model = Instance.new("Model")
 model.Name = "MagmaVent"
 model.Parent = decorationsFolder
 
--- 1) Rissboden-Basis (dunkles Vulkangestein) -------------------------------------
-local base = newPart("Base", Vector3.new(4, 0.6, 4), ORIGIN, Color3.fromRGB(40, 25, 20), Enum.Material.Rock, model)
+-- 1) Rissboden-Basis (dunkles Vulkangestein), rundlich, toy-like -------------------
+local base = newOvalPart("Base", Vector3.new(4, 1.0, 4), ORIGIN, Color3.fromRGB(40, 25, 20), Enum.Material.Rock, model)
 base.CanCollide = true
+newTexture("LavaCracks", Enum.NormalId.Top, base, { studsU = 1.2, studsV = 1.2, color = Color3.fromRGB(255, 130, 40), transparency = 0.15 })
 
 -- 2) Glühender Riss (schmale Neon-Spalte quer über den Sockel) ------------------
 local crack = newPart(
@@ -123,18 +124,21 @@ local crackBranch = newPart(
 )
 
 -- 3) Umliegende, aufgebrochene Gesteinsbrocken (CSG-Optik ohne teure Union) -----
+local rockChunks = {}
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 20)
-	local rock = newPart(
+	local rock = newOvalPart(
 		"RockChunk" .. i,
-		Vector3.new(0.9, 0.7, 0.9),
-		ORIGIN * CFrame.new(math.cos(angle) * 1.6, 0.55, math.sin(angle) * 1.6) * CFrame.Angles(math.rad(10 * i), math.rad(20 * i), 0),
+		Vector3.new(1.0, 0.8, 1.0),
+		ORIGIN * CFrame.new(math.cos(angle) * 1.6, 0.55, math.sin(angle) * 1.6),
 		Color3.fromRGB(50, 32, 26),
 		Enum.Material.Rock,
 		model
 	)
 	rock.CanCollide = true
+	rockChunks[i] = rock
 end
+newTexture("BasaltRock", Enum.NormalId.Front, rockChunks[1], { studsU = 1, studsV = 1, color = Color3.fromRGB(38, 24, 20), transparency = 0.2 })
 
 -- 3b) Kleine Glut-Kiesel entlang des Risses für mehr Detail ----------------------
 for i = 1, 3 do

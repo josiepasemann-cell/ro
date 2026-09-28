@@ -21,6 +21,7 @@
 		Reine Geometrie-Erzeugung, keine Gameplay-Logik. Idempotent.
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -55,6 +56,35 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes, toy-like Ellipsoid statt Kiste (nur für runde Deko-Bits;
+-- die Truhe selbst bleibt bewusst blockig mit gerundeten Kanten/Trims).
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local decorationsFolder = getOrCreateFolder(assetsFolder, "Decorations")
 
@@ -67,27 +97,30 @@ local model = Instance.new("Model")
 model.Name = "TreasurePile"
 model.Parent = decorationsFolder
 
--- 1) Sockel-Base --------------------------------------------------------------
-local base = newPart("Base", Vector3.new(4, 0.5, 4), ORIGIN, Color3.fromRGB(210, 200, 160), Enum.Material.Sand, model)
+-- 1) Sockel-Base: rundlicher, toy-like Sandhügel -----------------------------
+local base = newOvalPart("Base", Vector3.new(4, 1.0, 4), ORIGIN, Color3.fromRGB(210, 200, 160), Enum.Material.Sand, model)
 base.CanCollide = true
+newTexture("CoinPile", Enum.NormalId.Top, base, { studsU = 1, studsV = 1, color = Color3.fromRGB(255, 215, 90), transparency = 0.55 })
 
--- 2) Truhe (Korpus + angewinkelter Deckel) --------------------------------------
+-- 2) Truhe (Korpus + angewinkelter Deckel) - bleibt bewusst blockig als
+-- "hartes Material"-Requisit, bekommt aber gerundete Trim-Kanten (Zylinder) ------
 local chestBody = newPart(
 	"ChestBody",
 	Vector3.new(2, 1.1, 1.4),
 	ORIGIN * CFrame.new(-0.6, 0.8, 0),
 	Color3.fromRGB(120, 75, 35),
-	Enum.Material.Wood,
+	Enum.Material.WoodPlanks,
 	model
 )
 chestBody.CanCollide = true
+newTexture("WoodPlanks", Enum.NormalId.Front, chestBody, { studsU = 0.6, studsV = 0.6, color = Color3.fromRGB(90, 58, 28), transparency = 0.35 })
 
 local chestLid = newPart(
 	"ChestLid",
 	Vector3.new(2, 0.25, 1.5),
 	ORIGIN * CFrame.new(-0.6, 1.5, -0.55) * CFrame.Angles(math.rad(-55), 0, 0),
 	Color3.fromRGB(140, 90, 45),
-	Enum.Material.Wood,
+	Enum.Material.WoodPlanks,
 	model
 )
 
@@ -96,9 +129,16 @@ local chestTrim = newPart(
 	Vector3.new(2.05, 0.15, 1.45),
 	ORIGIN * CFrame.new(-0.6, 1.05, 0),
 	Color3.fromRGB(230, 190, 70),
-	Enum.Material.Metal,
+	Enum.Material.Foil,
 	model
 )
+newTexture("GoldFoil", Enum.NormalId.Front, chestTrim, { studsU = 0.8, studsV = 0.8, color = Color3.fromRGB(250, 220, 140), transparency = 0.4 })
+
+-- Gerundete Eckbeschläge (Zylinder mit runden Kappen statt scharfer Kanten)
+for _, dx in ipairs({ -0.9, 0.9 }) do
+	local corner = newPart("ChestCorner" .. (dx < 0 and "L" or "R"), Vector3.new(0.18, 1.15, 0.18), ORIGIN * CFrame.new(-0.6 + dx, 0.8, 0.68), Color3.fromRGB(230, 190, 70), Enum.Material.Foil, model)
+	corner.Shape = Enum.PartType.Cylinder
+end
 
 -- 3) Münzhaufen (gestapelte, leicht rotierte flache Zylinder) -------------------
 for i = 1, 10 do
@@ -106,11 +146,11 @@ for i = 1, 10 do
 	local radius = 0.6 + (i % 3) * 0.25
 	local coin = newPart(
 		"Coin" .. i,
-		Vector3.new(0.15, 0.55, 0.55),
+		Vector3.new(0.18, 0.62, 0.62),
 		ORIGIN * CFrame.new(0.8 + math.cos(angle) * radius, 0.35 + (i % 4) * 0.12, math.sin(angle) * radius)
 			* CFrame.Angles(0, angle, math.rad(90)),
 		Color3.fromRGB(255, 215, 90),
-		Enum.Material.Metal,
+		Enum.Material.Foil,
 		model
 	)
 	coin.Shape = Enum.PartType.Cylinder
