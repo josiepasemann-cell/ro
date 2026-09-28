@@ -4,9 +4,11 @@
 	Name: GoldGuppy ("Gold Guppy")
 	Rarity (Platzhalter): Rare
 	Event: TreasureTide
-	Beschreibung:
-		Kleine, klassische Fisch-Silhouette, metallisch goldener Körper
-		(Material Metal) mit leuchtender Schwanzflossen-Kante (Neon).
+	Beschreibung (Update: organisch/cartoony, echter Fächerschwanz):
+		Kleine, chunky Cartoon-Fisch-Silhouette, metallisch goldener
+		Ellipsoid-Körper (Material Metal/Foil) mit einem ECHTEN Fächerschwanz
+		aus 3 überlappenden, dünnen, aufgefächerten Ellipsoid-Lamellen (statt
+		einer flachen leuchtenden Planke) und großen Cartoon-Augen.
 		Event-exklusive Kreatur des "Treasure Tide"-Events.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
@@ -57,8 +59,9 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
--- Block-Part + SpecialMesh(Sphere): echtes Torpedo-Ellipsoid statt der immer
--- kugelrunden Shape=Ball-Darstellung.
+-- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt der immer
+-- kugelrunden Shape=Ball-Darstellung - EINZIGE Grundform hier (Körper,
+-- Flossen, Fächerschwanz-Lamellen).
 local function newMeshBall(name, size, cframe, color, material, parent)
 	local part = newPart(name, size, cframe, color, material, parent)
 	local mesh = Instance.new("SpecialMesh")
@@ -79,77 +82,64 @@ local model = Instance.new("Model")
 model.Name = "GoldGuppy"
 model.Parent = creaturesFolder
 
-local GOLD_COLOR = Color3.fromRGB(230, 190, 70)
-local GOLD_COLOR_DARK = Color3.fromRGB(190, 150, 50)
+local GOLD_COLOR = Color3.fromRGB(235, 195, 75)
+local GOLD_COLOR_DARK = Color3.fromRGB(195, 155, 55)
 local GLOW_COLOR = Color3.fromRGB(255, 230, 130)
 
--- 1) Torpedoförmiger Körper: echtes Ellipsoid (Block + SpecialMesh Sphere) ----------
-local body = newMeshBall("Body", Vector3.new(0.8, 1.0, 1.6), ORIGIN, GOLD_COLOR, Enum.Material.Metal, model)
+-- 1) Chunky, rundlicher torpedoförmiger Körper (Ellipsoid, Material Foil für
+--    glänzenden Goldglanz) -----------------------------------------------------
+local body = newMeshBall("Body", Vector3.new(1.15, 1.25, 1.75), ORIGIN, GOLD_COLOR, Enum.Material.Foil, model)
 
--- 1b) Rückenflosse (klein, oben mittig), überlappt den Körper -----------------------
-local dorsalFin = Instance.new("WedgePart")
-dorsalFin.Name = "DorsalFin"
-dorsalFin.Size = Vector3.new(0.08, 0.4, 0.5)
-dorsalFin.CFrame = ORIGIN * CFrame.new(0, 0.55, 0.1) * CFrame.Angles(math.rad(-30), 0, 0)
-dorsalFin.Color = GOLD_COLOR_DARK
-dorsalFin.Material = Enum.Material.Metal
-dorsalFin.Anchored = true
-dorsalFin.CanCollide = false
-dorsalFin.TopSurface = Enum.SurfaceType.Smooth
-dorsalFin.BottomSurface = Enum.SurfaceType.Smooth
-dorsalFin.Parent = model
+-- 1b) Kleine, stummelige Rückenflosse (flaches Ellipsoid statt Wedge), überlappt
+--     den Körper -----------------------------------------------------------------
+local dorsalFin = newMeshBall("DorsalFin", Vector3.new(0.16, 0.55, 0.6), ORIGIN * CFrame.new(0, 0.75, 0.1) * CFrame.Angles(math.rad(-20), 0, 0), GOLD_COLOR_DARK, Enum.Material.Foil, model)
 
--- 1c) Zwei Augen mit Glanzpunkt ------------------------------------------------------
+-- 1c) Große Cartoon-Augen: übergroße weiße Ellipsoide + Pupille + Glanzpunkt -------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.3, 0.18, 0.65)
-	newMeshBall("Eye" .. i, Vector3.new(0.16, 0.16, 0.16), eyeCFrame, Color3.fromRGB(20, 20, 25), Enum.Material.SmoothPlastic, model)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.4, 0.22, 0.75)
+	newMeshBall("EyeWhite" .. i, Vector3.new(0.32, 0.32, 0.26), eyeCFrame, Color3.fromRGB(250, 252, 245), Enum.Material.SmoothPlastic, model)
+	newMeshBall("Eye" .. i, Vector3.new(0.19, 0.19, 0.15), eyeCFrame * CFrame.new(0, -0.01, 0.1), Color3.fromRGB(20, 20, 25), Enum.Material.SmoothPlastic, model)
+	newMeshBall("EyeHighlight" .. i, Vector3.new(0.07, 0.07, 0.05), eyeCFrame * CFrame.new(0.05, 0.05, 0.16), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+end
+
+-- 2) Echter Fächerschwanz: 3 überlappende, dünne, aufgefächerte Ellipsoid-Lamellen,
+--    Wurzel im Körper eingesenkt, Winkel zwischen -28° und +28° für die Fächerform,
+--    Größe wächst von der Wurzel zur Spitze -> deutlich als Fächer statt Planke ----
+local tailRoot = ORIGIN * CFrame.new(0, 0, -0.75)
+local TAIL_ANGLES = { -28, 0, 28 }
+for i, angleDeg in ipairs(TAIL_ANGLES) do
+	local lamellaCFrame = tailRoot * CFrame.Angles(0, math.rad(angleDeg), 0)
+	-- dünnes, hohes, LANGES Ellipsoid (Länge auf lokaler Z, nach hinten weisend)
+	local lamella = newMeshBall(
+		"TailLamella" .. i,
+		Vector3.new(0.16, 0.5, 0.85),
+		lamellaCFrame * CFrame.new(0, 0, -0.4),
+		i == 2 and GOLD_COLOR or GOLD_COLOR_DARK,
+		Enum.Material.Foil,
+		model
+	)
+	-- leuchtende Lamellen-Spitze, überlappt das hintere Ende der Lamelle
 	newMeshBall(
-		"EyeHighlight" .. i,
-		Vector3.new(0.05, 0.05, 0.05),
-		eyeCFrame * CFrame.new(0.04, 0.04, 0.07),
-		Color3.fromRGB(255, 255, 255),
+		"TailLamella" .. i .. "Tip",
+		Vector3.new(0.13, 0.24, 0.3),
+		lamellaCFrame * CFrame.new(0, 0, -0.75),
+		GLOW_COLOR,
 		Enum.Material.Neon,
 		model
 	)
 end
+-- Name "TailFin" bleibt als IdleSway-Sway-Anker erhalten (Präfix "tailfin"),
+-- deckt die mittlere Lamelle zusätzlich mit ab, damit vorhandene Sway-Logik
+-- weiter genau EINEN benannten "TailFin"-Part findet.
+local tailFinAnchor = newMeshBall("TailFin", Vector3.new(0.3, 0.3, 0.3), tailRoot, GOLD_COLOR, Enum.Material.Foil, model)
+tailFinAnchor.Transparency = 1
 
--- 2) Schwanzflosse mit leuchtender Kante, Wurzel im Körper eingesenkt ---------------
-local tailWedge = Instance.new("WedgePart")
-tailWedge.Name = "TailFin"
-tailWedge.Size = Vector3.new(0.1, 0.8, 0.7)
-tailWedge.CFrame = ORIGIN * CFrame.new(0, 0, -0.6) * CFrame.Angles(0, math.rad(90), 0)
-tailWedge.Color = GOLD_COLOR
-tailWedge.Material = Enum.Material.Metal
-tailWedge.Anchored = true
-tailWedge.CanCollide = false
-tailWedge.TopSurface = Enum.SurfaceType.Smooth
-tailWedge.BottomSurface = Enum.SurfaceType.Smooth
-tailWedge.Parent = model
-
-local tailEdge = newPart(
-	"TailFinEdge",
-	Vector3.new(0.08, 0.85, 0.15),
-	ORIGIN * CFrame.new(0, 0, -0.95),
-	GLOW_COLOR,
-	Enum.Material.Neon,
-	model
-)
-
--- 3) Zwei kleine Seitenflossen, Wurzel im Körper eingesenkt --------------------------
+-- 3) Zwei kleine Seitenflossen (flache Ellipsoide statt Wedges), Wurzel im Körper
+--    eingesenkt -------------------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local fin = Instance.new("WedgePart")
-	fin.Name = "SideFin" .. i
-	fin.Size = Vector3.new(0.5, 0.1, 0.4)
-	fin.CFrame = ORIGIN * CFrame.new(side * 0.3, -0.1, 0.1) * CFrame.Angles(0, 0, math.rad(side * 25))
-	fin.Color = GOLD_COLOR
-	fin.Material = Enum.Material.Metal
-	fin.Anchored = true
-	fin.CanCollide = false
-	fin.TopSurface = Enum.SurfaceType.Smooth
-	fin.BottomSurface = Enum.SurfaceType.Smooth
-	fin.Parent = model
+	newMeshBall("SideFin" .. i, Vector3.new(0.45, 0.14, 0.4), ORIGIN * CFrame.new(side * 0.42, -0.12, 0.15) * CFrame.Angles(0, 0, math.rad(side * 25)), GOLD_COLOR, Enum.Material.Foil, model)
 end
 
 -- 4) Idle-Puls-Attachment ------------------------------------------------------------

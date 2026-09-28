@@ -4,9 +4,12 @@
 	Name: GlowJelly ("Glühqualle")
 	Rarity (Platzhalter): Common
 	Beschreibung:
-		Kleine, transluzente Qualle mit gewölbter Glocke (halbtransparentes
-		Neon-Glas), gekräuseltem Glockensaum, kurzen dicken Mundarmen und
-		vielen dünnen, geschwungenen Tentakeln. Zone: SunZone.
+		Kleine, rundliche, cartoonhafte Qualle: bauchige, halbtransparente
+		Glocke (Neon-Glas) mit niedlichen großen Augen und einem kleinen
+		Lächeln, gekräuseltem Glockensaum aus überlappenden Ellipsen, kurzen
+		pummeligen Mundarmen und mehreren dünnen, geschwungenen
+		Ellipsen-Tentakel-Ketten. Rein organische Formen (keine Blöcke/Keile
+		außer Textur-Trägern). Zone: SunZone.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (die Glocke) -> für Bewegungssteuerung.
@@ -23,7 +26,6 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
-local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(0, 6, 60) -- Vor Ausführung anpassen für gewünschte Position
@@ -56,9 +58,11 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
--- Block-Part + SpecialMesh(Sphere)-Kind, damit eine nicht-uniforme Size zu
--- einem Ellipsoid gestreckt wird (ein Part mit Shape=Ball rendert IMMER als
--- Kugel mit der KLEINSTEN Achse als Durchmesser, siehe docs/previews/README.md).
+-- Organischer Baustein: Block-Part + SpecialMesh(Sphere)-Kind, damit eine
+-- nicht-uniforme Size zu einem Ellipsoid gestreckt wird (ein Part mit
+-- Shape=Ball rendert IMMER als Kugel mit der KLEINSTEN Achse als
+-- Durchmesser). Wird für praktisch jeden Körperteil verwendet - rundliche,
+-- cartoonhafte Silhouette statt harter Blockkanten. ------------------------
 local function newBall(name, size, cframe, color, material, parent)
 	local part = newPart(name, size, cframe, color, material, parent)
 	local mesh = Instance.new("SpecialMesh")
@@ -67,24 +71,27 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
--- Textur-Instanz mit projektweiter "TextureKey"-Konvention (siehe
--- assets/textures/README.md, sobald vorhanden). Texture bleibt bis zum
--- PNG-Upload leer ("") - ein Runtime-Skript blendet ungefüllte
--- KeyedTexture-Instanzen aus. Nur auf Block-Part-Flächen sinnvoll, Kugeln/
--- Ellipsoide bekommen stattdessen passende Materials.
-local function addKeyedTexture(part, key, face, color, transparency, studsU, studsV)
-	local tex = Instance.new("Texture")
-	tex.Name = "Tex_" .. key
-	tex.Texture = ""
-	tex.Face = face
-	tex.StudsPerTileU = studsU or 3
-	tex.StudsPerTileV = studsV or studsU or 3
-	tex.Color3 = color
-	tex.Transparency = transparency or 0
-	tex:SetAttribute("TextureKey", key)
-	CollectionService:AddTag(tex, "KeyedTexture")
-	tex.Parent = part
-	return tex
+-- Großes, niedliches Cartoon-Auge: weißer Ellipsoid + dunkle Pupille + kleiner
+-- weißer Glanzpunkt, alle deutlich ineinander eingebettet. ------------------
+local function newCartoonEye(name, cframe, eyeSize, parent)
+	local white = newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	local pupil = newBall(
+		name .. "Pupil",
+		eyeSize * 0.55,
+		cframe * CFrame.new(0, 0, -eyeSize.Z * 0.28),
+		Color3.fromRGB(15, 15, 20),
+		Enum.Material.SmoothPlastic,
+		parent
+	)
+	newBall(
+		name .. "Glint",
+		eyeSize * 0.18,
+		cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.18, -eyeSize.Z * 0.4),
+		Color3.fromRGB(255, 255, 255),
+		Enum.Material.Neon,
+		parent
+	)
+	return white
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -104,78 +111,63 @@ local BELL_TOP = Color3.fromRGB(110, 200, 240)
 local GLOW_COLOR = Color3.fromRGB(90, 240, 255)
 local ARM_COLOR = Color3.fromRGB(200, 245, 255)
 
--- 1) Glocke (Körper, Ellipsoid via SpecialMesh) -----------------------------
-local body = newBall("Body", Vector3.new(2.6, 1.9, 2.6), ORIGIN, BELL_COLOR, Enum.Material.Glass, model)
-body.Transparency = 0.25
+-- 1) Glocke: bauchiger, cartoonhaft übergroßer Ellipsoid-"Kopf" ---------------
+local body = newBall("Body", Vector3.new(2.6, 2.1, 2.6), ORIGIN, BELL_COLOR, Enum.Material.Glass, model)
+body.Transparency = 0.22
 
--- 1b) Countershading: dunklerer Scheitel oben, tief in die Glocke eingebettet
-newBall("BellCrown", Vector3.new(1.6, 0.9, 1.6), ORIGIN * CFrame.new(0, 0.55, 0), BELL_TOP, Enum.Material.Glass, model).Transparency = 0.3
+-- 1b) Countershading: dunklerer Scheitel oben, tief eingebettet --------------
+newBall("BellCrown", Vector3.new(1.7, 1.0, 1.7), ORIGIN * CFrame.new(0, 0.65, 0), BELL_TOP, Enum.Material.Glass, model).Transparency = 0.28
 
--- 2) Innerer Glow-Kern, gut in die Glocke eingebettet -----------------------
-newBall("GlowCore", Vector3.new(1.2, 0.9, 1.2), ORIGIN * CFrame.new(0, -0.1, 0), GLOW_COLOR, Enum.Material.Neon, model)
+-- 2) Innerer Glow-Kern --------------------------------------------------------
+newBall("GlowCore", Vector3.new(1.2, 0.95, 1.2), ORIGIN * CFrame.new(0, -0.05, 0.1), GLOW_COLOR, Enum.Material.Neon, model)
 
--- 2b) Vier kleine Membran-Patches (JellyMembrane-Textur) auf der Glockenoberfläche,
---     tief genug eingebettet um sicher mit Body zu überlappen -----------------
-for i = 1, 4 do
-	local angle = math.rad(90 * (i - 1) + 20)
-	local radius = 1.1
-	local patchCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.1, math.sin(angle) * radius) * CFrame.Angles(0, -angle, 0)
-	local patch = newPart("MembranePatch" .. i, Vector3.new(0.7, 0.9, 0.3), patchCFrame, BELL_COLOR, Enum.Material.Glass, model)
-	patch.Transparency = 0.3
-	addKeyedTexture(patch, "JellyMembrane", Enum.NormalId.Front, GLOW_COLOR, 0.2, 2, 2)
+-- 2b) Niedliches Cartoon-Gesicht: 2 große Augen + kleines Lächeln, vorne
+--     tief in die Glocke eingebettet ------------------------------------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(side * 0.55, 0.15, -1.05), Vector3.new(0.42, 0.42, 0.24), model)
 end
+local smile = newBall("Smile", Vector3.new(0.55, 0.14, 0.2), ORIGIN * CFrame.new(0, -0.35, -1.15) * CFrame.Angles(0, 0, math.rad(180)), Color3.fromRGB(60, 40, 70), Enum.Material.SmoothPlastic, model)
 
--- 3) Gekräuselter Glockensaum (8 kleine Wedges rund um den unteren Rand) ----
+-- 3) Gekräuselter Glockensaum: überlappende, abgeflachte Ellipsen statt Keile -
 for i = 1, 8 do
 	local angle = math.rad(45 * (i - 1))
 	local radius = 1.15
-	local frillCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, -0.75, math.sin(angle) * radius)
+	local frillCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, -0.85, math.sin(angle) * radius)
 		* CFrame.Angles(0, -angle, 0)
-		* CFrame.Angles(math.rad(30), 0, 0)
-	local frill = Instance.new("WedgePart")
-	frill.Name = "Frill" .. i
-	frill.Size = Vector3.new(0.55, 0.5, 0.15)
-	frill.CFrame = frillCFrame
-	frill.Color = (i % 2 == 0) and BELL_COLOR or ARM_COLOR
-	frill.Material = Enum.Material.Glass
+		* CFrame.Angles(math.rad(35), 0, 0)
+	local frill = newBall("Frill" .. i, Vector3.new(0.5, 0.62, 0.16), frillCFrame, (i % 2 == 0) and BELL_COLOR or ARM_COLOR, Enum.Material.Glass, model)
 	frill.Transparency = 0.2
-	frill.Anchored = true
-	frill.CanCollide = false
-	frill.Parent = model
 end
 
--- 4) 4 dicke Mundarme, direkt unter der Glockenmitte -------------------------
+-- 4) 4 pummelige Mundarme (2 dicke, sich verjüngende Ellipsen-Segmente) ------
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 45)
 	local radius = 0.35
-	local offset = Vector3.new(math.cos(angle) * radius, -1.1, math.sin(angle) * radius)
-	local arm = newPart(
-		"OralArm" .. i,
-		Vector3.new(0.28, 1.3, 0.28),
-		ORIGIN * CFrame.new(offset) * CFrame.Angles(math.rad(6 * i), 0, 0),
-		ARM_COLOR,
-		Enum.Material.Neon,
-		model
-	)
-	arm.Transparency = 0.15
+	local baseCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, -1.1, math.sin(angle) * radius) * CFrame.Angles(math.rad(6 * i), 0, 0)
+	local arm1 = newBall("OralArm" .. i, Vector3.new(0.34, 0.62, 0.34), baseCFrame, ARM_COLOR, Enum.Material.Neon, model)
+	arm1.Transparency = 0.15
+	local arm2 = newBall("OralArm" .. i .. "Tip", Vector3.new(0.24, 0.55, 0.24), baseCFrame * CFrame.new(0, -0.5, 0), ARM_COLOR, Enum.Material.Neon, model)
+	arm2.Transparency = 0.1
 end
 
--- 5) 8 dünne, geschwungene Tentakel (2 Segmente je Tentakel) -----------------
+-- 5) 8 dünne, geschwungene Tentakel-Ketten (3 sich verjüngende Ellipsen je Arm) --
 for i = 1, 8 do
 	local angle = math.rad(45 * (i - 1))
 	local radius = 1.0
-	local baseOffset = Vector3.new(math.cos(angle) * radius, -0.65, math.sin(angle) * radius)
-	local baseCFrame = ORIGIN * CFrame.new(baseOffset)
-
-	local seg1Length = 1.3 + (i % 2) * 0.3
-	local seg1CFrame = baseCFrame * CFrame.new(0, -seg1Length / 2, 0)
-	local seg1 = newPart("Tentacle" .. i, Vector3.new(0.18, seg1Length, 0.18), seg1CFrame, BELL_COLOR, Enum.Material.Neon, model)
-	seg1.Transparency = 0.15
-
-	local seg2Length = 1.1 + (i % 3) * 0.25
-	local seg2CFrame = baseCFrame * CFrame.new(0, -seg1Length, 0) * CFrame.Angles(math.rad(10 * ((i % 2 == 0) and 1 or -1)), 0, 0) * CFrame.new(0, -seg2Length / 2, 0)
-	local seg2 = newPart("TentacleTip" .. i, Vector3.new(0.12, seg2Length, 0.12), seg2CFrame, GLOW_COLOR, Enum.Material.Neon, model)
-	seg2.Transparency = 0.1
+	local baseOffset = Vector3.new(math.cos(angle) * radius, -0.75, math.sin(angle) * radius)
+	local segCFrame = ORIGIN * CFrame.new(baseOffset)
+	local diameters = { 0.26, 0.19, 0.13 }
+	local lengths = { 0.7, 0.6, 0.55 }
+	local curl = (i % 2 == 0) and 6 or -6
+	for seg = 1, 3 do
+		segCFrame = segCFrame * CFrame.Angles(math.rad(curl), 0, 0) * CFrame.new(0, -lengths[seg] * 0.42, 0)
+		local segName = (seg == 1) and ("Tentacle" .. i) or (seg == 2 and ("Tentacle" .. i .. "Mid") or ("TentacleTip" .. i))
+		local color = (seg == 3) and GLOW_COLOR or BELL_COLOR
+		local part = newBall(segName, Vector3.new(diameters[seg], lengths[seg], diameters[seg]), segCFrame, color, Enum.Material.Neon, model)
+		part.Transparency = 0.1
+		segCFrame = segCFrame * CFrame.new(0, -lengths[seg] * 0.42, 0)
+	end
 end
 
 -- 6) Idle-Puls-Attachment ---------------------------------------------------

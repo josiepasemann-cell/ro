@@ -154,26 +154,26 @@ local muzzlePoint = Instance.new("Attachment")
 muzzlePoint.Name = "MuzzlePoint"
 muzzlePoint.Parent = lureOrb
 
--- 5) Oberflaechendetails: Steinsockel-Textur, Rost-Rivets, Metall-Trimring ----
+-- 5) Oberflaechendetails: rundlicher Steinsockel, dicker Chrom-Trimring, ------
+-- klobige Bolzen-Kugeln (organisch/kartoonig statt scharfkantig) ------------
 addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(150, 150, 155), 0.05)
 
 local trimBand = newPart(
 	"FoundationTrimBand",
-	Vector3.new(0.3, 7.4, 7.4),
-	ORIGIN * CFrame.new(0, 1.15, 0) * CFrame.Angles(0, 0, math.rad(90)),
+	Vector3.new(0.55, 7.7, 7.7),
+	ORIGIN * CFrame.new(0, 1.2, 0) * CFrame.Angles(0, 0, math.rad(90)),
 	Color3.fromRGB(40, 42, 48),
 	Enum.Material.CorrodedMetal,
 	model
 )
 trimBand.Shape = Enum.PartType.Cylinder
 trimBand.CanCollide = false
-addKeyedTexture(trimBand, "RivetedPlates", Enum.NormalId.Front, 2, 1, Color3.fromRGB(90, 92, 98), 0.05)
 
-for i = 1, 5 do
-	local angle = math.rad(72 * (i - 1))
-	local rivetCFrame = ORIGIN * CFrame.new(math.cos(angle) * 3.15, 0.85, math.sin(angle) * 3.15)
-	local rivet = newPart("FoundationRivet" .. i, Vector3.new(0.35, 0.3, 0.35), rivetCFrame, Color3.fromRGB(200, 202, 206), Enum.Material.DiamondPlate, model)
-	rivet.Shape = Enum.PartType.Cylinder
+for i = 1, 4 do
+	local angle = math.rad(90 * (i - 1))
+	local rivetCFrame = ORIGIN * CFrame.new(math.cos(angle) * 3.15, 0.95, math.sin(angle) * 3.15)
+	local rivet = newPart("FoundationRivet" .. i, Vector3.new(0.55, 0.55, 0.55), rivetCFrame, Color3.fromRGB(210, 212, 216), Enum.Material.DiamondPlate, model)
+	rivet.Shape = Enum.PartType.Ball
 	rivet.CanCollide = false
 end
 

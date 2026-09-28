@@ -155,15 +155,14 @@ for i = 1, 3 do
 	orb.Transparency = 0.1
 end
 
--- 6) Oberflaechendetails: Holzdeck-Plattform, Metall-Mastbeschlag -----------
+-- 6) Oberflaechendetails: Holzdeck-Plattform, dicker rundlicher Mastbeschlag -
 addKeyedTexture(base, "WoodPlanks", Enum.NormalId.Top, 2.5, 2.5, Color3.fromRGB(150, 120, 90), 0.05)
-addKeyedTexture(mast, "RivetedPlates", Enum.NormalId.Front, 1.5, 2, Color3.fromRGB(130, 134, 140), 0.05)
 
 local collar = newPart(
 	"MastCollar",
-	Vector3.new(0.35, 1.6, 1.6),
+	Vector3.new(0.6, 2.0, 2.0),
 	ORIGIN * CFrame.new(0, 1.6, 0) * CFrame.Angles(0, 0, math.rad(90)),
-	Color3.fromRGB(70, 74, 80),
+	Color3.fromRGB(75, 80, 88),
 	Enum.Material.CorrodedMetal,
 	model
 )

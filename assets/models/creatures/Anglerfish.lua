@@ -4,11 +4,13 @@
 	Name: Anglerfish ("Anglerfisch")
 	Rarity (Platzhalter): Rare
 	Beschreibung:
-		Kompakter, bulliger Fisch mit großem Maul (Ober- und Unterkiefer als
-		Wedges, sichtbare Zähne), stachliger Rückenflosse, Bauch- und
-		Brustflossen, gebogenem Schwanzstiel mit Schwanzflosse, und der
-		charakteristischen leuchtenden Angel-Rute (Illicium) über dem Kopf.
-		Zone: TwilightZone.
+		Kompakter, bulliger, cartoonhafter Fisch: übergroßer runder Kopf-Körper
+		mit rundem, breitem Maul (Ober-/Unterkiefer als Ellipsoide statt
+		spitzer Keile), kleinen weichen Zahn-Spitzen, stachliger Rückenflosse
+		(überlappende flache Ellipsen), Bauch- und Brustflossen, gebogenem
+		Schwanzstiel mit Schwanzflosse, großen Kulleraugen und der
+		charakteristischen leuchtenden Angel-Rute (Illicium, Ellipsen-Kette)
+		über dem Kopf. Zone: TwilightZone.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (Hauptkörper) -> für Bewegungssteuerung.
@@ -65,19 +67,10 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
-local function newWedge(name, size, cframe, color, material, parent)
-	local part = Instance.new("WedgePart")
-	part.Name = name
-	part.Size = size
-	part.CFrame = cframe
-	part.Color = color
-	part.Material = material
-	part.Anchored = true
-	part.CanCollide = false
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	part.Parent = parent
-	return part
+local function newCartoonEye(name, cframe, eyeSize, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.55, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), Color3.fromRGB(30, 20, 40), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -92,78 +85,74 @@ local model = Instance.new("Model")
 model.Name = "Anglerfish"
 model.Parent = creaturesFolder
 
-local SKIN_COLOR = Color3.fromRGB(45, 42, 55)
-local BELLY_COLOR = Color3.fromRGB(70, 65, 80)
+local SKIN_COLOR = Color3.fromRGB(60, 56, 72)
+local SKIN_TOP = Color3.fromRGB(42, 38, 54)
+local BELLY_COLOR = Color3.fromRGB(95, 88, 108)
 local GLOW_COLOR = Color3.fromRGB(160, 90, 255)
 
--- 1) Hauptkörper (bullig, abgeflacht, Ellipsoid) --------------------------------
-local body = newBall("Body", Vector3.new(2.6, 2.2, 3.2), ORIGIN, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+-- 1) Hauptkörper: übergroßer, bulliger, runder Ellipsoid-Kopf-Körper ------------
+local body = newBall("Body", Vector3.new(2.8, 2.4, 3.0), ORIGIN, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 1b) Hellere Bauchunterseite, gut eingebettet -----------------------------------
-newBall("Belly", Vector3.new(1.9, 1.1, 2.6), ORIGIN * CFrame.new(0, -0.85, 0.1), BELLY_COLOR, Enum.Material.SmoothPlastic, model)
+-- 1b) Countershading: dunklerer Rücken, hellerer Bauch, gut eingebettet ---------
+newBall("BackShade", Vector3.new(1.8, 1.1, 2.2), ORIGIN * CFrame.new(0, 0.9, -0.1), SKIN_TOP, Enum.Material.SmoothPlastic, model)
+newBall("Belly", Vector3.new(1.9, 1.1, 2.5), ORIGIN * CFrame.new(0, -0.85, 0.1), BELLY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Großes Maul: Oberkiefer (Teil des Kopfes) + Unterkiefer als Wedge -----------
-local jawCFrame = ORIGIN * CFrame.new(0, -0.75, 1.45) * CFrame.Angles(math.rad(20), 0, 0)
-local jaw = newWedge("LowerJaw", Vector3.new(1.6, 0.9, 1.3), jawCFrame, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+-- 2) Großes, rundes Maul: Ober-/Unterkiefer als dicke, sich überlappende
+--    Ellipsoide statt spitzer Keile ----------------------------------------------
+local jaw = newBall("LowerJaw", Vector3.new(1.7, 0.85, 1.3), ORIGIN * CFrame.new(0, -0.7, 1.3) * CFrame.Angles(math.rad(14), 0, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+newBall("UpperJaw", Vector3.new(1.8, 0.7, 1.15), ORIGIN * CFrame.new(0, 0.15, 1.35) * CFrame.Angles(math.rad(-8), 0, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
-local upperJawCFrame = ORIGIN * CFrame.new(0, 0.35, 1.5) * CFrame.Angles(math.rad(-12), 0, 0)
-newWedge("UpperJaw", Vector3.new(1.7, 0.6, 1.1), upperJawCFrame * CFrame.Angles(math.rad(180), 0, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
-
--- 3) Zähne (Ober- und Unterkiefer, kleine weiße Spikes) --------------------------
+-- 3) Kleine, weiche Zahn-Spitzen (Ober- und Unterkiefer) --------------------------
 for i = 1, 5 do
-	local x = -0.6 + (i - 1) * 0.3
-	local toothCFrame = ORIGIN * CFrame.new(x, -0.45, 1.75) * CFrame.Angles(math.rad(180), 0, 0)
-	newPart("ToothLower" .. i, Vector3.new(0.12, 0.35, 0.12), toothCFrame, Color3.fromRGB(235, 235, 240), Enum.Material.SmoothPlastic, model)
-	local topToothCFrame = ORIGIN * CFrame.new(x, 0.1, 1.8)
-	newPart("ToothUpper" .. i, Vector3.new(0.1, 0.28, 0.1), topToothCFrame, Color3.fromRGB(235, 235, 240), Enum.Material.SmoothPlastic, model)
+	local x = -0.55 + (i - 1) * 0.28
+	newBall("ToothLower" .. i, Vector3.new(0.11, 0.28, 0.11), ORIGIN * CFrame.new(x, -0.42, 1.75) * CFrame.Angles(math.rad(180), 0, 0), Color3.fromRGB(240, 240, 245), Enum.Material.SmoothPlastic, model)
+	newBall("ToothUpper" .. i, Vector3.new(0.09, 0.22, 0.09), ORIGIN * CFrame.new(x, 0.08, 1.78), Color3.fromRGB(240, 240, 245), Enum.Material.SmoothPlastic, model)
 end
 
--- 4) Schwanzstiel + Schwanzflosse, überlappend an den Körper angesetzt ----------
-local peduncle = newPart("TailPeduncle", Vector3.new(0.8, 1.0, 1.0), ORIGIN * CFrame.new(0, 0, -1.7), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
-local tailFin = newPart("TailFin", Vector3.new(0.22, 1.6, 1.3), ORIGIN * CFrame.new(0, 0, -2.65), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+-- 4) Schwanzstiel + Schwanzflosse (überlappende, sich verjüngende Ellipsen) -------
+newBall("TailPeduncle", Vector3.new(0.85, 1.0, 1.0), ORIGIN * CFrame.new(0, 0, -1.65), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+newBall("TailFin", Vector3.new(0.2, 1.4, 1.15), ORIGIN * CFrame.new(0, 0, -2.55), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 5) Stachlige Rückenflosse (3 überlappende Spikes) -------------------------------
+-- 5) Stachlige Rückenflosse (3 überlappende, flache Ellipsen) --------------------
 for i = 1, 3 do
-	local spikeCFrame = ORIGIN * CFrame.new(-0.6 + (i - 1) * 0.5, 1.15, 0.3 - (i - 1) * 0.4) * CFrame.Angles(math.rad(-90), 0, 0)
-	newWedge("DorsalSpike" .. i, Vector3.new(0.15, 0.55, 0.55), spikeCFrame, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+	local spikeCFrame = ORIGIN * CFrame.new(-0.55 + (i - 1) * 0.5, 1.25, 0.25 - (i - 1) * 0.4) * CFrame.Angles(math.rad(-18), 0, 0)
+	newBall("DorsalSpike" .. i, Vector3.new(0.18, 0.6, 0.5), spikeCFrame, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 end
 
--- 6) Bauch- und Brustflossen -------------------------------------------------------
+-- 6) Bauch- und Brustflossen (flache, überlappende Ellipsen-Paare) --------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newWedge(
+	newBall(
 		"SideFin" .. i,
-		Vector3.new(0.15, 0.8, 1.0),
-		ORIGIN * CFrame.new(side * 1.3, -0.3, 0.4) * CFrame.Angles(0, math.rad(side * -90), 0),
+		Vector3.new(0.18, 0.85, 1.05),
+		ORIGIN * CFrame.new(side * 1.35, -0.3, 0.4) * CFrame.Angles(0, 0, math.rad(side * -78)),
 		SKIN_COLOR,
 		Enum.Material.SmoothPlastic,
 		model
 	)
 end
 
--- 7) Illicium (Angel-Rute) aus dem Kopf, leicht nach vorne geneigt, mit
---    Leucht-Köder. Alle Segmente liegen als durchgehende Kette entlang der
---    lokalen Y-Achse von rodCFrame, jedes um 0.2 Studs im Vorgänger
---    eingebettet - kein Segment kann dadurch freischweben. -----------------
-local rodCFrame = ORIGIN * CFrame.new(0, 0.75, 1.1) * CFrame.Angles(math.rad(-25), 0, 0)
-local ROD_OVERLAP = 0.2
+-- 7) Illicium (Angel-Rute) aus dem Kopf: Kette aus sich verjüngenden,
+--    überlappenden Ellipsen mit leuchtendem Köder-Ball an der Spitze --------------
+local rodCFrame = ORIGIN * CFrame.new(0, 0.85, 1.1) * CFrame.Angles(math.rad(-25), 0, 0)
+local ROD_OVERLAP = 0.16
 
-local half1 = 0.5 -- IlliciumBase Länge 1.0
+local half1 = 0.42 -- IlliciumBase Länge 0.84
 local base1Y = half1 - ROD_OVERLAP
-newPart("IlliciumBase", Vector3.new(0.22, half1 * 2, 0.22), rodCFrame * CFrame.new(0, base1Y, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+newBall("IlliciumBase", Vector3.new(0.2, half1 * 2, 0.2), rodCFrame * CFrame.new(0, base1Y, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
-local half2 = 0.45 -- IlliciumTipRod Länge 0.9
+local half2 = 0.38 -- IlliciumTipRod Länge 0.76
 local base2Y = (base1Y + half1) - ROD_OVERLAP + half2
-newPart("IlliciumTipRod", Vector3.new(0.16, half2 * 2, 0.16), rodCFrame * CFrame.new(0, base2Y, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+newBall("IlliciumTipRod", Vector3.new(0.14, half2 * 2, 0.14), rodCFrame * CFrame.new(0, base2Y, 0), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
-local orbHalf = 0.35 -- LureOrb Durchmesser 0.7
+local orbHalf = 0.36 -- LureOrb Durchmesser 0.72
 local orbY = (base2Y + half2) - ROD_OVERLAP + orbHalf
-local lureOrb = newBall("LureOrb", Vector3.new(orbHalf * 2, orbHalf * 2, orbHalf * 2), rodCFrame * CFrame.new(0, orbY, 0), GLOW_COLOR, Enum.Material.Neon, model)
+newBall("LureOrb", Vector3.new(orbHalf * 2, orbHalf * 2, orbHalf * 2), rodCFrame * CFrame.new(0, orbY, 0), GLOW_COLOR, Enum.Material.Neon, model)
 
--- 8) Zwei Augen ---------------------------------------------------------------------
+-- 8) Große Kulleraugen ---------------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newBall("Eye" .. i, Vector3.new(0.32, 0.32, 0.32), ORIGIN * CFrame.new(side * 0.75, 0.55, 1.3), Color3.fromRGB(255, 230, 60), Enum.Material.Neon, model)
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(side * 0.85, 0.6, 1.25), Vector3.new(0.5, 0.5, 0.3), model)
 end
 
 -- 9) Idle-Puls-Attachment -----------------------------------------------------------

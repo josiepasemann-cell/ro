@@ -58,6 +58,18 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Organisches, ovales/kapselförmiges Teil: Block-Part + SpecialMesh(Sphere),
+-- non-uniform Size -> gestrecktes Ellipsoid statt Kiste. Für Gliedmaßen,
+-- Tentakel, Flossen, Hörner (kartoonig rund statt eckig).
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
 -- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
 -- "FadeWithPart" = true, da der Client Gegner per Transparency/ScaleTo ein-
 -- und ausblendet - der Animator muss diese Texturen mitfaden.
@@ -94,20 +106,19 @@ local SKIN_COLOR = Color3.fromRGB(20, 18, 26)
 local ACCENT_COLOR = Color3.fromRGB(35, 30, 45)
 local EYE_COLOR = Color3.fromRGB(255, 40, 60)
 
--- 1) Hauptkörper (deutlich größer als normale Kreaturen) ------------------------
-local body = newPart("Body", Vector3.new(4.5, 4.0, 4.5), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Hauptkörper: chunky, kartoonig-bulböses Ellipsoid (deutlich größer als
+--    normale Kreaturen; leicht "aufgeplustert" statt geometrisch rund) --------
+local body = newOvalPart("Body", Vector3.new(4.8, 4.4, 4.6), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
 
--- 2) Mantel-Auswölbung oben (leicht dunklerer Buckel) -----------------------------
+-- 2) Mantel-Auswölbung oben (leicht dunklerer, rundlicher Buckel) -----------------
 local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, -0.4)
-local mantle = newPart("Mantle", Vector3.new(3.2, 2.2, 3.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
-mantle.Shape = Enum.PartType.Ball
+local mantle = newOvalPart("Mantle", Vector3.new(3.2, 2.4, 3.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
 
--- 2b) Kronendorn-Reihe auf dem Mantel (mehr Silhouette/Detail) ---------------------
+-- 2b) Kronendorn-Reihe auf dem Mantel (rundliche Hörnchen statt eckige Zacken) -----
 for c = 1, 5 do
 	local angle = math.rad(-70 + (c - 1) * 35)
 	local spikeCFrame = mantleCFrame * CFrame.new(0, 1.0, 0) * CFrame.Angles(0, angle, 0) * CFrame.new(0, 0.5, 0.3)
-	newPart("CrownRidge" .. c, Vector3.new(0.35, 1.1, 0.35), spikeCFrame, ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
+	newOvalPart("CrownRidge" .. c, Vector3.new(0.4, 1.0, 0.4), spikeCFrame, ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
 end
 
 -- 2c) Barnacle-/Warzen-Höcker auf dem Körper für mehr Oberflächen-Detail -----------
@@ -136,18 +147,19 @@ beakUpper.Parent = model
 newPart("MantleSeam1", Vector3.new(0.22, 0.5, 2.6), mantleCFrame * CFrame.new(-0.6, 0.4, 0), ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
 newPart("MantleSeam2", Vector3.new(0.22, 0.5, 2.6), mantleCFrame * CFrame.new(0.6, 0.4, 0), ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
 
--- 2f) Oberflächen-Texturen (Chitin-Haut, Kristall-Glanz auf dem Mantel, Bio-Adern) --
-newTexture("SharkSkin", Enum.NormalId.Front, body, { studsU = 2.5, studsV = 2.5, color = SKIN_COLOR, transparency = 0.1 })
-newTexture("BioVeins", Enum.NormalId.Back, body, { studsU = 3, studsV = 3, color = EYE_COLOR, transparency = 0.25 })
-newTexture("CrystalFacets", Enum.NormalId.Top, mantle, { studsU = 2, studsV = 2, color = ACCENT_COLOR, transparency = 0.2 })
+-- 2f) Oberflächen-Textur: gehämmerte Chitinplatte auf dem flachen Schnabel -------
+-- (Ellipsoid-Körper/Mantel bekommen bewusst KEINE Flächen-Texturen - dort
+-- übernehmen Material + Barnacle-Höcker die Oberflächen-Wirkung, siehe Brief.)
 newTexture("MetalPanels", Enum.NormalId.Front, beakUpper, { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(60, 55, 65) })
 
--- 3) Bedrohliche Glow-Augen ---------------------------------------------------------
+-- 3) Große, kartoonig-wütende Glow-Augen mit weißem Glanzpunkt ---------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 1.1, 0.4, 2.0)
-	local eye = newPart("Eye" .. i, Vector3.new(0.7, 0.7, 0.7), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 1.15, 0.5, 2.05)
+	local eye = newPart("Eye" .. i, Vector3.new(0.95, 0.95, 0.9), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
+	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.24, 0.24, 0.15), eyeCFrame * CFrame.new(side * -0.2, 0.22, 0.35), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	highlight.Shape = Enum.PartType.Ball
 end
 
 -- 4) 8 lange, peitschenartige Tentakel (je 4 Segmente, radial verteilt) ------------
@@ -164,9 +176,9 @@ for t = 1, TENTACLE_COUNT do
 
 		currentCFrame = currentCFrame * CFrame.Angles(curl, 0, 0) * CFrame.new(0, segLength / 2, 0)
 
-		newPart(
+		newOvalPart(
 			"Tentacle" .. t .. "_Segment" .. seg,
-			Vector3.new(width, segLength, width),
+			Vector3.new(width * 1.15, segLength, width * 1.15),
 			currentCFrame,
 			seg % 2 == 0 and SKIN_COLOR or ACCENT_COLOR,
 			seg % 2 == 0 and Enum.Material.Basalt or Enum.Material.CorrodedMetal,

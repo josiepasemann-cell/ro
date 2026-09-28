@@ -205,24 +205,25 @@ steamEmitter.Speed = NumberRange.new(2, 3)
 steamEmitter.Size = NumberSequence.new(0.6)
 steamEmitter.Parent = stack
 
--- 7) Oberflaechendetails: Riffelblech-Sockeltextur, Metallpaneele, Nietenring --
+-- 7) Oberflaechendetails: Riffelblech-Sockeltextur, Metallpaneele, dicke -------
+-- Bolzen-Kugeln, rundliche Fundamentplatte ----------------------------------
 addKeyedTexture(base, "RivetedPlates", Enum.NormalId.Top, 2.5, 2.5, Color3.fromRGB(150, 152, 156), 0.05)
 addKeyedTexture(mainTank, "MetalPanels", Enum.NormalId.Front, 2, 2, Color3.fromRGB(170, 176, 184), 0.05)
 
-local RIVET_COLOR = Color3.fromRGB(60, 64, 70)
-for i = 1, 6 do
-	local angle = math.rad(60 * (i - 1))
-	local rivetCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.85, 4, math.sin(angle) * 1.85) * CFrame.Angles(0, 0, math.rad(90))
-	local rivet = newPart("TankRivet" .. i, Vector3.new(0.2, 0.22, 0.22), rivetCFrame, RIVET_COLOR, Enum.Material.DiamondPlate, model)
-	rivet.Shape = Enum.PartType.Cylinder
+local RIVET_COLOR = Color3.fromRGB(70, 74, 80)
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1))
+	local rivetCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.9, 4, math.sin(angle) * 1.9)
+	local rivet = newPart("TankRivet" .. i, Vector3.new(0.4, 0.4, 0.4), rivetCFrame, RIVET_COLOR, Enum.Material.DiamondPlate, model)
+	rivet.Shape = Enum.PartType.Ball
 	rivet.CanCollide = false
 end
 
 local foundation = newPart(
 	"FoundationFooting",
-	Vector3.new(10.6, 0.4, 8.6),
+	Vector3.new(10.8, 0.5, 8.8),
 	ORIGIN * CFrame.new(0, -0.5, 0),
-	Color3.fromRGB(80, 82, 86),
+	Color3.fromRGB(85, 88, 92),
 	Enum.Material.Concrete,
 	model
 )

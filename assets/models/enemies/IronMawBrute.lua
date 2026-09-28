@@ -30,6 +30,7 @@
 		alle anderen CSG-Buildscripts in diesem Projekt).
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -63,6 +64,36 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes Ellipsoid (chunky, kartoonig runde Gliedmaßen).
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel; FadeWithPart = true (Client
+-- blendet Gegner per Transparency/ScaleTo).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	tex:SetAttribute("FadeWithPart", true)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local enemiesFolder = getOrCreateFolder(assetsFolder, "Enemies")
 
@@ -80,12 +111,12 @@ local ACCENT_COLOR = Color3.fromRGB(40, 25, 52)
 local EYE_COLOR = Color3.fromRGB(255, 40, 60)
 local ARMOR_COLOR = Color3.fromRGB(70, 60, 80)
 
--- 1) Hauptkörper: gedrungener, wuchtiger Rumpf -------------------------------------
-local body = newPart("Body", Vector3.new(4.0, 3.0, 4.0), ORIGIN, SKIN_COLOR, Enum.Material.Slate, model)
+-- 1) Hauptkörper: gedrungener, wuchtiger, kartoonig-bulböser Rumpf (Ellipsoid) ----
+local body = newOvalPart("Body", Vector3.new(4.4, 3.4, 4.2), ORIGIN, SKIN_COLOR, Enum.Material.Granite, model)
 
--- 2) Gehockter Schulter-/Nacken-Buckel (Mantel) ------------------------------------
+-- 2) Gehockter Schulter-/Nacken-Buckel (Mantel), rundlich ---------------------------
 local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, 0.8)
-newPart("Mantle", Vector3.new(3.4, 1.6, 2.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Slate, model)
+local mantle = newOvalPart("Mantle", Vector3.new(3.6, 1.8, 2.4), mantleCFrame, ACCENT_COLOR, Enum.Material.Granite, model)
 
 -- 3) Überdimensionierter Kiefer (Wedge, ragt nach vorn) -----------------------------
 local jawCFrame = ORIGIN * CFrame.new(0, -0.9, -2.2) * CFrame.Angles(math.rad(-15), 0, 0)
@@ -94,19 +125,21 @@ jaw.Name = "Jaw"
 jaw.Size = Vector3.new(2.6, 1.2, 2.0)
 jaw.CFrame = jawCFrame
 jaw.Color = ACCENT_COLOR
-jaw.Material = Enum.Material.Slate
+jaw.Material = Enum.Material.Granite
 jaw.Anchored = true
 jaw.CanCollide = false
 jaw.TopSurface = Enum.SurfaceType.Smooth
 jaw.BottomSurface = Enum.SurfaceType.Smooth
 jaw.Parent = model
 
--- 4) Glühende Augen ------------------------------------------------------------------
+-- 4) Große, wütende Glow-Augen mit weißem Glanzpunkt (kartoonig-bedrohlich) --------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	local eyeCFrame = ORIGIN * CFrame.new(side * 1.3, 0.6, -1.9)
-	local eye = newPart("Eye" .. i, Vector3.new(0.6, 0.6, 0.6), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
+	local eye = newPart("Eye" .. i, Vector3.new(0.85, 0.85, 0.7), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
+	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.22, 0.22, 0.14), eyeCFrame * CFrame.new(side * -0.18, 0.18, 0.3), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	highlight.Shape = Enum.PartType.Ball
 end
 
 -- 5) Panzerplatte auf der Brust (CSG-Union aus 3 angularen Platten) -----------------
@@ -117,7 +150,7 @@ local platePositions = {
 	{ CFrame.new(1.0, 0.0, -1.9), Vector3.new(1.0, 1.0, 0.4) },
 }
 for i, spec in ipairs(platePositions) do
-	local plate = newPart("ArmorPlatePiece" .. i, spec[2], ORIGIN * spec[1], ARMOR_COLOR, Enum.Material.Metal, workspace)
+	local plate = newPart("ArmorPlatePiece" .. i, spec[2], ORIGIN * spec[1], ARMOR_COLOR, Enum.Material.CorrodedMetal, workspace)
 	plate.CanCollide = true
 	table.insert(armorParts, plate)
 end
@@ -130,10 +163,13 @@ end)
 if armorUnionOk and armorPlate then
 	armorPlate.Name = "ArmorPlate"
 	armorPlate.Color = ARMOR_COLOR
-	armorPlate.Material = Enum.Material.Metal
+	armorPlate.Material = Enum.Material.CorrodedMetal
 	armorPlate.Anchored = true
 	armorPlate.CanCollide = false
 	armorPlate.Parent = model
+	-- Genietete Flächen-Textur auf der flachen Panzerplatte (echte Blockform,
+	-- daher geeignet für eine Face-Texture statt Ellipsoid-Materialtrick).
+	newTexture("RivetedPlates", Enum.NormalId.Front, armorPlate, { studsU = 1.2, studsV = 1.2, color = Color3.fromRGB(90, 78, 100) })
 else
 	warn("[Abyssara] IronMawBrute: ArmorPlate-CSG union failed, using unwelded individual plates.")
 	for _, plate in ipairs(armorParts) do
@@ -149,46 +185,39 @@ local legOffsets = {
 	Vector3.new(1.4, -1.7, 1.4),
 }
 for i, offset in ipairs(legOffsets) do
-	newPart("Leg" .. i, Vector3.new(0.7, 0.9, 0.7), ORIGIN * CFrame.new(offset), ACCENT_COLOR, Enum.Material.Slate, model)
-	-- Stumpfe Klauenfüße (überlappen das jeweilige Bein)
+	newOvalPart("Leg" .. i, Vector3.new(0.85, 0.95, 0.85), ORIGIN * CFrame.new(offset), ACCENT_COLOR, Enum.Material.Granite, model)
+	-- Stumpfe, rundliche Klauenfüße (überlappen das jeweilige Bein)
 	local footOffset = offset + Vector3.new(0, -0.55, offset.Z > 0 and 0.35 or -0.35)
-	local foot = Instance.new("WedgePart")
-	foot.Name = "Foot" .. i
-	foot.Size = Vector3.new(0.65, 0.4, 0.7)
-	foot.CFrame = ORIGIN * CFrame.new(footOffset)
-	foot.Color = ARMOR_COLOR
-	foot.Material = Enum.Material.Metal
-	foot.Anchored = true
-	foot.CanCollide = false
-	foot.TopSurface = Enum.SurfaceType.Smooth
-	foot.BottomSurface = Enum.SurfaceType.Smooth
-	foot.Parent = model
+	newOvalPart("Foot" .. i, Vector3.new(0.75, 0.45, 0.8), ORIGIN * CFrame.new(footOffset), ARMOR_COLOR, Enum.Material.CorrodedMetal, model)
 end
 
 -- 6b) Rückendornreihe auf dem Nacken-Buckel (Mantle) für mehr Bedrohlichkeit -------
+-- (rundliche, gestreckte Höcker statt eckige Zacken)
 for s = 1, 3 do
 	local x = (s - 2) * 0.9
-	newPart(
+	newOvalPart(
 		"BackSpike" .. s,
-		Vector3.new(0.35, 0.9 - math.abs(s - 2) * 0.2, 0.45),
+		Vector3.new(0.42, 0.9 - math.abs(s - 2) * 0.2, 0.5),
 		ORIGIN * CFrame.new(x, 2.3, 0.9) * CFrame.Angles(math.rad(-12), 0, 0),
 		ARMOR_COLOR,
-		Enum.Material.Metal,
+		Enum.Material.CorrodedMetal,
 		model
 	)
 end
 
--- 6c) Sichtbare untere Zahnreihe im überdimensionierten Kiefer ---------------------
-for tth = 1, 4 do
-	local x = (tth - 2.5) * 0.55
-	newPart(
+-- 6c) Sichtbare untere Zahnreihe im überdimensionierten Kiefer: wenige, große,
+-- runde kartoonige Zähne statt vieler kleiner Zacken -------------------------------
+for tth = 1, 2 do
+	local x = (tth - 1.5) * 0.7
+	local tooth = newPart(
 		"Tooth" .. tth,
-		Vector3.new(0.22, 0.35, 0.22),
-		ORIGIN * CFrame.new(x, -1.15, -2.2),
-		Color3.fromRGB(225, 220, 205),
+		Vector3.new(0.4, 0.5, 0.4),
+		ORIGIN * CFrame.new(x, -1.2, -2.2),
+		Color3.fromRGB(230, 225, 210),
 		Enum.Material.SmoothPlastic,
 		model
 	)
+	tooth.Shape = Enum.PartType.Ball
 end
 
 -- 7) Idle-/Bedrohungs-Puls-Attachment -------------------------------------------------

@@ -32,6 +32,7 @@
 		keine Gameplay-Logik. Wiederholtes Ausführen ist sicher (idempotent).
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -66,6 +67,36 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes Ellipsoid (big & funny-scary statt geometrisch hart).
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel; FadeWithPart = true (Client
+-- blendet Gegner per Transparency/ScaleTo).
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	tex:SetAttribute("FadeWithPart", true)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local enemiesFolder = getOrCreateFolder(assetsFolder, "Enemies")
 
@@ -83,29 +114,29 @@ local ACCENT_COLOR = Color3.fromRGB(28, 20, 30)
 local EYE_COLOR = Color3.fromRGB(255, 20, 30)
 local CROWN_COLOR = Color3.fromRGB(255, 30, 40)
 
--- 1) Hauptkörper (turmhoch, deutlich größer als IronMawBrute) --------------------
-local body = newPart("Body", Vector3.new(7.0, 6.5, 7.0), ORIGIN, SKIN_COLOR, Enum.Material.Slate, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Hauptkörper: turmhoch, bulbös-rund, "big & funny-scary" statt hart-geometrisch
+local body = newOvalPart("Body", Vector3.new(7.6, 7.2, 7.4), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
 
--- 2) Mantel-Auswölbung oben ----------------------------------------------------------
+-- 2) Mantel-Auswölbung oben, rundlich --------------------------------------------
 local mantleCFrame = ORIGIN * CFrame.new(0, 2.6, -0.6)
-newPart("Mantle", Vector3.new(5.0, 3.4, 5.0), mantleCFrame, ACCENT_COLOR, Enum.Material.Slate, model).Shape =
-	Enum.PartType.Ball
+local mantle = newOvalPart("Mantle", Vector3.new(5.2, 3.6, 5.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
 
--- 3) Größte Glow-Augen im Spiel -------------------------------------------------------
+-- 3) Größte, wildeste Glow-Augen im Spiel, mit weißem Glanzpunkt ---------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 1.8, 0.6, 3.2)
-	local eye = newPart("Eye" .. i, Vector3.new(1.2, 1.2, 1.2), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 1.85, 0.7, 3.25)
+	local eye = newPart("Eye" .. i, Vector3.new(1.5, 1.5, 1.3), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
+	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.4, 0.4, 0.24), eyeCFrame * CFrame.new(side * -0.3, 0.3, 0.5), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	highlight.Shape = Enum.PartType.Ball
 end
 
--- 4) Kronendorn-Cluster auf dem Kopf (5 Neon-Dornen) -------------------------------
+-- 4) Kronendorn-Cluster auf dem Kopf: 5 rundliche, kegelig verjüngte Neon-Hörner ---
 local crownLight
 for c = 1, 5 do
 	local angle = math.rad(-60 + (c - 1) * 30)
 	local crownCFrame = ORIGIN * CFrame.new(0, 3.4, 1.0) * CFrame.Angles(0, angle, math.rad(90)) * CFrame.new(0, 0, 1.0)
-	local spike = newPart("CrownSpike" .. c, Vector3.new(0.5, 2.0, 0.5), crownCFrame, CROWN_COLOR, Enum.Material.Neon, model)
+	local spike = newOvalPart("CrownSpike" .. c, Vector3.new(0.6, 2.0, 0.6), crownCFrame, CROWN_COLOR, Enum.Material.Neon, model)
 	if c == 1 then
 		local pointLight = Instance.new("PointLight")
 		pointLight.Name = "CrownLight"
@@ -118,31 +149,26 @@ for c = 1, 5 do
 	end
 end
 
--- 4b) Gepanzerte Brustplatten (überlappende Blöcke, brechen die reine Kugelform auf) -
+-- 4b) Gepanzerte Brustplatten (flache, echte Blockform - hier bleibt hartes
+-- Material sinnvoll; bekommt eine genietete Flächen-Textur) ------------------------
+local chestPlates = {}
 for p = 1, 3 do
 	local x = (p - 2) * 1.6
-	newPart(
+	local plate = newPart(
 		"ChestPlate" .. p,
 		Vector3.new(1.5 - math.abs(p - 2) * 0.3, 2.6, 0.9),
 		ORIGIN * CFrame.new(x, -0.3, 3.4) * CFrame.Angles(math.rad(6 * (p - 2)), 0, 0),
 		ACCENT_COLOR,
-		Enum.Material.Slate,
+		Enum.Material.CorrodedMetal,
 		model
 	)
+	chestPlates[p] = plate
 end
+newTexture("RivetedPlates", Enum.NormalId.Front, chestPlates[2], { studsU = 1.2, studsV = 1.2, color = Color3.fromRGB(70, 55, 62) })
+newTexture("MetalPanels", Enum.NormalId.Front, chestPlates[1], { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(60, 48, 54) })
 
--- 4c) Hakenschnabel unterhalb der Augen -------------------------------------------
-local beak = Instance.new("WedgePart")
-beak.Name = "Beak"
-beak.Size = Vector3.new(1.4, 1.1, 1.4)
-beak.CFrame = ORIGIN * CFrame.new(0, -1.0, 3.6) * CFrame.Angles(math.rad(-90), 0, 0)
-beak.Color = Color3.fromRGB(35, 25, 32)
-beak.Material = Enum.Material.Slate
-beak.Anchored = true
-beak.CanCollide = false
-beak.TopSurface = Enum.SurfaceType.Smooth
-beak.BottomSurface = Enum.SurfaceType.Smooth
-beak.Parent = model
+-- 4c) Rundlicher Hakenschnabel unterhalb der Augen (kartoonig statt spitz) --------
+local beak = newOvalPart("Beak", Vector3.new(1.6, 1.2, 1.3), ORIGIN * CFrame.new(0, -1.0, 3.6), Color3.fromRGB(35, 25, 32), Enum.Material.Granite, model)
 
 -- 5) 8 lange, dicke, peitschenartige Tentakel (je 3 Segmente, radial verteilt) -----
 for t = 1, TENTACLE_COUNT do
@@ -158,12 +184,12 @@ for t = 1, TENTACLE_COUNT do
 
 		currentCFrame = currentCFrame * CFrame.Angles(curl, 0, 0) * CFrame.new(0, segLength / 2, 0)
 
-		newPart(
+		newOvalPart(
 			"Tentacle" .. t .. "_Segment" .. seg,
-			Vector3.new(width, segLength, width),
+			Vector3.new(width * 1.15, segLength, width * 1.15),
 			currentCFrame,
 			seg % 2 == 0 and SKIN_COLOR or ACCENT_COLOR,
-			Enum.Material.Slate,
+			seg % 2 == 0 and Enum.Material.Basalt or Enum.Material.CorrodedMetal,
 			model
 		)
 

@@ -149,6 +149,34 @@ local function newWedge(name: string, size: Vector3, cframe: CFrame, color: Colo
 	return wedge
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes Ellipsoid statt Kiste (rundlicher Kartoon-Seepferdchen-Look).
+local function newOvalPart(name: string, size: Vector3, cframe: CFrame, color: Color3, material: Enum.Material, parent: Instance): Part
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key: string, face: Enum.NormalId, part: Instance, opts: { studsU: number?, studsV: number?, color: Color3?, transparency: number? }?): Texture
+	local o = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = o.studsU or 3
+	tex.StudsPerTileV = o.studsV or 3
+	tex.Color3 = o.color or Color3.new(1, 1, 1)
+	tex.Transparency = o.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 -- // Root setup ---------------------------------------------------------------
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local npcsFolder = getOrCreateFolder(assetsFolder, "Npcs")

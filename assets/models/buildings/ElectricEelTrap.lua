@@ -241,15 +241,16 @@ chargeLight.Brightness = 1.5
 chargeLight.Shadows = false
 chargeLight.Parent = chargeCore
 
--- 6) Oberflaechendetails: Steinsockel-Textur, Basalt-Felsanker, Ankerklammern -
+-- 6) Oberflaechendetails: Steinsockel-Textur, rundlicher Basalt-Felsanker, -----
+-- klobige Klemmen-Kugeln (kartoonig) ----------------------------------------
 addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(150, 150, 155), 0.05)
-addKeyedTexture(rockAnchor, "BasaltRock", Enum.NormalId.Front, 1.5, 1.5, ROCK_COLOR, 0.05)
 
-local CLAMP_COLOR = Color3.fromRGB(210, 212, 216)
+local CLAMP_COLOR = Color3.fromRGB(215, 217, 220)
 for i = 1, 3 do
 	local angle = math.rad(120 * (i - 1))
-	local clampCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.1, 0.9, math.sin(angle) * 1.1)
-	local clamp = newPart("AnchorClamp" .. i, Vector3.new(0.4, 0.5, 0.4), clampCFrame, CLAMP_COLOR, Enum.Material.DiamondPlate, model)
+	local clampCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.1, 0.95, math.sin(angle) * 1.1)
+	local clamp = newPart("AnchorClamp" .. i, Vector3.new(0.6, 0.6, 0.6), clampCFrame, CLAMP_COLOR, Enum.Material.DiamondPlate, model)
+	clamp.Shape = Enum.PartType.Ball
 	clamp.CanCollide = false
 end
 

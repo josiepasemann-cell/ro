@@ -4,14 +4,13 @@
 	Name: ToxinPuffer ("Toxin Puffer")
 	Rarity (Platzhalter): Rare
 	Event: ToxicTide
-	Beschreibung:
-		Runder, aufgeblasener Kugelfisch-Körper, sickly gelb-grün, mit
-		zweireihigen, nach außen zeigenden dunklen Stacheln (WedgeParts),
-		unregelmäßigen dunkelolivenen Gift-Flecken (Geometrie-Muster,
-		"ToxicBlotches"), heller Bauch-Gegenschattierung und einer leuchtend
-		grünen Bauchnaht (Neon). Körper trägt Material Pebble für eine raue,
-		warzige Haut statt der vorherigen glatten Kugel. Event-exklusive
-		Kreatur des "Toxic Tide"-Events.
+	Beschreibung (Update: organisch/cartoony, siehe Kommentar unten):
+		Rundlicher, aufgeblasener Kugelfisch, sickly gelb-grün mit dunkelolivenen
+		Gift-Flecken (Ellipsoid-Muster) und heller Bauch-Gegenschattierung.
+		Große, übertrieben runde Cartoon-Augen, winziges Lächel-Maul, kurze
+		stachelige Ellipsoid-"Noppen" statt spitzer Wedges. Material Pebble
+		für eine leicht raue, warzige Haut. Event-exklusive Kreatur des
+		"Toxic Tide"-Events.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" -> für Bewegungssteuerung.
@@ -28,7 +27,6 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
-local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(-15, 6, 105)
@@ -63,32 +61,14 @@ local function newPart(name, size, cframe, color, material, parent)
 end
 
 -- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt der immer
--- kugelrunden Shape=Ball-Darstellung - für flach angedrückte Flecken/Patches.
+-- kugelrunden Shape=Ball-Darstellung - Basis für JEDE organische Form hier
+-- (Körper, Noppen, Flecken).
 local function newMeshBall(name, size, cframe, color, material, parent)
 	local part = newPart(name, size, cframe, color, material, parent)
 	local mesh = Instance.new("SpecialMesh")
 	mesh.MeshType = Enum.MeshType.Sphere
 	mesh.Parent = part
 	return part
-end
-
--- Texture-Platzhalter (siehe assets/textures/README.md-Konvention): leere
--- `Texture`-Instanz mit TextureKey-Attribut + "KeyedTexture"-Tag, bleibt bis
--- zum Einspielen des PNG-Texturpacks unsichtbar (Runtime-Skript blendet sie
--- aus). Nur auf flachen Block/Wedge-Flächen sinnvoll, nicht auf Ellipsoiden.
-local function newKeyedTexture(part, key, face, color, studsPerU, studsPerV, transparency)
-	local tex = Instance.new("Texture")
-	tex.Name = "Tex_" .. key
-	tex.Texture = ""
-	tex.Face = face
-	tex.Color3 = color
-	tex.Transparency = transparency or 0
-	tex.StudsPerTileU = studsPerU or 3
-	tex.StudsPerTileV = studsPerV or 3
-	tex:SetAttribute("TextureKey", key)
-	CollectionService:AddTag(tex, "KeyedTexture")
-	tex.Parent = part
-	return tex
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -103,150 +83,59 @@ local model = Instance.new("Model")
 model.Name = "ToxinPuffer"
 model.Parent = creaturesFolder
 
-local BODY_COLOR = Color3.fromRGB(170, 210, 60)
-local BELLY_COLOR = Color3.fromRGB(212, 232, 150)
+local BODY_COLOR = Color3.fromRGB(175, 215, 65)
+local BELLY_COLOR = Color3.fromRGB(225, 240, 165)
 local GLOW_COLOR = Color3.fromRGB(150, 255, 60)
-local SPINE_COLOR = Color3.fromRGB(70, 90, 30)
-local BLOTCH_COLOR = Color3.fromRGB(95, 120, 35)
+local SPINE_COLOR = Color3.fromRGB(75, 95, 35)
+local BLOTCH_COLOR = Color3.fromRGB(100, 125, 40)
 
--- 1) Aufgeblasener Kugelkörper, Material Pebble für raue, warzige Toxin-Haut --------
-local body = newPart("Body", Vector3.new(3, 3, 3), ORIGIN, BODY_COLOR, Enum.Material.Pebble, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Aufgeblasener, leicht ellipsoider Kugelkörper (chunky, Pebble-Haut) -----------
+local body = newMeshBall("Body", Vector3.new(3.4, 3.1, 3.4), ORIGIN, BODY_COLOR, Enum.Material.Pebble, model)
 
--- 1b) Helle Bauch-Gegenschattierung (Countershading), flach an die Unterseite
---     angedrückt, überlappt den Körper -------------------------------------------
-local bellyPatch = newMeshBall(
-	"BellyPatch",
-	Vector3.new(2.5, 1.4, 2.5),
-	ORIGIN * CFrame.new(0, -1.05, 0),
-	BELLY_COLOR,
-	Enum.Material.Pebble,
-	model
-)
+-- 1b) Helle Bauch-Gegenschattierung, flach angedrückt, überlappt den Körper --------
+newMeshBall("BellyPatch", Vector3.new(2.6, 1.5, 2.6), ORIGIN * CFrame.new(0, -1.1, 0.05), BELLY_COLOR, Enum.Material.Pebble, model)
 
--- 1c) Unregelmäßige Gift-Flecken (Geometrie-Musterung "ToxicBlotches"), flach
---     angedrückte Ellipsoide, radial über den Rücken verteilt, in die Kugel
---     eingesenkt -> ersetzt die vorherige rein einfarbige Haut ---------------------
-for i = 1, 6 do
-	local angle = math.rad(60 * (i - 1) + 15)
-	local elevation = math.rad(10 + 22 * ((i % 3)))
-	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(elevation, 0, 0)
-	local pos = dir * CFrame.new(0, 0, 1.42)
-	local blotch = newMeshBall(
-		"ToxicBlotch" .. i,
-		Vector3.new(0.55 + (i % 2) * 0.15, 0.22, 0.5 + (i % 3) * 0.1),
-		ORIGIN * pos * CFrame.Angles(0, angle, 0),
-		BLOTCH_COLOR,
-		Enum.Material.Pebble,
-		model
-	)
+-- 1c) Vier große Gift-Flecken (Geometrie-Muster statt flacher Textur), auf den
+--     Rücken gesetzt, in den Körper eingesenkt -----------------------------------
+for i = 1, 4 do
+	local angle = math.rad(90 * (i - 1) + 45)
+	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(math.rad(28), 0, 0)
+	local pos = dir * CFrame.new(0, 0, 1.55)
+	newMeshBall("ToxicBlotch" .. i, Vector3.new(0.75, 0.3, 0.65), ORIGIN * pos * CFrame.Angles(0, angle, 0), BLOTCH_COLOR, Enum.Material.Pebble, model)
 end
 
 -- 2) Leuchtende Bauchnaht ------------------------------------------------------
-local belly = newPart(
-	"BellySeam",
-	Vector3.new(2.4, 0.3, 2.4),
-	ORIGIN * CFrame.new(0, -1.2, 0),
-	GLOW_COLOR,
-	Enum.Material.Neon,
-	model
-)
+local belly = newPart("BellySeam", Vector3.new(2.6, 0.3, 2.6), ORIGIN * CFrame.new(0, -1.3, 0), GLOW_COLOR, Enum.Material.Neon, model)
 belly.Shape = Enum.PartType.Cylinder
 belly.CFrame = belly.CFrame * CFrame.Angles(0, 0, math.rad(90))
 
--- 3) Zwei Augen mit Pupille + Glanzpunkt ---------------------------------------------
+-- 3) Große Cartoon-Augen: übergroße weiße Ellipsoide + dunkle Pupille + Glanzpunkt --
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.62, 0.4, 1.05)
-	local eyeWhite = newPart(
-		"EyeWhite" .. i,
-		Vector3.new(0.45, 0.45, 0.4),
-		eyeCFrame,
-		Color3.fromRGB(235, 240, 220),
-		Enum.Material.SmoothPlastic,
-		model
-	)
-	eyeWhite.Shape = Enum.PartType.Ball
-
-	local eye = newPart(
-		"Eye" .. i,
-		Vector3.new(0.3, 0.3, 0.3),
-		eyeCFrame * CFrame.new(0, 0, 0.18),
-		Color3.fromRGB(20, 20, 20),
-		Enum.Material.SmoothPlastic,
-		model
-	)
-	eye.Shape = Enum.PartType.Ball
-
-	local highlight = newPart(
-		"EyeHighlight" .. i,
-		Vector3.new(0.1, 0.1, 0.1),
-		eyeCFrame * CFrame.new(0.08, 0.08, 0.3),
-		Color3.fromRGB(255, 255, 255),
-		Enum.Material.Neon,
-		model
-	)
-	highlight.Shape = Enum.PartType.Ball
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.62, 0.3, 1.5)
+	newMeshBall("EyeWhite" .. i, Vector3.new(0.62, 0.62, 0.5), eyeCFrame, Color3.fromRGB(250, 252, 245), Enum.Material.SmoothPlastic, model)
+	newMeshBall("Eye" .. i, Vector3.new(0.36, 0.36, 0.3), eyeCFrame * CFrame.new(0, -0.02, 0.22), Color3.fromRGB(25, 20, 20), Enum.Material.SmoothPlastic, model)
+	newMeshBall("EyeHighlight" .. i, Vector3.new(0.13, 0.13, 0.1), eyeCFrame * CFrame.new(0.1, 0.1, 0.35), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	-- Blush-Fleck unter dem Auge, überlappt Körper + Auge -> niedliches Cartoon-Detail
+	newMeshBall("Blush" .. i, Vector3.new(0.35, 0.2, 0.22), eyeCFrame * CFrame.new(0, -0.42, -0.05), Color3.fromRGB(255, 160, 150), Enum.Material.SmoothPlastic, model)
 end
 
--- 3b) Kleines Maul --------------------------------------------------------------------
-local mouth = newPart(
-	"Mouth",
-	Vector3.new(0.6, 0.15, 0.3),
-	ORIGIN * CFrame.new(0, -0.35, 1.35),
-	SPINE_COLOR,
-	Enum.Material.SmoothPlastic,
-	model
-)
-mouth.Shape = Enum.PartType.Cylinder
-mouth.CFrame = mouth.CFrame * CFrame.Angles(0, 0, math.rad(90))
+-- 3b) Kleines Lächel-Maul (dünnes, gebogenes Ellipsoid) ------------------------------
+local mouth = newMeshBall("Mouth", Vector3.new(0.55, 0.14, 0.2), ORIGIN * CFrame.new(0, -0.25, 1.62) * CFrame.Angles(math.rad(15), 0, 0), SPINE_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 4) Stacheln, ZWEI Reihen (Äquator + oberer Ring) radial verteilt, in den Körper
---    eingesenkt -> deutlich stachligere, weniger "glatte Kugel"-Silhouette --------
+-- 4) Kurze, stumpfe Ellipsoid-"Noppen" (2 Ringe) statt spitzer Wedges - chunky,
+--    cartoony statt bedrohlich-scharf, aber deutlich stachelige Silhouette --------
 for i = 1, 8 do
 	local angle = math.rad(45 * (i - 1))
-	local elevation = math.rad(20 * ((i % 3) - 1))
-	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(elevation, 0, 0)
-	local offset = dir * CFrame.new(0, 0, 1.3)
-	local spineCFrame = ORIGIN * offset * CFrame.Angles(math.rad(-90), 0, 0)
-
-	local spine = Instance.new("WedgePart")
-	spine.Name = "Spine" .. i
-	spine.Size = Vector3.new(0.25, 0.6, 0.25)
-	spine.CFrame = spineCFrame
-	spine.Color = SPINE_COLOR
-	spine.Material = Enum.Material.SmoothPlastic
-	spine.Anchored = true
-	spine.CanCollide = false
-	spine.TopSurface = Enum.SurfaceType.Smooth
-	spine.BottomSurface = Enum.SurfaceType.Smooth
-	spine.Parent = model
-
-	-- flache Rücken-Face jedes 2. Stachels: Texture-Platzhalter für die
-	-- feine Warzenstruktur an der Stachelbasis (Block-taugliche Fläche)
-	if i % 2 == 0 then
-		newKeyedTexture(spine, "ToxicBlotches", Enum.NormalId.Back, BLOTCH_COLOR, 1, 1, 0.1)
-	end
+	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(math.rad(10 * ((i % 3) - 1)), 0, 0)
+	local pos = dir * CFrame.new(0, 0, 1.68)
+	newMeshBall("Spine" .. i, Vector3.new(0.3, 0.3, 0.55), ORIGIN * pos * CFrame.Angles(0, angle, 0), SPINE_COLOR, Enum.Material.SmoothPlastic, model)
 end
-
-for i = 1, 6 do
-	local angle = math.rad(60 * (i - 1) + 30)
-	local elevation = math.rad(55)
-	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(elevation, 0, 0)
-	local offset = dir * CFrame.new(0, 0, 1.28)
-	local spineCFrame = ORIGIN * offset * CFrame.Angles(math.rad(-90), 0, 0)
-
-	local spine = Instance.new("WedgePart")
-	spine.Name = "SpineTop" .. i
-	spine.Size = Vector3.new(0.2, 0.45, 0.2)
-	spine.CFrame = spineCFrame
-	spine.Color = SPINE_COLOR
-	spine.Material = Enum.Material.SmoothPlastic
-	spine.Anchored = true
-	spine.CanCollide = false
-	spine.TopSurface = Enum.SurfaceType.Smooth
-	spine.BottomSurface = Enum.SurfaceType.Smooth
-	spine.Parent = model
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1) + 36)
+	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(math.rad(58), 0, 0)
+	local pos = dir * CFrame.new(0, 0, 1.55)
+	newMeshBall("SpineTop" .. i, Vector3.new(0.24, 0.24, 0.42), ORIGIN * pos * CFrame.Angles(0, angle, 0), SPINE_COLOR, Enum.Material.SmoothPlastic, model)
 end
 
 -- 5) Idle-Puls-Attachment ------------------------------------------------------------

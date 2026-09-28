@@ -212,6 +212,54 @@ local function newPointLight(parent, color, brightness, range)
 	return light
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+-- Keyed-Textur-Platzhalter (siehe assets/textures/): Texture-Instanz mit
+-- Attribut "TextureKey" + Tag "KeyedTexture", Texture-Property bleibt leer
+-- bis die Nutzerin die PNGs hochlädt (ein Laufzeit-Skript blendet sie bis
+-- dahin aus). StudsPerTileU/V bewusst groß (6-16) für Boden-/Platzflächen.
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
+-- Rundlicher, kartoonig-klobiger Fels-/Korallen-Deko-Klumpen aus 2-3
+-- überlappenden Kugeln (statt einzelner Boxen) - organische Bodenstreuung.
+local function newRoundedCluster(namePrefix, cframe, baseRadius, color, material, parent, count)
+	count = count or 3
+	local parts = {}
+	for i = 1, count do
+		local r = baseRadius * (0.7 + 0.3 * (i / count))
+		local offset = Vector3.new(
+			(i - (count + 1) / 2) * baseRadius * 0.55,
+			r * 0.55,
+			(i % 2 == 0 and 1 or -1) * baseRadius * 0.18
+		)
+		local ball = Instance.new("Part")
+		ball.Name = namePrefix .. i
+		ball.Shape = Enum.PartType.Ball
+		ball.Size = Vector3.new(r * 2, r * 1.7, r * 2)
+		ball.CFrame = cframe * CFrame.new(offset)
+		ball.Color = color
+		ball.Material = material
+		ball.Anchored = true
+		ball.CanCollide = false
+		ball.Parent = parent
+		table.insert(parts, ball)
+	end
+	return parts
+end
+
 -- // Root-Setup ------------------------------------------------------------
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local hubFolder = getOrCreateFolder(assetsFolder, "Hub")
@@ -232,12 +280,37 @@ base.Shape = Enum.PartType.Cylinder
 base.Size = Vector3.new(PLAZA_THICKNESS, PLAZA_RADIUS * 2, PLAZA_RADIUS * 2)
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 base.Color = DARK_BASALT
-base.Material = Enum.Material.Basalt
+base.Material = Enum.Material.Cobblestone
 base.Anchored = true
 base.CanCollide = true
 base.TopSurface = Enum.SurfaceType.Smooth
 base.BottomSurface = Enum.SurfaceType.Smooth
 base.Parent = model
+addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 12, 12, Color3.fromRGB(150, 150, 158), 0.05)
+
+-- Dicker, rundlicher Randring (CSG-Ring, analog BroodPool-Becken-Technik) als
+-- klar lesbare Übergangs-"Trimband"-Kante zwischen Platz-Mitte und Neon-Rand
+local trimOuterCFrame = ORIGIN * CFrame.new(0, PLAZA_THICKNESS * 0.5 + 0.2, 0) * CFrame.Angles(0, 0, math.rad(90))
+local trimOuter = Instance.new("Part")
+trimOuter.Shape = Enum.PartType.Cylinder
+trimOuter.Size = Vector3.new(0.6, (PLAZA_RADIUS - 4) * 2, (PLAZA_RADIUS - 4) * 2)
+trimOuter.CFrame = trimOuterCFrame
+trimOuter.Anchored = true
+trimOuter.Parent = Workspace
+local trimInner = Instance.new("Part")
+trimInner.Shape = Enum.PartType.Cylinder
+trimInner.Size = Vector3.new(0.8, (PLAZA_RADIUS - 9) * 2, (PLAZA_RADIUS - 9) * 2)
+trimInner.CFrame = trimOuterCFrame
+trimInner.Anchored = true
+trimInner.Parent = Workspace
+local plazaTrimRing = trimOuter:SubtractAsync({ trimInner })
+plazaTrimRing.Name = "PlazaTrimRing"
+plazaTrimRing.Color = STONE_TRIM
+plazaTrimRing.Material = Enum.Material.Slate
+plazaTrimRing.Anchored = true
+plazaTrimRing.CanCollide = false
+plazaTrimRing.Parent = model
+addKeyedTexture(plazaTrimRing, "StoneTiles", Enum.NormalId.Top, 6, 6, Color3.fromRGB(120, 122, 130), 0.05)
 
 -- Dashed Neon-Lichtring am Platzrand (billige, performante "Leuchtturm"-Kontur)
 local RIM_DASH_COUNT = 28
@@ -772,18 +845,70 @@ for i, deg in ipairs(SPAWN_ANGLES) do
 	newNeon("SpawnRing" .. i, Vector3.new(6.3, 0.15, 6.3), spawn.CFrame * CFrame.new(0, 0.55, 0), NEON.Cyan, model, false)
 end
 
--- 7) Zusätzliche Deko-Taschen (dichte/offene Rhythmus, Kelp/Kristall-Akzente)
+-- 7) Zusätzliche Deko-Taschen (dichte/offene Rhythmus) -----------------------
+-- Statt vieler identischer, schmaler Neon-Stäbe: wenige, aber große, rundlich-
+-- kartoonige Boden-Cluster (Basalt-Felsbrocken, Korallen-Polster, Kelp-Wedel),
+-- die den flachen Platzboden organisch aufbrechen. Ein paar Neon-Glühstäbe
+-- bleiben als klare Farbakzente erhalten (reduziert, größer, bewusst grell).
 local DECO_COLORS = { NEON.Cyan, NEON.Magenta, NEON.ToxicGreen, NEON.NeonOrange, NEON.Violet }
-for i = 1, 16 do
+local ROCK_COLORS = { Color3.fromRGB(70, 74, 84), Color3.fromRGB(56, 58, 68) }
+local CORAL_COLORS = { Color3.fromRGB(255, 140, 120), Color3.fromRGB(255, 170, 210), Color3.fromRGB(140, 255, 210) }
+local KELP_COLOR = Color3.fromRGB(40, 120, 100)
+
+-- 7a) Dicke, rundliche Basalt-Felsbrocken (Ball-Cluster statt Boxen) ----------
+for i = 1, 8 do
+	local angle = rng:NextNumber(0, math.pi * 2)
+	local radius = rng:NextNumber(66, PLAZA_RADIUS - 8)
+	local pos = landmarkCFrame * CFrame.new(math.cos(angle) * radius, PLAZA_TOP_Y, math.sin(angle) * radius)
+	local rockParts = newRoundedCluster("PlazaRock" .. i .. "_", pos, rng:NextNumber(2.2, 4.2), ROCK_COLORS[(i % 2) + 1], Enum.Material.Basalt, model, 3)
+	for _, p in ipairs(rockParts) do
+		p.CanCollide = true
+	end
+end
+
+-- 7b) Große, bulbige Korallen-Polster (2-3 dicke Kugeln je Cluster) ----------
+for i = 1, 6 do
+	local angle = rng:NextNumber(0, math.pi * 2)
+	local radius = rng:NextNumber(64, PLAZA_RADIUS - 10)
+	local pos = landmarkCFrame * CFrame.new(math.cos(angle) * radius, PLAZA_TOP_Y, math.sin(angle) * radius)
+	local color = CORAL_COLORS[((i - 1) % #CORAL_COLORS) + 1]
+	newRoundedCluster("PlazaCoralPatch" .. i .. "_", pos, rng:NextNumber(1.6, 2.6), color, Enum.Material.Pebble, model, 3)
+	local glowNub = Instance.new("Part")
+	glowNub.Name = "PlazaCoralGlow" .. i
+	glowNub.Shape = Enum.PartType.Ball
+	glowNub.Size = Vector3.new(0.9, 0.9, 0.9)
+	glowNub.CFrame = pos * CFrame.new(0, 2.4, 0)
+	glowNub.Color = DECO_COLORS[rng:NextInteger(1, #DECO_COLORS)]
+	glowNub.Material = Enum.Material.Neon
+	glowNub.Anchored = true
+	glowNub.CanCollide = false
+	glowNub.Parent = model
+end
+
+-- 7c) Kelp-Wedel: je 2 dicke, leicht gebogene Zylinder-Blätter -------------
+for i = 1, 6 do
+	local angle = rng:NextNumber(0, math.pi * 2)
+	local radius = rng:NextNumber(66, PLAZA_RADIUS - 8)
+	local pos = landmarkCFrame * CFrame.new(math.cos(angle) * radius, PLAZA_TOP_Y, math.sin(angle) * radius)
+	for blade = 1, 2 do
+		local h = rng:NextNumber(4, 7)
+		local lean = math.rad(rng:NextNumber(6, 16)) * (blade == 1 and 1 or -1)
+		local bladeCFrame = pos * CFrame.new((blade - 1.5) * 1.1, 0, 0) * CFrame.Angles(0, 0, lean) * CFrame.new(0, h / 2, 0)
+		local kelp = newPart("PlazaKelp" .. i .. "_" .. blade, Vector3.new(0.9, h, 0.5), bladeCFrame, KELP_COLOR, Enum.Material.SmoothPlastic, model, false)
+	end
+end
+
+-- 7d) Wenige, große Neon-Glühstäbe als klare Farbakzente (reduziert von 16) --
+for i = 1, 8 do
 	local angle = rng:NextNumber(0, math.pi * 2)
 	local radius = rng:NextNumber(70, PLAZA_RADIUS - 6)
 	local px = math.cos(angle) * radius
 	local pz = math.sin(angle) * radius
-	local height = rng:NextNumber(2, 5)
+	local height = rng:NextNumber(3, 6)
 	local coral = Instance.new("Part")
 	coral.Name = "PlazaCoralAccent" .. i
 	coral.Shape = Enum.PartType.Cylinder
-	coral.Size = Vector3.new(height, 0.7, 0.7)
+	coral.Size = Vector3.new(height, 1.0, 1.0)
 	coral.CFrame = landmarkCFrame * CFrame.new(px, PLAZA_TOP_Y + height / 2, pz) * CFrame.Angles(0, 0, math.rad(90))
 	coral.Color = DECO_COLORS[rng:NextInteger(1, #DECO_COLORS)]
 	coral.Material = Enum.Material.Neon

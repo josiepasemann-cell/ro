@@ -176,16 +176,16 @@ local muzzlePoint = Instance.new("Attachment")
 muzzlePoint.Name = "MuzzlePoint"
 muzzlePoint.Parent = slowPulseCore
 
--- 6) Oberflaechendetails: Steinsockel-Textur, poroese Korallenhaut, Kieselring -
+-- 6) Oberflaechendetails: Steinsockel-Textur, dicke Kiesel-Kugeln am Sockelrand
 addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(150, 150, 155), 0.05)
-addKeyedTexture(mound, "CoralPorous", Enum.NormalId.Front, 2, 2, CORAL_COLOR, 0.05)
 
-local PEBBLE_COLOR = Color3.fromRGB(110, 100, 96)
-for i = 1, 5 do
-	local angle = math.rad(72 * (i - 1) + 20)
+local PEBBLE_COLOR = Color3.fromRGB(120, 108, 102)
+for i = 1, 4 do
+	local angle = math.rad(90 * (i - 1) + 20)
 	local radius = 3.2
-	local pebbleCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.85, math.sin(angle) * radius)
-	local pebble = newPart("BasePebble" .. i, Vector3.new(0.4, 0.35, 0.4), pebbleCFrame, PEBBLE_COLOR, Enum.Material.Pebble, model)
+	local pebbleCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.9, math.sin(angle) * radius)
+	local pebble = newPart("BasePebble" .. i, Vector3.new(0.7, 0.6, 0.7), pebbleCFrame, PEBBLE_COLOR, Enum.Material.Pebble, model)
+	pebble.Shape = Enum.PartType.Ball
 	pebble.CanCollide = false
 end
 

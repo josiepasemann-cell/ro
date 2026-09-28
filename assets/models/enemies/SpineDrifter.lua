@@ -81,6 +81,18 @@ local function newTexture(key, face, part, opts)
 	return tex
 end
 
+-- Organisches, ovales/kapselförmiges Teil: Block-Part + SpecialMesh(Sphere),
+-- non-uniform Size -> gestrecktes Ellipsoid statt Kiste. Für Gliedmaßen,
+-- Flossen, Schwanz (kartoonig rund statt eckig).
+local function newOvalPart(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local enemiesFolder = getOrCreateFolder(assetsFolder, "Enemies")
 
@@ -97,93 +109,63 @@ local SKIN_COLOR = Color3.fromRGB(40, 60, 70)
 local ACCENT_COLOR = Color3.fromRGB(28, 44, 52)
 local EYE_COLOR = Color3.fromRGB(255, 60, 80)
 
--- 1) Hauptkörper: schlanker, langgezogener Rumpf --------------------------------
-local body = newPart("Body", Vector3.new(1.4, 1.4, 4.0), ORIGIN, SKIN_COLOR, Enum.Material.Pebble, model)
+-- 1) Hauptkörper: schlanker, langgezogener, ovaler Rumpf (Ellipsoid) ------------
+local body = newOvalPart("Body", Vector3.new(1.5, 1.5, 4.0), ORIGIN, SKIN_COLOR, Enum.Material.Pebble, model)
 
 -- Countershading: heller Bauchstreifen entlang der Unterseite (überlappt Body)
-newPart("BellyStripe", Vector3.new(0.6, 0.35, 3.6), ORIGIN * CFrame.new(0, -0.65, 0.1), Color3.fromRGB(120, 150, 160), Enum.Material.Pebble, model)
+newOvalPart("BellyStripe", Vector3.new(0.65, 0.4, 3.6), ORIGIN * CFrame.new(0, -0.65, 0.1), Color3.fromRGB(120, 150, 160), Enum.Material.Pebble, model)
 
--- 2) Kopf-/Mantel-Verjüngung vorn (leicht dunkler) --------------------------------
-local mantleCFrame = ORIGIN * CFrame.new(0, 0.1, -2.1)
-local mantle = newPart("Mantle", Vector3.new(0.9, 0.9, 1.3), mantleCFrame, ACCENT_COLOR, Enum.Material.Pebble, model)
+-- 2) Kopf-/Mantel-Verjüngung vorn: großer, kartoonig runder Kopf -----------------
+local mantleCFrame = ORIGIN * CFrame.new(0, 0.15, -2.1)
+local mantle = newOvalPart("Mantle", Vector3.new(1.3, 1.2, 1.5), mantleCFrame, ACCENT_COLOR, Enum.Material.Pebble, model)
 
--- Oberflächen-Texturen: feine Fischhaut am Rumpf, Aal-Streifen, Gift-Flecken am Kopf
-newTexture("FishScalesFine", Enum.NormalId.Front, body, { studsU = 1.5, studsV = 1.5, color = SKIN_COLOR, transparency = 0.1 })
-newTexture("EelStripes", Enum.NormalId.Top, body, { studsU = 1.2, studsV = 4, color = ACCENT_COLOR, transparency = 0.15 })
-newTexture("ToxicBlotches", Enum.NormalId.Front, mantle, { studsU = 1, studsV = 1, color = EYE_COLOR, transparency = 0.3 })
-
--- 3) Glühende Augenschlitze -------------------------------------------------------
+-- 3) Große, freundlich-fiese Glow-Augen mit weißem Glanzpunkt --------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.45, 0.15, -2.6)
-	local eye = newPart("Eye" .. i, Vector3.new(0.5, 0.15, 0.2), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
-	eye.CanCollide = false
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.5, 0.2, -2.6)
+	local eye = newPart("Eye" .. i, Vector3.new(0.45, 0.45, 0.28), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
+	eye.Shape = Enum.PartType.Ball
+	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.14, 0.14, 0.1), eyeCFrame * CFrame.new(side * -0.1, 0.1, 0.12), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	highlight.Shape = Enum.PartType.Ball
 end
 
--- 4) Dünne Rückenstacheln (6 Stück, abnehmend zum Schwanz, WedgeParts entlang des Rückens) --
+-- 4) Dünne, gerundete Rückenstacheln (6 Stück, abnehmend zum Schwanz) -------------
 for i = 1, 6 do
 	local z = -1.7 + (i - 1) * 0.75
 	local spineHeight = 0.7 - i * 0.05
 	local spineCFrame = ORIGIN * CFrame.new(0, 0.85, z) * CFrame.Angles(math.rad(90), 0, 0)
-	local spine = Instance.new("WedgePart")
-	spine.Name = "DorsalSpine" .. i
-	spine.Size = Vector3.new(0.15, spineHeight, 0.55)
-	spine.CFrame = spineCFrame
-	spine.Color = i % 2 == 0 and ACCENT_COLOR or EYE_COLOR
-	spine.Material = i % 2 == 0 and Enum.Material.SmoothPlastic or Enum.Material.Neon
-	spine.Anchored = true
-	spine.CanCollide = false
-	spine.TopSurface = Enum.SurfaceType.Smooth
-	spine.BottomSurface = Enum.SurfaceType.Smooth
-	spine.Parent = model
+	newOvalPart(
+		"DorsalSpine" .. i,
+		Vector3.new(0.22, spineHeight, 0.55),
+		spineCFrame,
+		i % 2 == 0 and ACCENT_COLOR or EYE_COLOR,
+		i % 2 == 0 and Enum.Material.SmoothPlastic or Enum.Material.Neon,
+		model
+	)
 end
 
--- 5) Seitliche Steuerflossen (dünn, knapp an der Körpermitte anliegend) ------------
+-- 5) Seitliche Steuerflossen: dünne, flach gedrückte Ellipsoide, angestellt -------
 for _, side in ipairs({ -1, 1 }) do
 	local finCFrame = ORIGIN * CFrame.new(side * 0.75, -0.1, -0.3) * CFrame.Angles(0, 0, math.rad(side * 20))
-	local fin = Instance.new("WedgePart")
-	fin.Name = "SideFin" .. (side < 0 and "L" or "R")
-	fin.Size = Vector3.new(0.75, 0.1, 0.9)
-	fin.CFrame = finCFrame * CFrame.Angles(0, 0, math.rad(90))
-	fin.Color = ACCENT_COLOR
-	fin.Material = Enum.Material.SmoothPlastic
-	fin.Anchored = true
-	fin.CanCollide = false
-	fin.TopSurface = Enum.SurfaceType.Smooth
-	fin.BottomSurface = Enum.SurfaceType.Smooth
-	fin.Parent = model
+	newOvalPart(
+		"SideFin" .. (side < 0 and "L" or "R"),
+		Vector3.new(0.9, 0.18, 1.0),
+		finCFrame,
+		ACCENT_COLOR,
+		Enum.Material.SmoothPlastic,
+		model
+	)
 end
 
--- 6) Schwanzstiel (verjüngendes Segment, schließt die Lücke Body -> Flosse) --------
-newPart("TailStalk", Vector3.new(0.55, 0.55, 1.3), ORIGIN * CFrame.new(0, 0, 2.45), ACCENT_COLOR, Enum.Material.SmoothPlastic, model)
+-- 6) Schwanzstiel (verjüngendes ovales Segment, schließt die Lücke Body -> Flosse) --
+newOvalPart("TailStalk", Vector3.new(0.55, 0.55, 1.3), ORIGIN * CFrame.new(0, 0, 2.45), ACCENT_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 7) Schwanzflosse (überlappt den Stiel, gefächertes Doppel-Wedge) -----------------
+-- 7) Schwanzflosse (überlappt den Stiel, gefächerte flache Ellipsoide) -----------
 local tailBaseCFrame = ORIGIN * CFrame.new(0, 0, 2.9)
-local tailFin = Instance.new("WedgePart")
-tailFin.Name = "TailFin"
-tailFin.Size = Vector3.new(0.1, 1.2, 1.1)
-tailFin.CFrame = tailBaseCFrame * CFrame.Angles(0, math.rad(90), 0)
-tailFin.Color = ACCENT_COLOR
-tailFin.Material = Enum.Material.SmoothPlastic
-tailFin.Anchored = true
-tailFin.CanCollide = false
-tailFin.TopSurface = Enum.SurfaceType.Smooth
-tailFin.BottomSurface = Enum.SurfaceType.Smooth
-tailFin.Parent = model
+newOvalPart("TailFin", Vector3.new(0.18, 1.2, 1.1), tailBaseCFrame, ACCENT_COLOR, Enum.Material.SmoothPlastic, model)
+newOvalPart("TailFinLower", Vector3.new(0.16, 0.7, 0.8), tailBaseCFrame * CFrame.new(0, -0.55, 0.1), EYE_COLOR, Enum.Material.Neon, model)
 
-local tailFinLower = Instance.new("WedgePart")
-tailFinLower.Name = "TailFinLower"
-tailFinLower.Size = Vector3.new(0.1, 0.7, 0.8)
-tailFinLower.CFrame = tailBaseCFrame * CFrame.new(0, -0.55, 0.1) * CFrame.Angles(0, math.rad(-90), 0)
-tailFinLower.Color = EYE_COLOR
-tailFinLower.Material = Enum.Material.Neon
-tailFinLower.Anchored = true
-tailFinLower.CanCollide = false
-tailFinLower.TopSurface = Enum.SurfaceType.Smooth
-tailFinLower.BottomSurface = Enum.SurfaceType.Smooth
-tailFinLower.Parent = model
-
--- 6) Idle-/Bedrohungs-Puls-Attachment -------------------------------------------------
+-- 8) Idle-/Bedrohungs-Puls-Attachment -------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body

@@ -4,11 +4,13 @@
 	Name: TreasureTurtle ("Treasure Turtle")
 	Rarity (Platzhalter): Epic
 	Event: TreasureTide
-	Beschreibung:
-		Schildkröten-Silhouette mit einem Panzer aus einem CSG-Union
-		"Schatztruhen-Deckel"-Muster (gold mit teal-farbenen Einlage-Streifen)
-		und einem kleinen leuchtenden Schlüsselloch-Detail (Neon) in der
-		Panzermitte. Event-exklusive Kreatur des "Treasure Tide"-Events.
+	Beschreibung (Update: organisch/cartoony statt Box-Silhouette):
+		Chunky Cartoon-Schildkröte: klar erkennbarer, kugelig-gewölbter
+		Ellipsoid-Panzer (gold, aus 3 überlappenden Ellipsoiden statt CSG-Box),
+		schmale teal-farbene Bänder als Panzernähte, deutlicher, weit nach
+		vorne herausragender Kopf auf kurzem Hals, große Cartoon-Augen,
+		stummelige Ellipsoid-Flipper an allen vier Ecken. Event-exklusive
+		Kreatur des "Treasure Tide"-Events.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" -> für Bewegungssteuerung.
@@ -28,7 +30,6 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
-local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(15, 5, 120)
@@ -63,32 +64,14 @@ local function newPart(name, size, cframe, color, material, parent)
 end
 
 -- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt der immer
--- kugelrunden Shape=Ball-Darstellung.
+-- kugelrunden Shape=Ball-Darstellung - EINZIGE Grundform in diesem Skript
+-- (Panzer, Kopf, Flipper, Bänder) für eine durchgehend organische Silhouette.
 local function newMeshBall(name, size, cframe, color, material, parent)
 	local part = newPart(name, size, cframe, color, material, parent)
 	local mesh = Instance.new("SpecialMesh")
 	mesh.MeshType = Enum.MeshType.Sphere
 	mesh.Parent = part
 	return part
-end
-
--- Texture-Platzhalter (siehe assets/textures/README.md-Konvention): leere
--- `Texture`-Instanz mit TextureKey-Attribut + "KeyedTexture"-Tag, bleibt bis
--- zum Einspielen des PNG-Texturpacks unsichtbar. Nur auf flachen Block-
--- Flächen sinnvoll (Panzerrand), nicht auf dem Ellipsoid-Körper.
-local function newKeyedTexture(part, key, face, color, studsPerU, studsPerV, transparency)
-	local tex = Instance.new("Texture")
-	tex.Name = "Tex_" .. key
-	tex.Texture = ""
-	tex.Face = face
-	tex.Color3 = color
-	tex.Transparency = transparency or 0
-	tex.StudsPerTileU = studsPerU or 3
-	tex.StudsPerTileV = studsPerV or 3
-	tex:SetAttribute("TextureKey", key)
-	CollectionService:AddTag(tex, "KeyedTexture")
-	tex.Parent = part
-	return tex
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -103,155 +86,78 @@ local model = Instance.new("Model")
 model.Name = "TreasureTurtle"
 model.Parent = creaturesFolder
 
-local SHELL_GOLD = Color3.fromRGB(210, 170, 60)
-local SHELL_TEAL = Color3.fromRGB(50, 140, 130)
+local SHELL_GOLD = Color3.fromRGB(215, 175, 60)
+local SHELL_TEAL = Color3.fromRGB(50, 145, 130)
 local GLOW_COLOR = Color3.fromRGB(255, 220, 120)
-local BODY_COLOR = Color3.fromRGB(70, 150, 90)
-local BODY_COLOR_LIGHT = Color3.fromRGB(95, 180, 115)
+local BODY_COLOR = Color3.fromRGB(75, 155, 95)
+local BODY_COLOR_LIGHT = Color3.fromRGB(100, 185, 120)
 
--- 1) Körper: echtes Ellipsoid (Body = untere Panzer-/Körperbasis) -------------------
-local body = newMeshBall("Body", Vector3.new(3.2, 1.4, 4.2), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
+-- 1) Körper: chunky Ellipsoid (untere Panzer-/Körperbasis) -------------------------
+local body = newMeshBall("Body", Vector3.new(3.4, 1.6, 4.4), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Panzer: CSG-Union aus goldener Basis (Block, rundlich gewölbt) + teal-farbenen
---    Einlage-Streifen -> "Schatztruhen-Deckel". Die Basis bleibt bewusst ein Block
---    (kein Shape=Ball), damit die Union eine klare, kastenartige Truhenform behält
---    statt auf die kleinste Achse zur Kugel zusammenzuschrumpfen.
-do
-	local shellBase = Instance.new("Part")
-	shellBase.Name = "ShellBase"
-	shellBase.Size = Vector3.new(3.0, 1.5, 3.9)
-	shellBase.CFrame = ORIGIN * CFrame.new(0, 0.75, 0)
-	shellBase.Color = SHELL_GOLD
-	shellBase.Material = Enum.Material.SmoothPlastic
-	shellBase.Anchored = true
-	shellBase.Parent = Workspace
+-- 2) Panzer: 2 überlappende, sich verjüngende gold Ellipsoide -> klar gewölbte,
+--    kuppelförmige Panzersilhouette statt Box/CSG. -----------------------------
+local shellLower = newMeshBall("ShellLower", Vector3.new(3.3, 1.6, 4.1), ORIGIN * CFrame.new(0, 0.55, -0.1), SHELL_GOLD, Enum.Material.Slate, model)
+local shell = newMeshBall("Shell", Vector3.new(2.7, 1.7, 3.5), ORIGIN * CFrame.new(0, 1.15, -0.1), SHELL_GOLD, Enum.Material.Slate, model)
+newMeshBall("ShellCap", Vector3.new(1.7, 0.9, 2.2), ORIGIN * CFrame.new(0, 1.85, -0.1), SHELL_GOLD, Enum.Material.Slate, model)
 
-	local shellDome = Instance.new("Part")
-	shellDome.Name = "ShellDome"
-	shellDome.Size = Vector3.new(2.6, 1.0, 3.4)
-	shellDome.CFrame = ORIGIN * CFrame.new(0, 1.35, 0)
-	shellDome.Color = SHELL_GOLD
-	shellDome.Material = Enum.Material.SmoothPlastic
-	shellDome.Anchored = true
-	shellDome.Parent = Workspace
-	local domeMesh = Instance.new("SpecialMesh")
-	domeMesh.MeshType = Enum.MeshType.Sphere
-	domeMesh.Parent = shellDome
-
-	local stripeParts = { shellDome }
-	for i = 1, 3 do
-		local zOffset = -1.2 + (i - 1) * 1.2
-		local stripe = Instance.new("Part")
-		stripe.Name = "ShellStripe" .. i
-		stripe.Size = Vector3.new(3.2, 0.5, 0.5)
-		stripe.CFrame = ORIGIN * CFrame.new(0, 1.5, zOffset)
-		stripe.Color = SHELL_TEAL
-		stripe.Material = Enum.Material.SmoothPlastic
-		stripe.Anchored = true
-		stripe.Parent = Workspace
-		table.insert(stripeParts, stripe)
-	end
-
-	local shellUnion = shellBase:UnionAsync(stripeParts)
-	shellUnion.Name = "Shell"
-	shellUnion.Color = SHELL_GOLD
-	shellUnion.Material = Enum.Material.SmoothPlastic
-	shellUnion.Anchored = true
-	shellUnion.CanCollide = false
-	shellUnion.Parent = model
-
-	shellBase:Destroy()
-	for _, stripe in ipairs(stripeParts) do
-		stripe:Destroy()
-	end
-end
-
--- 2b) Panzerrand (Rim), umläuft den unteren Panzerrand, überlappt Panzer + Körper ---
-local shellRim = newPart(
-	"ShellRim",
-	Vector3.new(3.15, 0.35, 4.05),
-	ORIGIN * CFrame.new(0, 0.55, 0),
-	Color3.fromRGB(180, 145, 45),
-	Enum.Material.Metal,
-	model
-)
-
--- 3) Leuchtendes Schlüsselloch-Detail (Panzermitte) ----------------------------------
-local keyhole = newPart(
-	"KeyholeDetail",
-	Vector3.new(0.35, 0.12, 0.5),
-	ORIGIN * CFrame.new(0, 1.7, 0),
-	GLOW_COLOR,
-	Enum.Material.Neon,
-	model
-)
-
--- 4) Kopf, im vorderen Körperbereich eingesenkt ---------------------------------------
-local head = newMeshBall(
-	"Head",
-	Vector3.new(0.9, 0.9, 0.9),
-	ORIGIN * CFrame.new(0, 0.05, 1.85),
-	BODY_COLOR,
-	Enum.Material.SmoothPlastic,
-	model
-)
-
--- 4b) Zwei Augen mit Glanzpunkt -------------------------------------------------------
+-- 2b) Zwei schmale, gebogene teal Panzernähte (flache Ellipsoid-Bänder statt Box-
+--     Streifen), hugging die Panzeroberfläche ---------------------------------
 for i = 1, 2 do
-	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.28, 0.2, 2.2)
-	newMeshBall("Eye" .. i, Vector3.new(0.18, 0.18, 0.18), eyeCFrame, Color3.fromRGB(20, 20, 20), Enum.Material.SmoothPlastic, model)
+	local zOffset = (i - 1) * 1.5 - 0.75
 	newMeshBall(
-		"EyeHighlight" .. i,
-		Vector3.new(0.06, 0.06, 0.06),
-		eyeCFrame * CFrame.new(0.04, 0.04, 0.08),
-		Color3.fromRGB(255, 255, 255),
-		Enum.Material.Neon,
+		"ShellSeam" .. i,
+		Vector3.new(2.75, 0.32, 0.5),
+		ORIGIN * CFrame.new(0, 1.55, zOffset),
+		SHELL_TEAL,
+		Enum.Material.SmoothPlastic,
 		model
 	)
 end
 
--- 4c) Kleiner Schnabel-Akzent vorne am Kopf, überlappt Kopf + Körper -----------------
-local beak = newPart(
-	"BeakDetail",
-	Vector3.new(0.5, 0.3, 0.3),
-	ORIGIN * CFrame.new(0, -0.05, 2.35),
-	BODY_COLOR_LIGHT,
-	Enum.Material.SmoothPlastic,
-	model
-)
+-- 2c) Panzerrand-Kragen (stark abgeflachtes Ellipsoid statt Box-Rim), umläuft den
+--     unteren Panzerrand, überlappt Panzer + Körper -----------------------------
+newMeshBall("ShellRim", Vector3.new(3.5, 0.45, 4.35), ORIGIN * CFrame.new(0, 0.35, -0.1), Color3.fromRGB(190, 155, 50), Enum.Material.Foil, model)
 
--- 5) Vier Beine (paddelförmig), Wurzel im Körper eingesenkt --------------------------
-local legPositions = {
-	{ "LegFrontLeft", 1.0, 1.4 },
-	{ "LegFrontRight", -1.0, 1.4 },
-	{ "LegBackLeft", 1.0, -1.5 },
-	{ "LegBackRight", -1.0, -1.5 },
-}
-for _, legData in ipairs(legPositions) do
-	local legName, xOff, zOff = legData[1], legData[2], legData[3]
-	local leg = Instance.new("WedgePart")
-	leg.Name = legName
-	leg.Size = Vector3.new(0.65, 0.35, 1.05)
-	leg.CFrame = ORIGIN * CFrame.new(xOff, -0.15, zOff)
-	leg.Color = BODY_COLOR
-	leg.Material = Enum.Material.SmoothPlastic
-	leg.Anchored = true
-	leg.CanCollide = false
-	leg.TopSurface = Enum.SurfaceType.Smooth
-	leg.BottomSurface = Enum.SurfaceType.Smooth
-	leg.Parent = model
+-- 3) Leuchtendes Schlüsselloch-Detail (Panzermitte) ----------------------------------
+newMeshBall("KeyholeDetail", Vector3.new(0.4, 0.14, 0.5), ORIGIN * CFrame.new(0, 1.95, -0.1), GLOW_COLOR, Enum.Material.Neon, model)
+
+-- 4) Kurzer Hals + großer, deutlich sichtbarer Kopf, weit vor dem Panzer -------------
+local neck = newMeshBall("Neck", Vector3.new(1.0, 0.9, 1.0), ORIGIN * CFrame.new(0, 0.3, 1.75), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+local head = newMeshBall("Head", Vector3.new(1.5, 1.35, 1.4), ORIGIN * CFrame.new(0, 0.45, 2.55), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+
+-- 4b) Große Cartoon-Augen: übergroße weiße Ellipsoide + Pupille + Glanzpunkt --------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.5, 0.65, 3.05)
+	newMeshBall("EyeWhite" .. i, Vector3.new(0.5, 0.5, 0.4), eyeCFrame, Color3.fromRGB(250, 252, 245), Enum.Material.SmoothPlastic, model)
+	newMeshBall("Eye" .. i, Vector3.new(0.28, 0.28, 0.24), eyeCFrame * CFrame.new(0, 0, 0.18), Color3.fromRGB(20, 20, 20), Enum.Material.SmoothPlastic, model)
+	newMeshBall("EyeHighlight" .. i, Vector3.new(0.1, 0.1, 0.08), eyeCFrame * CFrame.new(0.08, 0.08, 0.3), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	newMeshBall("Blush" .. i, Vector3.new(0.32, 0.18, 0.2), eyeCFrame * CFrame.new(0, -0.4, -0.05), Color3.fromRGB(255, 165, 150), Enum.Material.SmoothPlastic, model)
 end
 
--- 6) Kurzer Schwanzstummel hinten, überlappt den Körper -------------------------------
-local tail = newMeshBall(
-	"TailStub",
-	Vector3.new(0.5, 0.4, 0.5),
-	ORIGIN * CFrame.new(0, -0.1, -2.1),
-	BODY_COLOR,
-	Enum.Material.SmoothPlastic,
-	model
-)
+-- 4c) Kleiner Schnabel-Akzent (Ellipsoid statt Box), vorne am Kopf ------------------
+newMeshBall("BeakDetail", Vector3.new(0.55, 0.35, 0.4), ORIGIN * CFrame.new(0, 0.1, 3.2), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
+
+-- 4d) Cartoon-Lächeln unter dem Schnabel (dünnes Ellipsoid) -------------------------
+newMeshBall("HeadSmile", Vector3.new(0.5, 0.1, 0.15), ORIGIN * CFrame.new(0, -0.15, 3.28) * CFrame.Angles(math.rad(10), 0, 0), Color3.fromRGB(40, 60, 35), Enum.Material.SmoothPlastic, model)
+
+-- 5) Vier stummelige Flipper: je 2 überlappende, sich verjüngende Ellipsoide -------
+local legPositions = {
+	{ "LegFrontLeft", 1.5, 1.3, 1 },
+	{ "LegFrontRight", -1.5, 1.3, -1 },
+	{ "LegBackLeft", 1.45, -1.6, 1 },
+	{ "LegBackRight", -1.45, -1.6, -1 },
+}
+for _, legData in ipairs(legPositions) do
+	local legName, xOff, zOff, side = legData[1], legData[2], legData[3], legData[4]
+	local root = ORIGIN * CFrame.new(xOff * 0.62, -0.25, zOff)
+	newMeshBall(legName, Vector3.new(0.95, 0.55, 1.3), root, BODY_COLOR, Enum.Material.SmoothPlastic, model)
+	newMeshBall(legName .. "Tip", Vector3.new(0.7, 0.4, 0.85), root * CFrame.new(side * 0.6, -0.05, 0), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
+end
+
+-- 6) Kurzer, rundlicher Schwanzstummel hinten, überlappt den Körper -------------------
+newMeshBall("TailStub", Vector3.new(0.6, 0.5, 0.6), ORIGIN * CFrame.new(0, -0.05, -2.2), BODY_COLOR, Enum.Material.SmoothPlastic, model)
 
 -- 7) Idle-Puls-Attachment ------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")

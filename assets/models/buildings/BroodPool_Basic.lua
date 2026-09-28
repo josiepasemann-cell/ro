@@ -143,26 +143,27 @@ for i = 1, 4 do
 	)
 end
 
--- 6) Oberflaechendetails: Basalt-Sockeltextur, Korallenbesatz, Kieselsteine --
+-- 6) Oberflaechendetails: Basalt-Sockeltextur, dicke rundliche Koralle-Kugeln,-
+-- klobige Kiesel-Ellipsoide (kartoonig, keine scharfen Kanten) --------------
 addKeyedTexture(base, "BasaltRock", Enum.NormalId.Top, 4, 4, Color3.fromRGB(140, 146, 154), 0.05)
-addKeyedTexture(poolRing, "CoralPorous", Enum.NormalId.Front, 3, 2, Color3.fromRGB(255, 190, 175), 0.1)
 
-local PEBBLE_COLOR = Color3.fromRGB(120, 126, 134)
-for i = 1, 6 do
-	local angle = math.rad(60 * (i - 1) + 15)
-	local radius = 6.6
-	local pebbleCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.55, math.sin(angle) * radius)
-	local pebble = newPart("FoundationPebble" .. i, Vector3.new(0.5 + (i % 3) * 0.15, 0.4, 0.5 + (i % 2) * 0.2), pebbleCFrame, PEBBLE_COLOR, Enum.Material.Pebble, model)
+local PEBBLE_COLOR = Color3.fromRGB(130, 136, 144)
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1) + 15)
+	local radius = 6.0
+	local pebbleCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.6, math.sin(angle) * radius)
+	local pebble = newPart("FoundationPebble" .. i, Vector3.new(1.0, 1.0, 1.0), pebbleCFrame, PEBBLE_COLOR, Enum.Material.Pebble, model)
+	pebble.Shape = Enum.PartType.Ball
 	pebble.CanCollide = false
 end
 
-local CORAL_ACCENT = Color3.fromRGB(255, 150, 130)
+local CORAL_ACCENT = Color3.fromRGB(255, 140, 120)
 for i = 1, 3 do
 	local angle = math.rad(120 * (i - 1) + 60)
-	local radius = 5.4
-	local nubCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 1.1, math.sin(angle) * radius)
-	local nub = newPart("CoralNub" .. i, Vector3.new(0.5, 0.9, 0.5), nubCFrame, CORAL_ACCENT, Enum.Material.Pebble, model)
-	addKeyedTexture(nub, "CoralPorous", Enum.NormalId.Front, 1, 1, CORAL_ACCENT, 0.05)
+	local radius = 5.2
+	local nubCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 1.3, math.sin(angle) * radius)
+	local nub = newPart("CoralNub" .. i, Vector3.new(1.1, 1.5, 1.1), nubCFrame, CORAL_ACCENT, Enum.Material.Pebble, model)
+	nub.Shape = Enum.PartType.Ball
 	nub.CanCollide = false
 end
 

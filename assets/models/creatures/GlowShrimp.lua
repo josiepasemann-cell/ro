@@ -4,10 +4,12 @@
 	Name: GlowShrimp ("Leuchtgarnele")
 	Rarity (Platzhalter): Common
 	Beschreibung:
-		Kleine, längliche Garnele mit segmentiertem Körper (Kopf, Körper,
-		2 Schwanzsegmente), Schwanzfächer, Rostrum-Spitze, 2 Antennen,
-		4 Laufbeinpaaren und leuchtenden Punktmustern entlang des Rückens.
-		Zone: SunZone.
+		Kleine, pummelige, cartoonhafte Garnele: übergroßer runder Kopf mit
+		großen Kulleraugen, dicker Körper, 2 rundliche Schwanzsegmente,
+		fächerartiger Schwanzflossen-Ellipsen-Büschel, kleine Rostrum-Spitze,
+		2 geschwungene Antennen-Ketten, 4 kurze, stummelige Beinpaare und
+		leuchtende Punktmuster entlang des Rückens. Rein organische Formen
+		(Ellipsoide), keine Blockkanten. Zone: SunZone.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (mittleres Körpersegment) -> für Bewegungssteuerung.
@@ -23,7 +25,6 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
-local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(6, 5, 60) -- Vor Ausführung anpassen für gewünschte Position
@@ -56,7 +57,7 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
--- Block-Part + SpecialMesh(Sphere)-Kind für Ellipsoide (siehe GlowJelly.lua).
+-- Organischer Baustein für praktisch jeden Körperteil (siehe GlowJelly.lua).
 local function newBall(name, size, cframe, color, material, parent)
 	local part = newPart(name, size, cframe, color, material, parent)
 	local mesh = Instance.new("SpecialMesh")
@@ -65,19 +66,10 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
-local function addKeyedTexture(part, key, face, color, transparency, studsU, studsV)
-	local tex = Instance.new("Texture")
-	tex.Name = "Tex_" .. key
-	tex.Texture = ""
-	tex.Face = face
-	tex.StudsPerTileU = studsU or 3
-	tex.StudsPerTileV = studsV or studsU or 3
-	tex.Color3 = color
-	tex.Transparency = transparency or 0
-	tex:SetAttribute("TextureKey", key)
-	CollectionService:AddTag(tex, "KeyedTexture")
-	tex.Parent = part
-	return tex
+local function newCartoonEye(name, cframe, eyeSize, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.55, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), Color3.fromRGB(20, 15, 15), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -93,81 +85,68 @@ model.Name = "GlowShrimp"
 model.Parent = creaturesFolder
 
 local SHELL_COLOR = Color3.fromRGB(255, 200, 150)
-local SHELL_DARK = Color3.fromRGB(210, 145, 100)
-local SHELL_BELLY = Color3.fromRGB(255, 225, 195)
+local SHELL_DARK = Color3.fromRGB(215, 150, 105)
+local SHELL_BELLY = Color3.fromRGB(255, 228, 200)
 local GLOW_COLOR = Color3.fromRGB(255, 150, 220)
-local EYE_COLOR = Color3.fromRGB(20, 20, 25)
 
--- 1) Körpersegmente entlang der lokalen X-Achse (Kopf = +X, Schwanz = -X),
---    jeweils mit großzügiger Überlappung zum Nachbarsegment. Leicht bumpiges
---    Pebble-Material statt glattem Plastik für organische Panzeroberfläche. --
-local head = newBall("HeadSegment", Vector3.new(0.95, 0.85, 0.78), ORIGIN * CFrame.new(0.78, 0.1, 0) * CFrame.Angles(0, 0, math.rad(-6)), SHELL_COLOR, Enum.Material.Pebble, model)
+-- 1) Körpersegmente: übergroßer, runder Kopf (cartoonhaft) + Körper + 2
+--    Schwanzsegmente, alle großzügig überlappend. Leicht bumpiges Pebble-
+--    Material für organische Panzeroberfläche. ------------------------------
+local head = newBall("HeadSegment", Vector3.new(1.15, 1.05, 0.95), ORIGIN * CFrame.new(0.75, 0.15, 0) * CFrame.Angles(0, 0, math.rad(-6)), SHELL_COLOR, Enum.Material.Pebble, model)
 
-local body = newBall("Body", Vector3.new(1.15, 0.95, 0.88), ORIGIN, SHELL_COLOR, Enum.Material.Pebble, model)
+local body = newBall("Body", Vector3.new(1.1, 0.9, 0.85), ORIGIN, SHELL_COLOR, Enum.Material.Pebble, model)
 
-local tail1 = newBall("TailSegment1", Vector3.new(0.85, 0.75, 0.72), ORIGIN * CFrame.new(-0.78, -0.08, 0) * CFrame.Angles(0, 0, math.rad(8)), SHELL_COLOR, Enum.Material.Pebble, model)
+local tail1 = newBall("TailSegment1", Vector3.new(0.78, 0.68, 0.66), ORIGIN * CFrame.new(-0.72, -0.1, 0) * CFrame.Angles(0, 0, math.rad(10)), SHELL_COLOR, Enum.Material.Pebble, model)
 
-local tail2 = newBall("TailSegment2", Vector3.new(0.62, 0.58, 0.55), ORIGIN * CFrame.new(-1.3, -0.22, 0) * CFrame.Angles(0, 0, math.rad(18)), SHELL_DARK, Enum.Material.Pebble, model)
+local tail2 = newBall("TailSegment2", Vector3.new(0.55, 0.5, 0.48), ORIGIN * CFrame.new(-1.2, -0.26, 0) * CFrame.Angles(0, 0, math.rad(20)), SHELL_DARK, Enum.Material.Pebble, model)
 
 -- 1b) Hellere Bauchunterseite (Countershading), deutlich eingebettet ---------
-newBall("Belly", Vector3.new(1.6, 0.35, 0.7), ORIGIN * CFrame.new(-0.3, -0.42, 0), SHELL_BELLY, Enum.Material.SmoothPlastic, model)
+newBall("Belly", Vector3.new(1.5, 0.32, 0.62), ORIGIN * CFrame.new(-0.15, -0.4, 0), SHELL_BELLY, Enum.Material.SmoothPlastic, model)
 
--- 1c) Dunkle Segment-Trennfugen (Ringe) als schmale eingebettete Bänder -------
-local ringX = { 0.35, -0.35, -1.0 }
-for i, x in ipairs(ringX) do
-	newPart("SegmentRing" .. i, Vector3.new(0.06, 0.7, 0.7), ORIGIN * CFrame.new(x, -0.02, 0), SHELL_DARK, Enum.Material.SmoothPlastic, model)
-end
-
--- 2) Schwanzfächer, deutlich in TailSegment2 eingebettet ---------------------
-local fanCFrame = ORIGIN * CFrame.new(-1.7, -0.42, 0) * CFrame.Angles(0, 0, math.rad(26))
-local tailFin = newPart("TailFin", Vector3.new(0.32, 0.85, 1.15), fanCFrame, GLOW_COLOR, Enum.Material.Neon, model)
-tailFin.Transparency = 0.1
-addKeyedTexture(tailFin, "FishScalesFine", Enum.NormalId.Right, Color3.fromRGB(255, 255, 255), 0.2, 2, 2)
-
--- 3) Rostrum (spitzer Nasenstachel) am Kopf ----------------------------------
-local rostrumCFrame = ORIGIN * CFrame.new(1.25, 0.15, 0) * CFrame.Angles(0, 0, math.rad(-4))
-local rostrum = Instance.new("WedgePart")
-rostrum.Name = "Rostrum"
-rostrum.Size = Vector3.new(0.55, 0.22, 0.2)
-rostrum.CFrame = rostrumCFrame * CFrame.Angles(0, math.rad(90), 0)
-rostrum.Color = SHELL_COLOR
-rostrum.Material = Enum.Material.Pebble
-rostrum.Anchored = true
-rostrum.CanCollide = false
-rostrum.Parent = model
-
--- 4) Zwei dünne, geschwungene Antennen ---------------------------------------
+-- 1c) Niedliches Cartoon-Gesicht am übergroßen Kopf ---------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local baseCFrame = ORIGIN * CFrame.new(1.1, 0.35, side * 0.22) * CFrame.Angles(0, 0, math.rad(-38))
-	newPart("Antenna" .. i, Vector3.new(0.07, 1.9, 0.07), baseCFrame * CFrame.new(0, 0.9, 0), Color3.fromRGB(255, 220, 190), Enum.Material.SmoothPlastic, model)
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(1.05, 0.4, side * 0.34), Vector3.new(0.4, 0.4, 0.24), model)
 end
 
--- 5) Zwei kleine Stielaugen ---------------------------------------------------
+-- 2) Schwanzfächer: 3 überlappende, abgeflachte Ellipsen (statt Platte),
+--    fächerförmig aufgestellt, tief in TailSegment2 eingebettet -------------
+for i = 1, 3 do
+	local spread = math.rad(20 * (i - 2))
+	local fanCFrame = ORIGIN * CFrame.new(-1.55, -0.42, 0) * CFrame.Angles(0, spread, 0) * CFrame.Angles(0, 0, math.rad(26))
+	local fanPart = newBall("TailFin" .. (i == 2 and "" or i), Vector3.new(0.16, 0.75, 0.95), fanCFrame, GLOW_COLOR, Enum.Material.Neon, model)
+	fanPart.Transparency = 0.1
+end
+
+-- 3) Rostrum (kleine, stumpfe Nasenspitze) am Kopf ---------------------------
+newBall("Rostrum", Vector3.new(0.45, 0.28, 0.26), ORIGIN * CFrame.new(1.35, 0.12, 0) * CFrame.Angles(0, 0, math.rad(-4)), SHELL_COLOR, Enum.Material.Pebble, model)
+
+-- 4) Zwei geschwungene Antennen-Ketten (je 2 sich verjüngende Ellipsen) ------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(1.0, 0.42, side * 0.32)
-	newBall("Eye" .. i, Vector3.new(0.22, 0.22, 0.22), eyeCFrame, EYE_COLOR, Enum.Material.SmoothPlastic, model)
+	local baseCFrame = ORIGIN * CFrame.new(1.1, 0.4, side * 0.28) * CFrame.Angles(0, 0, math.rad(-38))
+	local seg1 = newBall("Antenna" .. i, Vector3.new(0.13, 0.85, 0.13), baseCFrame * CFrame.new(0, 0.4, 0), Color3.fromRGB(255, 220, 190), Enum.Material.SmoothPlastic, model)
+	local seg2CFrame = baseCFrame * CFrame.new(0, 0.8, 0) * CFrame.Angles(0, 0, math.rad(-16 * side))
+	newBall("AntennaTip" .. i, Vector3.new(0.08, 0.9, 0.08), seg2CFrame * CFrame.new(0, 0.42, 0), Color3.fromRGB(255, 220, 190), Enum.Material.SmoothPlastic, model)
 end
 
--- 6) 4 Laufbeinpaare unter Körper/Schwanz ------------------------------------
-local legX = { 0.45, 0.05, -0.4, -0.85 }
+-- 5) 4 kurze, stummelige Beinpaare unter Körper/Schwanz (cartoony dick) ------
+local legX = { 0.4, 0.0, -0.4, -0.8 }
 for i = 1, 4 do
 	for j = 1, 2 do
 		local side = (j == 1) and 1 or -1
-		local legCFrame = ORIGIN * CFrame.new(legX[i], -0.42, side * 0.32) * CFrame.Angles(0, 0, math.rad(side * -12))
-		newPart("Leg" .. i .. "_" .. j, Vector3.new(0.08, 0.45, 0.08), legCFrame * CFrame.new(0, -0.2, 0), SHELL_DARK, Enum.Material.SmoothPlastic, model)
+		local legCFrame = ORIGIN * CFrame.new(legX[i], -0.42, side * 0.3) * CFrame.Angles(0, 0, math.rad(side * -14))
+		newBall("Leg" .. i .. "_" .. j, Vector3.new(0.16, 0.32, 0.16), legCFrame * CFrame.new(0, -0.16, 0), SHELL_DARK, Enum.Material.SmoothPlastic, model)
 	end
 end
 
--- 7) Leuchtpunkte entlang des Rückens (direkt auf der Panzeroberfläche) -----
-local dotX = { 0.78, 0.3, -0.2, -0.7, -1.15 }
+-- 6) Leuchtpunkte entlang des Rückens (direkt auf der Panzeroberfläche) -----
+local dotX = { 0.7, 0.25, -0.2, -0.65, -1.05 }
 for i = 1, #dotX do
-	local dotCFrame = ORIGIN * CFrame.new(dotX[i], 0.42, 0)
-	newBall("GlowSpot" .. i, Vector3.new(0.22, 0.22, 0.22), dotCFrame, GLOW_COLOR, Enum.Material.Neon, model)
+	newBall("GlowSpot" .. i, Vector3.new(0.2, 0.2, 0.2), ORIGIN * CFrame.new(dotX[i], 0.4, 0), GLOW_COLOR, Enum.Material.Neon, model)
 end
 
--- 8) Idle-Puls-Attachment -----------------------------------------------------
+-- 7) Idle-Puls-Attachment -----------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body

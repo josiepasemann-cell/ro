@@ -4,10 +4,13 @@
 	Name: BioluminescentEel ("Biolumineszenz-Aal")
 	Rarity (Platzhalter): Epic
 	Beschreibung:
-		Langer, segmentierter Aalkörper (Kette sich verjüngender, überlappender
-		Zylinder-Segmente) mit leuchtenden Streifen-Akzenten entlang des
-		Rückens, einem Kopf mit zwei Glow-Augen und kleinen Kiefer-/
-		Rückenflossen-Details. Zone: TwilightZone.
+		Langer, segmentierter, cartoonhaft rundlicher Aalkörper (Kette sich
+		verjüngender, überlappender Zylinder-Segmente mit abgerundeten
+		Ellipsen-Verbindungsstücken an jedem Gelenk, damit keine harten
+		Zylinderkanten sichtbar sind) mit leuchtenden Streifen-Akzenten
+		entlang des Rückens, einem übergroßen, runden Kopf mit großen
+		leuchtenden Kulleraugen und kleinen Kiefer-/Rückenflossen-Details.
+		Zone: TwilightZone.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (Kopfsegment) -> für Bewegungssteuerung.
@@ -64,6 +67,12 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
+local function newCartoonEye(name, cframe, eyeSize, pupilColor, parent)
+	newBall(name, eyeSize, cframe, Color3.fromRGB(255, 255, 255), Enum.Material.SmoothPlastic, parent)
+	newBall(name .. "Pupil", eyeSize * 0.55, cframe * CFrame.new(0, 0, -eyeSize.Z * 0.3), pupilColor, Enum.Material.Neon, parent)
+	newBall(name .. "Glint", eyeSize * 0.2, cframe * CFrame.new(eyeSize.X * 0.15, eyeSize.Y * 0.2, -eyeSize.Z * 0.42), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, parent)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -76,43 +85,46 @@ local model = Instance.new("Model")
 model.Name = "BioluminescentEel"
 model.Parent = creaturesFolder
 
-local SKIN_COLOR = Color3.fromRGB(30, 40, 55)
-local BELLY_COLOR = Color3.fromRGB(55, 70, 90)
+local SKIN_COLOR = Color3.fromRGB(35, 48, 65)
+local SKIN_TOP = Color3.fromRGB(24, 34, 48)
+local BELLY_COLOR = Color3.fromRGB(65, 82, 105)
 local STRIPE_COLOR = Color3.fromRGB(90, 220, 255)
 
--- 1) Kopf (Body / PrimaryPart) -------------------------------------------------
-local body = newBall("Body", Vector3.new(1.3, 1.1, 1.5), ORIGIN, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+-- 1) Kopf (Body / PrimaryPart): übergroßer, runder Ellipsoid-Kopf ------------
+local body = newBall("Body", Vector3.new(1.6, 1.35, 1.7), ORIGIN, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 1b) Helle Kehl-/Bauchzeichnung am Kopf, direkt eingebettet -------------------
-newBall("Throat", Vector3.new(0.8, 0.5, 0.9), ORIGIN * CFrame.new(0, -0.4, 0.3), BELLY_COLOR, Enum.Material.SmoothPlastic, model)
+-- 1b) Countershading: dunklere Kopfoberseite, helle Kehle -------------------
+newBall("HeadTop", Vector3.new(1.1, 0.6, 1.2), ORIGIN * CFrame.new(0, 0.55, -0.1), SKIN_TOP, Enum.Material.SmoothPlastic, model)
+newBall("Throat", Vector3.new(0.9, 0.55, 1.0), ORIGIN * CFrame.new(0, -0.45, 0.3), BELLY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Zwei Glow-Augen ---------------------------------------------------------------
+-- 2) Zwei große, leuchtende Kulleraugen --------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.4, 0.12, 0.65)
-	newBall("Eye" .. i, Vector3.new(0.26, 0.26, 0.26), eyeCFrame, STRIPE_COLOR, Enum.Material.Neon, model)
+	newCartoonEye("Eye" .. i, ORIGIN * CFrame.new(side * 0.48, 0.18, 0.75), Vector3.new(0.4, 0.4, 0.26), STRIPE_COLOR, model)
 end
 
--- 2b) Kleine Kieferlinie -----------------------------------------------------------
-newPart("Jaw", Vector3.new(0.6, 0.18, 0.5), ORIGIN * CFrame.new(0, -0.42, 0.6), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+-- 2b) Kleine Kieferlinie (weiches Ellipsoid statt Kante) --------------------
+newBall("Jaw", Vector3.new(0.65, 0.24, 0.55), ORIGIN * CFrame.new(0, -0.46, 0.6), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 3) Körpersegmente: sich verjüngend, überlappend und leicht schlängelnd ----------
--- currentZ/currentCFrame verfolgt jeweils das Zentrum des ZULETZT gebauten
--- Segments (bzw. des Kopfes), so dass jedes neue Segment garantiert um
--- SEG_OVERLAP Studs in seinen Vorgänger einbettet, unabhängig vom lokalen
--- Schlängel-Winkel.
-local SEG_OVERLAP = 0.22
+-- 3) Körpersegmente: sich verjüngend, überlappend und leicht schlängelnd, mit
+--    kleinen abgerundeten Ellipsen-Gelenkstücken zwischen den Zylindern, damit
+--    keine harten Zylinder-Endkappen sichtbar sind ---------------------------
+local SEG_OVERLAP = 0.24
 local prevCFrame = ORIGIN
-local prevHalfLen = 0.75 -- halbe Kopf-Tiefe (Body.Size.Z / 2)
+local prevHalfLen = 0.85 -- halbe Kopf-Tiefe (Body.Size.Z / 2)
 
 for i = 1, SEGMENT_COUNT do
 	local t = i / SEGMENT_COUNT
 	local segLength = 1.35
 	local halfLen = segLength / 2
-	local diameter = 1.05 - t * 0.75
+	local diameter = 1.15 - t * 0.85
 	local waveAngle = math.rad(16 * math.sin(i * 0.9))
 
 	local jointCFrame = prevCFrame * CFrame.Angles(0, waveAngle, 0) * CFrame.new(0, 0, -(prevHalfLen + halfLen - SEG_OVERLAP))
+
+	-- Abgerundetes Gelenkstück (Ellipsoid) genau am Segment-Übergang, damit
+	-- der Zylinder-Rand nicht als harte Kante sichtbar ist.
+	newBall("SegmentJoint" .. i, Vector3.new(diameter * 1.02, diameter * 1.02, diameter * 0.5), jointCFrame * CFrame.new(0, 0, halfLen - SEG_OVERLAP * 0.5), SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 
 	-- Cylinder-Shape: Roblox rendert die Länge IMMER entlang der lokalen
 	-- X-Achse (Size.X = Länge, Size.Y/Z = Durchmesser) - deshalb Size.X =
@@ -128,38 +140,24 @@ for i = 1, SEGMENT_COUNT do
 	)
 	segPart.Shape = Enum.PartType.Cylinder
 
-	-- Leuchtstreifen-Akzent auf jedem Segment (durchgehend eingebettet)
-	local stripeCFrame = jointCFrame * CFrame.new(0, diameter / 2 - 0.05, 0)
-	newPart(
-		"GlowStripe" .. i,
-		Vector3.new(diameter * 0.5, 0.14, segLength * 0.75),
-		stripeCFrame,
-		STRIPE_COLOR,
-		Enum.Material.Neon,
-		model
-	)
+	-- Leuchtstreifen-Akzent auf jedem Segment (schmaler, flacher Ellipsoid)
+	local stripeCFrame = jointCFrame * CFrame.new(0, diameter / 2 - 0.06, 0)
+	local stripe = newBall("GlowStripe" .. i, Vector3.new(diameter * 0.55, 0.16, segLength * 0.85), stripeCFrame, STRIPE_COLOR, Enum.Material.Neon, model)
+	stripe.Transparency = 0.05
 
-	-- Kleiner Rückenflossen-Zacken alle 2 Segmente
+	-- Kleiner Rückenflossen-Zacken alle 2 Segmente (flache Ellipse) ----------
 	if i % 2 == 0 then
-		local finCFrame = jointCFrame * CFrame.new(0, diameter / 2 + 0.15, 0)
-		local fin = Instance.new("WedgePart")
-		fin.Name = "DorsalFin" .. i
-		fin.Size = Vector3.new(diameter * 0.4, 0.35, segLength * 0.7)
-		fin.CFrame = finCFrame
-		fin.Color = SKIN_COLOR
-		fin.Material = Enum.Material.SmoothPlastic
-		fin.Anchored = true
-		fin.CanCollide = false
-		fin.Parent = model
+		local finCFrame = jointCFrame * CFrame.new(0, diameter / 2 + 0.16, 0)
+		newBall("DorsalFin" .. i, Vector3.new(diameter * 0.5, 0.38, segLength * 0.78), finCFrame, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
 	end
 
 	prevCFrame = jointCFrame
 	prevHalfLen = halfLen
 end
 
--- Schwanzspitze
-local tailTipCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfLen + 0.12 - SEG_OVERLAP))
-newBall("TailTip", Vector3.new(0.25, 0.25, 0.25), tailTipCFrame, STRIPE_COLOR, Enum.Material.Neon, model)
+-- Schwanzspitze (Ellipsoid statt harter Kugel-Kappe wirkt weicher)
+local tailTipCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfLen + 0.14 - SEG_OVERLAP))
+newBall("TailTip", Vector3.new(0.22, 0.22, 0.3), tailTipCFrame, STRIPE_COLOR, Enum.Material.Neon, model)
 
 -- 4) Idle-Puls-Attachment -----------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")

@@ -134,6 +134,34 @@ local function newPart(name: string, size: Vector3, cframe: CFrame, color: Color
 	return part
 end
 
+-- Organisches, ovales Teil: Block-Part + SpecialMesh(Sphere), non-uniform
+-- Size -> gestrecktes Ellipsoid statt Kiste (weicher, kartoonig runder Oktopus).
+local function newOvalPart(name: string, size: Vector3, cframe: CFrame, color: Color3, material: Enum.Material, parent: Instance): Part
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1, 1, 1)
+	mesh.Parent = part
+	return part
+end
+
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+local function newTexture(key: string, face: Enum.NormalId, part: Instance, opts: { studsU: number?, studsV: number?, color: Color3?, transparency: number? }?): Texture
+	local o = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = o.studsU or 3
+	tex.StudsPerTileV = o.studsV or 3
+	tex.Color3 = o.color or Color3.new(1, 1, 1)
+	tex.Transparency = o.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 -- // Root setup ---------------------------------------------------------------
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local npcsFolder = getOrCreateFolder(assetsFolder, "Npcs")
@@ -150,51 +178,54 @@ model.Parent = npcsFolder
 local anchor = computeStandAnchorCFrame(STAND_INTERACTABLE, SIDE_OFFSET, FORWARD_OFFSET, FALLBACK_OFFSET)
 local rootCFrame = anchor * CFrame.new(0, BODY_HEIGHT, 0)
 
--- 1) Body: rounded mantle -------------------------------------------------
-local body = newPart("Body", Vector3.new(3.0, 3.4, 3.0), rootCFrame, MANTLE_COLOR, Enum.Material.SmoothPlastic, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Body: big, soft, bulbous mantle (chunky cartoon ellipsoid) ------------
+local body = newOvalPart("Body", Vector3.new(3.4, 3.7, 3.2), rootCFrame, MANTLE_COLOR, Enum.Material.Marble, model)
 
 -- Glowing "age ring" wrinkles on the mantle
-newPart("MantleGlowRing", Vector3.new(3.05, 0.18, 3.05), rootCFrame * CFrame.new(0, 0.3, 0), NEON_VIOLET, Enum.Material.Neon, model)
-newPart("MantleGlowRing2", Vector3.new(2.7, 0.14, 2.7), rootCFrame * CFrame.new(0, -0.5, 0), NEON_VIOLET, Enum.Material.Neon, model)
+newOvalPart("MantleGlowRing", Vector3.new(3.15, 0.2, 3.15), rootCFrame * CFrame.new(0, 0.3, 0), NEON_VIOLET, Enum.Material.Neon, model)
+newOvalPart("MantleGlowRing2", Vector3.new(2.8, 0.16, 2.8), rootCFrame * CFrame.new(0, -0.5, 0), NEON_VIOLET, Enum.Material.Neon, model)
 
--- 2) Head: smaller bump perched at the front-top of the mantle ----------
-local head = newPart("Head", Vector3.new(1.5, 1.1, 1.3), rootCFrame * CFrame.new(0, 1.35, 0.9), MANTLE_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
-head.Shape = Enum.PartType.Ball
+-- 2) Head: oversized round bump perched at the front-top of the mantle ----------
+local head = newOvalPart("Head", Vector3.new(1.8, 1.3, 1.5), rootCFrame * CFrame.new(0, 1.4, 0.95), MANTLE_COLOR_LIGHT, Enum.Material.Marble, model)
 
--- Big kind eyes (named, movable for blink)
-local eye1 = newPart("Eye1", Vector3.new(0.55, 0.55, 0.3), rootCFrame * CFrame.new(-0.4, 1.4, 1.55), EYE_COLOR, Enum.Material.Neon, model)
+-- Big, kind, wide cartoon eyes with pupils + highlights (named, movable for blink)
+local eye1 = newPart("Eye1", Vector3.new(0.7, 0.7, 0.34), rootCFrame * CFrame.new(-0.42, 1.42, 1.62), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
 eye1.Shape = Enum.PartType.Ball
-local eye2 = newPart("Eye2", Vector3.new(0.55, 0.55, 0.3), rootCFrame * CFrame.new(0.4, 1.4, 1.55), EYE_COLOR, Enum.Material.Neon, model)
+local eye2 = newPart("Eye2", Vector3.new(0.7, 0.7, 0.34), rootCFrame * CFrame.new(0.42, 1.42, 1.62), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
 eye2.Shape = Enum.PartType.Ball
+for _, side in ipairs({ -1, 1 }) do
+	local pupilCFrame = rootCFrame * CFrame.new(side * 0.42, 1.42, 1.78)
+	local pupil = newPart("EyePupil" .. (side < 0 and "L" or "R"), Vector3.new(0.3, 0.3, 0.18), pupilCFrame, Color3.fromRGB(60, 40, 90), Enum.Material.SmoothPlastic, model)
+	pupil.Shape = Enum.PartType.Ball
+	local glint = newPart("EyeGlint" .. (side < 0 and "L" or "R"), Vector3.new(0.1, 0.1, 0.06), pupilCFrame * CFrame.new(0.09, 0.09, 0.06), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	glint.Shape = Enum.PartType.Ball
+end
 
--- Wise old spectacles (readable "elder" prop): two thin lens rims + a bridge
-newPart("SpecsLensL", Vector3.new(0.55, 0.55, 0.06), rootCFrame * CFrame.new(-0.4, 1.4, 1.62), Color3.fromRGB(230, 225, 210), Enum.Material.Glass, model).Shape = Enum.PartType.Ball
-newPart("SpecsLensR", Vector3.new(0.55, 0.55, 0.06), rootCFrame * CFrame.new(0.4, 1.4, 1.62), Color3.fromRGB(230, 225, 210), Enum.Material.Glass, model).Shape = Enum.PartType.Ball
-newPart("SpecsBridge", Vector3.new(0.35, 0.08, 0.08), rootCFrame * CFrame.new(0, 1.4, 1.63), Color3.fromRGB(210, 200, 180), Enum.Material.Metal, model)
+-- Wise old spectacles (readable "elder" prop): two thin round lens rims + a bridge
+newPart("SpecsLensL", Vector3.new(0.62, 0.62, 0.06), rootCFrame * CFrame.new(-0.42, 1.42, 1.7), Color3.fromRGB(230, 225, 210), Enum.Material.Glass, model).Shape = Enum.PartType.Ball
+newPart("SpecsLensR", Vector3.new(0.62, 0.62, 0.06), rootCFrame * CFrame.new(0.42, 1.42, 1.7), Color3.fromRGB(230, 225, 210), Enum.Material.Glass, model).Shape = Enum.PartType.Ball
+newPart("SpecsBridge", Vector3.new(0.4, 0.08, 0.08), rootCFrame * CFrame.new(0, 1.42, 1.71), Color3.fromRGB(210, 200, 180), Enum.Material.Foil, model)
 
--- 3) Two primary tentacles (named, movable for waving) -------------------
-local armL = newPart("ArmL", Vector3.new(0.55, 2.6, 0.55), rootCFrame * CFrame.new(-1.6, -2.0, 0.4) * CFrame.Angles(math.rad(10), 0, math.rad(14)), TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
-local armR = newPart("ArmR", Vector3.new(0.55, 2.6, 0.55), rootCFrame * CFrame.new(1.6, -2.0, 0.4) * CFrame.Angles(math.rad(10), 0, math.rad(-14)), TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
+-- 3) Two primary tentacles: tapering chains of overlapping ellipsoids (movable) --
+for _, spec in ipairs({ { name = "ArmL", side = -1 }, { name = "ArmR", side = 1 } }) do
+	local baseCFrame = rootCFrame * CFrame.new(spec.side * 1.6, -1.0, 0.4) * CFrame.Angles(math.rad(10), 0, math.rad(spec.side * 14))
+	local arm = newOvalPart(spec.name, Vector3.new(0.6, 1.3, 0.6), baseCFrame, TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
+	newOvalPart(spec.name .. "Tip", Vector3.new(0.42, 1.2, 0.42), baseCFrame * CFrame.new(0, -1.15, 0) * CFrame.Angles(math.rad(spec.side * 6), 0, 0), TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
+end
 
--- 4) Four more hanging tentacles (static decoration) ----------------------
+-- 4) Four more hanging tentacles: tapering two-segment ellipsoid chains ---------
 local tentacleOffsets = { Vector3.new(-0.8, -2.2, -1.0), Vector3.new(0.8, -2.2, -1.0), Vector3.new(-1.3, -2.1, -0.3), Vector3.new(1.3, -2.1, -0.3) }
 for index, offset in ipairs(tentacleOffsets) do
 	local sign = offset.X < 0 and -1 or 1
-	newPart(
-		"Tentacle" .. index,
-		Vector3.new(0.45, 2.2, 0.45),
-		rootCFrame * CFrame.new(offset) * CFrame.Angles(math.rad(6), 0, math.rad(sign * 8)),
-		TENTACLE_COLOR,
-		Enum.Material.SmoothPlastic,
-		model
-	)
+	local segCFrame = rootCFrame * CFrame.new(offset) * CFrame.Angles(math.rad(6), 0, math.rad(sign * 8))
+	newOvalPart("Tentacle" .. index, Vector3.new(0.5, 1.1, 0.5), segCFrame, TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
+	newOvalPart("Tentacle" .. index .. "Tip", Vector3.new(0.34, 1.1, 0.34), segCFrame * CFrame.new(0, -1.0, 0), TENTACLE_COLOR, Enum.Material.SmoothPlastic, model)
 end
 
--- 5) A guarded mystery egg cradled between the front tentacles -------------------
-local egg = newPart("GuardedEgg", Vector3.new(0.75, 0.95, 0.75), rootCFrame * CFrame.new(0, -1.5, 1.0), Color3.fromRGB(220, 200, 255), Enum.Material.SmoothPlastic, model)
+-- 5) A guarded mystery egg (big, round) cradled between the front tentacles -----
+local egg = newPart("GuardedEgg", Vector3.new(0.9, 1.1, 0.9), rootCFrame * CFrame.new(0, -1.5, 1.0), Color3.fromRGB(220, 200, 255), Enum.Material.SmoothPlastic, model)
 egg.Shape = Enum.PartType.Ball
-newPart("GuardedEggBand", Vector3.new(0.78, 0.16, 0.78), rootCFrame * CFrame.new(0, -1.35, 1.0), NEON_VIOLET, Enum.Material.Neon, model)
+newOvalPart("GuardedEggBand", Vector3.new(0.94, 0.18, 0.94), rootCFrame * CFrame.new(0, -1.35, 1.0), NEON_VIOLET, Enum.Material.Neon, model)
 
 model.PrimaryPart = body
 model:SetAttribute("NpcId", NPC_ID)
