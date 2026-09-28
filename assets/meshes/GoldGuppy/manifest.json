@@ -1,0 +1,508 @@
+{
+ "model": "GoldGuppy",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 9340,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "GoldGuppy_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00148,
+    0.0008,
+    -0.00175,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.1571,
+    1.2528,
+    1.7422
+   ],
+   "replaces": [
+    "Body"
+   ],
+   "material": "Foil",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_Body_ColorMap.png",
+    "NormalMap": "GoldGuppy_Body_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_Body_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_Body_MetalnessMap.png"
+   },
+   "tris": 4200,
+   "verts": 2396,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin",
+   "primary": false,
+   "animated": true,
+   "file": "GoldGuppy_DorsalFin.obj",
+   "glbNode": "DorsalFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.75,
+    -0.1,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "center": [
+    -0.00067,
+    0.74906,
+    -0.09777,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "size": [
+    0.1614,
+    0.5467,
+    0.6203
+   ],
+   "replaces": [
+    "DorsalFin"
+   ],
+   "material": "Foil",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_DorsalFin_ColorMap.png",
+    "NormalMap": "GoldGuppy_DorsalFin_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_DorsalFin_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_DorsalFin_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 467,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "GoldGuppy_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.4,
+    0.21,
+    -0.85,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.4,
+    0.22,
+    -0.75,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.32,
+    0.3189,
+    0.2591
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeWhite1",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_Eye1_ColorMap.png",
+    "NormalMap": "GoldGuppy_Eye1_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GoldGuppy_Eye1_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 425,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "GoldGuppy_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.4,
+    0.21,
+    -0.85,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.4,
+    0.22,
+    -0.75,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.32,
+    0.3189,
+    0.2591
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeWhite2",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_Eye1_ColorMap.png",
+    "NormalMap": "GoldGuppy_Eye1_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GoldGuppy_Eye1_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 425,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "GoldGuppy_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.75,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.00036,
+    -0.00135,
+    1.1695,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.8904,
+    0.5014,
+    0.9563
+   ],
+   "replaces": [
+    "TailFin",
+    "TailLamella1",
+    "TailLamella1Tip",
+    "TailLamella2",
+    "TailLamella2Tip",
+    "TailLamella3",
+    "TailLamella3Tip"
+   ],
+   "material": "Foil",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 0.85,
+    "Neon": 0.15
+   },
+   "neon": {
+    "fraction": 0.15,
+    "parts": [
+     "TailLamella1Tip",
+     "TailLamella2Tip",
+     "TailLamella3Tip"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_TailFin_ColorMap.png",
+    "NormalMap": "GoldGuppy_TailFin_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_TailFin_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_TailFin_MetalnessMap.png",
+    "EmissiveMask": "GoldGuppy_TailFin_EmissiveMask.png"
+   },
+   "tris": 1600,
+   "verts": 1058,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "GoldGuppy_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    -0.42,
+    -0.12,
+    -0.15,
+    -0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    0.90631,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.42201,
+    -0.11897,
+    -0.15204,
+    -0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    0.90631,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.4499,
+    0.1372,
+    0.3979
+   ],
+   "replaces": [
+    "SideFin1"
+   ],
+   "material": "Foil",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_SideFin1_ColorMap.png",
+    "NormalMap": "GoldGuppy_SideFin1_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_SideFin1_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 462,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "GoldGuppy_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    0.42,
+    -0.12,
+    -0.15,
+    -0.90631,
+    -0.42262,
+    0.0,
+    -0.42262,
+    0.90631,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.42022,
+    -0.11953,
+    -0.15012,
+    -0.90631,
+    -0.42262,
+    0.0,
+    -0.42262,
+    0.90631,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.4451,
+    0.137,
+    0.3972
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "Foil",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GoldGuppy_SideFin2_ColorMap.png",
+    "NormalMap": "GoldGuppy_SideFin2_NormalMap.png",
+    "RoughnessMap": "GoldGuppy_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "GoldGuppy_SideFin2_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 465,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ]
+}

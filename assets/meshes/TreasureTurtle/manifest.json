@@ -1,0 +1,787 @@
+{
+ "model": "TreasureTurtle",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 16640,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "TreasureTurtle_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00726,
+    0.76776,
+    -0.43443,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.5041,
+    3.1414,
+    5.8959
+   ],
+   "replaces": [
+    "Body",
+    "ShellLower",
+    "Shell",
+    "ShellCap",
+    "ShellSeam1",
+    "ShellSeam2",
+    "ShellRim",
+    "KeyholeDetail",
+    "Neck",
+    "Head",
+    "Blush1",
+    "Blush2",
+    "BeakDetail",
+    "HeadSmile",
+    "TailStub"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 0.1,
+    "Neon": 0.01,
+    "Slate": 0.425,
+    "SmoothPlastic": 0.465
+   },
+   "neon": {
+    "fraction": 0.0097,
+    "parts": [
+     "KeyholeDetail"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_Body_ColorMap.png",
+    "NormalMap": "TreasureTurtle_Body_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_Body_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_Body_MetalnessMap.png"
+   },
+   "tris": 8000,
+   "verts": 5072,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.5,
+    0.65,
+    -3.23,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.5,
+    0.65,
+    -3.05,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.5,
+    0.5,
+    0.4
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeWhite1",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_Eye1_ColorMap.png",
+    "NormalMap": "TreasureTurtle_Eye1_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_Eye1_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_Eye1_MetalnessMap.png",
+    "EmissiveMask": "TreasureTurtle_Eye1_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 425,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.5,
+    0.65,
+    -3.23,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.5,
+    0.65,
+    -3.05,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.5,
+    0.5,
+    0.4
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeWhite2",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_Eye1_ColorMap.png",
+    "NormalMap": "TreasureTurtle_Eye1_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_Eye1_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_Eye1_MetalnessMap.png",
+    "EmissiveMask": "TreasureTurtle_Eye1_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 425,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFrontLeft",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeft.obj",
+   "glbNode": "LegFrontLeft",
+   "sharedWith": null,
+   "pivot": [
+    -0.93,
+    -0.25,
+    -1.3,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.93009,
+    -0.25002,
+    -1.30352,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.9535,
+    0.5477,
+    1.2959
+   ],
+   "replaces": [
+    "LegFrontLeft"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeft_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeft_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 574,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFrontLeftTip",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeftTip.obj",
+   "glbNode": "LegFrontLeftTip",
+   "sharedWith": null,
+   "pivot": [
+    -1.53,
+    -0.3,
+    -1.3,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.53014,
+    -0.30042,
+    -1.2972,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.7018,
+    0.3983,
+    0.8479
+   ],
+   "replaces": [
+    "LegFrontLeftTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeftTip_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeftTip_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 580,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFrontRight",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeft.obj",
+   "glbNode": "LegFrontRight",
+   "sharedWith": "LegFrontLeft",
+   "pivot": [
+    0.93,
+    -0.25,
+    -1.3,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.92991,
+    -0.25002,
+    -1.30352,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.9535,
+    0.5477,
+    1.2959
+   ],
+   "replaces": [
+    "LegFrontRight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeft_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeft_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 574,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFrontRightTip",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeftTip.obj",
+   "glbNode": "LegFrontRightTip",
+   "sharedWith": "LegFrontLeftTip",
+   "pivot": [
+    1.53,
+    -0.3,
+    -1.3,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.52986,
+    -0.30042,
+    -1.2972,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.7018,
+    0.3983,
+    0.8479
+   ],
+   "replaces": [
+    "LegFrontRightTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeftTip_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeftTip_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 580,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegBackLeft",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeft.obj",
+   "glbNode": "LegBackLeft",
+   "sharedWith": "LegFrontLeft",
+   "pivot": [
+    -0.899,
+    -0.25,
+    1.6,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.89909,
+    -0.25002,
+    1.59648,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.9535,
+    0.5477,
+    1.2959
+   ],
+   "replaces": [
+    "LegBackLeft"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeft_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeft_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 574,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegBackLeftTip",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeftTip.obj",
+   "glbNode": "LegBackLeftTip",
+   "sharedWith": "LegFrontLeftTip",
+   "pivot": [
+    -1.499,
+    -0.3,
+    1.6,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.49914,
+    -0.30042,
+    1.6028,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.7018,
+    0.3983,
+    0.8479
+   ],
+   "replaces": [
+    "LegBackLeftTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeftTip_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeftTip_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 580,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegBackRight",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeft.obj",
+   "glbNode": "LegBackRight",
+   "sharedWith": "LegFrontLeft",
+   "pivot": [
+    0.899,
+    -0.25,
+    1.6,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.89891,
+    -0.25002,
+    1.59648,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.9535,
+    0.5477,
+    1.2959
+   ],
+   "replaces": [
+    "LegBackRight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeft_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeft_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 574,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegBackRightTip",
+   "primary": false,
+   "animated": true,
+   "file": "TreasureTurtle_LegFrontLeftTip.obj",
+   "glbNode": "LegBackRightTip",
+   "sharedWith": "LegFrontLeftTip",
+   "pivot": [
+    1.499,
+    -0.3,
+    1.6,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.49886,
+    -0.30042,
+    1.6028,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.7018,
+    0.3983,
+    0.8479
+   ],
+   "replaces": [
+    "LegBackRightTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TreasureTurtle_LegFrontLeftTip_ColorMap.png",
+    "NormalMap": "TreasureTurtle_LegFrontLeftTip_NormalMap.png",
+    "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
+    "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
+   },
+   "tris": 900,
+   "verts": 580,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ]
+}

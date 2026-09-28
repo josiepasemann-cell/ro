@@ -1,0 +1,871 @@
+{
+ "model": "Shopkeeper",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 17540,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "Shopkeeper_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00098,
+    -0.00505,
+    0.00499,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.6719,
+    2.6089,
+    3.3009
+   ],
+   "replaces": [
+    "Body",
+    "ShellMark",
+    "EyeStalkL",
+    "EyeStalkR",
+    "BlushL",
+    "BlushR",
+    "Satchel",
+    "SatchelFlap",
+    "SatchelBuckle",
+    "SatchelCoin1",
+    "SatchelCoin2",
+    "SatchelCoin3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Fabric": 0.074,
+    "Foil": 0.008,
+    "Neon": 0.006,
+    "SmoothPlastic": 0.916
+   },
+   "neon": {
+    "fraction": 0.0064,
+    "parts": [
+     "ShellMark",
+     "SatchelBuckle"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Body_ColorMap.png",
+    "NormalMap": "Shopkeeper_Body_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Body_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Body_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_Body_EmissiveMask.png"
+   },
+   "tris": 6500,
+   "verts": 3651,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Head",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Head.obj",
+   "glbNode": "Head",
+   "sharedWith": null,
+   "pivot": [
+    -1e-05,
+    -0.7,
+    -1.65,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00283,
+    -0.698,
+    -1.64638,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.395,
+    1.155,
+    1.0971
+   ],
+   "replaces": [
+    "Head",
+    "Mouth"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Head_ColorMap.png",
+    "NormalMap": "Shopkeeper_Head_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Head_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Head_MetalnessMap.png"
+   },
+   "tris": 2600,
+   "verts": 1505,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.32001,
+    0.22,
+    -2.15,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.32001,
+    0.22,
+    -2.15,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2994,
+    0.3,
+    0.2994
+   ],
+   "replaces": [
+    "Eye1",
+    "EyePupilL",
+    "EyeGlintL"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeGlintL"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Eye1_ColorMap.png",
+    "NormalMap": "Shopkeeper_Eye1_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Eye1_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Eye1_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_Eye1_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 425,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    0.31999,
+    0.22,
+    -2.15,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.31999,
+    0.22,
+    -2.15,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2994,
+    0.3,
+    0.2994
+   ],
+   "replaces": [
+    "Eye2",
+    "EyePupilR",
+    "EyeGlintR"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeGlintR"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Eye2_ColorMap.png",
+    "NormalMap": "Shopkeeper_Eye2_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Eye2_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Eye2_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_Eye2_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 425,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmL",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_ArmL.obj",
+   "glbNode": "ArmL",
+   "sharedWith": null,
+   "pivot": [
+    -1.9,
+    0.1,
+    -0.39999,
+    0.91354,
+    0.0,
+    0.40674,
+    0.0,
+    1.0,
+    0.0,
+    -0.40674,
+    0.0,
+    0.91354
+   ],
+   "center": [
+    -1.63602,
+    0.09704,
+    -0.37055,
+    0.91354,
+    0.0,
+    0.40674,
+    0.0,
+    1.0,
+    0.0,
+    -0.40674,
+    0.0,
+    0.91354
+   ],
+   "size": [
+    1.3065,
+    0.8431,
+    1.1168
+   ],
+   "replaces": [
+    "ArmL",
+    "ArmStalkL"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.597,
+    "SmoothPlastic": 0.403
+   },
+   "neon": {
+    "fraction": 0.5971,
+    "parts": [
+     "ArmL"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_ArmL_ColorMap.png",
+    "NormalMap": "Shopkeeper_ArmL_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_ArmL_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_ArmL_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_ArmL_EmissiveMask.png"
+   },
+   "tris": 1400,
+   "verts": 834,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmR",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_ArmR.obj",
+   "glbNode": "ArmR",
+   "sharedWith": null,
+   "pivot": [
+    1.89999,
+    0.1,
+    -0.40001,
+    0.91354,
+    0.0,
+    -0.40674,
+    0.0,
+    1.0,
+    0.0,
+    0.40674,
+    0.0,
+    0.91354
+   ],
+   "center": [
+    1.63265,
+    0.09757,
+    -0.36985,
+    0.91354,
+    0.0,
+    -0.40674,
+    0.0,
+    1.0,
+    0.0,
+    0.40674,
+    0.0,
+    0.91354
+   ],
+   "size": [
+    1.304,
+    0.8422,
+    1.1213
+   ],
+   "replaces": [
+    "ArmR",
+    "ArmStalkR"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.61,
+    "SmoothPlastic": 0.39
+   },
+   "neon": {
+    "fraction": 0.6103,
+    "parts": [
+     "ArmR"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_ArmR_ColorMap.png",
+    "NormalMap": "Shopkeeper_ArmR_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_ArmR_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_ArmR_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_ArmR_EmissiveMask.png"
+   },
+   "tris": 1400,
+   "verts": 870,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawTipL",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_ClawTipL.obj",
+   "glbNode": "ClawTipL",
+   "sharedWith": null,
+   "pivot": [
+    -2.35,
+    0.15,
+    -0.59999,
+    0.91354,
+    0.0,
+    0.40674,
+    0.0,
+    1.0,
+    0.0,
+    -0.40674,
+    0.0,
+    0.91354
+   ],
+   "center": [
+    -2.34821,
+    0.15136,
+    -0.60004,
+    0.91354,
+    0.0,
+    0.40674,
+    0.0,
+    1.0,
+    0.0,
+    -0.40674,
+    0.0,
+    0.91354
+   ],
+   "size": [
+    0.4478,
+    0.318,
+    0.5515
+   ],
+   "replaces": [
+    "ClawTipL"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "ClawTipL"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_ClawTipL_ColorMap.png",
+    "NormalMap": "Shopkeeper_ClawTipL_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_ClawTipL_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_ClawTipL_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_ClawTipL_EmissiveMask.png"
+   },
+   "tris": 700,
+   "verts": 446,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawTipR",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_ClawTipR.obj",
+   "glbNode": "ClawTipR",
+   "sharedWith": null,
+   "pivot": [
+    2.35,
+    0.15,
+    -0.60001,
+    0.91354,
+    0.0,
+    -0.40674,
+    0.0,
+    1.0,
+    0.0,
+    0.40674,
+    0.0,
+    0.91354
+   ],
+   "center": [
+    2.35103,
+    0.14948,
+    -0.60053,
+    0.91354,
+    0.0,
+    -0.40674,
+    0.0,
+    1.0,
+    0.0,
+    0.40674,
+    0.0,
+    0.91354
+   ],
+   "size": [
+    0.4477,
+    0.3163,
+    0.5445
+   ],
+   "replaces": [
+    "ClawTipR"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "ClawTipR"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_ClawTipR_ColorMap.png",
+    "NormalMap": "Shopkeeper_ClawTipR_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_ClawTipR_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_ClawTipR_MetalnessMap.png",
+    "EmissiveMask": "Shopkeeper_ClawTipR_EmissiveMask.png"
+   },
+   "tris": 700,
+   "verts": 460,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Leg1.obj",
+   "glbNode": "Leg1",
+   "sharedWith": null,
+   "pivot": [
+    -1.1,
+    -1.0,
+    0.80001,
+    0.88295,
+    0.46947,
+    -0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    -0.0,
+    1.0
+   ],
+   "center": [
+    -1.10027,
+    -0.9989,
+    0.80001,
+    0.88295,
+    0.46947,
+    -0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    -0.0,
+    1.0
+   ],
+   "size": [
+    0.3006,
+    0.8498,
+    0.2977
+   ],
+   "replaces": [
+    "Leg1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Leg1_ColorMap.png",
+    "NormalMap": "Shopkeeper_Leg1_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Leg1_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Leg1_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 460,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Leg1.obj",
+   "glbNode": "Leg2",
+   "sharedWith": "Leg1",
+   "pivot": [
+    -1.3,
+    -1.0,
+    -0.29999,
+    0.88295,
+    0.46947,
+    -0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    -0.0,
+    1.0
+   ],
+   "center": [
+    -1.30027,
+    -0.9989,
+    -0.29999,
+    0.88295,
+    0.46947,
+    -0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    -0.0,
+    1.0
+   ],
+   "size": [
+    0.3006,
+    0.8498,
+    0.2977
+   ],
+   "replaces": [
+    "Leg2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Leg1_ColorMap.png",
+    "NormalMap": "Shopkeeper_Leg1_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Leg1_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Leg1_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 460,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Leg3.obj",
+   "glbNode": "Leg3",
+   "sharedWith": null,
+   "pivot": [
+    1.10001,
+    -1.0,
+    0.79999,
+    0.88295,
+    -0.46947,
+    -0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.10086,
+    -1.00242,
+    0.80007,
+    0.88295,
+    -0.46947,
+    -0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3026,
+    0.8498,
+    0.3045
+   ],
+   "replaces": [
+    "Leg3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Leg3_ColorMap.png",
+    "NormalMap": "Shopkeeper_Leg3_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Leg3_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Leg3_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 447,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4",
+   "primary": false,
+   "animated": true,
+   "file": "Shopkeeper_Leg4.obj",
+   "glbNode": "Leg4",
+   "sharedWith": null,
+   "pivot": [
+    1.3,
+    -1.0,
+    -0.3,
+    0.88295,
+    -0.46947,
+    -0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.30079,
+    -1.00122,
+    -0.29955,
+    0.88295,
+    -0.46947,
+    -0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    -1e-05,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2949,
+    0.8549,
+    0.2981
+   ],
+   "replaces": [
+    "Leg4"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Shopkeeper_Leg4_ColorMap.png",
+    "NormalMap": "Shopkeeper_Leg4_NormalMap.png",
+    "RoughnessMap": "Shopkeeper_Leg4_RoughnessMap.png",
+    "MetalnessMap": "Shopkeeper_Leg4_MetalnessMap.png"
+   },
+   "tris": 700,
+   "verts": 448,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ]
+}
