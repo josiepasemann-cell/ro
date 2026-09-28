@@ -111,7 +111,7 @@ for i = 1, SHARD_COUNT do
 	local y = 0.1 + 0.4 * math.sin(i * 1.3)
 	local r = eggRadiusAt(y) - 0.2
 	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
-	local shard = newMeshBall("Shard" .. i, Vector3.new(0.5, 0.55, 0.4), ORIGIN * pos * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
+	local shard = newMeshBall("Shard" .. i, Vector3.new(0.5, 0.55, 0.4), ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
 	shard.Transparency = 0.05
 end
 
@@ -156,9 +156,9 @@ for i = 1, CRACK_COUNT do
 	local angle = math.rad(360 / CRACK_COUNT * (i - 1) + 45)
 	local y = -0.9
 	local r = eggRadiusAt(y) - 0.04
-	local crack = newPart(
+	local crack = newMeshBall(
 		"CrackGlow" .. i,
-		Vector3.new(0.08, 0.9, 0.08),
+		Vector3.new(0.13, 0.85, 0.13),
 		ORIGIN * CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r) * CFrame.Angles(0, angle, math.rad(15)),
 		CRACK_COLOR,
 		Enum.Material.Neon,

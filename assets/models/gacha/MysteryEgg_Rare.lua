@@ -108,18 +108,8 @@ for i = 1, FACET_COUNT do
 	local y = 0.2
 	local r = eggRadiusAt(y) - 0.15
 	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
-	local facet = Instance.new("WedgePart")
-	facet.Name = "Facet" .. i
-	facet.Size = Vector3.new(0.55, 0.6, 0.4)
-	facet.CFrame = ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0) * CFrame.Angles(0, 0, math.rad(90))
-	facet.Color = SHELL_COLOR
-	facet.Material = Enum.Material.Glass
+	local facet = newMeshBall("Facet" .. i, Vector3.new(0.42, 0.48, 0.32), ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
 	facet.Transparency = 0.05
-	facet.Anchored = true
-	facet.CanCollide = false
-	facet.TopSurface = Enum.SurfaceType.Smooth
-	facet.BottomSurface = Enum.SurfaceType.Smooth
-	facet.Parent = model
 end
 
 -- 3) Zwei Neon-Nahtringe, exakt auf der Eioberfläche ---------------------------------

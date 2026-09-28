@@ -66,6 +66,16 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt Box - für Filamente
+-- und Oberflächen-Noppen.
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local pickupsFolder = getOrCreateFolder(assetsFolder, "Pickups")
 
@@ -109,17 +119,29 @@ for i = 1, 3 do
 	speck.Shape = Enum.PartType.Ball
 end
 
--- 3b) Zwei kurze Spore-Filamente, Basis auf dem Kern ansetzend -----------------------
+-- 3b) Zwei kurze, sich verjüngende Spore-Filamente (Ellipsoide statt Boxen),
+--     Basis auf dem Kern ansetzend --------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local filament = newPart(
+	newMeshBall(
 		"SporeFilament" .. i,
-		Vector3.new(0.08, 0.5, 0.08),
+		Vector3.new(0.11, 0.45, 0.11),
 		ORIGIN * CFrame.new(side * 0.4, 0.45, side * 0.15) * CFrame.Angles(math.rad(side * 20), 0, 0),
 		Color3.fromRGB(180, 250, 255),
 		Enum.Material.Neon,
 		model
 	)
+end
+
+-- 3c) Kleine Oberflächen-Noppen (BioVeins-Musterung als Geometrie statt Textur),
+--     leicht in den Kern eingesenkt, für Oberflächendetail auf der sonst glatten
+--     Kugel ----------------------------------------------------------------------
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1) + 20)
+	local elevation = math.rad(20 * ((i % 3) - 1))
+	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(elevation, 0, 0)
+	local pos = (dir * CFrame.new(0, 0, 0.62)).Position
+	newMeshBall("BioVein" .. i, Vector3.new(0.2, 0.08, 0.34), ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0), Color3.fromRGB(70, 200, 215), Enum.Material.Neon, model)
 end
 
 -- 4) Idle-Puls-Attachment ---------------------------------------------------

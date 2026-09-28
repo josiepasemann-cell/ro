@@ -120,18 +120,8 @@ for i = 1, SHARD_COUNT do
 	local y = 0.1 + 0.45 * math.sin(i * 1.1)
 	local r = eggRadiusAt(y) - 0.22
 	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
-	local shard = Instance.new("WedgePart")
-	shard.Name = "Shard" .. i
-	shard.Size = Vector3.new(0.68, 0.85, 0.52)
-	shard.CFrame = ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0) * CFrame.Angles(0, 0, math.rad(90))
-	shard.Color = SHELL_COLOR
-	shard.Material = Enum.Material.Glass
+	local shard = newMeshBall("Shard" .. i, Vector3.new(0.52, 0.58, 0.42), ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
 	shard.Transparency = 0.02
-	shard.Anchored = true
-	shard.CanCollide = false
-	shard.TopSurface = Enum.SurfaceType.Smooth
-	shard.BottomSurface = Enum.SurfaceType.Smooth
-	shard.Parent = model
 end
 
 -- 3) Heller Kern im oberen Zentrum der Schale (durch das Glas sichtbar) -------------
@@ -146,7 +136,7 @@ for i = 1, SPIKE_COUNT do
 		* CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r)
 		* CFrame.Angles(0, angle, 0)
 		* CFrame.Angles(math.rad(-20), 0, 0)
-	newPart("CrownSpike" .. i, Vector3.new(0.26, 1.3, 0.26), spikeCFrame * CFrame.new(0, 0.4, 0), CROWN_COLOR, Enum.Material.Neon, model)
+	newMeshBall("CrownSpike" .. i, Vector3.new(0.28, 1.2, 0.28), spikeCFrame * CFrame.new(0, 0.4, 0), CROWN_COLOR, Enum.Material.Neon, model)
 end
 
 -- 5) Zwei Runenringe auf unterschiedlicher Höhe, fest an die Schale anliegend ------
@@ -176,9 +166,9 @@ for i = 1, CRACK_COUNT do
 	local angle = math.rad(360 / CRACK_COUNT * (i - 1) + 30)
 	local y = -1.1
 	local r = eggRadiusAt(y) - 0.04
-	newPart(
+	newMeshBall(
 		"CrackGlow" .. i,
-		Vector3.new(0.08, 1.0, 0.08),
+		Vector3.new(0.13, 0.95, 0.13),
 		ORIGIN * CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r) * CFrame.Angles(0, angle, math.rad(15)),
 		CRACK_COLOR,
 		Enum.Material.Neon,
@@ -223,7 +213,7 @@ for i = 1, SATELLITE_COUNT do
 	local tetherCFrame = CFrame.new(worldMid, worldSatellite)
 	newPart("SatelliteTether" .. i, Vector3.new(0.12, 0.12, tetherLength), tetherCFrame, CORE_COLOR, Enum.Material.Neon, model)
 
-	newPart("Satellite" .. i, Vector3.new(0.45, 0.7, 0.45), satCFrame, CORE_COLOR, Enum.Material.Neon, model)
+	newMeshBall("Satellite" .. i, Vector3.new(0.45, 0.6, 0.45), satCFrame, CORE_COLOR, Enum.Material.Neon, model)
 end
 
 -- 9) Punktlicht (hellste Lichtquelle im Egg-Set) -----------------------------

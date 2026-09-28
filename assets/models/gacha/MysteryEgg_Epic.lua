@@ -107,7 +107,7 @@ for i = 1, SHARD_COUNT do
 	local y = 0.15 + 0.35 * math.sin(i)
 	local r = eggRadiusAt(y) - 0.18
 	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
-	local shard = newMeshBall("Shard" .. i, Vector3.new(0.45, 0.5, 0.35), ORIGIN * pos * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
+	local shard = newMeshBall("Shard" .. i, Vector3.new(0.45, 0.5, 0.35), ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0), SHELL_COLOR, Enum.Material.Glass, model)
 	shard.Transparency = 0.05
 end
 

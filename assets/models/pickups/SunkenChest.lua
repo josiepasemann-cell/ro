@@ -34,6 +34,7 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
+local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(0, 4, -115) -- Vor Ausführung anpassen für gewünschte Position
@@ -67,6 +68,26 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Texture-Platzhalter (siehe assets/textures/README.md-Konvention): leere
+-- `Texture`-Instanz mit TextureKey-Attribut + "KeyedTexture"-Tag, bleibt bis
+-- zum Einspielen des PNG-Texturpacks unsichtbar. Truhe ist ein Objekt (kein
+-- Kreaturen-Körperteil) und bleibt daher bewusst blockig - hier sinnvoll auf
+-- flachen Block-Flächen (Holz-/Metall-/Nietenmuster).
+local function newKeyedTexture(part, key, face, color, studsPerU, studsPerV, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex.StudsPerTileU = studsPerU or 2
+	tex.StudsPerTileV = studsPerV or 2
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local pickupsFolder = getOrCreateFolder(assetsFolder, "Pickups")
 
@@ -85,7 +106,14 @@ model.Parent = pickupsFolder
 -- Part bleibt (Vertrag: PrimaryPart = Body, für Placement/Halte-Logik).
 local body = newPart("Body", Vector3.new(1.6, 1.2, 1.2), ORIGIN, Color3.fromRGB(230, 190, 70), Enum.Material.Neon, model)
 
--- 2) Deckel-Akzent (rein visuell, kein eigener PrimaryPart) --------------------
+-- 1b) Hölzerner Truhenkasten, umschließt den Glow-Kern, Material Wood + Texture-
+--     Platzhalter "WoodPlanks" auf Front/Back --------------------------------------
+local chestCase = newPart("ChestCase", Vector3.new(1.9, 1.3, 1.35), ORIGIN * CFrame.new(0, -0.05, 0), Color3.fromRGB(120, 80, 45), Enum.Material.Wood, model)
+newKeyedTexture(chestCase, "WoodPlanks", Enum.NormalId.Front, Color3.fromRGB(110, 72, 40), 1.5, 1.5)
+newKeyedTexture(chestCase, "WoodPlanks", Enum.NormalId.Back, Color3.fromRGB(110, 72, 40), 1.5, 1.5)
+
+-- 2) Deckel-Akzent (rein visuell, kein eigener PrimaryPart), Metal + Texture-
+--    Platzhalter "RivetedPlates" oben ------------------------------------------------
 local lid = newPart(
 	"ChestLidAccent",
 	Vector3.new(1.6, 0.3, 1.3),
@@ -94,6 +122,7 @@ local lid = newPart(
 	Enum.Material.Metal,
 	model
 )
+newKeyedTexture(lid, "RivetedPlates", Enum.NormalId.Top, Color3.fromRGB(255, 225, 130), 1, 1)
 
 -- 3) Äußere Glashülle (Glimmen/Tiefe, analog GlowSporePickup) ------------------
 local shell = newPart(
@@ -115,7 +144,7 @@ shell.Transparency = 0.6
 -- 3b) Goldene Zierbänder am Truhenkörper (vertikale Beschläge), überlappen Body ----
 for i = 1, 2 do
 	local xOff = (i == 1) and 0.55 or -0.55
-	newPart(
+	local band = newPart(
 		"ChestBand" .. i,
 		Vector3.new(0.15, 1.3, 1.25),
 		ORIGIN * CFrame.new(xOff, 0, 0),
@@ -123,6 +152,7 @@ for i = 1, 2 do
 		Enum.Material.Metal,
 		model
 	)
+	newKeyedTexture(band, "MetalPanels", Enum.NormalId.Front, Color3.fromRGB(255, 235, 170), 0.6, 0.6)
 end
 
 -- 4) Drei umlaufende Glimmer-Partikel-Anker (Gold-Funken), in die Hülle eingesenkt --

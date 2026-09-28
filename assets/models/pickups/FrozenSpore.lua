@@ -84,6 +84,16 @@ local function newPart(name, size, cframe, color, material, parent, transparency
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt Box - für Risslinien
+-- und Schalen-Splitter.
+local function newMeshBall(name, size, cframe, color, material, parent, transparency)
+	local part = newPart(name, size, cframe, color, material, parent, transparency)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local pickupsFolder = getOrCreateFolder(assetsFolder, "Pickups")
 
@@ -159,9 +169,9 @@ crackedBase.Shape = Enum.PartType.Ball
 
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 15)
-	local crackLine = newPart(
+	local crackLine = newMeshBall(
 		"CrackLine" .. i,
-		Vector3.new(0.1, 1.5, 0.1),
+		Vector3.new(0.16, 1.4, 0.16),
 		ORIGIN * CFrame.new(math.cos(angle) * 0.9, 0, math.sin(angle) * 0.9) * CFrame.Angles(0, angle, math.rad(20)),
 		Color3.fromRGB(150, 220, 255),
 		Enum.Material.Neon,
@@ -192,9 +202,9 @@ openBase.Shape = Enum.PartType.Ball
 -- überlappt - "aufgebrochen" statt frei im Raum schwebend).
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 45)
-	local shard = newPart(
+	local shard = newMeshBall(
 		"ShellShard" .. i,
-		Vector3.new(0.9, 0.9, 0.15),
+		Vector3.new(0.75, 0.75, 0.22),
 		ORIGIN * CFrame.new(math.cos(angle) * 0.85, math.sin(angle * 0.5) * 0.35, math.sin(angle) * 0.85)
 			* CFrame.Angles(math.rad(20 * i), angle, 0),
 		Color3.fromRGB(200, 235, 255),
