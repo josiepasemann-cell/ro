@@ -62,6 +62,35 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+-- Keyed-Textur-Platzhalter (siehe assets/textures/): Texture-Instanz mit
+-- Attribut "TextureKey" + Tag "KeyedTexture", Texture-Property bleibt leer
+-- bis die Nutzerin die PNGs hochlädt. StudsPerTileU/V bewusst groß (6-16)
+-- fuer Boden-/Gelaendeflaechen.
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
+-- Rundlicher, organisch-kartoonig geformter Fels/Kiesel statt scharfkantiger
+-- Box (Kugel-Shape mit leicht abgeflachter Hoehe).
+local function newRock(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	part.Shape = Enum.PartType.Ball
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local terrainFolder = getOrCreateFolder(assetsFolder, "Terrain")
 
@@ -85,12 +114,23 @@ local slabC = newPart("SlabC", Vector3.new(FLAT_TO_FLAT, THICKNESS, LONG), ORIGI
 local hexPlatform = slabA:IntersectAsync({ slabB, slabC })
 hexPlatform.Name = "PlatformBase"
 hexPlatform.Color = Color3.fromRGB(120, 128, 140) -- kühles Grau-Blau, Korallengestein/Beton-Look
-hexPlatform.Material = Enum.Material.Slate
+hexPlatform.Material = Enum.Material.Cobblestone
 hexPlatform.Anchored = true
 hexPlatform.CanCollide = true
 hexPlatform.TopSurface = Enum.SurfaceType.Smooth
 hexPlatform.BottomSurface = Enum.SurfaceType.Smooth
 hexPlatform.Parent = model
+addKeyedTexture(hexPlatform, "StoneTiles", Enum.NormalId.Top, 6, 6, Color3.fromRGB(140, 146, 156), 0.05)
+
+-- 1b) Ein paar dicke, rundliche Basalt-Brocken am Sechseck-Rand (kartoonig,
+-- bricht die glatte Kante organisch auf, bleibt außerhalb der Baufelder)
+for i = 1, 6 do
+	local angle = math.rad(60 * (i - 1) + 30)
+	local edgeRadius = FLAT_TO_FLAT * 0.52
+	local pos = ORIGIN * CFrame.new(math.cos(angle) * edgeRadius, THICKNESS / 2, math.sin(angle) * edgeRadius)
+	local rock = newRock("PlotEdgeRock" .. i, Vector3.new(2.4, 1.8, 2.4), pos, Color3.fromRGB(90, 96, 106), Enum.Material.Basalt, model)
+	rock.CanCollide = false
+end
 
 -- 2) Sichtbares Baufelder-Raster: 6 Trennlinien (Sektorspeichen) ---------
 local topY = ORIGIN.Position.Y + THICKNESS / 2 + 0.05

@@ -106,6 +106,35 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+-- Keyed-Textur-Platzhalter (siehe assets/textures/): Texture-Instanz mit
+-- Attribut "TextureKey" + Tag "KeyedTexture", Texture-Property bleibt leer
+-- bis die Nutzerin die PNGs hochlädt. StudsPerTileU/V bewusst groß (6-16)
+-- fuer Boden-/Gelaendeflaechen.
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
+-- Rundlicher, organisch-kartoonig geformter Fels/Kiesel statt scharfkantiger
+-- Box (Kugel-Shape mit leicht abgeflachter Hoehe).
+local function newRock(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	part.Shape = Enum.PartType.Ball
+	return part
+end
+
 local function newWedge(name, size, cframe, color, material, parent)
 	local wedge = Instance.new("WedgePart")
 	wedge.Name = name
@@ -186,6 +215,7 @@ base.CanCollide = true
 base.TopSurface = Enum.SurfaceType.Smooth
 base.BottomSurface = Enum.SurfaceType.Smooth
 base.Parent = model
+addKeyedTexture(base, "SandRipples", Enum.NormalId.Top, 10, 10, Color3.fromRGB(235, 214, 172), 0.05)
 
 -- 2) Zwei Dünenhügel (echte Höhe statt Deko-Klötze) -------------------------
 -- Gestapelte, verjüngende Tiers mit heller "Sonnenkuppe" als Farbbänderung.
@@ -270,7 +300,7 @@ for i = 1, 5 do
 	local pz = archZ + rng:NextNumber(-14, 14)
 	if not inHubSightLane(pz) then
 		local size = rng:NextNumber(1, 2.2)
-		newPart(
+		newRock(
 			"GateRock" .. i,
 			Vector3.new(size, size * 0.8, size),
 			ORIGIN * CFrame.new(px, BASE_TOP_Y + size * 0.4, pz) * CFrame.Angles(0, math.rad(rng:NextNumber(0, 360)), 0),
@@ -304,7 +334,7 @@ for i = 1, 6 do
 	if not inHubSightLane(pz) then
 		if i % 2 == 0 then
 			local size = rng:NextNumber(1.2, 2.4)
-			newPart(
+			newRock(
 				"WreckRock" .. i,
 				Vector3.new(size, size * 0.8, size),
 				ORIGIN * CFrame.new(px, BASE_TOP_Y + size * 0.4, pz),
@@ -341,7 +371,7 @@ for i = 1, DUNE_COUNT do
 		* CFrame.new(offsetX, BASE_TOP_Y + h / 2, offsetZ)
 		* CFrame.Angles(0, math.rad(rotY), 0)
 
-	local dune = newPart(
+	local dune = newRock(
 		"Dune" .. i,
 		Vector3.new(w, h, d),
 		duneCFrame,
@@ -361,7 +391,7 @@ for i = 1, ROCK_COUNT do
 		* CFrame.new(offsetX, BASE_TOP_Y + size / 2, offsetZ)
 		* CFrame.Angles(rng:NextNumber(-0.15, 0.15), math.rad(rotY), rng:NextNumber(-0.15, 0.15))
 
-	newPart(
+	newRock(
 		"SandRock" .. i,
 		Vector3.new(size, size * 0.8, size),
 		rockCFrame,

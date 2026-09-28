@@ -104,6 +104,35 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+-- Keyed-Textur-Platzhalter (siehe assets/textures/): Texture-Instanz mit
+-- Attribut "TextureKey" + Tag "KeyedTexture", Texture-Property bleibt leer
+-- bis die Nutzerin die PNGs hochlädt. StudsPerTileU/V bewusst groß (6-16)
+-- fuer Boden-/Gelaendeflaechen.
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
+-- Rundlicher, organisch-kartoonig geformter Fels/Kiesel statt scharfkantiger
+-- Box (Kugel-Shape mit leicht abgeflachter Hoehe).
+local function newRock(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	part.Shape = Enum.PartType.Ball
+	return part
+end
+
 -- Erzeugt ein Part entlang einer Richtung `dir` (Weltraum, normalisiert),
 -- beginnend bei `fromPos` (Weltraum). Genutzt für gebogene Kelp-Stämme, deren
 -- Segmente sich tatsächlich krümmen statt nur um die eigene Achse zu wackeln.
@@ -179,6 +208,7 @@ base.CanCollide = true
 base.TopSurface = Enum.SurfaceType.Smooth
 base.BottomSurface = Enum.SurfaceType.Smooth
 base.Parent = model
+addKeyedTexture(base, "BasaltRock", Enum.NormalId.Top, 10, 10, Color3.fromRGB(70, 72, 80), 0.05)
 
 -- 2) Zwei aufragende Felsnadeln (CSG-Union gestapelter Blöcke) -------------
 local SPIRE_SITES = {
@@ -256,7 +286,7 @@ for i = 1, 5 do
 	local px = archLocalX + rng:NextNumber(-6, 6)
 	local pz = archLocalZ + rng:NextNumber(9, 16) * (rng:NextNumber() < 0.5 and 1 or -1)
 	local size = rng:NextNumber(1.4, 3)
-	newPart(
+	newRock(
 		"ArchFlankRock" .. i,
 		Vector3.new(size, size * 0.9, size),
 		ORIGIN * CFrame.new(px, BASE_TOP_Y + size / 2, pz) * CFrame.Angles(0, math.rad(rng:NextNumber(0, 360)), 0),
@@ -278,7 +308,7 @@ for i = 1, BOULDER_COUNT do
 		* CFrame.new(offsetX, BASE_TOP_Y + h / 2, offsetZ)
 		* CFrame.Angles(rng:NextNumber(-0.2, 0.2), math.rad(rotY), rng:NextNumber(-0.2, 0.2))
 
-	newPart(
+	newRock(
 		"Boulder" .. i,
 		Vector3.new(w, h, d),
 		boulderCFrame,

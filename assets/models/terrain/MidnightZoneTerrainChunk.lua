@@ -99,6 +99,35 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+-- Keyed-Textur-Platzhalter (siehe assets/textures/): Texture-Instanz mit
+-- Attribut "TextureKey" + Tag "KeyedTexture", Texture-Property bleibt leer
+-- bis die Nutzerin die PNGs hochlädt. StudsPerTileU/V bewusst groß (6-16)
+-- fuer Boden-/Gelaendeflaechen.
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
+-- Rundlicher, organisch-kartoonig geformter Fels/Kiesel statt scharfkantiger
+-- Box (Kugel-Shape mit leicht abgeflachter Hoehe).
+local function newRock(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	part.Shape = Enum.PartType.Ball
+	return part
+end
+
 local function newLavaLight(parent, brightness, range)
 	local light = Instance.new("PointLight")
 	light.Color = LAVA_GLOW_COLOR
@@ -169,6 +198,7 @@ base.CanCollide = true
 base.TopSurface = Enum.SurfaceType.Smooth
 base.BottomSurface = Enum.SurfaceType.Smooth
 base.Parent = model
+addKeyedTexture(base, "LavaCracks", Enum.NormalId.Top, 10, 10, Color3.fromRGB(55, 38, 38), 0.05)
 
 -- 2) Enge Einstiegs-Passage (Hub-seitig, -Z): dichte Wände + Überhang -------
 local passageLocalZ = -HALF + 16
@@ -212,7 +242,7 @@ for i = 1, 8 do
 	local size = rng:NextNumber(1.6, 4.2)
 	local offsetX, offsetZ = randomOffLanePosition(4, 20)
 	offsetZ = math.clamp(offsetZ, -HALF + 25, arenaLocalZ - 22)
-	newPart(
+	newRock(
 		"CaveBoulder" .. i,
 		Vector3.new(size, size * 0.85, size),
 		ORIGIN * CFrame.new(offsetX, BASE_TOP_Y + size * 0.4, offsetZ) * CFrame.Angles(0, math.rad(rng:NextNumber(0, 360)), 0),
@@ -420,7 +450,7 @@ for i = 1, RING_ROCK_COUNT do
 	local radius = 16
 	local rx = math.cos(angle) * radius
 	local rz = arenaLocalZ + math.sin(angle) * radius
-	local emberRock = newPart(
+	local emberRock = newRock(
 		"ArenaRingEmber" .. i,
 		Vector3.new(1.4, 1, 1.4),
 		ORIGIN * CFrame.new(rx, BASE_TOP_Y + 0.4, rz),

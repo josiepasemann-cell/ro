@@ -106,6 +106,35 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+-- Keyed-Textur-Platzhalter (siehe assets/textures/): Texture-Instanz mit
+-- Attribut "TextureKey" + Tag "KeyedTexture", Texture-Property bleibt leer
+-- bis die Nutzerin die PNGs hochlädt. StudsPerTileU/V bewusst groß (6-16)
+-- fuer Boden-/Gelaendeflaechen.
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
+-- Rundlicher, organisch-kartoonig geformter Fels/Kiesel statt scharfkantiger
+-- Box (Kugel-Shape mit leicht abgeflachter Hoehe).
+local function newRock(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	part.Shape = Enum.PartType.Ball
+	return part
+end
+
 local function newWedge(name, size, cframe, color, material, parent)
 	local wedge = Instance.new("WedgePart")
 	wedge.Name = name
@@ -179,6 +208,7 @@ local base = newPart(
 	Enum.Material.Slate,
 	model
 )
+addKeyedTexture(base, "CrystalFacets", Enum.NormalId.Top, 8, 8, Color3.fromRGB(60, 50, 90), 0.05)
 
 -- 2) Schroffe Abgrund-Kante: jagged Klippenwand, die tief unter das Plateau
 --    hinabreicht (Andeutung von Bodenlosigkeit statt einer sichtbaren Sohle).
@@ -294,7 +324,7 @@ end
 for i = 1, 6 do
 	local bx, bz = randomOnPlateauOffLane(5, 5, 14)
 	local size = rng:NextNumber(1.6, 3.4)
-	newPart(
+	newRock(
 		"PlateauBoulder" .. i,
 		Vector3.new(size, size * 0.8, size),
 		ORIGIN * CFrame.new(bx, BASE_TOP_Y + size * 0.4, bz) * CFrame.Angles(0, math.rad(rng:NextNumber(0, 360)), 0),
