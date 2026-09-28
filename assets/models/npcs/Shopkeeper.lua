@@ -177,11 +177,20 @@ eye1.Shape = Enum.PartType.Ball
 local eye2 = newPart("Eye2", Vector3.new(0.32, 0.32, 0.32), rootCFrame * CFrame.new(0.3, 0.2, 2.05), Color3.fromRGB(20, 20, 24), Enum.Material.SmoothPlastic, model)
 eye2.Shape = Enum.PartType.Ball
 
--- 3) Claws (named, movable for waving) -----------------------------------
-local armL = newPart("ArmL", Vector3.new(1.0, 0.7, 1.4), rootCFrame * CFrame.new(-1.9, 0.1, 0.4) * CFrame.Angles(0, math.rad(24), 0), CLAW_COLOR, Enum.Material.Neon, model)
+-- 3) Claws (named, movable for waving) + connecting forearm stalks --------------
+-- The claws sit well outside the shell's radius, so a short stalk segment
+-- bridges shell -> claw on each side (overlaps both) - no floating parts.
+newPart("ArmStalkL", Vector3.new(0.9, 0.4, 0.9), rootCFrame * CFrame.new(-1.4, 0.1, 0.35) * CFrame.Angles(0, math.rad(24), 0), CLAW_COLOR, Enum.Material.SmoothPlastic, model)
+newPart("ArmStalkR", Vector3.new(0.9, 0.4, 0.9), rootCFrame * CFrame.new(1.4, 0.1, 0.35) * CFrame.Angles(0, math.rad(-24), 0), CLAW_COLOR, Enum.Material.SmoothPlastic, model)
+
+local armL = newPart("ArmL", Vector3.new(1.0, 0.7, 1.4), rootCFrame * CFrame.new(-1.85, 0.1, 0.4) * CFrame.Angles(0, math.rad(24), 0), CLAW_COLOR, Enum.Material.Neon, model)
 armL.Shape = Enum.PartType.Ball
-local armR = newPart("ArmR", Vector3.new(1.0, 0.7, 1.4), rootCFrame * CFrame.new(1.9, 0.1, 0.4) * CFrame.Angles(0, math.rad(-24), 0), CLAW_COLOR, Enum.Material.Neon, model)
+local armR = newPart("ArmR", Vector3.new(1.0, 0.7, 1.4), rootCFrame * CFrame.new(1.85, 0.1, 0.4) * CFrame.Angles(0, math.rad(-24), 0), CLAW_COLOR, Enum.Material.Neon, model)
 armR.Shape = Enum.PartType.Ball
+
+-- Claw pincer tips (small overlapping wedges for a readable pincer shape)
+newWedge("ClawTipL", Vector3.new(0.4, 0.3, 0.5), rootCFrame * CFrame.new(-2.2, 0.15, 0.55) * CFrame.Angles(0, math.rad(24), 0), CLAW_COLOR, Enum.Material.Neon, model)
+newWedge("ClawTipR", Vector3.new(0.4, 0.3, 0.5), rootCFrame * CFrame.new(2.2, 0.15, 0.55) * CFrame.Angles(0, math.rad(-24), math.rad(180)), CLAW_COLOR, Enum.Material.Neon, model)
 
 -- 4) Little legs peeking from under the shell (static decoration) -------
 local legOffsets = { Vector3.new(-1.1, -1.0, -0.8), Vector3.new(-1.3, -1.0, 0.3), Vector3.new(1.1, -1.0, -0.8), Vector3.new(1.3, -1.0, 0.3) }
@@ -195,6 +204,22 @@ for index, offset in ipairs(legOffsets) do
 		Enum.Material.SmoothPlastic,
 		model
 	)
+end
+
+-- 5) Merchant satchel + coin props slung on the shell (readable "shop" prop) -----
+local satchel = newPart("Satchel", Vector3.new(1.0, 0.9, 0.5), rootCFrame * CFrame.new(0, -0.3, -1.55), Color3.fromRGB(120, 88, 52), Enum.Material.SmoothPlastic, model)
+newPart("SatchelFlap", Vector3.new(1.02, 0.4, 0.1), rootCFrame * CFrame.new(0, 0.1, -1.82), Color3.fromRGB(150, 112, 68), Enum.Material.SmoothPlastic, model)
+newPart("SatchelBuckle", Vector3.new(0.2, 0.2, 0.1), rootCFrame * CFrame.new(0, -0.1, -1.85), NEON_ORANGE, Enum.Material.Neon, model)
+for i = 1, 3 do
+	local coin = newPart(
+		"SatchelCoin" .. i,
+		Vector3.new(0.28, 0.28, 0.06),
+		rootCFrame * CFrame.new(-0.3 + (i - 1) * 0.3, -0.75, -1.75) * CFrame.Angles(0, math.rad(15 * i), math.rad(90)),
+		Color3.fromRGB(255, 215, 90),
+		Enum.Material.Neon,
+		model
+	)
+	coin.Shape = Enum.PartType.Cylinder
 end
 
 model.PrimaryPart = body

@@ -60,6 +60,17 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt der immer
+-- kugelrunden Shape=Ball-Darstellung (Roblox zeichnet Ball-Parts stets als
+-- perfekte Kugel mit der kleinsten Size-Achse als Durchmesser).
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -73,40 +84,104 @@ model.Name = "EmberSlug"
 model.Parent = creaturesFolder
 
 local BODY_COLOR = Color3.fromRGB(40, 30, 30)
+local BODY_COLOR_LIGHT = Color3.fromRGB(60, 45, 42)
 local GLOW_COLOR = Color3.fromRGB(255, 130, 30)
+local CRACK_COLOR = Color3.fromRGB(255, 90, 20)
 
--- 1) Gedrungener Körper -------------------------------------------------------------
-local body = newPart("Body", Vector3.new(2.5, 1.5, 3.5), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Gedrungener Körper: echtes Ellipsoid (Block + SpecialMesh Sphere) --------------
+local body = newMeshBall("Body", Vector3.new(2.5, 1.5, 3.5), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Glühende Rückenrippe (4 Segmente, Schwanz -> Kopf) ------------------------------
+-- 1b) Helleres Unterbauch-Detail, überlappt den Körper -------------------------------
+local belly = newMeshBall(
+	"BellyPlate",
+	Vector3.new(1.9, 0.7, 3.0),
+	ORIGIN * CFrame.new(0, -0.5, 0),
+	BODY_COLOR_LIGHT,
+	Enum.Material.SmoothPlastic,
+	model
+)
+
+-- 2) Glühende Rückenrippe (4 Segmente, Schwanz -> Kopf), in den Rücken eingesenkt ----
 for i = 1, 4 do
-	local zOffset = 1.3 - (i - 1) * 0.85
-	local ridge = newPart(
+	local zOffset = 1.1 - (i - 1) * 0.75
+	local ridge = newMeshBall(
 		"RidgeSegment" .. i,
-		Vector3.new(0.4, 0.4, 0.7),
-		ORIGIN * CFrame.new(0, 0.85, zOffset),
+		Vector3.new(0.45, 0.45, 0.7),
+		ORIGIN * CFrame.new(0, 0.42, zOffset),
 		GLOW_COLOR,
 		Enum.Material.Neon,
 		model
 	)
-	ridge.Shape = Enum.PartType.Ball
-end
 
--- 3) Zwei Fühler (klein, am Kopf) ---------------------------------------------------
-for i = 1, 2 do
-	local side = (i == 1) and 1 or -1
+	-- feine Riss-Ader neben jedem Rippensegment, überlappt Segment + Körper
 	newPart(
-		"Antenna" .. i,
-		Vector3.new(0.12, 0.5, 0.12),
-		ORIGIN * CFrame.new(side * 0.35, 0.9, 1.6) * CFrame.Angles(math.rad(-15), 0, 0),
-		BODY_COLOR,
-		Enum.Material.SmoothPlastic,
+		"EmberCrack" .. i,
+		Vector3.new(0.06, 0.1, 0.5),
+		ORIGIN * CFrame.new(0.3, 0.3, zOffset) * CFrame.Angles(0, 0, math.rad(15)),
+		CRACK_COLOR,
+		Enum.Material.Neon,
 		model
 	)
 end
 
--- 4) Idle-Puls-Attachment ------------------------------------------------------------
+-- 3) Kopfhöcker (klein, vorne, Ansatzpunkt für Augen/Fühler) -------------------------
+local head = newMeshBall(
+	"Head",
+	Vector3.new(1.3, 0.95, 1.0),
+	ORIGIN * CFrame.new(0, 0.15, 1.55),
+	BODY_COLOR,
+	Enum.Material.SmoothPlastic,
+	model
+)
+
+-- 3b) Zwei Augen mit Glanzpunkt ------------------------------------------------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.4, 0.35, 1.95)
+	newMeshBall("Eye" .. i, Vector3.new(0.24, 0.24, 0.22), eyeCFrame, GLOW_COLOR, Enum.Material.Neon, model)
+	newMeshBall(
+		"EyeHighlight" .. i,
+		Vector3.new(0.08, 0.08, 0.08),
+		eyeCFrame * CFrame.new(0.05, 0.05, 0.1),
+		Color3.fromRGB(255, 240, 220),
+		Enum.Material.Neon,
+		model
+	)
+end
+
+-- 4) Zwei Fühler, Basis direkt auf dem Kopf ansetzend --------------------------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	local baseCFrame = ORIGIN * CFrame.new(side * 0.35, 0.55, 1.85) * CFrame.Angles(math.rad(-20), 0, 0)
+	newPart(
+		"Antenna" .. i,
+		Vector3.new(0.12, 0.5, 0.12),
+		baseCFrame * CFrame.new(0, 0.22, 0),
+		BODY_COLOR,
+		Enum.Material.SmoothPlastic,
+		model
+	)
+	newMeshBall(
+		"AntennaTip" .. i,
+		Vector3.new(0.16, 0.16, 0.16),
+		baseCFrame * CFrame.new(0, 0.46, 0),
+		GLOW_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+end
+
+-- 5) Kleine Mantelkante hinten (Schwanzabschluss), überlappt den Körper --------------
+local tail = newMeshBall(
+	"TailRidge",
+	Vector3.new(0.6, 0.5, 0.5),
+	ORIGIN * CFrame.new(0, 0.1, -1.75),
+	BODY_COLOR_LIGHT,
+	Enum.Material.SmoothPlastic,
+	model
+)
+
+-- 6) Idle-Puls-Attachment ------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body

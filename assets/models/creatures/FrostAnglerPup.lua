@@ -60,6 +60,16 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echtes Ellipsoid statt der immer
+-- kugelrunden Shape=Ball-Darstellung.
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -73,43 +83,68 @@ model.Name = "FrostAnglerPup"
 model.Parent = creaturesFolder
 
 local BODY_COLOR = Color3.fromRGB(180, 220, 240)
+local BELLY_COLOR = Color3.fromRGB(220, 240, 250)
 local LURE_COLOR = Color3.fromRGB(210, 245, 255)
 
--- 1) Rundlicher Körper -----------------------------------------------------------
-local body = newPart("Body", Vector3.new(1.8, 1.5, 2.4), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Rundlicher Körper: echtes Ellipsoid (Block + SpecialMesh Sphere) --------------
+local body = newMeshBall("Body", Vector3.new(1.8, 1.5, 2.4), ORIGIN, BODY_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Köderstab (gebogen) + leuchtende Spitze -------------------------------------
-local stalkBase = ORIGIN * CFrame.new(0, 0.9, 1.0)
+-- 1b) Helle Bauchunterseite, überlappt den Körper -----------------------------------
+local belly = newMeshBall(
+	"Belly",
+	Vector3.new(1.35, 0.85, 1.9),
+	ORIGIN * CFrame.new(0, -0.4, 0.05),
+	BELLY_COLOR,
+	Enum.Material.SmoothPlastic,
+	model
+)
+
+-- 1c) Zwei Augen mit Glanzpunkt ------------------------------------------------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.4, 0.2, 1.05)
+	newMeshBall("Eye" .. i, Vector3.new(0.26, 0.26, 0.24), eyeCFrame, Color3.fromRGB(20, 30, 40), Enum.Material.SmoothPlastic, model)
+	newMeshBall(
+		"EyeHighlight" .. i,
+		Vector3.new(0.09, 0.09, 0.09),
+		eyeCFrame * CFrame.new(0.06, 0.06, 0.1),
+		Color3.fromRGB(255, 255, 255),
+		Enum.Material.Neon,
+		model
+	)
+end
+
+-- 2) Köderstab (gebogen) + leuchtende Spitze, Basis im Körper eingesenkt -----------
+local stalkBase = ORIGIN * CFrame.new(0, 0.35, 0.85)
 local stalk = newPart(
 	"LureStalk",
 	Vector3.new(0.12, 0.8, 0.12),
-	stalkBase * CFrame.Angles(math.rad(-25), 0, 0),
+	stalkBase * CFrame.Angles(math.rad(-25), 0, 0) * CFrame.new(0, 0.3, 0),
 	BODY_COLOR,
 	Enum.Material.SmoothPlastic,
 	model
 )
 
-local lureOrb = newPart(
+local lureOrb = newMeshBall(
 	"LureOrb",
 	Vector3.new(0.35, 0.35, 0.35),
-	stalkBase * CFrame.Angles(math.rad(-25), 0, 0) * CFrame.new(0, 0.6, 0),
+	stalkBase * CFrame.Angles(math.rad(-25), 0, 0) * CFrame.new(0, 0.75, 0),
 	LURE_COLOR,
 	Enum.Material.Neon,
 	model
 )
-lureOrb.Shape = Enum.PartType.Ball
 
 local muzzlePoint = Instance.new("Attachment")
 muzzlePoint.Name = "MuzzlePoint"
 muzzlePoint.Parent = lureOrb
 
--- 3) Frost-Kristall-Akzente (3 kleine weiße WedgeParts am Rücken) -----------------
+-- 3) Frost-Kristall-Akzente (3 kleine weiße WedgeParts am Rücken, eingesenkt) -------
 for i = 1, 3 do
+	local zOffset = 0.5 - i * 0.4
 	local wedge = Instance.new("WedgePart")
 	wedge.Name = "FrostCrystal" .. i
-	wedge.Size = Vector3.new(0.25, 0.35, 0.25)
-	wedge.CFrame = ORIGIN * CFrame.new(0, 0.75, 0.6 - i * 0.5) * CFrame.Angles(0, 0, math.rad(180))
+	wedge.Size = Vector3.new(0.25, 0.4, 0.25)
+	wedge.CFrame = ORIGIN * CFrame.new(0, 0.55, zOffset) * CFrame.Angles(0, 0, math.rad(180))
 	wedge.Color = Color3.fromRGB(240, 250, 255)
 	wedge.Material = Enum.Material.Glass
 	wedge.Anchored = true
@@ -119,19 +154,33 @@ for i = 1, 3 do
 	wedge.Parent = model
 end
 
--- 4) Kleine Seitenflossen (Glass) ---------------------------------------------------
+-- 4) Kleine Seitenflossen (Glass), Basis im Körper eingesenkt -----------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	local fin = newPart(
-		"Fin" .. i,
+		"SideFin" .. i,
 		Vector3.new(0.1, 0.6, 0.8),
-		ORIGIN * CFrame.new(side * 0.95, 0, -0.3) * CFrame.Angles(0, 0, math.rad(side * 15)),
+		ORIGIN * CFrame.new(side * 0.72, -0.1, -0.3) * CFrame.Angles(0, 0, math.rad(side * 20)),
 		Color3.fromRGB(200, 235, 250),
 		Enum.Material.Glass,
 		model
 	)
 	fin.Transparency = 0.4
 end
+
+-- 4b) Schwanzflosse hinten, überlappt den Körper -------------------------------------
+local tailFin = Instance.new("WedgePart")
+tailFin.Name = "TailFin"
+tailFin.Size = Vector3.new(0.1, 0.7, 0.6)
+tailFin.CFrame = ORIGIN * CFrame.new(0, 0, -1.05) * CFrame.Angles(0, math.rad(90), 0)
+tailFin.Color = Color3.fromRGB(200, 235, 250)
+tailFin.Material = Enum.Material.Glass
+tailFin.Transparency = 0.35
+tailFin.Anchored = true
+tailFin.CanCollide = false
+tailFin.TopSurface = Enum.SurfaceType.Smooth
+tailFin.BottomSurface = Enum.SurfaceType.Smooth
+tailFin.Parent = model
 
 -- 5) Idle-Puls-Attachment ------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
