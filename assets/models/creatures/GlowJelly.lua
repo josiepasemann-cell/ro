@@ -5,12 +5,14 @@
 	Rarity (Platzhalter): Common
 	Beschreibung:
 		Kleine, transluzente Qualle mit gewölbter Glocke (halbtransparentes
-		Neon-Glas) und hängenden Tentakeln. Zone: SunZone.
+		Neon-Glas), gekräuseltem Glockensaum, kurzen dicken Mundarmen und
+		vielen dünnen, geschwungenen Tentakeln. Zone: SunZone.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" (die Glocke) -> für Bewegungssteuerung.
 		- Attachment "PulseAttachment" an Body -> Ansatzpunkt für die
 		  Idle-Puls-/Schwebe-Animation (Skalierung/Bobbing) durch den Code-Agenten.
+		- Teile "Tentacle1".."Tentacle8" werden von IdleSway automatisch geschwenkt.
 		- model:GetAttribute("Rarity") -> String, steuert später Glow-Farbe/Partikel.
 		- model:GetAttribute("Zone") -> Herkunfts-Zone (Platzhalter).
 
@@ -53,6 +55,17 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere)-Kind, damit eine nicht-uniforme Size zu
+-- einem Ellipsoid gestreckt wird (ein Part mit Shape=Ball rendert IMMER als
+-- Kugel mit der KLEINSTEN Achse als Durchmesser, siehe docs/previews/README.md).
+local function newBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -65,39 +78,71 @@ local model = Instance.new("Model")
 model.Name = "GlowJelly"
 model.Parent = creaturesFolder
 
--- 1) Glocke (Körper) -------------------------------------------------------
-local body = newPart("Body", Vector3.new(2.6, 1.8, 2.6), ORIGIN, Color3.fromRGB(150, 230, 255), Enum.Material.Glass, model)
-body.Shape = Enum.PartType.Ball
+local BELL_COLOR = Color3.fromRGB(150, 230, 255)
+local GLOW_COLOR = Color3.fromRGB(90, 240, 255)
+local ARM_COLOR = Color3.fromRGB(200, 245, 255)
+
+-- 1) Glocke (Körper, Ellipsoid via SpecialMesh) -----------------------------
+local body = newBall("Body", Vector3.new(2.6, 1.9, 2.6), ORIGIN, BELL_COLOR, Enum.Material.Glass, model)
 body.Transparency = 0.25
 
--- 2) Innerer Glow-Kern -------------------------------------------------------
-newPart(
-	"GlowCore",
-	Vector3.new(1.1, 0.8, 1.1),
-	ORIGIN,
-	Color3.fromRGB(90, 240, 255),
-	Enum.Material.Neon,
-	model
-).Shape = Enum.PartType.Ball
+-- 2) Innerer Glow-Kern, gut in die Glocke eingebettet -----------------------
+newBall("GlowCore", Vector3.new(1.2, 0.9, 1.2), ORIGIN * CFrame.new(0, -0.1, 0), GLOW_COLOR, Enum.Material.Neon, model)
 
--- 3) Tentakel (6 dünne, leicht unterschiedlich lange Stränge) ---------------
-for i = 1, 6 do
-	local angle = math.rad(60 * (i - 1))
-	local radius = 0.9
-	local length = 2.2 + (i % 2) * 0.6
-	local offset = Vector3.new(math.cos(angle) * radius, -0.9 - length / 2, math.sin(angle) * radius)
-	local tentacle = newPart(
-		"Tentacle" .. i,
-		Vector3.new(0.2, length, 0.2),
-		ORIGIN * CFrame.new(offset),
-		Color3.fromRGB(180, 240, 255),
+-- 3) Gekräuselter Glockensaum (8 kleine Wedges rund um den unteren Rand) ----
+for i = 1, 8 do
+	local angle = math.rad(45 * (i - 1))
+	local radius = 1.15
+	local frillCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, -0.75, math.sin(angle) * radius)
+		* CFrame.Angles(0, -angle, 0)
+		* CFrame.Angles(math.rad(30), 0, 0)
+	local frill = Instance.new("WedgePart")
+	frill.Name = "Frill" .. i
+	frill.Size = Vector3.new(0.55, 0.5, 0.15)
+	frill.CFrame = frillCFrame
+	frill.Color = BELL_COLOR
+	frill.Material = Enum.Material.Glass
+	frill.Transparency = 0.2
+	frill.Anchored = true
+	frill.CanCollide = false
+	frill.Parent = model
+end
+
+-- 4) 4 dicke Mundarme, direkt unter der Glockenmitte -------------------------
+for i = 1, 4 do
+	local angle = math.rad(90 * (i - 1) + 45)
+	local radius = 0.35
+	local offset = Vector3.new(math.cos(angle) * radius, -1.1, math.sin(angle) * radius)
+	local arm = newPart(
+		"OralArm" .. i,
+		Vector3.new(0.28, 1.3, 0.28),
+		ORIGIN * CFrame.new(offset) * CFrame.Angles(math.rad(6 * i), 0, 0),
+		ARM_COLOR,
 		Enum.Material.Neon,
 		model
 	)
-	tentacle.Transparency = 0.2
+	arm.Transparency = 0.15
 end
 
--- 4) Idle-Puls-Attachment ---------------------------------------------------
+-- 5) 8 dünne, geschwungene Tentakel (2 Segmente je Tentakel) -----------------
+for i = 1, 8 do
+	local angle = math.rad(45 * (i - 1))
+	local radius = 1.0
+	local baseOffset = Vector3.new(math.cos(angle) * radius, -0.65, math.sin(angle) * radius)
+	local baseCFrame = ORIGIN * CFrame.new(baseOffset)
+
+	local seg1Length = 1.3 + (i % 2) * 0.3
+	local seg1CFrame = baseCFrame * CFrame.new(0, -seg1Length / 2, 0)
+	local seg1 = newPart("Tentacle" .. i, Vector3.new(0.18, seg1Length, 0.18), seg1CFrame, BELL_COLOR, Enum.Material.Neon, model)
+	seg1.Transparency = 0.15
+
+	local seg2Length = 1.1 + (i % 3) * 0.25
+	local seg2CFrame = baseCFrame * CFrame.new(0, -seg1Length, 0) * CFrame.Angles(math.rad(10 * ((i % 2 == 0) and 1 or -1)), 0, 0) * CFrame.new(0, -seg2Length / 2, 0)
+	local seg2 = newPart("TentacleTip" .. i, Vector3.new(0.12, seg2Length, 0.12), seg2CFrame, GLOW_COLOR, Enum.Material.Neon, model)
+	seg2.Transparency = 0.1
+end
+
+-- 6) Idle-Puls-Attachment ---------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body

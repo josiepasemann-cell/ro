@@ -87,8 +87,8 @@ core.Transparency = 0.1
 -- 3) 5 ausfadende Tentakelstränge (je 3 Segmente, Transparency steigt zur Spitze) -----
 for t = 1, 5 do
 	local angle = math.rad(72 * (t - 1))
-	local radius = 1.0
-	local baseOffset = Vector3.new(math.cos(angle) * radius, -1.1, math.sin(angle) * radius)
+	local radius = 0.85
+	local baseOffset = Vector3.new(math.cos(angle) * radius, -0.9, math.sin(angle) * radius)
 
 	local currentCFrame = ORIGIN * CFrame.new(baseOffset)
 	for seg = 1, 3 do

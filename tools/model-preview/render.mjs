@@ -1,6 +1,8 @@
 // Renders contact sheets from out/models.json with three.js in headless Chromium.
 //
 // usage: node render.mjs [--three /path/to/node_modules/three] [--out ../../docs/previews] [--only creatures,hub]
+//        [--models out/models.json]
+//        [--model <Name>[,<Name>...]] [--script <path substring>]   one model, 4 large views -> <out>/<Name>.png
 import { createServer } from "node:http";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname, extname, normalize } from "node:path";
@@ -14,6 +16,8 @@ const threeDir = opt("--three", process.env.THREE_DIR || join(here, "node_module
 const outDir = opt("--out", join(here, "..", "..", "docs", "previews"));
 const only = opt("--only", "").split(",").filter(Boolean);
 const modelsPath = opt("--models", join(here, "out", "models.json"));
+const onlyModels = opt("--model", "").split(",").filter(Boolean);
+const onlyScript = opt("--script", "");
 if (!existsSync(join(threeDir, "build", "three.module.js"))) {
   console.error(`three.js not found at ${threeDir} (run: npm install in tools/model-preview, or pass --three)`);
   process.exit(1);
@@ -107,6 +111,32 @@ const sheets = {
   },
 };
 
+// ------------------------------------------------------------------ single-model sheets
+if (onlyModels.length || onlyScript) {
+  for (const k of Object.keys(sheets)) delete sheets[k];
+  let picks = onlyModels.map((n) => models.find((m) => m.name === n) || models.find((m) => m.name.toLowerCase() === n.toLowerCase()) || n);
+  const missing = picks.filter((p) => typeof p === "string");
+  if (missing.length) { console.error(`unknown model(s): ${missing.join(", ")} (in ${modelsPath})`); process.exit(1); }
+  if (onlyScript) {
+    const s = onlyScript.replace(/^.*?assets\/models\//, "");
+    const hit = models.filter((m) => m.script && m.script.includes(s));
+    if (!hit.length) { console.error(`no exported model came from a script matching "${onlyScript}"`); process.exit(1); }
+    picks.push(...hit);
+  }
+  for (const m of picks) {
+    const base = m.primary ? frontView(m).az - 30 : 0; // az 0 = camera on the -Z (LookVector) side
+    const views = [
+      ["front 3/4", { az: base + 35, el: 16 }], ["side (right)", { az: base + 90, el: 8 }],
+      ["back 3/4", { az: base + 215, el: 20 }], ["top-down 3/4", { az: base - 35, el: 58 }],
+    ];
+    sheets[m.name] = {
+      title: label(m), subtitle: `${m.category} · ${sub(m)} · ${m.script || ""}`,
+      width: 1600, cols: 2, cellAspect: 0.75,
+      cells: views.map(([v, view]) => ({ models: [m.name], label: v, sub: m.name, view: { ...view, margin: 0.9 }, maxLights: 8 })),
+    };
+  }
+}
+
 // camera azimuth that looks at the model's PrimaryPart front (LookVector = -Z), turned 30° to the side
 function frontView(m) {
   if (!m.primary) return {};
@@ -147,7 +177,7 @@ await page.waitForFunction(() => window.ready === true, null, { timeout: 60000 }
 
 mkdirSync(outDir, { recursive: true });
 for (const [name, spec] of Object.entries(sheets)) {
-  if (only.length && !only.includes(name)) continue;
+  if (only.length && !onlyModels.length && !onlyScript && !only.includes(name)) continue;
   const t0 = Date.now();
   const url = await page.evaluate((s) => window.renderSheet(s), spec);
   const file = join(outDir, `${name}.png`);

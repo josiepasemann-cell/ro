@@ -3,7 +3,9 @@
 Reads out/models.json (written by export.mjs) and treats every visible part
 as an oriented box. Balls use their smallest axis (Roblox renders a Ball as
 a sphere of that diameter); cylinders run along X with the smaller of Y/Z as
-diameter. Two parts count as connected when their boxes overlap or come
+diameter. A part with a mesh child (meshType/meshScale/meshOffset from the
+export) uses the box Size * meshScale shifted by meshOffset instead, which for
+a Sphere mesh is the ellipsoid's bounding box. Two parts count as connected when their boxes overlap or come
 within TOLERANCE studs. Any group of parts not connected to the model's
 largest group is reported as floating.
 
@@ -25,16 +27,19 @@ SKIP_CATEGORIES = {"Hub", "Terrain"}
 def part_box(part):
     size = np.array(part["size"], dtype=float)
     shape = part.get("shape", "Block")
-    if part.get("meshScale") is not None:
-        size = size * np.array(part["meshScale"], dtype=float)
-    if shape == "Ball" and part.get("meshType") is None:
+    cf = part["cf"]
+    center = np.array(cf[0:3], dtype=float)
+    rot = np.array(cf[3:12], dtype=float).reshape(3, 3)
+    if part.get("meshType") is not None:
+        # SpecialMesh/BlockMesh/CylinderMesh replace the part shape: the mesh fills
+        # Size * Scale (bounding box used for every mesh type), shifted by Offset
+        size = size * np.array(part.get("meshScale") or [1, 1, 1], dtype=float)
+        center = center + rot @ np.array(part.get("meshOffset") or [0, 0, 0], dtype=float)
+    elif shape == "Ball":
         size = np.full(3, size.min())
     elif shape == "Cylinder":
         d = min(size[1], size[2])
         size = np.array([size[0], d, d])
-    cf = part["cf"]
-    center = np.array(cf[0:3], dtype=float)
-    rot = np.array(cf[3:12], dtype=float).reshape(3, 3)
     return center, rot, size / 2.0
 
 

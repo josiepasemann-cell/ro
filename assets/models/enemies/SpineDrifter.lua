@@ -91,16 +91,17 @@ for i = 1, 2 do
 	eye.CanCollide = false
 end
 
--- 4) Dünne Rückenstacheln (4 Stück, WedgeParts entlang des Rückens) ---------------
-for i = 1, 4 do
-	local z = -1.4 + (i - 1) * 0.9
-	local spineCFrame = ORIGIN * CFrame.new(0, 0.9, z) * CFrame.Angles(math.rad(90), 0, 0)
+-- 4) Dünne Rückenstacheln (6 Stück, abnehmend zum Schwanz, WedgeParts entlang des Rückens) --
+for i = 1, 6 do
+	local z = -1.7 + (i - 1) * 0.75
+	local spineHeight = 0.7 - i * 0.05
+	local spineCFrame = ORIGIN * CFrame.new(0, 0.85, z) * CFrame.Angles(math.rad(90), 0, 0)
 	local spine = Instance.new("WedgePart")
 	spine.Name = "DorsalSpine" .. i
-	spine.Size = Vector3.new(0.15, 0.6, 0.5)
+	spine.Size = Vector3.new(0.15, spineHeight, 0.55)
 	spine.CFrame = spineCFrame
-	spine.Color = ACCENT_COLOR
-	spine.Material = Enum.Material.SmoothPlastic
+	spine.Color = i % 2 == 0 and ACCENT_COLOR or EYE_COLOR
+	spine.Material = i % 2 == 0 and Enum.Material.SmoothPlastic or Enum.Material.Neon
 	spine.Anchored = true
 	spine.CanCollide = false
 	spine.TopSurface = Enum.SurfaceType.Smooth
@@ -108,12 +109,31 @@ for i = 1, 4 do
 	spine.Parent = model
 end
 
--- 5) Schwanzflosse (dünnes Wedge-Paar am Heck) -------------------------------------
-local tailCFrame = ORIGIN * CFrame.new(0, 0, 2.3) * CFrame.Angles(0, math.rad(90), 0)
+-- 5) Seitliche Steuerflossen (dünn, knapp an der Körpermitte anliegend) ------------
+for _, side in ipairs({ -1, 1 }) do
+	local finCFrame = ORIGIN * CFrame.new(side * 0.75, -0.1, -0.3) * CFrame.Angles(0, 0, math.rad(side * 20))
+	local fin = Instance.new("WedgePart")
+	fin.Name = "SideFin" .. (side < 0 and "L" or "R")
+	fin.Size = Vector3.new(0.75, 0.1, 0.9)
+	fin.CFrame = finCFrame * CFrame.Angles(0, 0, math.rad(90))
+	fin.Color = ACCENT_COLOR
+	fin.Material = Enum.Material.SmoothPlastic
+	fin.Anchored = true
+	fin.CanCollide = false
+	fin.TopSurface = Enum.SurfaceType.Smooth
+	fin.BottomSurface = Enum.SurfaceType.Smooth
+	fin.Parent = model
+end
+
+-- 6) Schwanzstiel (verjüngendes Segment, schließt die Lücke Body -> Flosse) --------
+newPart("TailStalk", Vector3.new(0.55, 0.55, 1.3), ORIGIN * CFrame.new(0, 0, 2.45), ACCENT_COLOR, Enum.Material.SmoothPlastic, model)
+
+-- 7) Schwanzflosse (überlappt den Stiel, gefächertes Doppel-Wedge) -----------------
+local tailBaseCFrame = ORIGIN * CFrame.new(0, 0, 2.9)
 local tailFin = Instance.new("WedgePart")
 tailFin.Name = "TailFin"
-tailFin.Size = Vector3.new(0.1, 1.0, 1.0)
-tailFin.CFrame = tailCFrame
+tailFin.Size = Vector3.new(0.1, 1.2, 1.1)
+tailFin.CFrame = tailBaseCFrame * CFrame.Angles(0, math.rad(90), 0)
 tailFin.Color = ACCENT_COLOR
 tailFin.Material = Enum.Material.SmoothPlastic
 tailFin.Anchored = true
@@ -121,6 +141,18 @@ tailFin.CanCollide = false
 tailFin.TopSurface = Enum.SurfaceType.Smooth
 tailFin.BottomSurface = Enum.SurfaceType.Smooth
 tailFin.Parent = model
+
+local tailFinLower = Instance.new("WedgePart")
+tailFinLower.Name = "TailFinLower"
+tailFinLower.Size = Vector3.new(0.1, 0.7, 0.8)
+tailFinLower.CFrame = tailBaseCFrame * CFrame.new(0, -0.55, 0.1) * CFrame.Angles(0, math.rad(-90), 0)
+tailFinLower.Color = EYE_COLOR
+tailFinLower.Material = Enum.Material.Neon
+tailFinLower.Anchored = true
+tailFinLower.CanCollide = false
+tailFinLower.TopSurface = Enum.SurfaceType.Smooth
+tailFinLower.BottomSurface = Enum.SurfaceType.Smooth
+tailFinLower.Parent = model
 
 -- 6) Idle-/Bedrohungs-Puls-Attachment -------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")

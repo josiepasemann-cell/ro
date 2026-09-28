@@ -165,33 +165,72 @@ model.Parent = npcsFolder
 local anchor = computeStandAnchorCFrame(STAND_INTERACTABLE, SIDE_OFFSET, FORWARD_OFFSET, FALLBACK_OFFSET)
 local rootCFrame = anchor * CFrame.new(0, BODY_HEIGHT, 0)
 
--- 1) Body: curved seahorse torso ------------------------------------------
-local body = newPart("Body", Vector3.new(1.4, 2.6, 1.4), rootCFrame, BODY_COLOR, Enum.Material.SmoothPlastic, model)
-body.Shape = Enum.PartType.Cylinder
-body.CFrame = rootCFrame * CFrame.Angles(0, 0, math.rad(90))
+-- 1) Body: upright seahorse torso, built from three stacked, overlapping
+--    segments (belly, chest, upper chest) so the silhouette tapers ------------
+local body = newPart("Body", Vector3.new(1.3, 1.7, 1.3), rootCFrame * CFrame.new(0, -0.5, 0), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+newPart("UpperChest", Vector3.new(1.0, 1.1, 1.0), rootCFrame * CFrame.new(0, 0.55, -0.05), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
 
--- Curled tail (static decoration)
-newWedge("TailCurl", Vector3.new(0.9, 1.0, 0.9), rootCFrame * CFrame.new(0, -1.7, -0.3) * CFrame.Angles(math.rad(-30), 0, 0), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+-- Ridged belly plates (small overlapping wedges down the front)
+for i = 1, 4 do
+	local y = -1.1 + (i - 1) * 0.45
+	newWedge(
+		"BellyPlate" .. i,
+		Vector3.new(0.9, 0.32, 0.35),
+		rootCFrame * CFrame.new(0, y, 0.62) * CFrame.Angles(math.rad(-90), 0, 0),
+		BODY_COLOR_LIGHT,
+		Enum.Material.SmoothPlastic,
+		model
+	)
+end
 
--- Neon dorsal fin along the back
-newPart("DorsalFin", Vector3.new(0.15, 1.6, 0.5), rootCFrame * CFrame.new(0, 0.6, -0.75), NEON_GREEN, Enum.Material.Neon, model)
+-- Curled tail (three tapering, overlapping segments coiling under the body)
+local tailSegments = {
+	{ pos = Vector3.new(0, -1.55, -0.35), size = Vector3.new(0.85, 0.85, 0.9), angle = -20 },
+	{ pos = Vector3.new(0, -2.15, -0.95), size = Vector3.new(0.6, 0.75, 0.7), angle = -55 },
+	{ pos = Vector3.new(0.05, -2.35, -1.55), size = Vector3.new(0.4, 0.55, 0.5), angle = -100 },
+}
+for i, spec in ipairs(tailSegments) do
+	newWedge(
+		"TailCurl" .. i,
+		spec.size,
+		rootCFrame * CFrame.new(spec.pos) * CFrame.Angles(math.rad(spec.angle), 0, 0),
+		BODY_COLOR,
+		Enum.Material.SmoothPlastic,
+		model
+	)
+end
 
--- 2) Head: seahorse snout pointing forward --------------------------------
-local head = newWedge("Head", Vector3.new(0.7, 0.65, 1.5), rootCFrame * CFrame.new(0, 1.55, 0.55) * CFrame.Angles(0, math.rad(180), 0), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
+-- Neon dorsal fin along the back (two overlapping fronds for a frillier look)
+newPart("DorsalFin", Vector3.new(0.15, 1.5, 0.55), rootCFrame * CFrame.new(0, 0.2, -0.55), NEON_GREEN, Enum.Material.Neon, model)
+newPart("DorsalFinTip", Vector3.new(0.12, 0.8, 0.4), rootCFrame * CFrame.new(0, 1.1, -0.65), NEON_GREEN, Enum.Material.Neon, model)
 
--- Eyes (named, movable for blink)
-local eye1 = newPart("Eye1", Vector3.new(0.22, 0.22, 0.22), rootCFrame * CFrame.new(-0.26, 1.72, 0.55), EYE_COLOR, Enum.Material.SmoothPlastic, model)
+-- 2) Head: seahorse snout pointing forward, overlapping the upper chest ----------
+local head = newWedge("Head", Vector3.new(0.7, 0.65, 1.5), rootCFrame * CFrame.new(0, 1.25, 0.55) * CFrame.Angles(0, math.rad(180), 0), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
+
+-- Snout crest ridges (small fins running along the snout)
+newPart("SnoutCrest", Vector3.new(0.15, 0.2, 1.1), rootCFrame * CFrame.new(0, 1.55, 0.65), NEON_GREEN, Enum.Material.Neon, model)
+
+-- Eyes (named, movable for blink) + brow ridges for readability -------------------
+local eye1 = newPart("Eye1", Vector3.new(0.24, 0.24, 0.24), rootCFrame * CFrame.new(-0.26, 1.42, 0.55), EYE_COLOR, Enum.Material.SmoothPlastic, model)
 eye1.Shape = Enum.PartType.Ball
-local eye2 = newPart("Eye2", Vector3.new(0.22, 0.22, 0.22), rootCFrame * CFrame.new(0.26, 1.72, 0.55), EYE_COLOR, Enum.Material.SmoothPlastic, model)
+local eye2 = newPart("Eye2", Vector3.new(0.24, 0.24, 0.24), rootCFrame * CFrame.new(0.26, 1.42, 0.55), EYE_COLOR, Enum.Material.SmoothPlastic, model)
 eye2.Shape = Enum.PartType.Ball
+newPart("EyeHighlight1", Vector3.new(0.08, 0.08, 0.08), rootCFrame * CFrame.new(-0.31, 1.47, 0.66), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+newPart("EyeHighlight2", Vector3.new(0.08, 0.08, 0.08), rootCFrame * CFrame.new(0.21, 1.47, 0.66), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 
--- Captain's hat (static decoration, perched on the head)
-newWedge("CaptainHat", Vector3.new(0.9, 0.45, 0.9), rootCFrame * CFrame.new(0, 2.05, 0.4) * CFrame.Angles(0, math.rad(180), 0), HAT_COLOR, Enum.Material.SmoothPlastic, model)
-newPart("HatTrim", Vector3.new(0.95, 0.1, 0.95), rootCFrame * CFrame.new(0, 1.85, 0.4), NEON_GREEN, Enum.Material.Neon, model)
+-- Captain's hat (static decoration, perched on and overlapping the head)
+newWedge("CaptainHat", Vector3.new(0.9, 0.45, 0.9), rootCFrame * CFrame.new(0, 1.75, 0.4) * CFrame.Angles(0, math.rad(180), 0), HAT_COLOR, Enum.Material.SmoothPlastic, model)
+newPart("HatTrim", Vector3.new(0.95, 0.12, 0.95), rootCFrame * CFrame.new(0, 1.56, 0.4), NEON_GREEN, Enum.Material.Neon, model)
+newPart("HatBadge", Vector3.new(0.3, 0.3, 0.1), rootCFrame * CFrame.new(0, 1.75, 0.86), Color3.fromRGB(255, 210, 60), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 
--- 3) Side fins (named, movable for the salute/wave gesture) --------------
-local armL = newPart("ArmL", Vector3.new(0.15, 0.9, 0.6), rootCFrame * CFrame.new(-0.85, 0.5, 0.1) * CFrame.Angles(0, 0, math.rad(18)), NEON_GREEN, Enum.Material.Neon, model)
-local armR = newPart("ArmR", Vector3.new(0.15, 0.9, 0.6), rootCFrame * CFrame.new(0.85, 0.5, 0.1) * CFrame.Angles(0, 0, math.rad(-18)), NEON_GREEN, Enum.Material.Neon, model)
+-- 3) Side fins (named, movable for the salute/wave gesture), overlapping the chest
+local armL = newPart("ArmL", Vector3.new(0.15, 0.9, 0.6), rootCFrame * CFrame.new(-0.62, 0.45, 0.1) * CFrame.Angles(0, 0, math.rad(18)), NEON_GREEN, Enum.Material.Neon, model)
+local armR = newPart("ArmR", Vector3.new(0.15, 0.9, 0.6), rootCFrame * CFrame.new(0.62, 0.45, 0.1) * CFrame.Angles(0, 0, math.rad(-18)), NEON_GREEN, Enum.Material.Neon, model)
+
+-- Small satchel of scrolls slung on the hip (readable "quest giver" prop)
+local satchel = newPart("Satchel", Vector3.new(0.55, 0.6, 0.4), rootCFrame * CFrame.new(0.55, -0.75, -0.15) * CFrame.Angles(0, 0, math.rad(-10)), Color3.fromRGB(120, 90, 55), Enum.Material.SmoothPlastic, model)
+newPart("SatchelStrap", Vector3.new(0.14, 1.3, 0.16), rootCFrame * CFrame.new(0.25, -0.05, -0.1) * CFrame.Angles(0, 0, math.rad(28)), Color3.fromRGB(90, 65, 38), Enum.Material.SmoothPlastic, model)
+newPart("ScrollTip", Vector3.new(0.16, 0.35, 0.16), rootCFrame * CFrame.new(0.55, -0.45, -0.15), Color3.fromRGB(235, 220, 175), Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Cylinder
 
 model.PrimaryPart = body
 model:SetAttribute("NpcId", NPC_ID)

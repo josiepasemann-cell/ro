@@ -89,26 +89,59 @@ local belly = newPart(
 belly.Shape = Enum.PartType.Cylinder
 belly.CFrame = belly.CFrame * CFrame.Angles(0, 0, math.rad(90))
 
--- 3) Zwei Augen -------------------------------------------------------------------
+-- 3) Zwei Augen mit Pupille + Glanzpunkt ---------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.75, 0.45, 1.25)
+	local eyeWhite = newPart(
+		"EyeWhite" .. i,
+		Vector3.new(0.45, 0.45, 0.4),
+		eyeCFrame,
+		Color3.fromRGB(235, 240, 220),
+		Enum.Material.SmoothPlastic,
+		model
+	)
+	eyeWhite.Shape = Enum.PartType.Ball
+
 	local eye = newPart(
 		"Eye" .. i,
-		Vector3.new(0.35, 0.35, 0.35),
-		ORIGIN * CFrame.new(side * 0.7, 0.4, 1.3),
+		Vector3.new(0.3, 0.3, 0.3),
+		eyeCFrame * CFrame.new(0, 0, 0.18),
 		Color3.fromRGB(20, 20, 20),
 		Enum.Material.SmoothPlastic,
 		model
 	)
 	eye.Shape = Enum.PartType.Ball
+
+	local highlight = newPart(
+		"EyeHighlight" .. i,
+		Vector3.new(0.1, 0.1, 0.1),
+		eyeCFrame * CFrame.new(0.08, 0.08, 0.3),
+		Color3.fromRGB(255, 255, 255),
+		Enum.Material.Neon,
+		model
+	)
+	highlight.Shape = Enum.PartType.Ball
 end
 
--- 4) Stacheln (8 kleine WedgeParts radial verteilt) --------------------------------
+-- 3b) Kleines Maul --------------------------------------------------------------------
+local mouth = newPart(
+	"Mouth",
+	Vector3.new(0.6, 0.15, 0.3),
+	ORIGIN * CFrame.new(0, -0.35, 1.35),
+	SPINE_COLOR,
+	Enum.Material.SmoothPlastic,
+	model
+)
+mouth.Shape = Enum.PartType.Cylinder
+mouth.CFrame = mouth.CFrame * CFrame.Angles(0, 0, math.rad(90))
+
+-- 4) Stacheln (8 kleine WedgeParts radial verteilt, in den Körper eingesenkt) --------
 for i = 1, 8 do
 	local angle = math.rad(45 * (i - 1))
 	local elevation = math.rad(20 * ((i % 3) - 1))
 	local dir = CFrame.Angles(0, angle, 0) * CFrame.Angles(elevation, 0, 0)
-	local offset = dir * CFrame.new(0, 0, 1.5)
+	local offset = dir * CFrame.new(0, 0, 1.3)
 	local spineCFrame = ORIGIN * offset * CFrame.Angles(math.rad(-90), 0, 0)
 
 	local spine = Instance.new("WedgePart")
