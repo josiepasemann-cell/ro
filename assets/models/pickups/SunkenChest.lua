@@ -112,13 +112,13 @@ shellMesh.MeshType = Enum.MeshType.Sphere
 shellMesh.Parent = shell
 shell.Transparency = 0.6
 
--- 3b) Goldene Zierbänder am Truhenkörper, überlappen Body direkt -------------------
+-- 3b) Goldene Zierbänder am Truhenkörper (vertikale Beschläge), überlappen Body ----
 for i = 1, 2 do
-	local zOff = (i == 1) and 0.32 or -0.32
+	local xOff = (i == 1) and 0.55 or -0.55
 	newPart(
 		"ChestBand" .. i,
-		Vector3.new(0.12, 1.3, 1.3),
-		ORIGIN * CFrame.new(0, 0, zOff),
+		Vector3.new(0.15, 1.3, 1.25),
+		ORIGIN * CFrame.new(xOff, 0, 0),
 		Color3.fromRGB(255, 235, 170),
 		Enum.Material.Metal,
 		model

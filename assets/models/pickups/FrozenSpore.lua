@@ -187,13 +187,15 @@ local openBase = newPart(
 )
 openBase.Shape = Enum.PartType.Ball
 
--- 4 auseinandergebrochene Eisschalen-Splitter um den freien Kern -----------------
+-- 4 auseinandergebrochene, aber weiter am Kern haftende Eisschalen-Splitter -------
+-- (radial nahe genug am Kern platziert, damit jeder Splitter den Body-Kern
+-- überlappt - "aufgebrochen" statt frei im Raum schwebend).
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 45)
 	local shard = newPart(
 		"ShellShard" .. i,
 		Vector3.new(0.9, 0.9, 0.15),
-		ORIGIN * CFrame.new(math.cos(angle) * 1.6, math.sin(angle * 0.5) * 0.5, math.sin(angle) * 1.6)
+		ORIGIN * CFrame.new(math.cos(angle) * 0.85, math.sin(angle * 0.5) * 0.35, math.sin(angle) * 0.85)
 			* CFrame.Angles(math.rad(20 * i), angle, 0),
 		Color3.fromRGB(200, 235, 255),
 		Enum.Material.Glass,
