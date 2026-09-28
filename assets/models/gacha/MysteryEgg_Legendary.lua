@@ -146,7 +146,7 @@ do
 	local r = eggRadiusAt(y) + 0.12
 	local runeRing = newPart(
 		"RuneRing",
-		Vector3.new(0.35, r * 2, r * 2),
+		Vector3.new(0.16, r * 2, r * 2),
 		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
 		RUNE_COLOR,
 		Enum.Material.Neon,

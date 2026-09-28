@@ -104,7 +104,7 @@ local body = newBall("Body", Vector3.new(2.1, 1.7, 6.5), ORIGIN, BODY_COLOR, Enu
 newBall("Belly", Vector3.new(1.5, 0.9, 5.2), ORIGIN * CFrame.new(0, -0.85, 0), BODY_LIGHT, Enum.Material.SmoothPlastic, model)
 
 -- 2) Hammerkopf: zentraler Querbalken + 2 sich verjüngende Enden -----------------------
-newPart("HammerHead", Vector3.new(6.8, 0.9, 1.2), ORIGIN * CFrame.new(0, 0.1, -3.15), BODY_COLOR, Enum.Material.SmoothPlastic, model)
+newPart("HammerHead", Vector3.new(6.2, 1.25, 1.35), ORIGIN * CFrame.new(0, 0.25, -3.1), BODY_COLOR, Enum.Material.SmoothPlastic, model)
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	newWedge(

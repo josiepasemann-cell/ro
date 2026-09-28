@@ -133,13 +133,13 @@ for i = 1, 2 do
 end
 
 -- 5) Schwanzstiel + Schwanzflosse (2 Wedges) ------------------------------------------------------
-local peduncle = newPart("TailPeduncle", Vector3.new(0.5, 0.55, 0.9), ORIGIN * CFrame.new(0, 0, 2.55), BODY_DARK, Enum.Material.SmoothPlastic, model)
+local peduncle = newPart("TailPeduncle", Vector3.new(0.5, 0.7, 0.9), ORIGIN * CFrame.new(0, 0, 2.55), BODY_DARK, Enum.Material.SmoothPlastic, model)
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	local tailFin = newWedge(
 		"TailFin" .. i,
 		Vector3.new(0.15, 1.1, 1.1),
-		ORIGIN * CFrame.new(0, side * 0.5, 3.35) * CFrame.Angles(0, 0, math.rad(side * 90)),
+		ORIGIN * CFrame.new(0, side * 0.3, 3.35) * CFrame.Angles(0, 0, math.rad(side * 90)),
 		BODY_COLOR,
 		Enum.Material.Glass,
 		model

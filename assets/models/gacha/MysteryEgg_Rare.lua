@@ -128,7 +128,7 @@ for i, yOffset in ipairs(ringOffsets) do
 	local r = eggRadiusAt(yOffset) + 0.05
 	local ring = newPart(
 		"SeamRing" .. i,
-		Vector3.new(0.14, r * 2, r * 2),
+		Vector3.new(0.1, r * 2, r * 2),
 		ORIGIN * CFrame.new(0, yOffset, 0) * CFrame.Angles(0, 0, math.rad(90)),
 		SEAM_COLOR,
 		Enum.Material.Neon,

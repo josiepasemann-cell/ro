@@ -150,7 +150,7 @@ for i = 1, SPIKE_COUNT do
 end
 
 -- 5) Zwei Runenringe auf unterschiedlicher Höhe, fest an die Schale anliegend ------
-local ringConfigs = { { y = 0.4, thickness = 0.3 }, { y = -0.5, thickness = 0.32 } }
+local ringConfigs = { { y = 0.4, thickness = 0.15 }, { y = -0.5, thickness = 0.16 } }
 for i, cfg in ipairs(ringConfigs) do
 	local r = eggRadiusAt(cfg.y) + 0.12
 	local runeRing = newPart(
