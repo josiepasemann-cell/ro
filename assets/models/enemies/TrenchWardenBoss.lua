@@ -109,66 +109,116 @@ local model = Instance.new("Model")
 model.Name = "TrenchWardenBoss"
 model.Parent = enemiesFolder
 
-local SKIN_COLOR = Color3.fromRGB(15, 10, 15)
-local ACCENT_COLOR = Color3.fromRGB(28, 20, 30)
-local EYE_COLOR = Color3.fromRGB(255, 20, 30)
-local CROWN_COLOR = Color3.fromRGB(255, 30, 40)
+-- Deep purple + gold "crowned leviathan" palette - deliberately NOT close to
+-- ShadowKraken's near-black/red palette (see design brief: boss must be
+-- unmistakable at a glance). EYE_COLOR/CROWN_COLOR/WEAKSPOT_COLOR are bright
+-- gold/white so the face + weak spot pop against the dark purple hull.
+local SKIN_COLOR = Color3.fromRGB(46, 14, 64)
+local ACCENT_COLOR = Color3.fromRGB(30, 12, 42)
+local EYE_COLOR = Color3.fromRGB(255, 170, 30)
+local CROWN_COLOR = Color3.fromRGB(255, 205, 60)
+local WEAKSPOT_COLOR = Color3.fromRGB(255, 250, 200)
+local TOOTH_COLOR = Color3.fromRGB(240, 235, 220)
 
--- 1) Hauptkörper: turmhoch, bulbös-rund, "big & funny-scary" statt hart-geometrisch
-local body = newOvalPart("Body", Vector3.new(7.6, 7.2, 7.4), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
+-- NOTE: -Z is the model's front (LookVector side; RaidService/ModelAnimator
+-- orient the boss so -Z faces its direction of travel / the plot center, see
+-- ModelAnimator.client.lua's atan2(planar.X, planar.Z) yaw) - every face/
+-- crown/armor part below sits on -Z so the boss is unmistakable head-on.
 
--- 2) Mantel-Auswölbung oben, rundlich --------------------------------------------
-local mantleCFrame = ORIGIN * CFrame.new(0, 2.6, -0.6)
-local mantle = newOvalPart("Mantle", Vector3.new(5.2, 3.6, 5.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
+-- 1) Hauptkörper: turmhoch, bulbös-rund, deutlich größer als jeder andere Gegner --
+local body = newOvalPart("Body", Vector3.new(8.6, 8.0, 8.2), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
 
--- 3) Größte, wildeste Glow-Augen im Spiel, mit weißem Glanzpunkt ---------------------
+-- 2) Mantel-Auswölbung oben, rundlich, mit goldenem Zierring --------------------
+local mantleCFrame = ORIGIN * CFrame.new(0, 2.9, -0.6)
+local mantle = newOvalPart("Mantle", Vector3.new(5.8, 4.0, 5.8), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
+newOvalPart("MantleGoldBand", Vector3.new(5.9, 0.3, 5.9), mantleCFrame * CFrame.new(0, -1.2, 0), CROWN_COLOR, Enum.Material.Neon, model)
+
+-- 3) Größte, wildeste Glow-Augen im Spiel, mit Zornesbrauen + weißem Glanzpunkt ----
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 1.85, 0.7, 3.25)
-	local eye = newPart("Eye" .. i, Vector3.new(1.5, 1.5, 1.3), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 2.0, 0.9, -3.6)
+	local eye = newPart("Eye" .. i, Vector3.new(1.7, 1.7, 1.4), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
-	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.4, 0.4, 0.24), eyeCFrame * CFrame.new(side * -0.3, 0.3, 0.5), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.44, 0.44, 0.26), eyeCFrame * CFrame.new(side * -0.32, 0.32, -0.55), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
 	highlight.Shape = Enum.PartType.Ball
+	-- Angled angry eyebrow ridge above each eye
+	newOvalPart("Eyebrow" .. i, Vector3.new(1.5, 0.4, 0.5), eyeCFrame * CFrame.new(side * 0.15, 1.05, -0.1) * CFrame.Angles(0, 0, math.rad(side * -22)), ACCENT_COLOR, Enum.Material.Basalt, model)
 end
 
--- 4) Kronendorn-Cluster auf dem Kopf: 5 rundliche, kegelig verjüngte Neon-Hörner ---
+-- 4) Kronendorn-Cluster auf dem Kopf: 5 goldene, kegelig verjüngte Hörner, nach
+-- vorn geschwenkt für eine majestätische, klar erkennbare Krone -------------------
 local crownLight
 for c = 1, 5 do
 	local angle = math.rad(-60 + (c - 1) * 30)
-	local crownCFrame = ORIGIN * CFrame.new(0, 3.4, 1.0) * CFrame.Angles(0, angle, math.rad(90)) * CFrame.new(0, 0, 1.0)
-	local spike = newOvalPart("CrownSpike" .. c, Vector3.new(0.6, 2.0, 0.6), crownCFrame, CROWN_COLOR, Enum.Material.Neon, model)
+	local crownCFrame = ORIGIN * CFrame.new(0, 3.8, -1.0) * CFrame.Angles(0, angle, math.rad(90)) * CFrame.new(0, 0, 1.1)
+	local spike = newOvalPart("CrownSpike" .. c, Vector3.new(0.65, 2.3, 0.65), crownCFrame, CROWN_COLOR, Enum.Material.Neon, model)
 	if c == 1 then
 		local pointLight = Instance.new("PointLight")
 		pointLight.Name = "CrownLight"
 		pointLight.Color = CROWN_COLOR
-		pointLight.Range = 24
-		pointLight.Brightness = 3
+		pointLight.Range = 28
+		pointLight.Brightness = 3.5
 		pointLight.Shadows = false
 		pointLight.Parent = spike
 		crownLight = pointLight
 	end
 end
 
--- 4b) Gepanzerte Brustplatten (flache, echte Blockform - hier bleibt hartes
--- Material sinnvoll; bekommt eine genietete Flächen-Textur) ------------------------
+-- 4a) Anglerfish-Lockangel: gebogener Stiel über dem Kopf mit leuchtender Spitze --
+-- Signature-Silhouette-Element, macht den Boss auf den ersten Blick von
+-- ShadowKraken/allen anderen Gegnern unterscheidbar.
+local lureBase = ORIGIN * CFrame.new(0, 4.3, -0.6)
+newOvalPart("LureStalk1", Vector3.new(0.3, 1.4, 0.3), lureBase * CFrame.Angles(math.rad(-18), 0, 0), ACCENT_COLOR, Enum.Material.Basalt, model)
+local lureStalk2CFrame = lureBase * CFrame.Angles(math.rad(-18), 0, 0) * CFrame.new(0, 1.2, 0) * CFrame.Angles(math.rad(-30), 0, 0)
+newOvalPart("LureStalk2", Vector3.new(0.24, 1.2, 0.24), lureStalk2CFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
+local lureTipCFrame = lureStalk2CFrame * CFrame.new(0, 1.0, 0)
+local lureOrb = newPart("LureOrb", Vector3.new(0.9, 0.9, 0.9), lureTipCFrame, WEAKSPOT_COLOR, Enum.Material.Neon, model)
+lureOrb.Shape = Enum.PartType.Ball
+local lureLight = Instance.new("PointLight")
+lureLight.Name = "LureLight"
+lureLight.Color = WEAKSPOT_COLOR
+lureLight.Range = 20
+lureLight.Brightness = 2.5
+lureLight.Shadows = false
+lureLight.Parent = lureOrb
+
+-- 4b) Gepanzerte Brustplatten (flache, echte Blockform mit Gold-Nieten-Textur) ----
 local chestPlates = {}
 for p = 1, 3 do
-	local x = (p - 2) * 1.6
+	local x = (p - 2) * 1.8
 	local plate = newPart(
 		"ChestPlate" .. p,
-		Vector3.new(1.5 - math.abs(p - 2) * 0.3, 2.6, 0.9),
-		ORIGIN * CFrame.new(x, -0.3, 3.4) * CFrame.Angles(math.rad(6 * (p - 2)), 0, 0),
+		Vector3.new(1.7 - math.abs(p - 2) * 0.3, 2.9, 1.0),
+		ORIGIN * CFrame.new(x, -0.3, -3.7) * CFrame.Angles(math.rad(-6 * (p - 2)), 0, 0),
 		ACCENT_COLOR,
 		Enum.Material.CorrodedMetal,
 		model
 	)
 	chestPlates[p] = plate
 end
-newTexture("RivetedPlates", Enum.NormalId.Front, chestPlates[2], { studsU = 1.2, studsV = 1.2, color = Color3.fromRGB(70, 55, 62) })
+newTexture("RivetedPlates", Enum.NormalId.Front, chestPlates[2], { studsU = 1.2, studsV = 1.2, color = Color3.fromRGB(120, 95, 40) })
 newTexture("MetalPanels", Enum.NormalId.Front, chestPlates[1], { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(60, 48, 54) })
 
--- 4c) Rundlicher Hakenschnabel unterhalb der Augen (kartoonig statt spitz) --------
-local beak = newOvalPart("Beak", Vector3.new(1.6, 1.2, 1.3), ORIGIN * CFrame.new(0, -1.0, 3.6), Color3.fromRGB(35, 25, 32), Enum.Material.Granite, model)
+-- 4c) Glühender Schwachpunkt-Kern, mittig in der Brustpanzerung eingelassen -------
+local weakSpot = newPart("WeakSpotCore", Vector3.new(0.95, 0.95, 0.5), ORIGIN * CFrame.new(0, -0.3, -4.05), WEAKSPOT_COLOR, Enum.Material.Neon, model)
+weakSpot.Shape = Enum.PartType.Ball
+local weakSpotLight = Instance.new("PointLight")
+weakSpotLight.Name = "WeakSpotLight"
+weakSpotLight.Color = WEAKSPOT_COLOR
+weakSpotLight.Range = 18
+weakSpotLight.Brightness = 3
+weakSpotLight.Shadows = false
+weakSpotLight.Parent = weakSpot
+
+-- 4d) Rundlicher Unterkiefer + große, runde Kartoon-Zähne (statt spitzem Schnabel) -
+local jawCFrame = ORIGIN * CFrame.new(0, -1.3, -3.8)
+local jaw = newOvalPart("Beak", Vector3.new(2.2, 1.3, 1.6), jawCFrame, Color3.fromRGB(60, 22, 40), Enum.Material.Granite, model)
+newOvalPart("UpperSnout", Vector3.new(2.0, 0.9, 1.3), ORIGIN * CFrame.new(0, -0.25, -3.85), Color3.fromRGB(60, 22, 40), Enum.Material.Granite, model)
+for tth = 1, 4 do
+	local x = (tth - 2.5) * 0.55
+	local tooth = newPart("Tooth" .. tth, Vector3.new(0.42, 0.5, 0.4), jawCFrame * CFrame.new(x, 0.55, -0.55), TOOTH_COLOR, Enum.Material.SmoothPlastic, model)
+	tooth.Shape = Enum.PartType.Ball
+end
 
 -- 5) 8 lange, dicke, peitschenartige Tentakel (je 3 Segmente, radial verteilt) -----
 for t = 1, TENTACLE_COUNT do

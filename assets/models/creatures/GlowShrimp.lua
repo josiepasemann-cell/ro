@@ -152,6 +152,18 @@ local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body
 
+-- The parts above were laid out with the head toward +X, but the game treats
+-- the body's LookVector (-Z) as the front, so turn everything except the body
+-- a quarter circle around it.
+do
+	local turn = body.CFrame * CFrame.Angles(0, math.pi / 2, 0) * body.CFrame:Inverse()
+	for _, part in ipairs(model:GetDescendants()) do
+		if part:IsA("BasePart") and part ~= body then
+			part.CFrame = turn * part.CFrame
+		end
+	end
+end
+
 model.PrimaryPart = body
 model:SetAttribute("Rarity", RARITY)
 model:SetAttribute("Zone", ZONE)

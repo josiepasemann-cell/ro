@@ -195,8 +195,12 @@ local rootCFrame = anchor * CFrame.new(0, BODY_HEIGHT, 0)
 
 -- 1) Body: upright seahorse torso, built from overlapping round ellipsoid
 --    segments (belly, chest, upper chest) - chunky, tapering silhouette -------
+-- NOTE: -Z is the model's front (LookVector side, faces the hub stand/camera,
+-- see computeStandAnchorCFrame's CFrame.lookAt above) - snout/face/hat sit on
+-- -Z, the curled tail + dorsal fin sit on +Z (behind), giving a readable
+-- upright seahorse silhouette from the front.
 local body = newOvalPart("Body", Vector3.new(1.55, 1.9, 1.5), rootCFrame * CFrame.new(0, -0.5, 0), BODY_COLOR, Enum.Material.SmoothPlastic, model)
-newOvalPart("UpperChest", Vector3.new(1.2, 1.25, 1.15), rootCFrame * CFrame.new(0, 0.55, -0.05), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
+newOvalPart("UpperChest", Vector3.new(1.2, 1.25, 1.15), rootCFrame * CFrame.new(0, 0.55, 0.05), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
 
 -- Ridged belly plates (small overlapping flattened ellipsoids down the front)
 for i = 1, 4 do
@@ -204,18 +208,18 @@ for i = 1, 4 do
 	newOvalPart(
 		"BellyPlate" .. i,
 		Vector3.new(1.0, 0.36, 0.4),
-		rootCFrame * CFrame.new(0, y, 0.62),
+		rootCFrame * CFrame.new(0, y, -0.62),
 		BODY_COLOR_LIGHT,
 		Enum.Material.SmoothPlastic,
 		model
 	)
 end
 
--- Curled tail (three tapering, overlapping ellipsoid segments coiling under the body)
+-- Curled tail (three tapering, overlapping ellipsoid segments coiling behind the body)
 local tailSegments = {
-	{ pos = Vector3.new(0, -1.55, -0.35), size = Vector3.new(0.9, 0.9, 0.95) },
-	{ pos = Vector3.new(0, -2.15, -0.95), size = Vector3.new(0.65, 0.8, 0.75) },
-	{ pos = Vector3.new(0.05, -2.35, -1.55), size = Vector3.new(0.45, 0.6, 0.55) },
+	{ pos = Vector3.new(0, -1.55, 0.35), size = Vector3.new(0.9, 0.9, 0.95) },
+	{ pos = Vector3.new(0, -2.15, 0.95), size = Vector3.new(0.65, 0.8, 0.75) },
+	{ pos = Vector3.new(0.05, -2.35, 1.55), size = Vector3.new(0.45, 0.6, 0.55) },
 }
 for i, spec in ipairs(tailSegments) do
 	newOvalPart(
@@ -229,48 +233,52 @@ for i, spec in ipairs(tailSegments) do
 end
 
 -- Neon dorsal fin along the back: thin, flattened, fanned ellipsoids --------------
-newOvalPart("DorsalFin", Vector3.new(0.18, 1.5, 0.6), rootCFrame * CFrame.new(0, 0.2, -0.55), NEON_GREEN, Enum.Material.Neon, model)
-newOvalPart("DorsalFinTip", Vector3.new(0.15, 0.8, 0.42), rootCFrame * CFrame.new(0, 1.1, -0.65), NEON_GREEN, Enum.Material.Neon, model)
+newOvalPart("DorsalFin", Vector3.new(0.18, 1.5, 0.6), rootCFrame * CFrame.new(0, 0.2, 0.55), NEON_GREEN, Enum.Material.SmoothPlastic, model)
+newOvalPart("DorsalFinTip", Vector3.new(0.15, 0.8, 0.42), rootCFrame * CFrame.new(0, 1.1, 0.65), NEON_GREEN, Enum.Material.SmoothPlastic, model)
 
 -- 2) Head: big, round cartoon seahorse snout, overlapping the upper chest --------
-local head = newOvalPart("Head", Vector3.new(1.0, 0.9, 1.6), rootCFrame * CFrame.new(0, 1.3, 0.55), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
+local head = newOvalPart("Head", Vector3.new(1.0, 0.9, 1.6), rootCFrame * CFrame.new(0, 1.3, -0.55), BODY_COLOR_LIGHT, Enum.Material.SmoothPlastic, model)
 
 -- Snout crest ridge (small thin fin running along the snout)
-newOvalPart("SnoutCrest", Vector3.new(0.16, 0.24, 1.1), rootCFrame * CFrame.new(0, 1.62, 0.65), NEON_GREEN, Enum.Material.Neon, model)
+newOvalPart("SnoutCrest", Vector3.new(0.16, 0.24, 1.1), rootCFrame * CFrame.new(0, 1.62, -0.65), NEON_GREEN, Enum.Material.SmoothPlastic, model)
 
 -- Big cartoon eyes: white eyeball, big pupil, highlight (named, movable for blink)
-local eye1 = newPart("Eye1", Vector3.new(0.42, 0.42, 0.24), rootCFrame * CFrame.new(-0.28, 1.46, 0.65), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
+local eye1 = newPart("Eye1", Vector3.new(0.42, 0.42, 0.24), rootCFrame * CFrame.new(-0.28, 1.46, -0.65), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
 eye1.Shape = Enum.PartType.Ball
-local eye2 = newPart("Eye2", Vector3.new(0.42, 0.42, 0.24), rootCFrame * CFrame.new(0.28, 1.46, 0.65), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
+local eye2 = newPart("Eye2", Vector3.new(0.42, 0.42, 0.24), rootCFrame * CFrame.new(0.28, 1.46, -0.65), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
 eye2.Shape = Enum.PartType.Ball
 for _, side in ipairs({ -1, 1 }) do
-	local pupilCFrame = rootCFrame * CFrame.new(side * 0.29, 1.46, 0.78)
+	local pupilCFrame = rootCFrame * CFrame.new(side * 0.29, 1.46, -0.78)
 	newPart("EyePupil" .. (side < 0 and "L" or "R"), Vector3.new(0.2, 0.2, 0.12), pupilCFrame, EYE_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
-	newPart("EyeHighlight" .. (side < 0 and "1" or "2"), Vector3.new(0.09, 0.09, 0.08), pupilCFrame * CFrame.new(0.08, 0.08, 0.05), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+	newPart("EyeHighlight" .. (side < 0 and "1" or "2"), Vector3.new(0.09, 0.09, 0.08), pupilCFrame * CFrame.new(0.08, 0.08, -0.05), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 end
+
+-- Friendly captain's smile (small dark ellipsoid arc under the snout tip)
+newOvalPart("Mouth", Vector3.new(0.34, 0.1, 0.12), rootCFrame * CFrame.new(0, 1.1, -1.12), Color3.fromRGB(50, 35, 32), Enum.Material.SmoothPlastic, model)
 
 -- Rosy cheek blush (friendly cartoon captain)
 for _, side in ipairs({ -1, 1 }) do
-	local blush = newPart("Blush" .. (side < 0 and "L" or "R"), Vector3.new(0.28, 0.18, 0.06), rootCFrame * CFrame.new(side * 0.42, 1.24, 0.85), Color3.fromRGB(255, 150, 150), Enum.Material.SmoothPlastic, model)
+	local blush = newPart("Blush" .. (side < 0 and "L" or "R"), Vector3.new(0.28, 0.18, 0.06), rootCFrame * CFrame.new(side * 0.42, 1.24, -0.85), Color3.fromRGB(255, 150, 150), Enum.Material.SmoothPlastic, model)
 	blush.Shape = Enum.PartType.Ball
 	blush.Transparency = 0.35
 end
 
--- Oversized captain's hat (static decoration, perched on and overlapping the head)
-local hatBrim = newWedge("CaptainHat", Vector3.new(1.15, 0.5, 1.15), rootCFrame * CFrame.new(0, 1.85, 0.4) * CFrame.Angles(0, math.rad(180), 0), HAT_COLOR, Enum.Material.Fabric, model)
-newOvalPart("HatTrim", Vector3.new(1.2, 0.14, 1.2), rootCFrame * CFrame.new(0, 1.62, 0.4), NEON_GREEN, Enum.Material.Neon, model)
-local hatBadge = newPart("HatBadge", Vector3.new(0.36, 0.36, 0.12), rootCFrame * CFrame.new(0, 1.85, 0.9), Color3.fromRGB(255, 210, 60), Enum.Material.Neon, model)
+-- Rounded captain's hat (dome crown + brim ellipsoids, not a boxy wedge) --------
+local hatCrown = newOvalPart("CaptainHat", Vector3.new(1.15, 0.85, 1.1), rootCFrame * CFrame.new(0, 1.95, -0.35) * CFrame.Angles(0, math.rad(180), 0), HAT_COLOR, Enum.Material.Fabric, model)
+newOvalPart("HatBrim", Vector3.new(1.35, 0.24, 1.35), rootCFrame * CFrame.new(0, 1.55, -0.4), HAT_COLOR, Enum.Material.Fabric, model)
+newOvalPart("HatTrim", Vector3.new(1.2, 0.1, 1.2), rootCFrame * CFrame.new(0, 1.66, -0.4), NEON_GREEN, Enum.Material.SmoothPlastic, model)
+local hatBadge = newPart("HatBadge", Vector3.new(0.36, 0.36, 0.12), rootCFrame * CFrame.new(0, 1.95, -0.82), Color3.fromRGB(255, 210, 60), Enum.Material.Neon, model)
 hatBadge.Shape = Enum.PartType.Ball
-newTexture("GoldFoil", Enum.NormalId.Front, hatBrim, { studsU = 1, studsV = 1, color = Color3.fromRGB(230, 200, 120), transparency = 0.55 })
+newTexture("GoldFoil", Enum.NormalId.Front, hatCrown, { studsU = 1, studsV = 1, color = Color3.fromRGB(230, 200, 120), transparency = 0.55 })
 
 -- 3) Side fins (named, movable for the salute/wave gesture): thin fanned ellipsoids
-local armL = newOvalPart("ArmL", Vector3.new(0.2, 0.95, 0.65), rootCFrame * CFrame.new(-0.65, 0.45, 0.1) * CFrame.Angles(0, 0, math.rad(18)), NEON_GREEN, Enum.Material.Neon, model)
-local armR = newOvalPart("ArmR", Vector3.new(0.2, 0.95, 0.65), rootCFrame * CFrame.new(0.65, 0.45, 0.1) * CFrame.Angles(0, 0, math.rad(-18)), NEON_GREEN, Enum.Material.Neon, model)
+local armL = newOvalPart("ArmL", Vector3.new(0.2, 0.95, 0.65), rootCFrame * CFrame.new(-0.85, 0.4, 0.05) * CFrame.Angles(0, 0, math.rad(18)), NEON_GREEN, Enum.Material.SmoothPlastic, model)
+local armR = newOvalPart("ArmR", Vector3.new(0.2, 0.95, 0.65), rootCFrame * CFrame.new(0.85, 0.4, 0.05) * CFrame.Angles(0, 0, math.rad(-18)), NEON_GREEN, Enum.Material.SmoothPlastic, model)
 
 -- Oversized satchel of scrolls slung on the hip (readable "quest giver" prop)
-local satchel = newPart("Satchel", Vector3.new(0.7, 0.75, 0.5), rootCFrame * CFrame.new(0.6, -0.78, -0.15) * CFrame.Angles(0, 0, math.rad(-10)), Color3.fromRGB(120, 90, 55), Enum.Material.Fabric, model)
-newOvalPart("SatchelStrap", Vector3.new(0.16, 1.35, 0.18), rootCFrame * CFrame.new(0.25, -0.05, -0.1) * CFrame.Angles(0, 0, math.rad(28)), Color3.fromRGB(90, 65, 38), Enum.Material.Fabric, model)
-newPart("ScrollTip", Vector3.new(0.18, 0.4, 0.18), rootCFrame * CFrame.new(0.6, -0.45, -0.15), Color3.fromRGB(235, 220, 175), Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Cylinder
+local satchel = newPart("Satchel", Vector3.new(0.7, 0.75, 0.5), rootCFrame * CFrame.new(0.6, -0.78, 0.15) * CFrame.Angles(0, 0, math.rad(-10)), Color3.fromRGB(120, 90, 55), Enum.Material.Fabric, model)
+newOvalPart("SatchelStrap", Vector3.new(0.16, 1.35, 0.18), rootCFrame * CFrame.new(0.25, -0.05, 0.1) * CFrame.Angles(0, 0, math.rad(28)), Color3.fromRGB(90, 65, 38), Enum.Material.Fabric, model)
+newPart("ScrollTip", Vector3.new(0.18, 0.4, 0.18), rootCFrame * CFrame.new(0.6, -0.45, 0.15), Color3.fromRGB(235, 220, 175), Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Cylinder
 newTexture("WoodPlanks", Enum.NormalId.Front, satchel, { studsU = 1, studsV = 1, color = Color3.fromRGB(95, 68, 38), transparency = 0.4 })
 
 model.PrimaryPart = body

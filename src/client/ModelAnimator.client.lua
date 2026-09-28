@@ -230,7 +230,8 @@ local function updateChaseEntry(entry: ChaseEntry, dt: number, now: number)
 
 	local planar = Vector3.new(toTarget.X, 0, toTarget.Z)
 	if planar.Magnitude > MIN_MOVE_FOR_YAW_STUDS then
-		local targetYaw = math.atan2(planar.X, planar.Z)
+		-- Front is LookVector (-Z), the Roblox convention the models and server use.
+		local targetYaw = math.atan2(-planar.X, -planar.Z)
 		local yawDelta = (targetYaw - entry.Yaw + math.pi) % (2 * math.pi) - math.pi
 		entry.Yaw += yawDelta * math.clamp(YAW_TURN_RATE * dt, 0, 1)
 	end

@@ -194,42 +194,63 @@ local anchor = computeStandAnchorCFrame(STAND_INTERACTABLE, SIDE_OFFSET, FORWARD
 local rootCFrame = anchor * CFrame.new(0, BODY_HEIGHT, 0)
 
 -- 1) Body: big, round, chunky cartoon clownfish body -----------------------
+-- NOTE: -Z is the model's front (LookVector side, faces the hub stand/camera,
+-- see computeStandAnchorCFrame's CFrame.lookAt above) - head/face/fins below
+-- sit on -Z, tail on +Z, so Splash actually reads front-on.
 local body = newOvalPart("Body", Vector3.new(2.9, 2.3, 3.2), rootCFrame, BODY_ORANGE, Enum.Material.SmoothPlastic, model)
 
--- Classic white stripes (flattened ellipsoid bands)
-newOvalPart("StripeWhite1", Vector3.new(2.75, 0.44, 0.32), rootCFrame * CFrame.new(0, 0, 0.6), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
-newOvalPart("StripeWhite2", Vector3.new(2.6, 0.44, 0.32), rootCFrame * CFrame.new(0, 0.05, -0.4), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
+-- Classic white stripes, wrapped fully over the top/bottom of the body (taller
+-- than the body itself, Vector3.new(..)'s Y > body's Y) so they actually poke
+-- out of the ellipsoid surface as a visible band instead of hiding inside it,
+-- each edged with a thin black rim. The black copy is THINNER than the white
+-- one along the stripe's own depth axis (Z) so the white still pokes through -
+-- growing black bigger on EVERY axis would just swallow the white band whole.
+newOvalPart("StripeBlack1", Vector3.new(2.95, 2.7, 0.22), rootCFrame * CFrame.new(0, 0, -0.6), Color3.fromRGB(20, 18, 20), Enum.Material.SmoothPlastic, model)
+newOvalPart("StripeWhite1", Vector3.new(2.85, 2.6, 0.34), rootCFrame * CFrame.new(0, 0, -0.6), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
+newOvalPart("StripeBlack2", Vector3.new(2.8, 2.55, 0.22), rootCFrame * CFrame.new(0, 0.05, 0.4), Color3.fromRGB(20, 18, 20), Enum.Material.SmoothPlastic, model)
+newOvalPart("StripeWhite2", Vector3.new(2.7, 2.45, 0.34), rootCFrame * CFrame.new(0, 0.05, 0.4), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
 
--- Dorsal fin (static decoration): thin flattened ellipsoid, neon-trimmed
-newOvalPart("DorsalFin", Vector3.new(1.0, 0.16, 0.85), rootCFrame * CFrame.new(0, 1.1, -0.3), NEON_GREEN, Enum.Material.Neon, model)
+-- Dorsal fin (static decoration): thin flattened ellipsoid, black-edged + orange.
+-- Black is thinner in Y (the fin's own depth off the back) so the green top
+-- shows through, but wider in X/Z so a black rim reads around the silhouette.
+newOvalPart("DorsalFinEdge", Vector3.new(1.02, 0.1, 0.86), rootCFrame * CFrame.new(0, 1.1, 0.3), Color3.fromRGB(20, 18, 20), Enum.Material.SmoothPlastic, model)
+newOvalPart("DorsalFin", Vector3.new(0.94, 0.16, 0.78), rootCFrame * CFrame.new(0, 1.12, 0.3), NEON_GREEN, Enum.Material.SmoothPlastic, model)
 
 -- Tail stalk bridges the body -> tail fin gap (round ellipsoid connector)
-newOvalPart("TailStalk", Vector3.new(0.8, 0.8, 1.05), rootCFrame * CFrame.new(0, 0, -1.2), BODY_ORANGE, Enum.Material.SmoothPlastic, model)
-newOvalPart("TailFin", Vector3.new(0.16, 1.15, 0.85), rootCFrame * CFrame.new(0, 0, -1.65), NEON_GREEN, Enum.Material.Neon, model)
-newOvalPart("TailFinTip", Vector3.new(0.14, 0.75, 0.58), rootCFrame * CFrame.new(0, 0, -1.8), STRIPE_WHITE, Enum.Material.Neon, model)
+newOvalPart("TailStalk", Vector3.new(0.8, 0.8, 1.05), rootCFrame * CFrame.new(0, 0, 1.2), BODY_ORANGE, Enum.Material.SmoothPlastic, model)
+newOvalPart("TailFinEdge", Vector3.new(0.1, 1.24, 0.94), rootCFrame * CFrame.new(0, 0, 1.68), Color3.fromRGB(20, 18, 20), Enum.Material.SmoothPlastic, model)
+newOvalPart("TailFin", Vector3.new(0.16, 1.15, 0.85), rootCFrame * CFrame.new(0, 0, 1.65), NEON_GREEN, Enum.Material.SmoothPlastic, model)
+newOvalPart("TailFinTip", Vector3.new(0.14, 0.75, 0.58), rootCFrame * CFrame.new(0, 0, 1.8), STRIPE_WHITE, Enum.Material.SmoothPlastic, model)
 
 -- 2) Head: big round nose bump at the front ------------------------------------
-local head = newOvalPart("Head", Vector3.new(1.05, 1.15, 0.8), rootCFrame * CFrame.new(0, 0.05, 1.35), BODY_ORANGE_LIGHT, Enum.Material.SmoothPlastic, model)
+local head = newOvalPart("Head", Vector3.new(1.05, 1.15, 0.8), rootCFrame * CFrame.new(0, 0.05, -1.35), BODY_ORANGE_LIGHT, Enum.Material.SmoothPlastic, model)
 
 -- Big cartoon eyes: white eyeball, big pupil, highlight (named, movable for blink)
-local eye1 = newPart("Eye1", Vector3.new(0.44, 0.44, 0.3), rootCFrame * CFrame.new(-0.36, 0.22, 1.6), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
+local eye1 = newPart("Eye1", Vector3.new(0.44, 0.44, 0.3), rootCFrame * CFrame.new(-0.36, 0.22, -1.6), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
 eye1.Shape = Enum.PartType.Ball
-local eye2 = newPart("Eye2", Vector3.new(0.44, 0.44, 0.3), rootCFrame * CFrame.new(0.36, 0.22, 1.6), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
+local eye2 = newPart("Eye2", Vector3.new(0.44, 0.44, 0.3), rootCFrame * CFrame.new(0.36, 0.22, -1.6), Color3.fromRGB(250, 250, 255), Enum.Material.SmoothPlastic, model)
 eye2.Shape = Enum.PartType.Ball
 for _, side in ipairs({ -1, 1 }) do
-	local pupilCFrame = rootCFrame * CFrame.new(side * 0.37, 0.22, 1.76)
+	local pupilCFrame = rootCFrame * CFrame.new(side * 0.37, 0.22, -1.76)
 	newPart("EyePupil" .. (side < 0 and "L" or "R"), Vector3.new(0.22, 0.22, 0.14), pupilCFrame, EYE_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
-	newPart("EyeGlint" .. (side < 0 and "L" or "R"), Vector3.new(0.09, 0.09, 0.06), pupilCFrame * CFrame.new(0.08, 0.08, 0.05), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+	newPart("EyeGlint" .. (side < 0 and "L" or "R"), Vector3.new(0.09, 0.09, 0.06), pupilCFrame * CFrame.new(0.08, 0.08, -0.05), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 end
 
--- 3) Pectoral fins (named, movable for waving): thin fanned ellipsoids -----------
-local armL = newOvalPart("ArmL", Vector3.new(0.18, 0.65, 0.95), rootCFrame * CFrame.new(-1.35, -0.2, 0.3) * CFrame.Angles(0, 0, math.rad(20)), NEON_GREEN, Enum.Material.Neon, model)
-local armR = newOvalPart("ArmR", Vector3.new(0.18, 0.65, 0.95), rootCFrame * CFrame.new(1.35, -0.2, 0.3) * CFrame.Angles(0, 0, math.rad(-20)), NEON_GREEN, Enum.Material.Neon, model)
+-- Cheerful curved smile (small dark ellipsoid arc under the nose)
+newOvalPart("Mouth", Vector3.new(0.42, 0.12, 0.14), rootCFrame * CFrame.new(0, -0.16, -1.72), Color3.fromRGB(60, 30, 20), Enum.Material.SmoothPlastic, model)
+
+-- 3) Pectoral fins (named, movable for waving): rounded, black-edged, orange fans.
+-- Black edge is thinner along X (the fin's own thickness) so the green face
+-- shows through on both sides, but taller/longer (Y/Z) for a visible rim.
+local armEdgeL = newOvalPart("ArmLEdge", Vector3.new(0.12, 0.74, 1.03), rootCFrame * CFrame.new(-1.36, -0.2, -0.3) * CFrame.Angles(0, 0, math.rad(20)), Color3.fromRGB(20, 18, 20), Enum.Material.SmoothPlastic, model)
+local armL = newOvalPart("ArmL", Vector3.new(0.18, 0.65, 0.95), rootCFrame * CFrame.new(-1.35, -0.2, -0.3) * CFrame.Angles(0, 0, math.rad(20)), NEON_GREEN, Enum.Material.SmoothPlastic, model)
+local armEdgeR = newOvalPart("ArmREdge", Vector3.new(0.12, 0.74, 1.03), rootCFrame * CFrame.new(1.36, -0.2, -0.3) * CFrame.Angles(0, 0, math.rad(-20)), Color3.fromRGB(20, 18, 20), Enum.Material.SmoothPlastic, model)
+local armR = newOvalPart("ArmR", Vector3.new(0.18, 0.65, 0.95), rootCFrame * CFrame.new(1.35, -0.2, -0.3) * CFrame.Angles(0, 0, math.rad(-20)), NEON_GREEN, Enum.Material.SmoothPlastic, model)
 
 -- 4) Small trade crate resting against the body (readable "trader" prop) --------
-local crate = newPart("TradeCrate", Vector3.new(0.95, 0.9, 0.95), rootCFrame * CFrame.new(0, -0.9, 0.95), Color3.fromRGB(150, 108, 60), Enum.Material.WoodPlanks, model)
-local crateBand = newPart("TradeCrateBandX", Vector3.new(1.0, 0.16, 1.0), rootCFrame * CFrame.new(0, -0.9, 0.95), Color3.fromRGB(90, 62, 32), Enum.Material.CorrodedMetal, model)
-newPart("TradeCrateGem", Vector3.new(0.34, 0.34, 0.34), rootCFrame * CFrame.new(0, -0.48, 0.95), NEON_GREEN, Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+local crate = newPart("TradeCrate", Vector3.new(0.95, 0.9, 0.95), rootCFrame * CFrame.new(0, -0.9, -0.95), Color3.fromRGB(150, 108, 60), Enum.Material.WoodPlanks, model)
+local crateBand = newPart("TradeCrateBandX", Vector3.new(1.0, 0.16, 1.0), rootCFrame * CFrame.new(0, -0.9, -0.95), Color3.fromRGB(90, 62, 32), Enum.Material.CorrodedMetal, model)
+newPart("TradeCrateGem", Vector3.new(0.34, 0.34, 0.34), rootCFrame * CFrame.new(0, -0.48, -0.95), NEON_GREEN, Enum.Material.Neon, model).Shape = Enum.PartType.Ball
 newTexture("WoodPlanks", Enum.NormalId.Front, crate, { studsU = 0.6, studsV = 0.6, color = Color3.fromRGB(100, 70, 38), transparency = 0.4 })
 newTexture("MetalPanels", Enum.NormalId.Front, crateBand, { studsU = 0.8, studsV = 0.8, color = Color3.fromRGB(60, 42, 22) })
 

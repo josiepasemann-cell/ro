@@ -156,40 +156,45 @@ local glowCore = newPart("GlowCore", Vector3.new(1.3, 1.0, 1.3), rootCFrame, NEO
 glowCore.Shape = Enum.PartType.Ball
 
 -- 2) Head: small friendly "face" bump at the front-bottom of the bell -----
-local head = newPart("Head", Vector3.new(1.1, 0.6, 1.1), rootCFrame * CFrame.new(0, -1.15, 0.7), BELL_COLOR, Enum.Material.Glass, model)
+-- NOTE: -Z is the model's front (LookVector side, faces the hub spawn/camera,
+-- see computeGuideAnchorCFrame's CFrame.lookAt above) - the face sits on -Z.
+local head = newPart("Head", Vector3.new(1.1, 0.6, 1.1), rootCFrame * CFrame.new(0, -1.15, -0.7), BELL_COLOR, Enum.Material.Glass, model)
 head.Shape = Enum.PartType.Ball
 head.Transparency = 0.1
 
 -- Big cute eyes with pupil + highlight (named, movable for blink)
-local eye1 = newPart("Eye1", Vector3.new(0.48, 0.48, 0.22), rootCFrame * CFrame.new(-0.34, -1.05, 1.25), EYE_COLOR, Enum.Material.Neon, model)
+local eye1 = newPart("Eye1", Vector3.new(0.48, 0.48, 0.22), rootCFrame * CFrame.new(-0.34, -1.05, -1.25), EYE_COLOR, Enum.Material.Neon, model)
 eye1.Shape = Enum.PartType.Ball
-local eye2 = newPart("Eye2", Vector3.new(0.48, 0.48, 0.22), rootCFrame * CFrame.new(0.34, -1.05, 1.25), EYE_COLOR, Enum.Material.Neon, model)
+local eye2 = newPart("Eye2", Vector3.new(0.48, 0.48, 0.22), rootCFrame * CFrame.new(0.34, -1.05, -1.25), EYE_COLOR, Enum.Material.Neon, model)
 eye2.Shape = Enum.PartType.Ball
-newPart("Eye1Pupil", Vector3.new(0.2, 0.2, 0.09), rootCFrame * CFrame.new(-0.34, -1.05, 1.34), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
-newPart("Eye2Pupil", Vector3.new(0.2, 0.2, 0.09), rootCFrame * CFrame.new(0.34, -1.05, 1.34), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
-newPart("Eye1Glint", Vector3.new(0.08, 0.08, 0.05), rootCFrame * CFrame.new(-0.27, -0.98, 1.4), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
-newPart("Eye2Glint", Vector3.new(0.08, 0.08, 0.05), rootCFrame * CFrame.new(0.41, -0.98, 1.4), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+newPart("Eye1Pupil", Vector3.new(0.2, 0.2, 0.09), rootCFrame * CFrame.new(-0.34, -1.05, -1.34), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
+newPart("Eye2Pupil", Vector3.new(0.2, 0.2, 0.09), rootCFrame * CFrame.new(0.34, -1.05, -1.34), EYE_PUPIL_COLOR, Enum.Material.SmoothPlastic, model).Shape = Enum.PartType.Ball
+newPart("Eye1Glint", Vector3.new(0.08, 0.08, 0.05), rootCFrame * CFrame.new(-0.27, -0.98, -1.4), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+newPart("Eye2Glint", Vector3.new(0.08, 0.08, 0.05), rootCFrame * CFrame.new(0.41, -0.98, -1.4), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model).Shape = Enum.PartType.Ball
+
+-- Friendly smile (small dark ellipsoid arc under the eyes)
+newOvalPart("Mouth", Vector3.new(0.36, 0.1, 0.1), rootCFrame * CFrame.new(0, -1.32, -1.2), Color3.fromRGB(40, 60, 70), Enum.Material.SmoothPlastic, model)
 
 -- 3) Two primary tentacles: tapering chains of overlapping ellipsoids (movable) --
-local armL = newOvalPart("ArmL", Vector3.new(0.6, 1.6, 0.6), rootCFrame * CFrame.new(-1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)), NEON_CYAN, Enum.Material.Neon, model)
-newOvalPart("ArmLTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(-1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)) * CFrame.new(0, -1.5, 0), NEON_CYAN, Enum.Material.Neon, model)
-local armR = newOvalPart("ArmR", Vector3.new(0.6, 1.6, 0.6), rootCFrame * CFrame.new(1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)), NEON_CYAN, Enum.Material.Neon, model)
-newOvalPart("ArmRTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -1.5, 0), NEON_CYAN, Enum.Material.Neon, model)
+local armL = newOvalPart("ArmL", Vector3.new(0.6, 1.6, 0.6), rootCFrame * CFrame.new(-1.4, -1.6, -0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)), NEON_CYAN, Enum.Material.SmoothPlastic, model)
+newOvalPart("ArmLTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(-1.4, -1.6, -0.2) * CFrame.Angles(math.rad(8), 0, math.rad(10)) * CFrame.new(0, -1.5, 0), NEON_CYAN, Enum.Material.SmoothPlastic, model)
+local armR = newOvalPart("ArmR", Vector3.new(0.6, 1.6, 0.6), rootCFrame * CFrame.new(1.4, -1.6, -0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)), NEON_CYAN, Enum.Material.SmoothPlastic, model)
+newOvalPart("ArmRTip", Vector3.new(0.4, 1.5, 0.4), rootCFrame * CFrame.new(1.4, -1.6, -0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -1.5, 0), NEON_CYAN, Enum.Material.SmoothPlastic, model)
 
 -- 4) Four more hanging tentacles in a rainbow of neon colors: tapering pairs -----
 local tentacleColors = { NEON_MAGENTA, NEON_VIOLET, NEON_MAGENTA, NEON_VIOLET }
-local tentacleOffsets = { Vector3.new(-0.7, -1.7, -0.8), Vector3.new(0.7, -1.7, -0.8), Vector3.new(-1.0, -1.7, 0.6), Vector3.new(1.0, -1.7, 0.6) }
+local tentacleOffsets = { Vector3.new(-0.7, -1.7, 0.8), Vector3.new(0.7, -1.7, 0.8), Vector3.new(-1.0, -1.7, -0.6), Vector3.new(1.0, -1.7, -0.6) }
 for index, offset in ipairs(tentacleOffsets) do
 	local sign = offset.X < 0 and -1 or 1
 	local segCFrame = rootCFrame * CFrame.new(offset) * CFrame.Angles(math.rad(6), 0, math.rad(sign * 8))
-	newOvalPart("Tentacle" .. index, Vector3.new(0.55, 1.3, 0.55), segCFrame, tentacleColors[index], Enum.Material.Neon, model)
-	newOvalPart("Tentacle" .. index .. "Tip", Vector3.new(0.36, 1.2, 0.36), segCFrame * CFrame.new(0, -1.1, 0), tentacleColors[index], Enum.Material.Neon, model)
+	newOvalPart("Tentacle" .. index, Vector3.new(0.55, 1.3, 0.55), segCFrame, tentacleColors[index], Enum.Material.SmoothPlastic, model)
+	newOvalPart("Tentacle" .. index .. "Tip", Vector3.new(0.36, 1.2, 0.36), segCFrame * CFrame.new(0, -1.1, 0), tentacleColors[index], Enum.Material.SmoothPlastic, model)
 end
 
 -- 5) Oversized welcome lantern held near the tip of the right tentacle -----------
 -- Reuses ArmR's own CFrame chain so the lantern sits exactly at (and
 -- overlaps) the tentacle tip regardless of its tilt.
-local armRTipCFrame = rootCFrame * CFrame.new(1.4, -1.6, 0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -2.9, 0)
+local armRTipCFrame = rootCFrame * CFrame.new(1.4, -1.6, -0.2) * CFrame.Angles(math.rad(8), 0, math.rad(-10)) * CFrame.new(0, -2.9, 0)
 local lantern = newPart("Lantern", Vector3.new(0.6, 0.72, 0.6), armRTipCFrame, Color3.fromRGB(255, 225, 150), Enum.Material.Glass, model)
 lantern.Shape = Enum.PartType.Ball
 lantern.Transparency = 0.15

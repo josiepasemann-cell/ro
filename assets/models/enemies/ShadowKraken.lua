@@ -105,19 +105,25 @@ model.Parent = enemiesFolder
 local SKIN_COLOR = Color3.fromRGB(20, 18, 26)
 local ACCENT_COLOR = Color3.fromRGB(35, 30, 45)
 local EYE_COLOR = Color3.fromRGB(255, 40, 60)
+local PUPIL_COLOR = Color3.fromRGB(15, 8, 10)
+
+-- NOTE: -Z is the model's front (LookVector side; RaidService/ModelAnimator
+-- orient this enemy so -Z faces its direction of travel / the plot center,
+-- see ModelAnimator.client.lua's atan2(planar.X, planar.Z) yaw) - the face
+-- below sits on -Z so it reads clearly while chasing toward the player.
 
 -- 1) Hauptkörper: chunky, kartoonig-bulböses Ellipsoid (deutlich größer als
 --    normale Kreaturen; leicht "aufgeplustert" statt geometrisch rund) --------
 local body = newOvalPart("Body", Vector3.new(4.8, 4.4, 4.6), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
 
 -- 2) Mantel-Auswölbung oben (leicht dunklerer, rundlicher Buckel) -----------------
-local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, -0.4)
+local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, 0.4)
 local mantle = newOvalPart("Mantle", Vector3.new(3.2, 2.4, 3.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
 
 -- 2b) Kronendorn-Reihe auf dem Mantel (rundliche Hörnchen statt eckige Zacken) -----
 for c = 1, 5 do
 	local angle = math.rad(-70 + (c - 1) * 35)
-	local spikeCFrame = mantleCFrame * CFrame.new(0, 1.0, 0) * CFrame.Angles(0, angle, 0) * CFrame.new(0, 0.5, 0.3)
+	local spikeCFrame = mantleCFrame * CFrame.new(0, 1.0, 0) * CFrame.Angles(0, angle, 0) * CFrame.new(0, 0.5, -0.3)
 	newOvalPart("CrownRidge" .. c, Vector3.new(0.4, 1.0, 0.4), spikeCFrame, ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
 end
 
@@ -133,7 +139,7 @@ end
 local beakUpper = Instance.new("WedgePart")
 beakUpper.Name = "BeakUpper"
 beakUpper.Size = Vector3.new(0.9, 0.7, 0.9)
-beakUpper.CFrame = ORIGIN * CFrame.new(0, -0.1, 1.9) * CFrame.Angles(math.rad(-90), 0, 0)
+beakUpper.CFrame = ORIGIN * CFrame.new(0, -0.1, -1.9) * CFrame.Angles(math.rad(90), 0, math.rad(180))
 beakUpper.Color = Color3.fromRGB(45, 40, 50)
 beakUpper.Material = Enum.Material.CorrodedMetal
 beakUpper.Anchored = true
@@ -152,14 +158,19 @@ newPart("MantleSeam2", Vector3.new(0.22, 0.5, 2.6), mantleCFrame * CFrame.new(0.
 -- übernehmen Material + Barnacle-Höcker die Oberflächen-Wirkung, siehe Brief.)
 newTexture("MetalPanels", Enum.NormalId.Front, beakUpper, { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(60, 55, 65) })
 
--- 3) Große, kartoonig-wütende Glow-Augen mit weißem Glanzpunkt ---------------------
+-- 3) Große, kartoonig-wütende Glow-Augen mit Pupille + weißem Glanzpunkt -----------
+-- (readable angry eyes: white glow sclera + a dark pupil, not just a red dot)
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 1.15, 0.5, 2.05)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 1.15, 0.5, -2.05)
 	local eye = newPart("Eye" .. i, Vector3.new(0.95, 0.95, 0.9), eyeCFrame, EYE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
-	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.24, 0.24, 0.15), eyeCFrame * CFrame.new(side * -0.2, 0.22, 0.35), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
+	local pupil = newPart("Eye" .. i .. "Pupil", Vector3.new(0.4, 0.4, 0.18), eyeCFrame * CFrame.new(side * -0.08, 0, -0.42), PUPIL_COLOR, Enum.Material.SmoothPlastic, model)
+	pupil.Shape = Enum.PartType.Ball
+	local highlight = newPart("Eye" .. i .. "Highlight", Vector3.new(0.24, 0.24, 0.15), eyeCFrame * CFrame.new(side * -0.2, 0.22, -0.35), Color3.fromRGB(255, 255, 255), Enum.Material.Neon, model)
 	highlight.Shape = Enum.PartType.Ball
+	-- Angled angry eyebrow ridge above each eye
+	newOvalPart("Eyebrow" .. i, Vector3.new(0.9, 0.24, 0.3), eyeCFrame * CFrame.new(side * 0.1, 0.65, -0.05) * CFrame.Angles(0, 0, math.rad(side * -20)), ACCENT_COLOR, Enum.Material.Basalt, model)
 end
 
 -- 4) 8 lange, peitschenartige Tentakel (je 4 Segmente, radial verteilt) ------------

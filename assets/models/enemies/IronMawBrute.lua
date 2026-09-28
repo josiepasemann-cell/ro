@@ -118,19 +118,11 @@ local body = newOvalPart("Body", Vector3.new(4.4, 3.4, 4.2), ORIGIN, SKIN_COLOR,
 local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, 0.8)
 local mantle = newOvalPart("Mantle", Vector3.new(3.6, 1.8, 2.4), mantleCFrame, ACCENT_COLOR, Enum.Material.Granite, model)
 
--- 3) Überdimensionierter Kiefer (Wedge, ragt nach vorn) -----------------------------
-local jawCFrame = ORIGIN * CFrame.new(0, -0.9, -2.2) * CFrame.Angles(math.rad(-15), 0, 0)
-local jaw = Instance.new("WedgePart")
-jaw.Name = "Jaw"
-jaw.Size = Vector3.new(2.6, 1.2, 2.0)
-jaw.CFrame = jawCFrame
-jaw.Color = ACCENT_COLOR
-jaw.Material = Enum.Material.Granite
-jaw.Anchored = true
-jaw.CanCollide = false
-jaw.TopSurface = Enum.SurfaceType.Smooth
-jaw.BottomSurface = Enum.SurfaceType.Smooth
-jaw.Parent = model
+-- 3) Überdimensionierter Kiefer: runde Unterbiss-Ellipsoide statt eckigem Wedge,
+-- damit der Brute chunky/rundlich statt hart-geometrisch wirkt --------------------
+local jawCFrame = ORIGIN * CFrame.new(0, -1.05, -2.1) * CFrame.Angles(math.rad(10), 0, 0)
+local jaw = newOvalPart("Jaw", Vector3.new(2.6, 1.2, 2.0), jawCFrame, ACCENT_COLOR, Enum.Material.Granite, model)
+newOvalPart("JawUnderbite", Vector3.new(2.9, 0.9, 1.6), ORIGIN * CFrame.new(0, -1.3, -2.5), ACCENT_COLOR, Enum.Material.Granite, model)
 
 -- 4) Große, wütende Glow-Augen mit weißem Glanzpunkt (kartoonig-bedrohlich) --------
 for i = 1, 2 do
@@ -207,12 +199,12 @@ end
 
 -- 6c) Sichtbare untere Zahnreihe im überdimensionierten Kiefer: wenige, große,
 -- runde kartoonige Zähne statt vieler kleiner Zacken -------------------------------
-for tth = 1, 2 do
-	local x = (tth - 1.5) * 0.7
+for tth = 1, 4 do
+	local x = (tth - 2.5) * 0.6
 	local tooth = newPart(
 		"Tooth" .. tth,
-		Vector3.new(0.4, 0.5, 0.4),
-		ORIGIN * CFrame.new(x, -1.2, -2.2),
+		Vector3.new(0.42, 0.5, 0.4),
+		ORIGIN * CFrame.new(x, -0.75, -2.65),
 		Color3.fromRGB(230, 225, 210),
 		Enum.Material.SmoothPlastic,
 		model
