@@ -260,23 +260,27 @@ end
 
 -- // Raid-Gegner: Spawn-Einwachs + Sterbe-Auflösung (Transparency/Scale) -------
 
-local raidVisualState: { [Model]: { BaseTransparency: { [BasePart]: number }, BaseScale: number } } = {}
+type FadeTarget = BasePart | Texture | Decal
 
-local function captureBaseTransparency(model: Model): { [BasePart]: number }
-	local map: { [BasePart]: number } = {}
+local raidVisualState: { [Model]: { BaseTransparency: { [FadeTarget]: number }, BaseScale: number } } = {}
+
+-- Textures and decals on the model's faces fade too; otherwise they'd stay
+-- fully visible while the body dissolves.
+local function captureBaseTransparency(model: Model): { [FadeTarget]: number }
+	local map: { [FadeTarget]: number } = {}
 	for _, descendant in ipairs(model:GetDescendants()) do
-		if descendant:IsA("BasePart") then
-			map[descendant] = descendant.Transparency
+		if descendant:IsA("BasePart") or descendant:IsA("Decal") then
+			map[descendant :: FadeTarget] = (descendant :: any).Transparency
 		end
 	end
 	return map
 end
 
-local function applyUniformFade(model: Model, base: { [BasePart]: number }, revealAlpha: number)
+local function applyUniformFade(model: Model, base: { [FadeTarget]: number }, revealAlpha: number)
 	-- revealAlpha 0 = voll unsichtbar, 1 = normale (Basis-)Transparenz.
-	for part, baseTransparency in pairs(base) do
-		if part.Parent then
-			part.Transparency = 1 - (1 - baseTransparency) * math.clamp(revealAlpha, 0, 1)
+	for target, baseTransparency in pairs(base) do
+		if target.Parent then
+			(target :: any).Transparency = 1 - (1 - baseTransparency) * math.clamp(revealAlpha, 0, 1)
 		end
 	end
 end
