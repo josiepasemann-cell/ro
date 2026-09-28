@@ -1,7 +1,8 @@
 // Runs every buildscript in assets/models/** through the Luau API shim and
 // writes the resulting part geometry to models.json.
 //
-// usage: node export.mjs [--luau /path/to/luau] [--out models.json] [--only <pattern>[,<pattern>...]]
+// usage: node export.mjs [--luau /path/to/luau] [--out models.json] [--only <pattern>[,<pattern>...]] [--extra <file.lua>,...]
+//   --extra: run these scripts (any path) instead of assets/models, or in addition to an --only selection.
 //   --only: folder/file substring (e.g. "creatures", "creatures/Axolotl") or glob ("creatures/*Egg*.lua",
 //   "**/npcs/**"), matched against the path relative to assets/models. Hub scripts are added automatically
 //   when an NPC script is selected (NPC scripts look for the hub).
@@ -43,6 +44,10 @@ if (only.length) {
   if (!scripts.length) { console.error(`--only ${only.join(",")} matched no scripts under ${modelsDir}`); process.exit(1); }
   console.log(`--only: running ${scripts.length} script(s)${needHub ? " (hub added for NPCs)" : ""}`);
 }
+
+// --extra a.lua,b.lua: also run scripts outside assets/models (e.g. scratch test scenes)
+const extra = opt("--extra", "").split(",").map((s) => s.trim()).filter(Boolean).map((p) => resolve(p));
+if (extra.length) scripts = [...(only.length ? scripts : []), ...extra];
 
 const shim = readFileSync(join(here, "shim.luau"), "utf8");
 const B = (s) => { let n = 6; while (s.includes("]" + "=".repeat(n) + "]")) n++; const e = "=".repeat(n); return `[${e}[\n${s}]${e}]`; };

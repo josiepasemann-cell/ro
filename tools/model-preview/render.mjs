@@ -1,10 +1,10 @@
 // Renders contact sheets from out/models.json with three.js in headless Chromium.
 //
 // usage: node render.mjs [--three /path/to/node_modules/three] [--out ../../docs/previews] [--only creatures,hub]
-//        [--models out/models.json] [--textures ../../assets/textures]
+//        [--models out/models.json] [--textures ../../assets/textures] [--category <Name>]
 //        [--model <Name>[,<Name>...]] [--script <path substring>]   one model, 4 large views -> <out>/<Name>.png
 import { createServer } from "node:http";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname, extname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -111,6 +111,15 @@ const sheets = {
   },
 };
 
+// ------------------------------------------------------------------ --category <Name>: one sheet with every model of that category
+const onlyCategory = opt("--category", "");
+if (onlyCategory) {
+  for (const k of Object.keys(sheets)) delete sheets[k];
+  const ms = find(onlyCategory);
+  if (!ms.length) { console.error(`no models in category "${onlyCategory}" (in ${modelsPath})`); process.exit(1); }
+  sheets[onlyCategory.toLowerCase()] = { title: onlyCategory, subtitle: `${ms.length} models`, width: 1600, cols: 5, cells: ms.map((m) => cell(m, { view: { az: -35, el: 22 } })) };
+}
+
 // ------------------------------------------------------------------ single-model sheets
 if (onlyModels.length || onlyScript) {
   for (const k of Object.keys(sheets)) delete sheets[k];
@@ -161,6 +170,16 @@ const server = createServer((req, res) => {
     // Texture/Decal images: assets/textures/<TextureKey>.png (missing files -> 404, the page skips them)
     const rel = normalize(url.slice(10));
     if (!rel.startsWith("..") && !rel.startsWith("/")) file = join(texturesDir, rel);
+  }
+  if (url === "/textures/index.json") {
+    const list = [];
+    const walkTex = (d, pre) => { for (const f of existsSync(d) ? readdirSync(d, { withFileTypes: true }) : []) {
+      if (f.isDirectory()) walkTex(join(d, f.name), pre + f.name + "/"); else if (f.name.endsWith(".png")) list.push(pre + f.name);
+    } };
+    walkTex(texturesDir, "");
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify(list));
+    return;
   }
   if (!file || !existsSync(file)) { res.writeHead(404); res.end(); return; }
   res.writeHead(200, { "content-type": MIME[extname(file)] || "application/octet-stream" });

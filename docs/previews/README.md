@@ -20,7 +20,7 @@ Every cell is framed separately, so sizes can't be compared between cells.
 
 ## How faithful the renders are
 
-- **Geometry, colours, materials and transparency** come straight from the scripts. Cylinders run
+- **Geometry, colours, materials and transparency** come straight from the scripts (materials are drawn as approximations, see below). Cylinders run
   along X, and wedges slope the way Roblox wedges do. Balls are drawn as spheres whose diameter is
   the smallest axis of `Size`, because Roblox does not stretch balls into ellipsoids. Many
   creatures, eggs and NPCs set non-uniform `Size` on a Ball, so they look rounder or smaller here
@@ -38,6 +38,21 @@ Every cell is framed separately, so sizes can't be compared between cells.
 
   A new SpecialMesh defaults to `Head`, as in Roblox, so set `MeshType` explicitly. CSG operands
   ignore meshes. A MeshPart with no MeshId renders as a box.
+- **Materials** are approximated, not copied from Roblox. Each `Material` gets a procedural
+  surface pattern generated in the page (brick courses, wood grain, slate cracks, cobbles, brushed
+  metal, foil crinkle, diamond plate and so on), with a matching bump and roughness. The pattern is
+  multiplied with the part's `Color`. It is projected in part space and measured in studs, so a large
+  part repeats the pattern instead of stretching it. `SmoothPlastic` stays plain. `Neon` glows.
+  `Glass`, `Ice` and `Glacier` are glossy and see-through. `ForceField` is a translucent, glowing
+  shimmer. `CrackedLava` is dark rock with glowing orange cracks. An unknown material renders like
+  `Plastic`.
+- **Textures and Decals**: a `Texture` or `Decal` child of a part is drawn on its `Face` when it has
+  the attribute `TextureKey`. The image comes from `assets/textures/<TextureKey>.png`. Its
+  `rbxassetid` `Texture` is not used. A `Texture` tiles every `StudsPerTileU/V` studs, shifted by
+  `OffsetStudsU/V`. A `Decal` is stretched once over the face. Both are multiplied by `Color3`,
+  respect `Transparency`, and draw over the part's own material. They show on Block faces and on a
+  wedge's Back, Bottom and slope (`Top`). They are skipped on balls, cylinders, CSG results, and
+  faces that have no image file yet. The first missing image is logged once.
 - **CSG**: `UnionAsync`, `SubtractAsync` and `IntersectAsync` are not computed as meshes. The shim
   keeps the operands, and the renderer resolves the result for each pixel (it cuts away fragments
   inside a cutter, keeps only the overlap for intersections, and draws the cutter walls inside the
@@ -83,6 +98,15 @@ node render.mjs --models out/mine.json --only creatures --out out/png
 
 The part JSON has these optional fields when a part has a mesh child: `meshType` (a string such
 as `"Sphere"`), `meshScale` `[x,y,z]` and `meshOffset` `[x,y,z]`.
+
+Parts with `Texture`/`Decal` children also have `textures`: a list of objects with `class`, `face`,
+`key` (the `TextureKey` attribute), `texture`, `color`, `transparency`, and, for a Texture,
+`studsPerTile` and `offsetStuds`.
+
+To try a scene that lives outside `assets/models`, use `node export.mjs --extra path/to/Test.lua
+--out out/test.json`. Then `node render.mjs --models out/test.json --category <FolderName>` draws one
+sheet with every model in that `Workspace.Assets` folder. `--textures <dir>` reads images from a
+different directory than `assets/textures`.
 
 `export.mjs` prints any script that errors under the shim. `render.mjs` takes a `--three <dir>`
 argument if three.js is installed somewhere else. It uses the global `playwright` package, with
