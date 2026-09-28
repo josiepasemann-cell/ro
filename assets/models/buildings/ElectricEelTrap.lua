@@ -103,20 +103,50 @@ local rockAnchor = newPart(
 )
 
 -- 3) Aufgerollter Aal-Körper (6 Segmente in Spirale um den Felsanker) --------------
+-- Jedes Segment ist ein Zylinder, der exakt vom vorigen Wegpunkt zum nächsten
+-- reicht (statt nur tangential ausgerichtet an seiner eigenen Position zu
+-- stehen) - so bildet der Körper eine durchgehend verbundene Kette statt
+-- einzelner, frei im Raum schwebender Stücke.
 local SEGMENT_COUNT = 6
+local BODY_DIAMETER = 0.7
+local STRIPE_THICKNESS = 0.12
+local waypoints = {}
+waypoints[0] = (ORIGIN * CFrame.new(0, 1.7, 0)).Position -- im Felsanker
 local currentAngle = 0
 local currentHeight = 1.0
-for i = 1, SEGMENT_COUNT do
+for i = 1, SEGMENT_COUNT - 1 do
 	currentAngle += math.rad(75)
 	currentHeight += 0.5
 	local radius = 1.6
-	local segCFrame = ORIGIN
-		* CFrame.new(math.cos(currentAngle) * radius, currentHeight, math.sin(currentAngle) * radius)
-		* CFrame.Angles(0, -currentAngle, 0)
+	waypoints[i] = (ORIGIN * CFrame.new(math.cos(currentAngle) * radius, currentHeight, math.sin(currentAngle) * radius)).Position
+end
 
+-- 4) Aal-Kopf (Angriffs-Ursprung, oben an der Spirale) ------------------------------
+currentAngle += math.rad(75)
+currentHeight += 0.6
+local headCFrame = ORIGIN
+	* CFrame.new(math.cos(currentAngle) * 1.4, currentHeight, math.sin(currentAngle) * 1.4)
+	* CFrame.Angles(0, -currentAngle, 0)
+waypoints[SEGMENT_COUNT] = headCFrame.Position -- letztes Segment mündet im Kopf
+
+for i = 1, SEGMENT_COUNT do
+	local p1, p2 = waypoints[i - 1], waypoints[i]
+	local dir = p2 - p1
+	local length = dir.Magnitude
+	local xAxis = dir.Unit
+	local upRef = Vector3.new(0, 1, 0)
+	if math.abs(xAxis:Dot(upRef)) > 0.95 then
+		upRef = Vector3.new(1, 0, 0)
+	end
+	local zAxis = xAxis:Cross(upRef).Unit
+	local yAxis = zAxis:Cross(xAxis).Unit
+	local segCFrame = CFrame.fromMatrix(p1:Lerp(p2, 0.5), xAxis, yAxis, zAxis)
+
+	-- +0.3 Studs Länge (Padding) sorgt für ~0.15 Studs Überlappung an jedem
+	-- Gelenk mit dem vorigen/nächsten Segment bzw. Felsanker/Kopf.
 	local segment = newPart(
 		"EelBodySegment" .. i,
-		Vector3.new(1.0, 0.7, 0.7),
+		Vector3.new(length + 0.3, BODY_DIAMETER, BODY_DIAMETER),
 		segCFrame,
 		EEL_COLOR,
 		Enum.Material.SmoothPlastic,
@@ -126,10 +156,10 @@ for i = 1, SEGMENT_COUNT do
 	segment.CanCollide = false
 
 	-- Gelber Neon-Streifen-Akzent auf jedem Segment (Körperlange Zier-Linie) --------
-	local stripeCFrame = segCFrame * CFrame.new(0, 0.42, 0)
+	local stripeCFrame = segCFrame * CFrame.new(0, BODY_DIAMETER / 2 - 0.05, 0)
 	local stripe = newPart(
 		"EelStripe" .. i,
-		Vector3.new(0.9, 0.12, 0.12),
+		Vector3.new(length * 0.85, STRIPE_THICKNESS, STRIPE_THICKNESS),
 		stripeCFrame,
 		STRIPE_COLOR,
 		Enum.Material.Neon,
@@ -138,20 +168,16 @@ for i = 1, SEGMENT_COUNT do
 	stripe.CanCollide = false
 end
 
--- 4) Aal-Kopf (Angriffs-Ursprung, oben an der Spirale) ------------------------------
-currentAngle += math.rad(75)
-currentHeight += 0.6
-local headCFrame = ORIGIN
-	* CFrame.new(math.cos(currentAngle) * 1.4, currentHeight, math.sin(currentAngle) * 1.4)
-	* CFrame.Angles(0, -currentAngle, 0)
-
 local eelHead = newPart("EelHead", Vector3.new(1.3, 1.0, 1.4), headCFrame, EEL_COLOR, Enum.Material.SmoothPlastic, model)
 eelHead.CanCollide = false
 
 -- Kleine Glow-Augen am Kopf ----------------------------------------------------------
+-- Z-Offset auf -0.5 reduziert (Kopf ist 1.4 Studs lang, halbe Länge 0.7):
+-- vorher lagen die Augen exakt auf der Vorderkante des Kopfes und schwebten
+-- damit ohne echte Überlappung.
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = headCFrame * CFrame.new(side * 0.35, 0.2, -0.6)
+	local eyeCFrame = headCFrame * CFrame.new(side * 0.35, 0.2, -0.5)
 	local eye = newPart("EelEye" .. i, Vector3.new(0.2, 0.2, 0.2), eyeCFrame, STRIPE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
 	eye.CanCollide = false
@@ -176,10 +202,13 @@ sparkEmitter.Parent = eelHead
 -- ChargeCore.Transparency / ChargeCore.Color / ChargeLight.Brightness zur Laufzeit
 -- ansteuern, um "Aufladen vor dem Schuss" darzustellen. Reine Geometrie hier -
 -- keine Blink-/Timing-Logik im Buildscript selbst.
+-- Y-Offset auf 0.45 reduziert (Kopf ist 1.0 Studs hoch, halbe Höhe 0.5): der
+-- Kern bettet sich damit ~0.3 Studs in den Kopf ein statt frei 0.15 Studs
+-- darüber zu schweben.
 local chargeCore = newPart(
 	"ChargeCore",
 	Vector3.new(0.5, 0.5, 0.5),
-	headCFrame * CFrame.new(0, 0.65, 0),
+	headCFrame * CFrame.new(0, 0.45, 0),
 	STRIPE_COLOR,
 	Enum.Material.Neon,
 	model

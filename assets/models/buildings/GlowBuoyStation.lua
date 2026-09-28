@@ -104,10 +104,27 @@ local mainOrb = newPart(
 mainOrb.Shape = Enum.PartType.Ball
 mainOrb.CanCollide = false
 
--- 5) Drei kleinere umlaufende Sammel-Orbs -------------------------------------
+-- 5) Drei kleinere umlaufende Sammel-Orbs, an dünnen Streben am Mast ---------
+-- Jeder Orb hängt an einem dünnen Arm, der vom Mast-Mittelpunkt (auf der
+-- Mastachse, also garantiert im Mast) zum Orb-Mittelpunkt reicht - so
+-- schweben die Orbs sichtbar verbunden statt frei neben der Boje.
 for i = 1, 3 do
 	local angle = math.rad(120 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 3.5, 7.5 + i * 0.6, math.sin(angle) * 3.5)
+	local orbY = 7.5 + i * 0.6
+	local offset = Vector3.new(math.cos(angle) * 3.5, orbY, math.sin(angle) * 3.5)
+	local orbPos = (ORIGIN * CFrame.new(offset)).Position
+	local mastPoint = (ORIGIN * CFrame.new(0, orbY, 0)).Position
+
+	local arm = newPart(
+		"OrbitArm" .. i,
+		Vector3.new(0.22, 0.22, (orbPos - mastPoint).Magnitude),
+		CFrame.new(mastPoint:Lerp(orbPos, 0.5), orbPos),
+		Color3.fromRGB(150, 255, 235),
+		Enum.Material.Neon,
+		model
+	)
+	arm.CanCollide = false
+
 	local orb = newPart(
 		"OrbitOrb" .. i,
 		Vector3.new(1.1, 1.1, 1.1),

@@ -96,9 +96,11 @@ local mastStrip = newPart(
 mastStrip.CanCollide = false
 
 -- 4) Sammelkorb (unterer Strebenring) ----------------------------------------
+-- Radius 0.9 statt 1.4: der Mast hat nur Radius 0.55, die Streben müssen also
+-- näher heranreichen, um ihn zu überlappen statt daneben zu schweben.
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 1.4, MAST_HEIGHT - 1.0, math.sin(angle) * 1.4)
+	local offset = Vector3.new(math.cos(angle) * 0.9, MAST_HEIGHT - 1.0, math.sin(angle) * 0.9)
 	newPart(
 		"BasketStrut" .. i,
 		Vector3.new(0.3, 2, 0.3),
@@ -108,6 +110,20 @@ for i = 1, 4 do
 		model
 	)
 end
+
+-- 4b) Mastspitze: verjüngter Pfosten vom Mastkopf bis in den Haupt-Orb hinein
+-- (Detail + garantiert, dass Mast/Sockel mit dem oberen Strebenring/Orb
+-- verbunden bleiben statt als getrennte Gruppe zu schweben) -----------------
+local mastTipBottom = (ORIGIN * CFrame.new(0, MAST_HEIGHT + 0.5, 0)).Position
+local mastTipTop = (ORIGIN * CFrame.new(0, MAST_HEIGHT + 3.6, 0)).Position
+newPart(
+	"MastTip",
+	Vector3.new(0.55, 0.55, (mastTipTop - mastTipBottom).Magnitude),
+	CFrame.new(mastTipBottom:Lerp(mastTipTop, 0.5), mastTipTop),
+	Color3.fromRGB(100, 106, 116),
+	Enum.Material.Metal,
+	model
+)
 
 -- 5) Oberer Strebenring ------------------------------------------------------
 for i = 1, 4 do
@@ -152,10 +168,24 @@ mainOrbLight.Brightness = 2
 mainOrbLight.Shadows = false
 mainOrbLight.Parent = mainOrb
 
--- 7) Sechs kleinere umlaufende Sammel-Orbs -----------------------------------
+-- 7) Sechs kleinere umlaufende Sammel-Orbs, an dünnen Streben vom Mast -------
 for i = 1, 6 do
 	local angle = math.rad(60 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 4.2, MAST_HEIGHT - 2 + i * 0.4, math.sin(angle) * 4.2)
+	local orbY = MAST_HEIGHT - 2 + i * 0.4
+	local offset = Vector3.new(math.cos(angle) * 4.2, orbY, math.sin(angle) * 4.2)
+	local orbPos = (ORIGIN * CFrame.new(offset)).Position
+	local mastPoint = (ORIGIN * CFrame.new(0, orbY, 0)).Position
+
+	local arm = newPart(
+		"OrbitArm" .. i,
+		Vector3.new(0.24, 0.24, (orbPos - mastPoint).Magnitude),
+		CFrame.new(mastPoint:Lerp(orbPos, 0.5), orbPos),
+		Color3.fromRGB(150, 255, 235),
+		Enum.Material.Neon,
+		model
+	)
+	arm.CanCollide = false
+
 	local orb = newPart(
 		"OrbitOrb" .. i,
 		Vector3.new(1.2, 1.2, 1.2),

@@ -5,8 +5,9 @@
 	Rarity (Platzhalter): Uncommon
 	Beschreibung:
 		Kleiner, tropfenförmiger Körper, fast transluzent (Glass), mit
-		blassem cyanfarbenem Innen-Glow-Kern (Neon). Keine sichtbaren
-		Flossen - wirkt wie ein treibendes Licht. Zone: HadalDepths.
+		blassem cyanfarbenem Innen-Glow-Kern (Neon), umgebender äußerer
+		Glimm-Aura und mehreren kleinen umlaufenden Lichtpartikeln. Keine
+		sichtbaren Flossen - wirkt wie ein treibendes Licht. Zone: HadalDepths.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Body" -> für Bewegungssteuerung (langsamer
@@ -56,6 +57,14 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local function newBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -71,16 +80,15 @@ model.Parent = creaturesFolder
 local BODY_COLOR = Color3.fromRGB(140, 220, 235)
 local GLOW_COLOR = Color3.fromRGB(150, 255, 240)
 
--- 1) Tropfenförmiger Körper (Glass, halbtransparent) ------------------------------
-local body = newPart("Body", Vector3.new(1.3, 1.5, 1.3), ORIGIN, BODY_COLOR, Enum.Material.Glass, model)
-body.Shape = Enum.PartType.Ball
+-- 1) Tropfenförmiger Körper (Glass, halbtransparent, Ellipsoid) -------------------
+local body = newBall("Body", Vector3.new(1.3, 1.5, 1.3), ORIGIN, BODY_COLOR, Enum.Material.Glass, model)
 body.Transparency = 0.4
 
--- Verjüngte Spitze unten (Tropfenform)
+-- Verjüngte Spitze unten (Tropfenform), tief in den Körper eingebettet
 local tip = Instance.new("WedgePart")
 tip.Name = "Tip"
-tip.Size = Vector3.new(0.5, 0.7, 1.3)
-tip.CFrame = ORIGIN * CFrame.new(0, -0.9, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+tip.Size = Vector3.new(0.5, 0.8, 1.3)
+tip.CFrame = ORIGIN * CFrame.new(0, -0.75, 0) * CFrame.Angles(math.rad(-90), 0, 0)
 tip.Color = BODY_COLOR
 tip.Material = Enum.Material.Glass
 tip.Transparency = 0.4
@@ -89,10 +97,22 @@ tip.CanCollide = false
 tip.Parent = model
 
 -- 2) Innerer Glow-Kern -----------------------------------------------------------------
-local core = newPart("GlowCore", Vector3.new(0.5, 0.5, 0.5), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
-core.Shape = Enum.PartType.Ball
+local core = newBall("GlowCore", Vector3.new(0.55, 0.55, 0.55), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
 
--- 3) Idle-Puls-Attachment ----------------------------------------------------------------
+-- 3) Äußere Glimm-Aura (großzügig um den Körper, sehr transparent) ---------------------
+local aura = newBall("GlimmerAura", Vector3.new(1.9, 2.1, 1.9), ORIGIN, GLOW_COLOR, Enum.Material.Neon, model)
+aura.Transparency = 0.75
+aura.CanCollide = false
+
+-- 4) Kleine umlaufende Lichtpartikel (Glow-Fünkchen) -----------------------------------
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1))
+	local radius = 0.85
+	local speckCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.15 * ((i % 2 == 0) and 1 or -1), math.sin(angle) * radius)
+	newBall("GlimmerSpeck" .. i, Vector3.new(0.14, 0.14, 0.14), speckCFrame, GLOW_COLOR, Enum.Material.Neon, model)
+end
+
+-- 5) Idle-Puls-Attachment ----------------------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = body

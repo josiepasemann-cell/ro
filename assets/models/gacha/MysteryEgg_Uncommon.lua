@@ -35,6 +35,8 @@ local ORIGIN = CFrame.new(46, 5, 0) -- Vor Ausführung anpassen für gewünschte
 local EGG_TIER = "Uncommon"
 local EGG_NAME = "Mystery Egg (Uncommon)"
 local SPOT_COUNT = 5
+local SHELL_SIZE = Vector3.new(2.7, 3.5, 2.7)
+local HALF_X, HALF_Y = SHELL_SIZE.X / 2, SHELL_SIZE.Y / 2
 -- // ----------------------------------------------------------------------
 
 local function getOrCreateFolder(parent, name)
@@ -62,6 +64,21 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echte Ei-Form (Ellipsoid) statt der immer
+-- kugelrunden Shape=Ball-Darstellung.
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
+local function eggRadiusAt(y)
+	local t = math.clamp(y / HALF_Y, -1, 1)
+	return HALF_X * math.sqrt(1 - t * t)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local gachaFolder = getOrCreateFolder(assetsFolder, "Gacha")
 
@@ -78,28 +95,62 @@ local SHELL_COLOR = Color3.fromRGB(120, 235, 205)
 local SEAM_COLOR = Color3.fromRGB(90, 250, 220)
 local SPOT_COLOR = Color3.fromRGB(200, 255, 240)
 
--- 1) Schale (satteres Türkis, leichter Glanz via SmoothPlastic) -------------
-local shell = newPart("Shell", Vector3.new(2.7, 3.5, 2.7), ORIGIN, SHELL_COLOR, Enum.Material.SmoothPlastic, model)
-shell.Shape = Enum.PartType.Ball
+-- 1) Schale: echte Eiform (Block + SpecialMesh Sphere), satteres Türkis -------------
+local shell = newMeshBall("Shell", SHELL_SIZE, ORIGIN, SHELL_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Zwei Neon-Nahtringe (oberes + unteres Drittel) --------------------------
-local ringOffsets = { 0.7, -0.7 }
+-- 2) Zwei Neon-Nahtringe (oberes + unteres Drittel), exakt auf der Eioberfläche -----
+local ringOffsets = { 0.75, -0.75 }
 for i, yOffset in ipairs(ringOffsets) do
-	local ringCFrame = ORIGIN * CFrame.new(0, yOffset, 0) * CFrame.Angles(0, 0, math.rad(90))
-	local diameter = 2.5 - math.abs(yOffset) * 0.5
-	local ring = newPart("SeamRing" .. i, Vector3.new(0.16, diameter, diameter), ringCFrame, SEAM_COLOR, Enum.Material.Neon, model)
+	local r = eggRadiusAt(yOffset) + 0.05
+	local ring = newPart(
+		"SeamRing" .. i,
+		Vector3.new(0.16, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, yOffset, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		SEAM_COLOR,
+		Enum.Material.Neon,
+		model
+	)
 	ring.Shape = Enum.PartType.Cylinder
 end
 
--- 3) Gesprenkeltes Muster aus kleinen Leuchtpunkten, ringförmig verteilt ----
-for i = 1, SPOT_COUNT do
-	local angle = math.rad(360 / SPOT_COUNT * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 1.25, 0.1, math.sin(angle) * 1.25)
-	local spot = newPart("Spot" .. i, Vector3.new(0.28, 0.28, 0.28), ORIGIN * CFrame.new(offset), SPOT_COLOR, Enum.Material.Neon, model)
-	spot.Shape = Enum.PartType.Ball
+-- 3) Standring unten -----------------------------------------------------------------
+do
+	local y = -HALF_Y + 0.35
+	local r = eggRadiusAt(y) + 0.05
+	local footRing = newPart(
+		"FootRing",
+		Vector3.new(0.22, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(70, 190, 165),
+		Enum.Material.SmoothPlastic,
+		model
+	)
+	footRing.Shape = Enum.PartType.Cylinder
 end
 
--- 4) Idle-Puls-Attachment ---------------------------------------------------
+-- 4) Kleine facettierte Spitze oben, überlappt die Schale ----------------------------
+local tip = Instance.new("WedgePart")
+tip.Name = "TopTip"
+tip.Size = Vector3.new(0.4, 0.5, 0.4)
+tip.CFrame = ORIGIN * CFrame.new(0, HALF_Y - 0.2, 0) * CFrame.Angles(0, 0, math.rad(180))
+tip.Color = SPOT_COLOR
+tip.Material = Enum.Material.Neon
+tip.Anchored = true
+tip.CanCollide = false
+tip.TopSurface = Enum.SurfaceType.Smooth
+tip.BottomSurface = Enum.SurfaceType.Smooth
+tip.Parent = model
+
+-- 5) Gesprenkeltes Muster aus kleinen Leuchtpunkten, ringförmig auf der Schale ------
+for i = 1, SPOT_COUNT do
+	local angle = math.rad(360 / SPOT_COUNT * (i - 1))
+	local y = 0.15
+	local r = eggRadiusAt(y) - 0.06
+	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
+	newMeshBall("Spot" .. i, Vector3.new(0.28, 0.28, 0.28), ORIGIN * CFrame.new(pos), SPOT_COLOR, Enum.Material.Neon, model)
+end
+
+-- 6) Idle-Puls-Attachment ---------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = shell

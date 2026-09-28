@@ -124,12 +124,12 @@ for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	-- Wurzel liegt AUF der Körperoberfläche (x-Halbachse 0.5), Flügel wächst
 	-- von dort nach außen -> stets überlappend mit dem Rumpf.
-	local rootCFrame = ORIGIN * CFrame.new(side * 0.42, 0.15, 0.1) * CFrame.Angles(0, 0, math.rad(side * 18))
+	local rootCFrame = ORIGIN * CFrame.new(side * 0.4, 0.12, 0.05) * CFrame.Angles(0, 0, math.rad(side * 16))
 
 	local wing = Instance.new("WedgePart")
 	wing.Name = (i == 1) and "WingRight" or "WingLeft"
-	wing.Size = Vector3.new(1.7, 0.1, 1.5)
-	wing.CFrame = rootCFrame * CFrame.new(side * 0.75, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
+	wing.Size = Vector3.new(1.15, 0.08, 1.0)
+	wing.CFrame = rootCFrame * CFrame.new(side * 0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
 	wing.Color = BODY_COLOR
 	wing.Material = Enum.Material.SmoothPlastic
 	wing.Anchored = true
@@ -142,8 +142,8 @@ for i = 1, 2 do
 	-- Innerer Flügel-Fleck (Musterdetail), überlappt den Flügel selbst
 	local spot = newMeshBall(
 		"WingSpot" .. i,
-		Vector3.new(0.4, 0.05, 0.4),
-		wing.CFrame * CFrame.new(side * 0.1, 0.06, -0.1),
+		Vector3.new(0.22, 0.04, 0.22),
+		wing.CFrame * CFrame.new(side * 0.08, 0.05, -0.06),
 		RAINBOW_COLORS[2],
 		Enum.Material.Neon,
 		model
@@ -152,11 +152,11 @@ for i = 1, 2 do
 	-- Regenbogen-Kante: 3 kleine Neon-Segmente ENTLANG der äußeren Flügelkante,
 	-- jedes überlappt den WedgePart selbst statt frei daneben zu schweben.
 	for c = 1, 3 do
-		local along = -0.55 + (c - 1) * 0.55
-		local edgeCFrame = wing.CFrame * CFrame.new(side * 0.78, 0, along)
+		local along = -0.32 + (c - 1) * 0.32
+		local edgeCFrame = wing.CFrame * CFrame.new(side * 0.52, 0, along)
 		newPart(
 			("WingEdge%d_%d"):format(i, c),
-			Vector3.new(0.45, 0.09, 0.4),
+			Vector3.new(0.26, 0.07, 0.24),
 			edgeCFrame,
 			RAINBOW_COLORS[c],
 			Enum.Material.Neon,

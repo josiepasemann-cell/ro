@@ -93,9 +93,11 @@ local mastStrip = newPart(
 mastStrip.CanCollide = false
 
 -- 4) Sammelkorb (unterer Strebenring, wie Stufe 1) ---------------------------
+-- Radius 0.85 statt 1.4: der Mast hat nur Radius 0.5, die Streben müssen also
+-- näher heranreichen, um ihn zu überlappen statt daneben zu schweben.
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 1.4, MAST_HEIGHT - 1.0, math.sin(angle) * 1.4)
+	local offset = Vector3.new(math.cos(angle) * 0.85, MAST_HEIGHT - 1.0, math.sin(angle) * 0.85)
 	newPart(
 		"BasketStrut" .. i,
 		Vector3.new(0.3, 2, 0.3),
@@ -106,7 +108,21 @@ for i = 1, 4 do
 	)
 end
 
--- 5) Zweiter, oberer Strebenring (neu, mehr Struktur) ------------------------
+-- 5) Mastspitze: verjüngter Pfosten vom Mastkopf bis in den Haupt-Orb hinein
+-- (Detail + garantiert, dass Mast/Sockel mit dem oberen Strebenring/Orb
+-- verbunden bleiben statt als getrennte Gruppe zu schweben) -----------------
+local mastTipBottom = (ORIGIN * CFrame.new(0, MAST_HEIGHT + 0.5, 0)).Position
+local mastTipTop = (ORIGIN * CFrame.new(0, MAST_HEIGHT + 3.2, 0)).Position
+local mastTip = newPart(
+	"MastTip",
+	Vector3.new(0.5, 0.5, (mastTipTop - mastTipBottom).Magnitude),
+	CFrame.new(mastTipBottom:Lerp(mastTipTop, 0.5), mastTipTop),
+	Color3.fromRGB(90, 96, 104),
+	Enum.Material.Metal,
+	model
+)
+
+-- 6) Zweiter, oberer Strebenring (neu, mehr Struktur) ------------------------
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1) + 45)
 	local offset = Vector3.new(math.cos(angle) * 2.0, MAST_HEIGHT + 1.0, math.sin(angle) * 2.0)
@@ -120,7 +136,7 @@ for i = 1, 4 do
 	)
 end
 
--- 6) Haupt-Glow-Orb an der Spitze (größer/heller als Stufe 1) ----------------
+-- 7) Haupt-Glow-Orb an der Spitze (größer/heller als Stufe 1) ----------------
 local mainOrb = newPart(
 	"MainOrb",
 	Vector3.new(3.8, 3.8, 3.8),
@@ -132,10 +148,25 @@ local mainOrb = newPart(
 mainOrb.Shape = Enum.PartType.Ball
 mainOrb.CanCollide = false
 
--- 7) Vier kleinere umlaufende Sammel-Orbs (1 mehr als Stufe 1) ---------------
+-- 8) Vier kleinere umlaufende Sammel-Orbs (1 mehr als Stufe 1), an dünnen
+-- Streben vom Mast (siehe Stufe 1) -------------------------------------------
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 3.8, MAST_HEIGHT - 2 + i * 0.5, math.sin(angle) * 3.8)
+	local orbY = MAST_HEIGHT - 2 + i * 0.5
+	local offset = Vector3.new(math.cos(angle) * 3.8, orbY, math.sin(angle) * 3.8)
+	local orbPos = (ORIGIN * CFrame.new(offset)).Position
+	local mastPoint = (ORIGIN * CFrame.new(0, orbY, 0)).Position
+
+	local arm = newPart(
+		"OrbitArm" .. i,
+		Vector3.new(0.24, 0.24, (orbPos - mastPoint).Magnitude),
+		CFrame.new(mastPoint:Lerp(orbPos, 0.5), orbPos),
+		Color3.fromRGB(150, 255, 235),
+		Enum.Material.Neon,
+		model
+	)
+	arm.CanCollide = false
+
 	local orb = newPart(
 		"OrbitOrb" .. i,
 		Vector3.new(1.2, 1.2, 1.2),

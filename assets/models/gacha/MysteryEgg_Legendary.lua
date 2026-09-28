@@ -5,11 +5,11 @@
 	Bezug: docs/expansion-concepts.md, Abschnitt 1.7 "Mystery Egg Gacha
 	(Compliance-konform)".
 	Beschreibung:
-		Zweifarbige (Violett-Körper + Cyan-Krone) Kristallschale mit
-		Dornenkrone, einem freischwebenden Runenring (CSG-Subtraktion, analog
-		zur BroodPool-Ringtechnik) und einem sanften Punktlicht als zusätzlichem
-		Glanz-Element. Deutlich aufwendiger als Epic: mehr Spitzen, zweiter
-		Farbakzent, eigene Lichtquelle.
+		Zweifarbige (Violett-Körper + Cyan-Krone) Kristall-Eischale mit
+		Dornenkrone, einem eng anliegenden leuchtenden Runenring um den
+		Äquator und glühenden Rissen sowie einem sanften Punktlicht als
+		zusätzlichem Glanz-Element. Deutlich aufwendiger als Epic: mehr
+		Spitzen, zweiter Farbakzent, eigene Lichtquelle, sichtbare Risse.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Shell" -> Ansatzpunkt für Öffnungs-Animation und
@@ -37,8 +37,11 @@ local Workspace = game:GetService("Workspace")
 local ORIGIN = CFrame.new(64, 5, 0) -- Vor Ausführung anpassen für gewünschte Position
 local EGG_TIER = "Legendary"
 local EGG_NAME = "Mystery Egg (Legendary)"
-local SHARD_COUNT = 6
+local SHARD_COUNT = 8
 local SPIKE_COUNT = 5
+local CRACK_COUNT = 4
+local SHELL_SIZE = Vector3.new(2.8, 3.6, 2.8)
+local HALF_X, HALF_Y = SHELL_SIZE.X / 2, SHELL_SIZE.Y / 2
 -- // ----------------------------------------------------------------------
 
 local function getOrCreateFolder(parent, name)
@@ -66,6 +69,21 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echte Ei-Form (Ellipsoid) statt der immer
+-- kugelrunden Shape=Ball-Darstellung.
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
+local function eggRadiusAt(y)
+	local t = math.clamp(y / HALF_Y, -1, 1)
+	return HALF_X * math.sqrt(1 - t * t)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local gachaFolder = getOrCreateFolder(assetsFolder, "Gacha")
 
@@ -81,63 +99,99 @@ model.Parent = gachaFolder
 local SHELL_COLOR = Color3.fromRGB(150, 70, 255)
 local CROWN_COLOR = Color3.fromRGB(110, 245, 255)
 local RUNE_COLOR = Color3.fromRGB(160, 255, 255)
+local CRACK_COLOR = Color3.fromRGB(255, 245, 255)
 
--- 1) Grundkörper --------------------------------------------------------------
-local baseBall = newPart("ShellBase", Vector3.new(2.8, 3.6, 2.8), ORIGIN, SHELL_COLOR, Enum.Material.Glass, Workspace)
-baseBall.Shape = Enum.PartType.Ball
+-- 1) Grundkörper: echte Eiform (Block + SpecialMesh Sphere) -------------------------
+local shell = newMeshBall("Shell", SHELL_SIZE, ORIGIN, SHELL_COLOR, Enum.Material.Glass, model)
+shell.Transparency = 0.08
 
--- 2) Kristallschübe (facettierte Oberfläche, wie Epic aber zahlreicher) -----
-local shardParts = {}
+-- 2) Kristallschübe (facettierte Oberfläche, zahlreicher als Epic), eingesenkt ------
 for i = 1, SHARD_COUNT do
 	local angle = math.rad(360 / SHARD_COUNT * (i - 1))
-	local shardCFrame = ORIGIN
-		* CFrame.new(math.cos(angle) * 1.15, 0.15, math.sin(angle) * 1.15)
-		* CFrame.Angles(0, angle, 0)
-		* CFrame.Angles(math.rad(35), 0, 0)
-	local shard = newPart("Shard" .. i, Vector3.new(0.7, 1.5, 0.45), shardCFrame, SHELL_COLOR, Enum.Material.Glass, Workspace)
-	table.insert(shardParts, shard)
+	local y = 0.1 + 0.4 * math.sin(i * 1.3)
+	local r = eggRadiusAt(y) - 0.2
+	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
+	local shard = Instance.new("WedgePart")
+	shard.Name = "Shard" .. i
+	shard.Size = Vector3.new(0.65, 0.8, 0.5)
+	shard.CFrame = ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0) * CFrame.Angles(0, 0, math.rad(90))
+	shard.Color = SHELL_COLOR
+	shard.Material = Enum.Material.Glass
+	shard.Transparency = 0.05
+	shard.Anchored = true
+	shard.CanCollide = false
+	shard.TopSurface = Enum.SurfaceType.Smooth
+	shard.BottomSurface = Enum.SurfaceType.Smooth
+	shard.Parent = model
 end
 
--- 3) CSG-Union: Grundkörper + Kristallschübe ---------------------------------
-local shell = baseBall:UnionAsync(shardParts)
-shell.Name = "Shell"
-shell.Color = SHELL_COLOR
-shell.Material = Enum.Material.Glass
-shell.Transparency = 0.08
-shell.Anchored = true
-shell.CanCollide = false
-shell.Parent = model
-
--- 4) Dornenkrone oben (radial angeordnete, sich verjüngende Cyan-Spitzen) ---
+-- 3) Dornenkrone oben (radial angeordnete, sich verjüngende Cyan-Spitzen), Basis
+--    im oberen Schalenbereich eingesenkt ------------------------------------------
 for i = 1, SPIKE_COUNT do
 	local angle = math.rad(360 / SPIKE_COUNT * (i - 1))
-	local radius = 0.75
+	local y = HALF_Y - 0.55
+	local r = eggRadiusAt(y) * 0.7
 	local spikeCFrame = ORIGIN
-		* CFrame.new(math.cos(angle) * radius, 1.75, math.sin(angle) * radius)
+		* CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r)
 		* CFrame.Angles(0, angle, 0)
-		* CFrame.Angles(math.rad(-15), 0, 0)
-	newPart("CrownSpike" .. i, Vector3.new(0.28, 1.0, 0.28), spikeCFrame, CROWN_COLOR, Enum.Material.Neon, model)
+		* CFrame.Angles(math.rad(-20), 0, 0)
+	newPart("CrownSpike" .. i, Vector3.new(0.28, 1.0, 0.28), spikeCFrame * CFrame.new(0, 0.3, 0), CROWN_COLOR, Enum.Material.Neon, model)
 end
 
--- 5) Freischwebender Runenring (CSG-Subtraktion: Außen- minus Innenzylinder,
---    analog zur BroodPool-Ringtechnik) --------------------------------------
-local outerCFrame = ORIGIN * CFrame.new(0, -0.3, 0) * CFrame.Angles(0, 0, math.rad(90))
-local outerCyl = newPart("RuneRingOuter", Vector3.new(0.35, 4.2, 4.2), outerCFrame, RUNE_COLOR, Enum.Material.Neon, Workspace)
-outerCyl.Shape = Enum.PartType.Cylinder
+-- 4) Leuchtender Runenring, eng um den Äquator anliegend (kein freischwebendes CSG-
+--    Objekt mehr, sondern fest mit der Schale verbunden), plus kleine "Runen"-Gemme
+--    entlang des Rings --------------------------------------------------------------
+do
+	local y = 0
+	local r = eggRadiusAt(y) + 0.12
+	local runeRing = newPart(
+		"RuneRing",
+		Vector3.new(0.35, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		RUNE_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+	runeRing.Shape = Enum.PartType.Cylinder
 
-local innerCFrame = ORIGIN * CFrame.new(0, -0.3, 0) * CFrame.Angles(0, 0, math.rad(90))
-local innerCyl = newPart("RuneRingInner", Vector3.new(0.6, 3.5, 3.5), innerCFrame, RUNE_COLOR, Enum.Material.Neon, Workspace)
-innerCyl.Shape = Enum.PartType.Cylinder
+	for i = 1, 6 do
+		local angle = math.rad(60 * (i - 1))
+		local gemPos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
+		newMeshBall("RuneGem" .. i, Vector3.new(0.22, 0.22, 0.22), ORIGIN * CFrame.new(gemPos), CROWN_COLOR, Enum.Material.Neon, model)
+	end
+end
 
-local runeRing = outerCyl:SubtractAsync({ innerCyl })
-runeRing.Name = "RuneRing"
-runeRing.Color = RUNE_COLOR
-runeRing.Material = Enum.Material.Neon
-runeRing.Anchored = true
-runeRing.CanCollide = false
-runeRing.Parent = model
+-- 5) Glühende Risse (Neon-Linien), Legendary-exklusives Ornament --------------------
+for i = 1, CRACK_COUNT do
+	local angle = math.rad(360 / CRACK_COUNT * (i - 1) + 45)
+	local y = -0.9
+	local r = eggRadiusAt(y) - 0.04
+	local crack = newPart(
+		"CrackGlow" .. i,
+		Vector3.new(0.08, 0.9, 0.08),
+		ORIGIN * CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r) * CFrame.Angles(0, angle, math.rad(15)),
+		CRACK_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+end
 
--- 6) Punktlicht als zusätzlicher Glanz-Akzent (rein dekorativ, statisch) ----
+-- 6) Standring unten -------------------------------------------------------------------
+do
+	local y = -HALF_Y + 0.35
+	local r = eggRadiusAt(y) + 0.05
+	local footRing = newPart(
+		"FootRing",
+		Vector3.new(0.24, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(90, 40, 160),
+		Enum.Material.Metal,
+		model
+	)
+	footRing.Shape = Enum.PartType.Cylinder
+end
+
+-- 7) Punktlicht als zusätzlicher Glanz-Akzent (rein dekorativ, statisch) ----
 local shineLight = Instance.new("PointLight")
 shineLight.Name = "ShineLight"
 shineLight.Color = CROWN_COLOR
@@ -145,7 +199,7 @@ shineLight.Range = 12
 shineLight.Brightness = 1.5
 shineLight.Parent = shell
 
--- 7) Idle-Puls-Attachment ---------------------------------------------------
+-- 8) Idle-Puls-Attachment ---------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = shell

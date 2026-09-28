@@ -93,9 +93,12 @@ for i, diameter in ipairs(segmentSizes) do
 end
 
 -- 3) Vier dekorative Rückenflossen -------------------------------------------
+-- Radius 1.85 statt 2.2: TowerSegment2 hat an dieser Höhe Radius 1.9, die Fin
+-- muss also näher am Schaft sitzen, um ihn zu überlappen statt daneben zu
+-- schweben (radialer Flossenanteil ist mit 0.2 Studs sehr dünn).
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1))
-	local finCFrame = ORIGIN * CFrame.new(math.cos(angle) * 2.2, 4.8, math.sin(angle) * 2.2) * CFrame.Angles(0, angle, 0)
+	local finCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.85, 4.8, math.sin(angle) * 1.85) * CFrame.Angles(0, angle, 0)
 	local fin = newPart("SpineFin" .. i, Vector3.new(0.2, 1.7, 1.0), finCFrame, Color3.fromRGB(200, 0, 255), Enum.Material.Neon, model)
 	fin.CanCollide = false
 end
@@ -133,7 +136,9 @@ else
 end
 
 -- 5) Gebogener Illicium-Arm (Angel-Rute), aus 4 abgewinkelten Segmenten -------
-local armBaseCFrame = ORIGIN * CFrame.new(0, currentY + 0.3, 0)
+-- Startet 0.2 Studs unterhalb des Turmkopf-Endes (statt darüber), damit die
+-- Rute den Turmschaft/die Dornenkrone überlappt statt daneben zu schweben.
+local armBaseCFrame = ORIGIN * CFrame.new(0, currentY - 0.2, 0)
 local armSegCFrame = armBaseCFrame
 local armLen = 1.7
 for i = 1, 4 do

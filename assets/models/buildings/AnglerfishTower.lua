@@ -89,7 +89,22 @@ for i, diameter in ipairs(segmentSizes) do
 end
 
 -- 3) Gebogener Illicium-Arm (Angel-Rute), aus 3 abgewinkelten Segmenten -------
-local armBaseCFrame = ORIGIN * CFrame.new(0, currentY + 0.3, 0)
+-- Startet 0.2 Studs INNERHALB des Turmkopfes (statt darüber), damit das erste
+-- Rutensegment den Turmschaft überlappt statt daneben zu schweben.
+local armBaseCFrame = ORIGIN * CFrame.new(0, currentY - 0.2, 0)
+
+-- Kleine Sockel-Manschette, wo die Rute aus dem Turmkopf tritt (Detail) -------
+local armSocket = newPart(
+	"ArmSocket",
+	Vector3.new(0.6, 0.5, 0.6),
+	armBaseCFrame,
+	Color3.fromRGB(30, 32, 38),
+	Enum.Material.Metal,
+	model
+)
+armSocket.Shape = Enum.PartType.Cylinder
+armSocket.CFrame = armBaseCFrame * CFrame.Angles(0, 0, math.rad(90))
+
 local armSegCFrame = armBaseCFrame
 local armLen = 1.6
 for i = 1, 3 do

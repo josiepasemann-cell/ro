@@ -90,15 +90,33 @@ for i, diameter in ipairs(segmentSizes) do
 end
 
 -- 3) Vier dekorative Rückenflossen (mehr Struktur) ---------------------------
+-- Radius 1.75 statt 2.0: TowerSegment2 hat an dieser Höhe Radius 1.8, die Fin
+-- muss also näher am Schaft sitzen, um ihn zu überlappen statt daneben zu
+-- schweben (radialer Flossenanteil ist mit 0.2 Studs sehr dünn).
 for i = 1, 4 do
 	local angle = math.rad(90 * (i - 1))
-	local finCFrame = ORIGIN * CFrame.new(math.cos(angle) * 2.0, 4.5, math.sin(angle) * 2.0) * CFrame.Angles(0, angle, 0)
+	local finCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.75, 4.5, math.sin(angle) * 1.75) * CFrame.Angles(0, angle, 0)
 	local fin = newPart("SpineFin" .. i, Vector3.new(0.2, 1.4, 0.9), finCFrame, Color3.fromRGB(160, 90, 255), Enum.Material.Neon, model)
 	fin.CanCollide = false
 end
 
 -- 4) Gebogener Illicium-Arm (Angel-Rute), aus 3 abgewinkelten Segmenten -------
-local armBaseCFrame = ORIGIN * CFrame.new(0, currentY + 0.3, 0)
+-- Startet 0.2 Studs INNERHALB des Turmkopfes (statt darüber), damit das erste
+-- Rutensegment den Turmschaft überlappt statt daneben zu schweben.
+local armBaseCFrame = ORIGIN * CFrame.new(0, currentY - 0.2, 0)
+
+-- Kleine Sockel-Manschette, wo die Rute aus dem Turmkopf tritt (Detail) -------
+local armSocket = newPart(
+	"ArmSocket",
+	Vector3.new(0.65, 0.55, 0.65),
+	armBaseCFrame,
+	Color3.fromRGB(35, 38, 44),
+	Enum.Material.Metal,
+	model
+)
+armSocket.Shape = Enum.PartType.Cylinder
+armSocket.CFrame = armBaseCFrame * CFrame.Angles(0, 0, math.rad(90))
+
 local armSegCFrame = armBaseCFrame
 local armLen = 1.7
 for i = 1, 3 do

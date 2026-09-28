@@ -89,7 +89,9 @@ for i, offset in ipairs(sideOffsets) do
 	pipe.Shape = Enum.PartType.Cylinder
 
 	if i <= 2 then
-		local stripeCFrame = pipeCFrame * CFrame.new(0, 0.4, 0)
+		-- Offset 0.2 statt 0.4: Rohrradius ist 0.25, der Streifen muss also
+		-- ins Rohr einbetten statt frei daneben zu schweben.
+		local stripeCFrame = pipeCFrame * CFrame.new(0, 0.2, 0)
 		local stripe = newPart("PipeGlowStripe" .. i, Vector3.new(2.0, 0.12, 0.12), stripeCFrame, Color3.fromRGB(0, 255, 150), Enum.Material.Neon, model)
 		stripe.CanCollide = false
 	end

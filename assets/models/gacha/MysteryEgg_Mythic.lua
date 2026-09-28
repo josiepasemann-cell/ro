@@ -6,12 +6,14 @@
 	(Compliance-konform)"; Rarity-Skala gemäß GDD Abschnitt 3/8
 	("Common → Uncommon → Rare → Epic → Legendary → Mythic → Abyssal").
 	Beschreibung:
-		Aufwendigstes Ei-Design des Gacha-Sets: zweifarbige Kristallschale
-		(Violett-Körper + heller Cyan-Kern), hohe Dornenkrone, ZWEI versetzt
-		geneigte Runenringe (CSG-Subtraktion) und drei kleine frei schwebende
-		Kristallsplitter-Satelliten um das Ei herum. Hellste Punktlichtquelle
-		im gesamten Ei-Set. Klar als "über Legendary" erkennbar, aber noch
-		unterhalb der (im GDD separat vorgesehenen) Abyssal-Stufe.
+		Aufwendigstes Ei-Design des Gacha-Sets: zweifarbige Kristall-Eischale
+		(Violett-Körper + heller Cyan-Kern), hohe Dornenkrone, ZWEI Runenringe
+		auf unterschiedlicher Höhe, glühende Risse und drei kleine Kristall-
+		splitter-Satelliten, die über dünne Leuchtstreben mit der Schale
+		verbunden bleiben (kein frei schwebendes Geometrie-Fragment). Hellste
+		Punktlichtquelle im gesamten Ei-Set. Klar als "über Legendary"
+		erkennbar, aber noch unterhalb der (im GDD separat vorgesehenen)
+		Abyssal-Stufe.
 
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-AGENTEN:
 		- Model.PrimaryPart = "Shell" -> Ansatzpunkt für Öffnungs-Animation und
@@ -21,7 +23,8 @@
 		  /Puls-Animation.
 		- model:GetAttribute("EggName") -> Anzeigename (Platzhalter).
 		- PointLight "ShineLight" an Shell -> rein dekorative Lichtquelle.
-		- "Satellite1".."Satellite3" -> frei schwebende Splitter-Parts, als
+		- "Satellite1".."Satellite3" -> kleine Kristallsplitter, je über eine
+		  eigene "SatelliteTether"-Strebe fest mit der Schale verbunden, als
 		  spätere Ansatzpunkte für Orbit-/Rotations-Animation durch den
 		  Code-Agenten (rein geometrisch platziert, keine Bewegung im Skript).
 
@@ -41,9 +44,12 @@ local Workspace = game:GetService("Workspace")
 local ORIGIN = CFrame.new(70, 5, 0) -- Vor Ausführung anpassen für gewünschte Position
 local EGG_TIER = "Mythic"
 local EGG_NAME = "Mystery Egg (Mythic)"
-local SHARD_COUNT = 7
+local SHARD_COUNT = 9
 local SPIKE_COUNT = 7
 local SATELLITE_COUNT = 3
+local CRACK_COUNT = 6
+local SHELL_SIZE = Vector3.new(2.9, 3.7, 2.9)
+local HALF_X, HALF_Y = SHELL_SIZE.X / 2, SHELL_SIZE.Y / 2
 -- // ----------------------------------------------------------------------
 
 local function getOrCreateFolder(parent, name)
@@ -71,6 +77,21 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): echte Ei-Form (Ellipsoid) statt der immer
+-- kugelrunden Shape=Ball-Darstellung.
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
+local function eggRadiusAt(y)
+	local t = math.clamp(y / HALF_Y, -1, 1)
+	return HALF_X * math.sqrt(1 - t * t)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local gachaFolder = getOrCreateFolder(assetsFolder, "Gacha")
 
@@ -87,80 +108,125 @@ local SHELL_COLOR = Color3.fromRGB(135, 60, 255)
 local CORE_COLOR = Color3.fromRGB(180, 255, 255)
 local CROWN_COLOR = Color3.fromRGB(120, 250, 255)
 local RUNE_COLOR = Color3.fromRGB(200, 150, 255)
+local CRACK_COLOR = Color3.fromRGB(255, 250, 255)
 
--- 1) Grundkörper ----------------------------------------------------------
-local baseBall = newPart("ShellBase", Vector3.new(2.9, 3.7, 2.9), ORIGIN, SHELL_COLOR, Enum.Material.Glass, Workspace)
-baseBall.Shape = Enum.PartType.Ball
+-- 1) Grundkörper: echte Eiform (Block + SpecialMesh Sphere) -------------------------
+local shell = newMeshBall("Shell", SHELL_SIZE, ORIGIN, SHELL_COLOR, Enum.Material.Glass, model)
+shell.Transparency = 0.05
 
--- 2) Kristallschübe (dichtestes Facettenmuster im Egg-Set) ------------------
-local shardParts = {}
+-- 2) Kristallschübe (dichtestes Facettenmuster im Egg-Set), eingesenkt --------------
 for i = 1, SHARD_COUNT do
 	local angle = math.rad(360 / SHARD_COUNT * (i - 1))
-	local shardCFrame = ORIGIN
-		* CFrame.new(math.cos(angle) * 1.2, 0.15, math.sin(angle) * 1.2)
-		* CFrame.Angles(0, angle, 0)
-		* CFrame.Angles(math.rad(35), 0, 0)
-	local shard = newPart("Shard" .. i, Vector3.new(0.72, 1.55, 0.48), shardCFrame, SHELL_COLOR, Enum.Material.Glass, Workspace)
-	table.insert(shardParts, shard)
+	local y = 0.1 + 0.45 * math.sin(i * 1.1)
+	local r = eggRadiusAt(y) - 0.22
+	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
+	local shard = Instance.new("WedgePart")
+	shard.Name = "Shard" .. i
+	shard.Size = Vector3.new(0.68, 0.85, 0.52)
+	shard.CFrame = ORIGIN * CFrame.new(pos) * CFrame.Angles(0, angle, 0) * CFrame.Angles(0, 0, math.rad(90))
+	shard.Color = SHELL_COLOR
+	shard.Material = Enum.Material.Glass
+	shard.Transparency = 0.02
+	shard.Anchored = true
+	shard.CanCollide = false
+	shard.TopSurface = Enum.SurfaceType.Smooth
+	shard.BottomSurface = Enum.SurfaceType.Smooth
+	shard.Parent = model
 end
 
--- 3) CSG-Union: Grundkörper + Kristallschübe -------------------------------
-local shell = baseBall:UnionAsync(shardParts)
-shell.Name = "Shell"
-shell.Color = SHELL_COLOR
-shell.Material = Enum.Material.Glass
-shell.Transparency = 0.05
-shell.Anchored = true
-shell.CanCollide = false
-shell.Parent = model
+-- 3) Heller Kern im oberen Zentrum der Schale (durch das Glas sichtbar) -------------
+local core = newMeshBall("GlowCore", Vector3.new(0.9, 0.9, 0.9), ORIGIN * CFrame.new(0, 0.3, 0), CORE_COLOR, Enum.Material.Neon, model)
 
--- 4) Heller Kern im Zentrum der Schale (durch das Glas sichtbar) ------------
-local core = newPart("GlowCore", Vector3.new(0.9, 0.9, 0.9), ORIGIN, CORE_COLOR, Enum.Material.Neon, model)
-core.Shape = Enum.PartType.Ball
-
--- 5) Hohe Dornenkrone (mehr und längere Spitzen als Legendary) --------------
+-- 4) Hohe Dornenkrone (mehr und längere Spitzen als Legendary), Basis eingesenkt ---
 for i = 1, SPIKE_COUNT do
 	local angle = math.rad(360 / SPIKE_COUNT * (i - 1))
-	local radius = 0.8
+	local y = HALF_Y - 0.6
+	local r = eggRadiusAt(y) * 0.72
 	local spikeCFrame = ORIGIN
-		* CFrame.new(math.cos(angle) * radius, 1.85, math.sin(angle) * radius)
+		* CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r)
 		* CFrame.Angles(0, angle, 0)
-		* CFrame.Angles(math.rad(-15), 0, 0)
-	newPart("CrownSpike" .. i, Vector3.new(0.26, 1.3, 0.26), spikeCFrame, CROWN_COLOR, Enum.Material.Neon, model)
+		* CFrame.Angles(math.rad(-20), 0, 0)
+	newPart("CrownSpike" .. i, Vector3.new(0.26, 1.3, 0.26), spikeCFrame * CFrame.new(0, 0.4, 0), CROWN_COLOR, Enum.Material.Neon, model)
 end
 
--- 6) Zwei versetzt geneigte Runenringe (je CSG-Subtraktion) -----------------
-local ringConfigs = {
-	{ yOffset = -0.2, tilt = 0 },
-	{ yOffset = 0.1, tilt = 35 },
-}
+-- 5) Zwei Runenringe auf unterschiedlicher Höhe, fest an die Schale anliegend ------
+local ringConfigs = { { y = 0.4, thickness = 0.3 }, { y = -0.5, thickness = 0.32 } }
 for i, cfg in ipairs(ringConfigs) do
-	local ringBaseCFrame = ORIGIN * CFrame.new(0, cfg.yOffset, 0) * CFrame.Angles(0, 0, math.rad(90)) * CFrame.Angles(math.rad(cfg.tilt), 0, 0)
-
-	local outerCyl = newPart("RuneRingOuter" .. i, Vector3.new(0.3, 4.5, 4.5), ringBaseCFrame, RUNE_COLOR, Enum.Material.Neon, Workspace)
-	outerCyl.Shape = Enum.PartType.Cylinder
-
-	local innerCyl = newPart("RuneRingInner" .. i, Vector3.new(0.55, 3.8, 3.8), ringBaseCFrame, RUNE_COLOR, Enum.Material.Neon, Workspace)
-	innerCyl.Shape = Enum.PartType.Cylinder
-
-	local runeRing = outerCyl:SubtractAsync({ innerCyl })
-	runeRing.Name = "RuneRing" .. i
-	runeRing.Color = RUNE_COLOR
-	runeRing.Material = Enum.Material.Neon
+	local r = eggRadiusAt(cfg.y) + 0.12
+	local runeRing = newPart(
+		"RuneRing" .. i,
+		Vector3.new(cfg.thickness, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, cfg.y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		RUNE_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+	runeRing.Shape = Enum.PartType.Cylinder
 	runeRing.Transparency = 0.1
-	runeRing.Anchored = true
-	runeRing.CanCollide = false
-	runeRing.Parent = model
+
+	for g = 1, 5 do
+		local angle = math.rad(72 * (g - 1) + i * 20)
+		local gemPos = Vector3.new(math.cos(angle) * r, cfg.y, math.sin(angle) * r)
+		newMeshBall("RuneGem" .. i .. "_" .. g, Vector3.new(0.2, 0.2, 0.2), ORIGIN * CFrame.new(gemPos), CROWN_COLOR, Enum.Material.Neon, model)
+	end
 end
 
--- 7) Frei schwebende Kristallsplitter-Satelliten um das Ei ------------------
+-- 6) Glühende Risse (Neon-Linien), dichter als Legendary -----------------------------
+for i = 1, CRACK_COUNT do
+	local angle = math.rad(360 / CRACK_COUNT * (i - 1) + 30)
+	local y = -1.1
+	local r = eggRadiusAt(y) - 0.04
+	newPart(
+		"CrackGlow" .. i,
+		Vector3.new(0.08, 1.0, 0.08),
+		ORIGIN * CFrame.new(math.cos(angle) * r, y, math.sin(angle) * r) * CFrame.Angles(0, angle, math.rad(15)),
+		CRACK_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+end
+
+-- 7) Standring unten -------------------------------------------------------------------
+do
+	local y = -HALF_Y + 0.35
+	local r = eggRadiusAt(y) + 0.05
+	local footRing = newPart(
+		"FootRing",
+		Vector3.new(0.26, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(80, 35, 150),
+		Enum.Material.Metal,
+		model
+	)
+	footRing.Shape = Enum.PartType.Cylinder
+end
+
+-- 8) Drei Kristallsplitter-Satelliten, JEWEILS über eine dünne Leuchtstrebe fest mit
+--    der Schale verbunden (kein frei schwebendes Fragment mehr) --------------------
 for i = 1, SATELLITE_COUNT do
 	local angle = math.rad(360 / SATELLITE_COUNT * (i - 1) + 20)
-	local offset = Vector3.new(math.cos(angle) * 3.1, math.sin(angle * 2) * 0.6, math.sin(angle) * 3.1)
-	local satellite = newPart("Satellite" .. i, Vector3.new(0.45, 0.7, 0.45), ORIGIN * CFrame.new(offset) * CFrame.Angles(0, angle, math.rad(20)), CORE_COLOR, Enum.Material.Neon, model)
+	local y = 0.2 * math.sin(i * 2)
+	local shellR = eggRadiusAt(y)
+	local satR = shellR + 1.15
+	local satPos = Vector3.new(math.cos(angle) * satR, y, math.sin(angle) * satR)
+	local satCFrame = ORIGIN * CFrame.new(satPos) * CFrame.Angles(0, angle, math.rad(20))
+
+	-- Leuchtstrebe von der Schaloberfläche zum Satelliten (garantiert Überlappung).
+	-- CFrame.new(from, to) richtet die lokale -Z-Achse auf `to` aus; ein Part mit
+	-- passender Size.Z, mittig auf der Verbindungsstrecke platziert, überdeckt so
+	-- exakt (und robust gegenüber Winkeln) die Strecke zwischen beiden Enden.
+	local surfacePos = Vector3.new(math.cos(angle) * (shellR - 0.05), y, math.sin(angle) * (shellR - 0.05))
+	local worldSurface = (ORIGIN * CFrame.new(surfacePos)).Position
+	local worldSatellite = (ORIGIN * CFrame.new(satPos)).Position
+	local worldMid = worldSurface:Lerp(worldSatellite, 0.5)
+	local tetherLength = (worldSatellite - worldSurface).Magnitude + 0.2
+	local tetherCFrame = CFrame.new(worldMid, worldSatellite)
+	newPart("SatelliteTether" .. i, Vector3.new(0.12, 0.12, tetherLength), tetherCFrame, CORE_COLOR, Enum.Material.Neon, model)
+
+	newPart("Satellite" .. i, Vector3.new(0.45, 0.7, 0.45), satCFrame, CORE_COLOR, Enum.Material.Neon, model)
 end
 
--- 8) Punktlicht (hellste Lichtquelle im Egg-Set) -----------------------------
+-- 9) Punktlicht (hellste Lichtquelle im Egg-Set) -----------------------------
 local shineLight = Instance.new("PointLight")
 shineLight.Name = "ShineLight"
 shineLight.Color = CORE_COLOR
@@ -168,7 +234,7 @@ shineLight.Range = 16
 shineLight.Brightness = 2.2
 shineLight.Parent = shell
 
--- 9) Idle-Puls-Attachment ---------------------------------------------------
+-- 10) Idle-Puls-Attachment ---------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = shell

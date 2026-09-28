@@ -38,6 +38,10 @@ local Workspace = game:GetService("Workspace")
 local ORIGIN = CFrame.new(40, 5, 0) -- Vor Ausführung anpassen für gewünschte Position
 local EGG_TIER = "Common"
 local EGG_NAME = "Mystery Egg (Common)"
+-- Halbachsen der Eiform (siehe SHELL_SIZE weiter unten) - werden gebraucht,
+-- um Nahtringe/Details exakt auf die gewölbte Oberfläche zu setzen.
+local SHELL_SIZE = Vector3.new(2.6, 3.4, 2.6)
+local HALF_X, HALF_Y = SHELL_SIZE.X / 2, SHELL_SIZE.Y / 2
 -- // ----------------------------------------------------------------------
 
 local function getOrCreateFolder(parent, name)
@@ -65,6 +69,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Block-Part + SpecialMesh(Sphere): rendert eine ECHTE Ei-Form (Ellipsoid,
+-- höher als breit). Shape=Ball würde Roblox immer als perfekte Kugel mit der
+-- KLEINSTEN Size-Achse als Durchmesser zeichnen - hier bewusst vermieden.
+local function newMeshBall(name, size, cframe, color, material, parent)
+	local part = newPart(name, size, cframe, color, material, parent)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = part
+	return part
+end
+
+-- Horizontaler Ei-Querschnittsradius auf Höhe `y` (relativ zur Eimitte) -----
+local function eggRadiusAt(y)
+	local t = math.clamp(y / HALF_Y, -1, 1)
+	return HALF_X * math.sqrt(1 - t * t)
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local gachaFolder = getOrCreateFolder(assetsFolder, "Gacha")
 
@@ -80,16 +101,59 @@ model.Parent = gachaFolder
 local SHELL_COLOR = Color3.fromRGB(215, 250, 245)
 local SEAM_COLOR = Color3.fromRGB(140, 230, 255)
 
--- 1) Schale (glatte Eiform, mattes Plastik, kein Glanz) ---------------------
-local shell = newPart("Shell", Vector3.new(2.6, 3.4, 2.6), ORIGIN, SHELL_COLOR, Enum.Material.SmoothPlastic, model)
-shell.Shape = Enum.PartType.Ball
+-- 1) Schale: echte Eiform (Block + SpecialMesh Sphere), mattes Plastik --------------
+local shell = newMeshBall("Shell", SHELL_SIZE, ORIGIN, SHELL_COLOR, Enum.Material.SmoothPlastic, model)
 
--- 2) Einzelner dünner Neon-Nahtring um die Äquatorlinie ---------------------
-local seamCFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
-local seam = newPart("SeamRing", Vector3.new(0.18, 2.75, 2.75), seamCFrame, SEAM_COLOR, Enum.Material.Neon, model)
-seam.Shape = Enum.PartType.Cylinder
+-- 2) Einzelner dünner Neon-Nahtring um die Äquatorlinie, exakt auf der Schale -------
+do
+	local y = 0
+	local r = eggRadiusAt(y) + 0.05
+	local ring = newPart(
+		"SeamRing",
+		Vector3.new(0.18, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		SEAM_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+	ring.Shape = Enum.PartType.Cylinder
+end
 
--- 3) Idle-Puls-Attachment ---------------------------------------------------
+-- 3) Kleiner Standring unten (Ei "sitzt" sichtbar auf, statt frei zu schweben) ------
+do
+	local y = -HALF_Y + 0.35
+	local r = eggRadiusAt(y) + 0.05
+	local footRing = newPart(
+		"FootRing",
+		Vector3.new(0.22, r * 2, r * 2),
+		ORIGIN * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(180, 220, 220),
+		Enum.Material.SmoothPlastic,
+		model
+	)
+	footRing.Shape = Enum.PartType.Cylinder
+end
+
+-- 4) Spitzen-Glanzpunkt oben, überlappt die Schale -----------------------------------
+newMeshBall(
+	"TopHighlight",
+	Vector3.new(0.4, 0.35, 0.4),
+	ORIGIN * CFrame.new(0, HALF_Y - 0.35, 0),
+	Color3.fromRGB(240, 255, 253),
+	Enum.Material.SmoothPlastic,
+	model
+)
+
+-- 5) Drei winzige Sprenkel, leicht in die Schale eingesenkt --------------------------
+for i = 1, 3 do
+	local angle = math.rad(120 * (i - 1) + 20)
+	local y = 0.5
+	local r = eggRadiusAt(y) - 0.05
+	local pos = Vector3.new(math.cos(angle) * r, y, math.sin(angle) * r)
+	newMeshBall("Speckle" .. i, Vector3.new(0.18, 0.18, 0.18), ORIGIN * CFrame.new(pos), SEAM_COLOR, Enum.Material.Neon, model)
+end
+
+-- 6) Idle-Puls-Attachment ---------------------------------------------------
 local pulseAttachment = Instance.new("Attachment")
 pulseAttachment.Name = "PulseAttachment"
 pulseAttachment.Parent = shell

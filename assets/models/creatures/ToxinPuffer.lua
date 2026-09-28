@@ -92,7 +92,7 @@ belly.CFrame = belly.CFrame * CFrame.Angles(0, 0, math.rad(90))
 -- 3) Zwei Augen mit Pupille + Glanzpunkt ---------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = ORIGIN * CFrame.new(side * 0.75, 0.45, 1.25)
+	local eyeCFrame = ORIGIN * CFrame.new(side * 0.62, 0.4, 1.05)
 	local eyeWhite = newPart(
 		"EyeWhite" .. i,
 		Vector3.new(0.45, 0.45, 0.4),

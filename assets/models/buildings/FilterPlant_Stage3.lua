@@ -144,10 +144,16 @@ statusLight3.Shape = Enum.PartType.Ball
 statusLight3.CanCollide = false
 
 -- 7) Abluft-Schornstein mit CSG-Leuchtring + Dampf-Partikelemitter -----------
+-- Reicht bis 0.3 Studs UNTER die Fundamentoberkante (statt bei y=5 in der
+-- Luft zu beginnen), damit der Schornstein den Sockel überlappt statt
+-- freischwebend daneben zu stehen. Höhe entsprechend vergrößert, Spitze
+-- (y=11, wo der Leuchtring sitzt) bleibt unverändert.
+local STACK_TOP_Y = 11
+local STACK_BOTTOM_Y = -0.3
 local stack = newPart(
 	"ExhaustStack",
-	Vector3.new(1.4, 6, 1.4),
-	ORIGIN * CFrame.new(-3.4, 8, 0),
+	Vector3.new(1.4, STACK_TOP_Y - STACK_BOTTOM_Y, 1.4),
+	ORIGIN * CFrame.new(-3.4, (STACK_TOP_Y + STACK_BOTTOM_Y) / 2, 0),
 	Color3.fromRGB(80, 84, 90),
 	Enum.Material.Metal,
 	model

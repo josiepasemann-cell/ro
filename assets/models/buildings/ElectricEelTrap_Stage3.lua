@@ -146,38 +146,22 @@ else
 end
 
 -- 5) Aufgerollter Aal-Körper (10 Segmente in Spirale um den Felsanker) -------
+-- Jedes Segment ist ein Zylinder, der exakt vom vorigen Wegpunkt zum nächsten
+-- reicht (statt nur tangential ausgerichtet an seiner eigenen Position zu
+-- stehen) - so bildet der Körper eine durchgehend verbundene Kette statt
+-- einzelner, frei im Raum schwebender Stücke.
 local SEGMENT_COUNT = 10
+local BODY_DIAMETER = 0.8
+local STRIPE_THICKNESS = 0.15
+local waypoints = {}
+waypoints[0] = (ORIGIN * CFrame.new(0, 1.9, 0)).Position -- im Felsanker
 local currentAngle = 0
 local currentHeight = 1.0
-for i = 1, SEGMENT_COUNT do
+for i = 1, SEGMENT_COUNT - 1 do
 	currentAngle += math.rad(50)
 	currentHeight += 0.36
 	local radius = 2.0
-	local segCFrame = ORIGIN
-		* CFrame.new(math.cos(currentAngle) * radius, currentHeight, math.sin(currentAngle) * radius)
-		* CFrame.Angles(0, -currentAngle, 0)
-
-	local segment = newPart(
-		"EelBodySegment" .. i,
-		Vector3.new(1.1, 0.8, 0.8),
-		segCFrame,
-		EEL_COLOR,
-		Enum.Material.SmoothPlastic,
-		model
-	)
-	segment.Shape = Enum.PartType.Cylinder
-	segment.CanCollide = false
-
-	local stripeCFrame = segCFrame * CFrame.new(0, 0.46, 0)
-	local stripe = newPart(
-		"EelStripe" .. i,
-		Vector3.new(1.0, 0.15, 0.15),
-		stripeCFrame,
-		STRIPE_COLOR,
-		Enum.Material.Neon,
-		model
-	)
-	stripe.CanCollide = false
+	waypoints[i] = (ORIGIN * CFrame.new(math.cos(currentAngle) * radius, currentHeight, math.sin(currentAngle) * radius)).Position
 end
 
 -- 6) Aal-Kopf (Angriffs-Ursprung, größer als Stufe 2) ------------------------
@@ -186,13 +170,55 @@ currentHeight += 0.6
 local headCFrame = ORIGIN
 	* CFrame.new(math.cos(currentAngle) * 1.6, currentHeight, math.sin(currentAngle) * 1.6)
 	* CFrame.Angles(0, -currentAngle, 0)
+waypoints[SEGMENT_COUNT] = headCFrame.Position -- letztes Segment mündet im Kopf
+
+for i = 1, SEGMENT_COUNT do
+	local p1, p2 = waypoints[i - 1], waypoints[i]
+	local dir = p2 - p1
+	local length = dir.Magnitude
+	local xAxis = dir.Unit
+	local upRef = Vector3.new(0, 1, 0)
+	if math.abs(xAxis:Dot(upRef)) > 0.95 then
+		upRef = Vector3.new(1, 0, 0)
+	end
+	local zAxis = xAxis:Cross(upRef).Unit
+	local yAxis = zAxis:Cross(xAxis).Unit
+	local segCFrame = CFrame.fromMatrix(p1:Lerp(p2, 0.5), xAxis, yAxis, zAxis)
+
+	-- +0.3 Studs Länge (Padding) sorgt für ~0.15 Studs Überlappung an jedem
+	-- Gelenk mit dem vorigen/nächsten Segment bzw. Felsanker/Kopf.
+	local segment = newPart(
+		"EelBodySegment" .. i,
+		Vector3.new(length + 0.3, BODY_DIAMETER, BODY_DIAMETER),
+		segCFrame,
+		EEL_COLOR,
+		Enum.Material.SmoothPlastic,
+		model
+	)
+	segment.Shape = Enum.PartType.Cylinder
+	segment.CanCollide = false
+
+	local stripeCFrame = segCFrame * CFrame.new(0, BODY_DIAMETER / 2 - 0.05, 0)
+	local stripe = newPart(
+		"EelStripe" .. i,
+		Vector3.new(length * 0.85, STRIPE_THICKNESS, STRIPE_THICKNESS),
+		stripeCFrame,
+		STRIPE_COLOR,
+		Enum.Material.Neon,
+		model
+	)
+	stripe.CanCollide = false
+end
 
 local eelHead = newPart("EelHead", Vector3.new(1.7, 1.3, 1.8), headCFrame, EEL_COLOR, Enum.Material.SmoothPlastic, model)
 eelHead.CanCollide = false
 
+-- Z-Offset reduziert (Kopf ist 1.8 Studs lang, halbe Länge 0.9): vorher lagen
+-- die Augen fast auf der Vorderkante des Kopfes und schwebten damit ohne
+-- echte Überlappung.
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	local eyeCFrame = headCFrame * CFrame.new(side * 0.45, 0.24, -0.8)
+	local eyeCFrame = headCFrame * CFrame.new(side * 0.45, 0.24, -0.65)
 	local eye = newPart("EelEye" .. i, Vector3.new(0.25, 0.25, 0.25), eyeCFrame, STRIPE_COLOR, Enum.Material.Neon, model)
 	eye.Shape = Enum.PartType.Ball
 	eye.CanCollide = false
@@ -214,10 +240,12 @@ sparkEmitter.Parent = eelHead
 -- 7) "Ladezustand"-Anzeige: ChargeCore (größer/heller) + ChargeLight ---------
 -- ChargeCore bleibt DIREKTES Kind von `model` (kein Unterordner), siehe
 -- Kopfkommentar - RaidService.flashChargeCore() sucht nicht rekursiv.
+-- Y-Offset reduziert (Kopf ist 1.3 Studs hoch, halbe Höhe 0.65): der Kern
+-- bettet sich damit in den Kopf ein statt frei darüber zu schweben.
 local chargeCore = newPart(
 	"ChargeCore",
 	Vector3.new(0.8, 0.8, 0.8),
-	headCFrame * CFrame.new(0, 0.75, 0),
+	headCFrame * CFrame.new(0, 0.6, 0),
 	STRIPE_COLOR,
 	Enum.Material.Neon,
 	model
