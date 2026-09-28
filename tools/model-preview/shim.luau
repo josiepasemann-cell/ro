@@ -517,6 +517,18 @@ local function defaultProps(cls)
 		p.MeshId = ""
 		p.TextureId = ""
 		p.VertexColor = v3(1, 1, 1)
+	elseif cls == "Decal" or cls == "Texture" then
+		p.Face = Enum.NormalId.Front
+		p.Texture = ""
+		p.Color3 = Color3.new(1, 1, 1)
+		p.Transparency = 0
+		p.ZIndex = 1
+		if cls == "Texture" then
+			p.StudsPerTileU = 2
+			p.StudsPerTileV = 2
+			p.OffsetStudsU = 0
+			p.OffsetStudsV = 0
+		end
 	elseif cls == "PointLight" or cls == "SpotLight" or cls == "SurfaceLight" then
 		p.Brightness = 1
 		p.Range = 8
@@ -1063,6 +1075,35 @@ local function effectsJson(p)
 	return "[" .. table.concat(fx, ",") .. "]"
 end
 
+-- Texture / Decal children drawn on a face of the part (key = attribute TextureKey -> assets/textures/<key>.png)
+local function texturesJson(p)
+	local out = {}
+	for _, c in ipairs(p._children) do
+		if c._class == "Texture" or c._class == "Decal" then
+			local pr = c._props
+			local col = pr.Color3
+			if typeOf(col) ~= "Color3" then col = Color3.new(1, 1, 1) end
+			local face = enumName(pr.Face)
+			if face == "" then face = "Front" end
+			local bits = {
+				'"class":' .. jstr(c._class),
+				'"face":' .. jstr(face),
+				'"texture":' .. jstr(tostring(pr.Texture or "")),
+				'"color":' .. jcol(col),
+				'"transparency":' .. num(tonumber(pr.Transparency) or 0),
+			}
+			local key = c._attrs.TextureKey
+			if key ~= nil then table.insert(bits, '"key":' .. jstr(tostring(key))) end
+			if c._class == "Texture" then
+				table.insert(bits, '"studsPerTile":[' .. num(tonumber(pr.StudsPerTileU) or 2) .. "," .. num(tonumber(pr.StudsPerTileV) or 2) .. "]")
+				table.insert(bits, '"offsetStuds":[' .. num(tonumber(pr.OffsetStudsU) or 0) .. "," .. num(tonumber(pr.OffsetStudsV) or 0) .. "]")
+			end
+			table.insert(out, "{" .. table.concat(bits, ",") .. "}")
+		end
+	end
+	return out
+end
+
 local partJson
 local function csgJson(p, worldCF)
 	local csg = p._csg
@@ -1106,6 +1147,10 @@ partJson = function(p, worldCF, override, role)
 		'"effects":' .. effectsJson(p),
 	}
 	if role then table.insert(parts, '"role":"' .. role .. '"') end
+	if not role then
+		local tex = texturesJson(p)
+		if #tex > 0 then table.insert(parts, '"textures":[' .. table.concat(tex, ",") .. "]") end
+	end
 	-- first DataModelMesh child replaces the part's rendered shape (CSG ignores meshes, so skip operands)
 	if not role and not p._csg then
 		for _, c in ipairs(p._children) do

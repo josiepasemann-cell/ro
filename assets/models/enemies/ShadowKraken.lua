@@ -23,6 +23,7 @@
 		keine Gameplay-Logik. Wiederholtes Ausführen ist sicher (idempotent).
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -57,6 +58,26 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+-- "FadeWithPart" = true, da der Client Gegner per Transparency/ScaleTo ein-
+-- und ausblendet - der Animator muss diese Texturen mitfaden.
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	tex:SetAttribute("FadeWithPart", true)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local enemiesFolder = getOrCreateFolder(assetsFolder, "Enemies")
 
@@ -74,26 +95,26 @@ local ACCENT_COLOR = Color3.fromRGB(35, 30, 45)
 local EYE_COLOR = Color3.fromRGB(255, 40, 60)
 
 -- 1) Hauptkörper (deutlich größer als normale Kreaturen) ------------------------
-local body = newPart("Body", Vector3.new(4.5, 4.0, 4.5), ORIGIN, SKIN_COLOR, Enum.Material.Slate, model)
+local body = newPart("Body", Vector3.new(4.5, 4.0, 4.5), ORIGIN, SKIN_COLOR, Enum.Material.Basalt, model)
 body.Shape = Enum.PartType.Ball
 
 -- 2) Mantel-Auswölbung oben (leicht dunklerer Buckel) -----------------------------
 local mantleCFrame = ORIGIN * CFrame.new(0, 1.6, -0.4)
-newPart("Mantle", Vector3.new(3.2, 2.2, 3.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Slate, model).Shape =
-	Enum.PartType.Ball
+local mantle = newPart("Mantle", Vector3.new(3.2, 2.2, 3.2), mantleCFrame, ACCENT_COLOR, Enum.Material.Basalt, model)
+mantle.Shape = Enum.PartType.Ball
 
 -- 2b) Kronendorn-Reihe auf dem Mantel (mehr Silhouette/Detail) ---------------------
 for c = 1, 5 do
 	local angle = math.rad(-70 + (c - 1) * 35)
 	local spikeCFrame = mantleCFrame * CFrame.new(0, 1.0, 0) * CFrame.Angles(0, angle, 0) * CFrame.new(0, 0.5, 0.3)
-	newPart("CrownRidge" .. c, Vector3.new(0.35, 1.1, 0.35), spikeCFrame, ACCENT_COLOR, Enum.Material.Slate, model)
+	newPart("CrownRidge" .. c, Vector3.new(0.35, 1.1, 0.35), spikeCFrame, ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
 end
 
 -- 2c) Barnacle-/Warzen-Höcker auf dem Körper für mehr Oberflächen-Detail -----------
 for b = 1, 6 do
 	local angle = math.rad(60 * b)
 	local bumpCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.7, math.sin(angle) * 0.6 - 0.4, math.sin(angle) * 1.4)
-	local bump = newPart("Barnacle" .. b, Vector3.new(0.45, 0.45, 0.45), bumpCFrame, ACCENT_COLOR, Enum.Material.Slate, model)
+	local bump = newPart("Barnacle" .. b, Vector3.new(0.45, 0.45, 0.45), bumpCFrame, ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
 	bump.Shape = Enum.PartType.Ball
 end
 
@@ -103,12 +124,23 @@ beakUpper.Name = "BeakUpper"
 beakUpper.Size = Vector3.new(0.9, 0.7, 0.9)
 beakUpper.CFrame = ORIGIN * CFrame.new(0, -0.1, 1.9) * CFrame.Angles(math.rad(-90), 0, 0)
 beakUpper.Color = Color3.fromRGB(45, 40, 50)
-beakUpper.Material = Enum.Material.Slate
+beakUpper.Material = Enum.Material.CorrodedMetal
 beakUpper.Anchored = true
 beakUpper.CanCollide = false
 beakUpper.TopSurface = Enum.SurfaceType.Smooth
 beakUpper.BottomSurface = Enum.SurfaceType.Smooth
 beakUpper.Parent = model
+
+-- 2e) Rückenkamm-Naht (2 dünne, überlappende Grate über den Mantel) -----------------
+-- Bricht die glatte Kugelsilhouette auf und liefert eine sichtbare "Panzernaht".
+newPart("MantleSeam1", Vector3.new(0.22, 0.5, 2.6), mantleCFrame * CFrame.new(-0.6, 0.4, 0), ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
+newPart("MantleSeam2", Vector3.new(0.22, 0.5, 2.6), mantleCFrame * CFrame.new(0.6, 0.4, 0), ACCENT_COLOR, Enum.Material.CorrodedMetal, model)
+
+-- 2f) Oberflächen-Texturen (Chitin-Haut, Kristall-Glanz auf dem Mantel, Bio-Adern) --
+newTexture("SharkSkin", Enum.NormalId.Front, body, { studsU = 2.5, studsV = 2.5, color = SKIN_COLOR, transparency = 0.1 })
+newTexture("BioVeins", Enum.NormalId.Back, body, { studsU = 3, studsV = 3, color = EYE_COLOR, transparency = 0.25 })
+newTexture("CrystalFacets", Enum.NormalId.Top, mantle, { studsU = 2, studsV = 2, color = ACCENT_COLOR, transparency = 0.2 })
+newTexture("MetalPanels", Enum.NormalId.Front, beakUpper, { studsU = 1.5, studsV = 1.5, color = Color3.fromRGB(60, 55, 65) })
 
 -- 3) Bedrohliche Glow-Augen ---------------------------------------------------------
 for i = 1, 2 do
@@ -137,7 +169,7 @@ for t = 1, TENTACLE_COUNT do
 			Vector3.new(width, segLength, width),
 			currentCFrame,
 			seg % 2 == 0 and SKIN_COLOR or ACCENT_COLOR,
-			Enum.Material.Slate,
+			seg % 2 == 0 and Enum.Material.Basalt or Enum.Material.CorrodedMetal,
 			model
 		)
 

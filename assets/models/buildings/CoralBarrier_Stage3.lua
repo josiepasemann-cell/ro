@@ -56,6 +56,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local buildingsFolder = getOrCreateFolder(assetsFolder, "Buildings")
 
@@ -72,7 +89,7 @@ local CORAL_COLOR = Color3.fromRGB(255, 60, 190)
 local TEAL_GLOW = Color3.fromRGB(0, 255, 220)
 
 -- 1) Fundament (IDENTISCH zu CoralBarrier.Base für Grid-Kompatibilität) -----
-local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Slate, model)
+local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
@@ -255,6 +272,19 @@ for i = 1, 2 do
 	local orbit = newPart("PulseOrbit" .. i, Vector3.new(0.6, 0.6, 0.6), orbitCFrame, CORAL_COLOR, Enum.Material.Neon, model)
 	orbit.Shape = Enum.PartType.Ball
 	orbit.CanCollide = false
+end
+
+-- 6) Oberflaechendetails: Steinsockel-Textur, poroese Korallenhaut, Kieselring -
+addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(150, 150, 155), 0.05)
+addKeyedTexture(mound, "CoralPorous", Enum.NormalId.Front, 2, 2, CORAL_COLOR, 0.05)
+
+local PEBBLE_COLOR = Color3.fromRGB(110, 100, 96)
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1) + 20)
+	local radius = 3.2
+	local pebbleCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.85, math.sin(angle) * radius)
+	local pebble = newPart("BasePebble" .. i, Vector3.new(0.4, 0.35, 0.4), pebbleCFrame, PEBBLE_COLOR, Enum.Material.Pebble, model)
+	pebble.CanCollide = false
 end
 
 model.PrimaryPart = base

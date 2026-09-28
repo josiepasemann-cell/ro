@@ -28,6 +28,7 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
+local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(15, 5, 120)
@@ -69,6 +70,25 @@ local function newMeshBall(name, size, cframe, color, material, parent)
 	mesh.MeshType = Enum.MeshType.Sphere
 	mesh.Parent = part
 	return part
+end
+
+-- Texture-Platzhalter (siehe assets/textures/README.md-Konvention): leere
+-- `Texture`-Instanz mit TextureKey-Attribut + "KeyedTexture"-Tag, bleibt bis
+-- zum Einspielen des PNG-Texturpacks unsichtbar. Nur auf flachen Block-
+-- Flächen sinnvoll (Panzerrand), nicht auf dem Ellipsoid-Körper.
+local function newKeyedTexture(part, key, face, color, studsPerU, studsPerV, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex.StudsPerTileU = studsPerU or 3
+	tex.StudsPerTileV = studsPerV or 3
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
 end
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")

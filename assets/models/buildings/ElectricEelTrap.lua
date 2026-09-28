@@ -71,6 +71,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local buildingsFolder = getOrCreateFolder(assetsFolder, "Buildings")
 
@@ -88,7 +105,7 @@ local STRIPE_COLOR = Color3.fromRGB(255, 230, 80)
 local ROCK_COLOR = Color3.fromRGB(55, 52, 50)
 
 -- 1) Fundament (identische Form/Maße wie AnglerfishTower.Base für Grid-Kompatibilität)
-local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Slate, model)
+local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
@@ -223,6 +240,18 @@ chargeLight.Range = 10
 chargeLight.Brightness = 1.5
 chargeLight.Shadows = false
 chargeLight.Parent = chargeCore
+
+-- 6) Oberflaechendetails: Steinsockel-Textur, Basalt-Felsanker, Ankerklammern -
+addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(150, 150, 155), 0.05)
+addKeyedTexture(rockAnchor, "BasaltRock", Enum.NormalId.Front, 1.5, 1.5, ROCK_COLOR, 0.05)
+
+local CLAMP_COLOR = Color3.fromRGB(210, 212, 216)
+for i = 1, 3 do
+	local angle = math.rad(120 * (i - 1))
+	local clampCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.1, 0.9, math.sin(angle) * 1.1)
+	local clamp = newPart("AnchorClamp" .. i, Vector3.new(0.4, 0.5, 0.4), clampCFrame, CLAMP_COLOR, Enum.Material.DiamondPlate, model)
+	clamp.CanCollide = false
+end
 
 model.PrimaryPart = base
 model:SetAttribute("BuildingType", "ElectricEelTrap")

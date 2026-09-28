@@ -51,6 +51,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local buildingsFolder = getOrCreateFolder(assetsFolder, "Buildings")
 
@@ -64,7 +81,7 @@ model.Name = "GlowBuoyStation"
 model.Parent = buildingsFolder
 
 -- 1) Fundament-Plattform ---------------------------------------------------
-local base = newPart("Base", Vector3.new(8, 1, 8), ORIGIN, Color3.fromRGB(100, 108, 118), Enum.Material.Slate, model)
+local base = newPart("Base", Vector3.new(8, 1, 8), ORIGIN, Color3.fromRGB(100, 108, 118), Enum.Material.WoodPlanks, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
@@ -137,6 +154,21 @@ for i = 1, 3 do
 	orb.CanCollide = false
 	orb.Transparency = 0.1
 end
+
+-- 6) Oberflaechendetails: Holzdeck-Plattform, Metall-Mastbeschlag -----------
+addKeyedTexture(base, "WoodPlanks", Enum.NormalId.Top, 2.5, 2.5, Color3.fromRGB(150, 120, 90), 0.05)
+addKeyedTexture(mast, "RivetedPlates", Enum.NormalId.Front, 1.5, 2, Color3.fromRGB(130, 134, 140), 0.05)
+
+local collar = newPart(
+	"MastCollar",
+	Vector3.new(0.35, 1.6, 1.6),
+	ORIGIN * CFrame.new(0, 1.6, 0) * CFrame.Angles(0, 0, math.rad(90)),
+	Color3.fromRGB(70, 74, 80),
+	Enum.Material.CorrodedMetal,
+	model
+)
+collar.Shape = Enum.PartType.Cylinder
+collar.CanCollide = false
 
 model.PrimaryPart = base
 model:SetAttribute("BuildingType", "GlowBuoyStation")

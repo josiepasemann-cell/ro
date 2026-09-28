@@ -51,6 +51,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local buildingsFolder = getOrCreateFolder(assetsFolder, "Buildings")
 
@@ -64,7 +81,7 @@ model.Name = "BroodPool_Basic"
 model.Parent = buildingsFolder
 
 -- 1) Fundament / Sockel ---------------------------------------------------
-local base = newPart("Base", Vector3.new(14, 1.2, 14), ORIGIN, Color3.fromRGB(110, 118, 128), Enum.Material.Slate, model)
+local base = newPart("Base", Vector3.new(14, 1.2, 14), ORIGIN, Color3.fromRGB(110, 118, 128), Enum.Material.Basalt, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
@@ -121,9 +138,32 @@ for i = 1, 4 do
 		Vector3.new(1, 3.2, 1),
 		ORIGIN * CFrame.new(offset),
 		Color3.fromRGB(90, 96, 104),
-		Enum.Material.Metal,
+		Enum.Material.CorrodedMetal,
 		model
 	)
+end
+
+-- 6) Oberflaechendetails: Basalt-Sockeltextur, Korallenbesatz, Kieselsteine --
+addKeyedTexture(base, "BasaltRock", Enum.NormalId.Top, 4, 4, Color3.fromRGB(140, 146, 154), 0.05)
+addKeyedTexture(poolRing, "CoralPorous", Enum.NormalId.Front, 3, 2, Color3.fromRGB(255, 190, 175), 0.1)
+
+local PEBBLE_COLOR = Color3.fromRGB(120, 126, 134)
+for i = 1, 6 do
+	local angle = math.rad(60 * (i - 1) + 15)
+	local radius = 6.6
+	local pebbleCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 0.55, math.sin(angle) * radius)
+	local pebble = newPart("FoundationPebble" .. i, Vector3.new(0.5 + (i % 3) * 0.15, 0.4, 0.5 + (i % 2) * 0.2), pebbleCFrame, PEBBLE_COLOR, Enum.Material.Pebble, model)
+	pebble.CanCollide = false
+end
+
+local CORAL_ACCENT = Color3.fromRGB(255, 150, 130)
+for i = 1, 3 do
+	local angle = math.rad(120 * (i - 1) + 60)
+	local radius = 5.4
+	local nubCFrame = ORIGIN * CFrame.new(math.cos(angle) * radius, 1.1, math.sin(angle) * radius)
+	local nub = newPart("CoralNub" .. i, Vector3.new(0.5, 0.9, 0.5), nubCFrame, CORAL_ACCENT, Enum.Material.Pebble, model)
+	addKeyedTexture(nub, "CoralPorous", Enum.NormalId.Front, 1, 1, CORAL_ACCENT, 0.05)
+	nub.CanCollide = false
 end
 
 model.PrimaryPart = base

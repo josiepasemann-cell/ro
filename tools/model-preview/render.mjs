@@ -1,7 +1,7 @@
 // Renders contact sheets from out/models.json with three.js in headless Chromium.
 //
 // usage: node render.mjs [--three /path/to/node_modules/three] [--out ../../docs/previews] [--only creatures,hub]
-//        [--models out/models.json]
+//        [--models out/models.json] [--textures ../../assets/textures]
 //        [--model <Name>[,<Name>...]] [--script <path substring>]   one model, 4 large views -> <out>/<Name>.png
 import { createServer } from "node:http";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -149,13 +149,19 @@ function frontView(m) {
 }
 
 // ------------------------------------------------------------------ server + browser
-const MIME = { ".js": "text/javascript", ".html": "text/html", ".json": "application/json" };
+const MIME = { ".js": "text/javascript", ".html": "text/html", ".json": "application/json", ".png": "image/png" };
+const texturesDir = opt("--textures", join(here, "..", "..", "assets", "textures"));
 const server = createServer((req, res) => {
   const url = decodeURIComponent(req.url.split("?")[0]);
   let file;
   if (url === "/" || url === "/render.html") file = join(here, "render.html");
   else if (url === "/models.json") file = modelsPath;
   else if (url.startsWith("/three/")) file = join(threeDir, normalize(url.slice(7)));
+  else if (url.startsWith("/textures/")) {
+    // Texture/Decal images: assets/textures/<TextureKey>.png (missing files -> 404, the page skips them)
+    const rel = normalize(url.slice(10));
+    if (!rel.startsWith("..") && !rel.startsWith("/")) file = join(texturesDir, rel);
+  }
   if (!file || !existsSync(file)) { res.writeHead(404); res.end(); return; }
   res.writeHead(200, { "content-type": MIME[extname(file)] || "application/octet-stream" });
   res.end(readFileSync(file));

@@ -54,6 +54,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local buildingsFolder = getOrCreateFolder(assetsFolder, "Buildings")
 
@@ -134,6 +151,30 @@ local statusLight2 = newPart(
 )
 statusLight2.Shape = Enum.PartType.Ball
 statusLight2.CanCollide = false
+
+-- 7) Oberflaechendetails: Riffelblech-Sockeltextur, Metallpaneele, Nietenring --
+addKeyedTexture(base, "RivetedPlates", Enum.NormalId.Top, 2.5, 2.5, Color3.fromRGB(150, 152, 156), 0.05)
+addKeyedTexture(mainTank, "MetalPanels", Enum.NormalId.Front, 2, 2, Color3.fromRGB(170, 176, 184), 0.05)
+
+local RIVET_COLOR = Color3.fromRGB(60, 64, 70)
+for i = 1, 6 do
+	local angle = math.rad(60 * (i - 1))
+	local rivetCFrame = ORIGIN * CFrame.new(math.cos(angle) * 1.85, 4, math.sin(angle) * 1.85) * CFrame.Angles(0, 0, math.rad(90))
+	local rivet = newPart("TankRivet" .. i, Vector3.new(0.2, 0.22, 0.22), rivetCFrame, RIVET_COLOR, Enum.Material.DiamondPlate, model)
+	rivet.Shape = Enum.PartType.Cylinder
+	rivet.CanCollide = false
+end
+
+local foundation = newPart(
+	"FoundationFooting",
+	Vector3.new(10.6, 0.4, 8.6),
+	ORIGIN * CFrame.new(0, -0.5, 0),
+	Color3.fromRGB(80, 82, 86),
+	Enum.Material.Concrete,
+	model
+)
+foundation.CanCollide = false
+addKeyedTexture(foundation, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(120, 122, 126), 0.05)
 
 model.PrimaryPart = base
 model:SetAttribute("BuildingType", "FilterPlant")

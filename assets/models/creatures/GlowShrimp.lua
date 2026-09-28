@@ -23,6 +23,7 @@
 ]]
 
 local Workspace = game:GetService("Workspace")
+local CollectionService = game:GetService("CollectionService")
 
 -- // Konfiguration -------------------------------------------------------
 local ORIGIN = CFrame.new(6, 5, 60) -- Vor Ausführung anpassen für gewünschte Position
@@ -64,6 +65,21 @@ local function newBall(name, size, cframe, color, material, parent)
 	return part
 end
 
+local function addKeyedTexture(part, key, face, color, transparency, studsU, studsV)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU or 3
+	tex.StudsPerTileV = studsV or studsU or 3
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local creaturesFolder = getOrCreateFolder(assetsFolder, "Creatures")
 
@@ -77,24 +93,36 @@ model.Name = "GlowShrimp"
 model.Parent = creaturesFolder
 
 local SHELL_COLOR = Color3.fromRGB(255, 200, 150)
-local SHELL_DARK = Color3.fromRGB(220, 160, 120)
+local SHELL_DARK = Color3.fromRGB(210, 145, 100)
+local SHELL_BELLY = Color3.fromRGB(255, 225, 195)
 local GLOW_COLOR = Color3.fromRGB(255, 150, 220)
 local EYE_COLOR = Color3.fromRGB(20, 20, 25)
 
 -- 1) Körpersegmente entlang der lokalen X-Achse (Kopf = +X, Schwanz = -X),
---    jeweils mit großzügiger Überlappung zum Nachbarsegment ---------------
-local head = newBall("HeadSegment", Vector3.new(0.95, 0.85, 0.78), ORIGIN * CFrame.new(0.78, 0.1, 0) * CFrame.Angles(0, 0, math.rad(-6)), SHELL_COLOR, Enum.Material.SmoothPlastic, model)
+--    jeweils mit großzügiger Überlappung zum Nachbarsegment. Leicht bumpiges
+--    Pebble-Material statt glattem Plastik für organische Panzeroberfläche. --
+local head = newBall("HeadSegment", Vector3.new(0.95, 0.85, 0.78), ORIGIN * CFrame.new(0.78, 0.1, 0) * CFrame.Angles(0, 0, math.rad(-6)), SHELL_COLOR, Enum.Material.Pebble, model)
 
-local body = newBall("Body", Vector3.new(1.15, 0.95, 0.88), ORIGIN, SHELL_COLOR, Enum.Material.SmoothPlastic, model)
+local body = newBall("Body", Vector3.new(1.15, 0.95, 0.88), ORIGIN, SHELL_COLOR, Enum.Material.Pebble, model)
 
-local tail1 = newBall("TailSegment1", Vector3.new(0.85, 0.75, 0.72), ORIGIN * CFrame.new(-0.78, -0.08, 0) * CFrame.Angles(0, 0, math.rad(8)), SHELL_COLOR, Enum.Material.SmoothPlastic, model)
+local tail1 = newBall("TailSegment1", Vector3.new(0.85, 0.75, 0.72), ORIGIN * CFrame.new(-0.78, -0.08, 0) * CFrame.Angles(0, 0, math.rad(8)), SHELL_COLOR, Enum.Material.Pebble, model)
 
-local tail2 = newBall("TailSegment2", Vector3.new(0.62, 0.58, 0.55), ORIGIN * CFrame.new(-1.3, -0.22, 0) * CFrame.Angles(0, 0, math.rad(18)), SHELL_DARK, Enum.Material.SmoothPlastic, model)
+local tail2 = newBall("TailSegment2", Vector3.new(0.62, 0.58, 0.55), ORIGIN * CFrame.new(-1.3, -0.22, 0) * CFrame.Angles(0, 0, math.rad(18)), SHELL_DARK, Enum.Material.Pebble, model)
+
+-- 1b) Hellere Bauchunterseite (Countershading), deutlich eingebettet ---------
+newBall("Belly", Vector3.new(1.6, 0.35, 0.7), ORIGIN * CFrame.new(-0.3, -0.42, 0), SHELL_BELLY, Enum.Material.SmoothPlastic, model)
+
+-- 1c) Dunkle Segment-Trennfugen (Ringe) als schmale eingebettete Bänder -------
+local ringX = { 0.35, -0.35, -1.0 }
+for i, x in ipairs(ringX) do
+	newPart("SegmentRing" .. i, Vector3.new(0.06, 0.7, 0.7), ORIGIN * CFrame.new(x, -0.02, 0), SHELL_DARK, Enum.Material.SmoothPlastic, model)
+end
 
 -- 2) Schwanzfächer, deutlich in TailSegment2 eingebettet ---------------------
 local fanCFrame = ORIGIN * CFrame.new(-1.7, -0.42, 0) * CFrame.Angles(0, 0, math.rad(26))
 local tailFin = newPart("TailFin", Vector3.new(0.32, 0.85, 1.15), fanCFrame, GLOW_COLOR, Enum.Material.Neon, model)
 tailFin.Transparency = 0.1
+addKeyedTexture(tailFin, "FishScalesFine", Enum.NormalId.Right, Color3.fromRGB(255, 255, 255), 0.2, 2, 2)
 
 -- 3) Rostrum (spitzer Nasenstachel) am Kopf ----------------------------------
 local rostrumCFrame = ORIGIN * CFrame.new(1.25, 0.15, 0) * CFrame.Angles(0, 0, math.rad(-4))
@@ -103,7 +131,7 @@ rostrum.Name = "Rostrum"
 rostrum.Size = Vector3.new(0.55, 0.22, 0.2)
 rostrum.CFrame = rostrumCFrame * CFrame.Angles(0, math.rad(90), 0)
 rostrum.Color = SHELL_COLOR
-rostrum.Material = Enum.Material.SmoothPlastic
+rostrum.Material = Enum.Material.Pebble
 rostrum.Anchored = true
 rostrum.CanCollide = false
 rostrum.Parent = model
@@ -119,7 +147,7 @@ end
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
 	local eyeCFrame = ORIGIN * CFrame.new(1.0, 0.42, side * 0.32)
-	local eye = newBall("Eye" .. i, Vector3.new(0.22, 0.22, 0.22), eyeCFrame, EYE_COLOR, Enum.Material.SmoothPlastic, model)
+	newBall("Eye" .. i, Vector3.new(0.22, 0.22, 0.22), eyeCFrame, EYE_COLOR, Enum.Material.SmoothPlastic, model)
 end
 
 -- 6) 4 Laufbeinpaare unter Körper/Schwanz ------------------------------------

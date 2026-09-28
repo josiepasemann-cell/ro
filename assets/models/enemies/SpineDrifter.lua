@@ -27,6 +27,7 @@
 		keine Gameplay-Logik. Wiederholtes Ausführen ist sicher (idempotent).
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 -- // Konfiguration -------------------------------------------------------
@@ -60,6 +61,26 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+-- Texture-Instanz mit Projekt-Texturschlüssel (siehe assets/textures/README.md).
+-- "FadeWithPart" = true, da der Client Gegner per Transparency/ScaleTo ein-
+-- und ausblendet - der Animator muss diese Texturen mitfaden.
+local function newTexture(key, face, part, opts)
+	opts = opts or {}
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = opts.studsU or 3
+	tex.StudsPerTileV = opts.studsV or 3
+	tex.Color3 = opts.color or Color3.new(1, 1, 1)
+	tex.Transparency = opts.transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	tex:SetAttribute("FadeWithPart", true)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = part
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local enemiesFolder = getOrCreateFolder(assetsFolder, "Enemies")
 
@@ -77,11 +98,19 @@ local ACCENT_COLOR = Color3.fromRGB(28, 44, 52)
 local EYE_COLOR = Color3.fromRGB(255, 60, 80)
 
 -- 1) Hauptkörper: schlanker, langgezogener Rumpf --------------------------------
-local body = newPart("Body", Vector3.new(1.4, 1.4, 4.0), ORIGIN, SKIN_COLOR, Enum.Material.SmoothPlastic, model)
+local body = newPart("Body", Vector3.new(1.4, 1.4, 4.0), ORIGIN, SKIN_COLOR, Enum.Material.Pebble, model)
+
+-- Countershading: heller Bauchstreifen entlang der Unterseite (überlappt Body)
+newPart("BellyStripe", Vector3.new(0.6, 0.35, 3.6), ORIGIN * CFrame.new(0, -0.65, 0.1), Color3.fromRGB(120, 150, 160), Enum.Material.Pebble, model)
 
 -- 2) Kopf-/Mantel-Verjüngung vorn (leicht dunkler) --------------------------------
 local mantleCFrame = ORIGIN * CFrame.new(0, 0.1, -2.1)
-newPart("Mantle", Vector3.new(0.9, 0.9, 1.3), mantleCFrame, ACCENT_COLOR, Enum.Material.SmoothPlastic, model)
+local mantle = newPart("Mantle", Vector3.new(0.9, 0.9, 1.3), mantleCFrame, ACCENT_COLOR, Enum.Material.Pebble, model)
+
+-- Oberflächen-Texturen: feine Fischhaut am Rumpf, Aal-Streifen, Gift-Flecken am Kopf
+newTexture("FishScalesFine", Enum.NormalId.Front, body, { studsU = 1.5, studsV = 1.5, color = SKIN_COLOR, transparency = 0.1 })
+newTexture("EelStripes", Enum.NormalId.Top, body, { studsU = 1.2, studsV = 4, color = ACCENT_COLOR, transparency = 0.15 })
+newTexture("ToxicBlotches", Enum.NormalId.Front, mantle, { studsU = 1, studsV = 1, color = EYE_COLOR, transparency = 0.3 })
 
 -- 3) Glühende Augenschlitze -------------------------------------------------------
 for i = 1, 2 do

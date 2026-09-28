@@ -57,6 +57,23 @@ local function newPart(name, size, cframe, color, material, parent)
 	return part
 end
 
+local CollectionService = game:GetService("CollectionService")
+
+local function addKeyedTexture(parent, key, face, studsU, studsV, color, transparency)
+	local tex = Instance.new("Texture")
+	tex.Name = "Tex_" .. key
+	tex.Texture = ""
+	tex.Face = face
+	tex.StudsPerTileU = studsU
+	tex.StudsPerTileV = studsV
+	tex.Color3 = color
+	tex.Transparency = transparency or 0
+	tex:SetAttribute("TextureKey", key)
+	CollectionService:AddTag(tex, "KeyedTexture")
+	tex.Parent = parent
+	return tex
+end
+
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
 local buildingsFolder = getOrCreateFolder(assetsFolder, "Buildings")
 
@@ -70,7 +87,7 @@ model.Name = "AnglerfishTower_Stage3"
 model.Parent = buildingsFolder
 
 -- 1) Fundament (IDENTISCH zu AnglerfishTower.Base für Grid-Kompatibilität) --
-local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Slate, model)
+local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
@@ -85,7 +102,7 @@ for i, diameter in ipairs(segmentSizes) do
 		Vector3.new(segHeight, diameter, diameter),
 		segCFrame,
 		Color3.fromRGB(55, 58, 66),
-		Enum.Material.Rock,
+		Enum.Material.CorrodedMetal,
 		model
 	)
 	seg.Shape = Enum.PartType.Cylinder
@@ -187,6 +204,29 @@ sparkleEmitter.Parent = lureOrb
 local muzzlePoint = Instance.new("Attachment")
 muzzlePoint.Name = "MuzzlePoint"
 muzzlePoint.Parent = lureOrb
+
+-- 5) Oberflaechendetails: Steinsockel-Textur, Rost-Rivets, Metall-Trimring ----
+addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 3, 3, Color3.fromRGB(150, 150, 155), 0.05)
+
+local trimBand = newPart(
+	"FoundationTrimBand",
+	Vector3.new(0.3, 7.4, 7.4),
+	ORIGIN * CFrame.new(0, 1.15, 0) * CFrame.Angles(0, 0, math.rad(90)),
+	Color3.fromRGB(40, 42, 48),
+	Enum.Material.CorrodedMetal,
+	model
+)
+trimBand.Shape = Enum.PartType.Cylinder
+trimBand.CanCollide = false
+addKeyedTexture(trimBand, "RivetedPlates", Enum.NormalId.Front, 2, 1, Color3.fromRGB(90, 92, 98), 0.05)
+
+for i = 1, 5 do
+	local angle = math.rad(72 * (i - 1))
+	local rivetCFrame = ORIGIN * CFrame.new(math.cos(angle) * 3.15, 0.85, math.sin(angle) * 3.15)
+	local rivet = newPart("FoundationRivet" .. i, Vector3.new(0.35, 0.3, 0.35), rivetCFrame, Color3.fromRGB(200, 202, 206), Enum.Material.DiamondPlate, model)
+	rivet.Shape = Enum.PartType.Cylinder
+	rivet.CanCollide = false
+end
 
 model.PrimaryPart = base
 model:SetAttribute("BuildingType", "AnglerfishTower")
