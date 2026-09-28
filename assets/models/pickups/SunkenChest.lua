@@ -104,13 +104,31 @@ local shell = newPart(
 	Enum.Material.Glass,
 	model
 )
-shell.Shape = Enum.PartType.Ball
+-- Block + SpecialMesh(Sphere): echtes Ellipsoid statt der immer kugelrunden
+-- Shape=Ball-Darstellung (Roblox zeichnet Ball-Parts sonst als perfekte
+-- Kugel mit der kleinsten Size-Achse als Durchmesser).
+local shellMesh = Instance.new("SpecialMesh")
+shellMesh.MeshType = Enum.MeshType.Sphere
+shellMesh.Parent = shell
 shell.Transparency = 0.6
 
--- 4) Drei umlaufende Glimmer-Partikel-Anker (Gold-Funken) ----------------------
+-- 3b) Goldene Zierbänder am Truhenkörper, überlappen Body direkt -------------------
+for i = 1, 2 do
+	local zOff = (i == 1) and 0.32 or -0.32
+	newPart(
+		"ChestBand" .. i,
+		Vector3.new(0.12, 1.3, 1.3),
+		ORIGIN * CFrame.new(0, 0, zOff),
+		Color3.fromRGB(255, 235, 170),
+		Enum.Material.Metal,
+		model
+	)
+end
+
+-- 4) Drei umlaufende Glimmer-Partikel-Anker (Gold-Funken), in die Hülle eingesenkt --
 for i = 1, 3 do
 	local angle = math.rad(120 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 1.1, math.sin(angle * 0.5) * 0.4, math.sin(angle) * 1.1)
+	local offset = Vector3.new(math.cos(angle) * 0.75, math.sin(angle * 0.5) * 0.35, math.sin(angle) * 0.75)
 	local speck = newPart(
 		"GlimmerSpeck" .. i,
 		Vector3.new(0.25, 0.25, 0.25),

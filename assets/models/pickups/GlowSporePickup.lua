@@ -94,10 +94,10 @@ local shell = newPart(
 shell.Shape = Enum.PartType.Ball
 shell.Transparency = 0.55
 
--- 3) Drei kleine umlaufende Glimmer-Partikel-Anker (rein geometrisch) --------
+-- 3) Drei kleine umlaufende Glimmer-Partikel-Anker, in die Glashülle eingesenkt -----
 for i = 1, 3 do
 	local angle = math.rad(120 * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * 1.1, math.sin(angle * 0.5) * 0.4, math.sin(angle) * 1.1)
+	local offset = Vector3.new(math.cos(angle) * 0.85, math.sin(angle * 0.5) * 0.35, math.sin(angle) * 0.85)
 	local speck = newPart(
 		"GlimmerSpeck" .. i,
 		Vector3.new(0.25, 0.25, 0.25),
@@ -107,6 +107,19 @@ for i = 1, 3 do
 		model
 	)
 	speck.Shape = Enum.PartType.Ball
+end
+
+-- 3b) Zwei kurze Spore-Filamente, Basis auf dem Kern ansetzend -----------------------
+for i = 1, 2 do
+	local side = (i == 1) and 1 or -1
+	local filament = newPart(
+		"SporeFilament" .. i,
+		Vector3.new(0.08, 0.5, 0.08),
+		ORIGIN * CFrame.new(side * 0.4, 0.45, side * 0.15) * CFrame.Angles(math.rad(side * 20), 0, 0),
+		Color3.fromRGB(180, 250, 255),
+		Enum.Material.Neon,
+		model
+	)
 end
 
 -- 4) Idle-Puls-Attachment ---------------------------------------------------
