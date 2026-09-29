@@ -1,0 +1,173 @@
+{
+ "model": "BroodPool_Basic",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3360,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "BroodPool_Basic_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.27891,
+    0.0138,
+    -0.0111,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.8261,
+    14.0368,
+    13.9613
+   ],
+   "replaces": [
+    "Base",
+    "Egg1",
+    "Egg2",
+    "Egg3",
+    "SupportPillar1",
+    "SupportPillar2",
+    "SupportPillar3",
+    "SupportPillar4",
+    "FoundationPebble1",
+    "FoundationPebble2",
+    "FoundationPebble3",
+    "FoundationPebble4",
+    "FoundationPebble5",
+    "CoralNub1",
+    "CoralNub2",
+    "CoralNub3"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.686,
+    "CorrodedMetal": 0.071,
+    "Fabric": 0.001,
+    "Glass": 0.0,
+    "Metal": 0.136,
+    "Pebble": 0.058,
+    "SmoothPlastic": 0.048
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "BroodPool_Basic_Base_ColorMap.png",
+    "NormalMap": "BroodPool_Basic_Base_NormalMap.png",
+    "RoughnessMap": "BroodPool_Basic_Base_RoughnessMap.png",
+    "MetalnessMap": "BroodPool_Basic_Base_MetalnessMap.png"
+   },
+   "tris": 3000,
+   "verts": 2536,
+   "textureSize": [
+    704,
+    704
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "GlowWater",
+   "primary": false,
+   "animated": true,
+   "file": "BroodPool_Basic_GlowWater.obj",
+   "glbNode": "GlowWater",
+   "sharedWith": null,
+   "pivot": [
+    2.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    2.18865,
+    0.00795,
+    0.05219,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.0308,
+    10.9742,
+    10.8798
+   ],
+   "replaces": [
+    "GlowWater",
+    "PoolBasin"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.175,
+   "materialMix": {
+    "Neon": 0.373,
+    "SmoothPlastic": 0.627
+   },
+   "neon": {
+    "fraction": 0.3731,
+    "parts": [
+     "GlowWater"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "BroodPool_Basic_GlowWater_ColorMap.png",
+    "NormalMap": "BroodPool_Basic_GlowWater_NormalMap.png",
+    "RoughnessMap": "BroodPool_Basic_GlowWater_RoughnessMap.png",
+    "MetalnessMap": "BroodPool_Basic_GlowWater_MetalnessMap.png",
+    "EmissiveMask": "BroodPool_Basic_GlowWater_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 348,
+   "textureSize": [
+    384,
+    384
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

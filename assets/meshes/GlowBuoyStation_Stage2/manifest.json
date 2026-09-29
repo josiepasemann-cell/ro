@@ -1,0 +1,191 @@
+{
+ "model": "GlowBuoyStation_Stage2",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3720,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "GlowBuoyStation_Stage2_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    7.03897,
+    -0.009,
+    -0.00625,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    15.1023,
+    8.8798,
+    8.8906
+   ],
+   "replaces": [
+    "Base",
+    "Mast",
+    "MastGlowStrip",
+    "UpperCollarStrut1",
+    "UpperCollarStrut2",
+    "UpperCollarStrut3",
+    "UpperCollarStrut4",
+    "OrbitArm1",
+    "OrbitOrb1",
+    "OrbitArm2",
+    "OrbitOrb2",
+    "OrbitArm3",
+    "OrbitOrb3",
+    "OrbitArm4",
+    "OrbitOrb4",
+    "MastCollar"
+   ],
+   "material": "WoodPlanks",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 0.055,
+    "Fabric": 0.106,
+    "Metal": 0.24,
+    "Neon": 0.188,
+    "SmoothPlastic": 0.099,
+    "WoodPlanks": 0.313
+   },
+   "neon": {
+    "fraction": 0.188,
+    "parts": [
+     "MastGlowStrip",
+     "UpperCollarStrut1",
+     "UpperCollarStrut2",
+     "UpperCollarStrut3",
+     "UpperCollarStrut4",
+     "OrbitArm1",
+     "OrbitOrb1",
+     "OrbitArm2",
+     "OrbitOrb2",
+     "OrbitArm3",
+     "OrbitOrb3",
+     "OrbitArm4",
+     "OrbitOrb4"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowBuoyStation_Stage2_Base_ColorMap.png",
+    "NormalMap": "GlowBuoyStation_Stage2_Base_NormalMap.png",
+    "RoughnessMap": "GlowBuoyStation_Stage2_Base_RoughnessMap.png",
+    "MetalnessMap": "GlowBuoyStation_Stage2_Base_MetalnessMap.png",
+    "EmissiveMask": "GlowBuoyStation_Stage2_Base_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 2704,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "MainOrb",
+   "primary": false,
+   "animated": true,
+   "file": "GlowBuoyStation_Stage2_MainOrb.obj",
+   "glbNode": "MainOrb",
+   "sharedWith": null,
+   "pivot": [
+    15.2,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    14.27009,
+    0.00167,
+    -0.01675,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.1054,
+    5.86,
+    4.0588
+   ],
+   "replaces": [
+    "MainOrb",
+    "BasketStrut1",
+    "BasketStrut2",
+    "BasketStrut3",
+    "BasketStrut4",
+    "MastTip"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Metal": 0.474,
+    "Neon": 0.526
+   },
+   "neon": {
+    "fraction": 0.5265,
+    "parts": [
+     "MainOrb"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowBuoyStation_Stage2_MainOrb_ColorMap.png",
+    "NormalMap": "GlowBuoyStation_Stage2_MainOrb_NormalMap.png",
+    "RoughnessMap": "GlowBuoyStation_Stage2_MainOrb_RoughnessMap.png",
+    "MetalnessMap": "GlowBuoyStation_Stage2_MainOrb_MetalnessMap.png",
+    "EmissiveMask": "GlowBuoyStation_Stage2_MainOrb_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 587,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

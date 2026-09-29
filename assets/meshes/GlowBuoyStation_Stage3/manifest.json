@@ -1,0 +1,201 @@
+{
+ "model": "GlowBuoyStation_Stage3",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3720,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "GlowBuoyStation_Stage3_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    9.11802,
+    -0.0245,
+    -0.00547,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    19.2445,
+    9.6612,
+    8.5779
+   ],
+   "replaces": [
+    "Base",
+    "Mast",
+    "MastGlowStrip",
+    "UpperCollarStrut1",
+    "UpperCollarStrut2",
+    "UpperCollarStrut3",
+    "UpperCollarStrut4",
+    "OrbitArm1",
+    "OrbitOrb1",
+    "OrbitArm2",
+    "OrbitOrb2",
+    "OrbitArm3",
+    "OrbitOrb3",
+    "OrbitArm4",
+    "OrbitOrb4",
+    "OrbitArm5",
+    "OrbitOrb5",
+    "OrbitArm6",
+    "OrbitOrb6",
+    "MastCollar"
+   ],
+   "material": "Metal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 0.046,
+    "Fabric": 0.107,
+    "Metal": 0.265,
+    "Neon": 0.249,
+    "SmoothPlastic": 0.1,
+    "WoodPlanks": 0.233
+   },
+   "neon": {
+    "fraction": 0.2495,
+    "parts": [
+     "MastGlowStrip",
+     "UpperCollarStrut1",
+     "UpperCollarStrut2",
+     "UpperCollarStrut3",
+     "UpperCollarStrut4",
+     "OrbitArm1",
+     "OrbitOrb1",
+     "OrbitArm2",
+     "OrbitOrb2",
+     "OrbitArm3",
+     "OrbitOrb3",
+     "OrbitArm4",
+     "OrbitOrb4",
+     "OrbitArm5",
+     "OrbitOrb5",
+     "OrbitArm6",
+     "OrbitOrb6"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowBuoyStation_Stage3_Base_ColorMap.png",
+    "NormalMap": "GlowBuoyStation_Stage3_Base_NormalMap.png",
+    "RoughnessMap": "GlowBuoyStation_Stage3_Base_RoughnessMap.png",
+    "MetalnessMap": "GlowBuoyStation_Stage3_Base_MetalnessMap.png",
+    "EmissiveMask": "GlowBuoyStation_Stage3_Base_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 2892,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "MainOrb",
+   "primary": false,
+   "animated": true,
+   "file": "GlowBuoyStation_Stage3_MainOrb.obj",
+   "glbNode": "MainOrb",
+   "sharedWith": null,
+   "pivot": [
+    19.6,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    18.61025,
+    0.07105,
+    -0.00149,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    6.6664,
+    6.5443,
+    5.8476
+   ],
+   "replaces": [
+    "MainOrb",
+    "BasketStrut1",
+    "BasketStrut2",
+    "BasketStrut3",
+    "BasketStrut4",
+    "MastTip",
+    "CrownRing"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Metal": 0.346,
+    "Neon": 0.654
+   },
+   "neon": {
+    "fraction": 0.6536,
+    "parts": [
+     "MainOrb",
+     "CrownRing"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowBuoyStation_Stage3_MainOrb_ColorMap.png",
+    "NormalMap": "GlowBuoyStation_Stage3_MainOrb_NormalMap.png",
+    "RoughnessMap": "GlowBuoyStation_Stage3_MainOrb_RoughnessMap.png",
+    "MetalnessMap": "GlowBuoyStation_Stage3_MainOrb_MetalnessMap.png",
+    "EmissiveMask": "GlowBuoyStation_Stage3_MainOrb_EmissiveMask.png"
+   },
+   "tris": 720,
+   "verts": 699,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

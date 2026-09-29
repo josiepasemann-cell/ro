@@ -29,7 +29,9 @@ def world_cf(cf):
 
 def main():
     models = {}
-    for cache in sorted((HERE / "cache").glob("models*.json")):
+    # models-all.json (one fresh export of every meshed model) wins over per-batch caches when present.
+    caches = sorted((HERE / "cache").glob("models*.json"), key=lambda c: c.name == "models-all.json")
+    for cache in caches:
         for m in json.loads(cache.read_text())["models"]:
             models[m["name"]] = m
 

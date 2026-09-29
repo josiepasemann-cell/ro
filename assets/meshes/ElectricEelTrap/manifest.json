@@ -1,0 +1,250 @@
+{
+ "model": "ElectricEelTrap",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 4330,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "ElectricEelTrap_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.08304,
+    0.00551,
+    -0.00573,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.3978,
+    7.0211,
+    6.9829
+   ],
+   "replaces": [
+    "Base",
+    "RockAnchor",
+    "AnchorClamp1",
+    "AnchorClamp2",
+    "AnchorClamp3"
+   ],
+   "material": "Cobblestone",
+   "transparency": 0.0,
+   "materialMix": {
+    "Cobblestone": 0.739,
+    "DiamondPlate": 0.025,
+    "Rock": 0.176,
+    "SmoothPlastic": 0.059
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ElectricEelTrap_Base_ColorMap.png",
+    "NormalMap": "ElectricEelTrap_Base_NormalMap.png",
+    "RoughnessMap": "ElectricEelTrap_Base_RoughnessMap.png",
+    "MetalnessMap": "ElectricEelTrap_Base_MetalnessMap.png"
+   },
+   "tris": 2400,
+   "verts": 1784,
+   "textureSize": [
+    640,
+    640
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "EelHead",
+   "primary": false,
+   "animated": true,
+   "file": "ElectricEelTrap_EelHead.obj",
+   "glbNode": "EelHead",
+   "sharedWith": null,
+   "pivot": [
+    4.1,
+    0.0,
+    1.4,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    2.85131,
+    -0.05622,
+    0.41936,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    4.4862,
+    3.7203,
+    3.7598
+   ],
+   "replaces": [
+    "EelHead",
+    "EelBodySegment1",
+    "EelStripe1",
+    "EelBodySegment2",
+    "EelStripe2",
+    "EelBodySegment3",
+    "EelStripe3",
+    "EelBodySegment4",
+    "EelStripe4",
+    "EelBodySegment5",
+    "EelStripe5",
+    "EelBodySegment6",
+    "EelStripe6",
+    "EelEye1",
+    "EelEye2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.1,
+    "SmoothPlastic": 0.973
+   },
+   "neon": {
+    "fraction": 0.0997,
+    "parts": [
+     "EelStripe1",
+     "EelStripe2",
+     "EelStripe3",
+     "EelStripe4",
+     "EelStripe5",
+     "EelStripe6",
+     "EelEye1",
+     "EelEye2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ElectricEelTrap_EelHead_ColorMap.png",
+    "NormalMap": "ElectricEelTrap_EelHead_NormalMap.png",
+    "RoughnessMap": "ElectricEelTrap_EelHead_RoughnessMap.png",
+    "MetalnessMap": "ElectricEelTrap_EelHead_MetalnessMap.png",
+    "EmissiveMask": "ElectricEelTrap_EelHead_EmissiveMask.png"
+   },
+   "tris": 1680,
+   "verts": 1162,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ChargeCore",
+   "primary": false,
+   "animated": true,
+   "file": "ElectricEelTrap_ChargeCore.obj",
+   "glbNode": "ChargeCore",
+   "sharedWith": null,
+   "pivot": [
+    4.55,
+    0.0,
+    1.4,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    4.54835,
+    4e-05,
+    1.40057,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.5941,
+    0.5896,
+    0.5927
+   ],
+   "replaces": [
+    "ChargeCore"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "ChargeCore"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "ElectricEelTrap_ChargeCore_ColorMap.png",
+    "NormalMap": "ElectricEelTrap_ChargeCore_NormalMap.png",
+    "RoughnessMap": "ElectricEelTrap_ChargeCore_RoughnessMap.png",
+    "MetalnessMap": "ElectricEelTrap_ChargeCore_MetalnessMap.png",
+    "EmissiveMask": "ElectricEelTrap_ChargeCore_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

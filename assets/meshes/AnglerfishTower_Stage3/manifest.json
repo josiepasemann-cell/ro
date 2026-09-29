@@ -1,0 +1,181 @@
+{
+ "model": "AnglerfishTower_Stage3",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 2960,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "AnglerfishTower_Stage3_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    7.11571,
+    0.11038,
+    -0.09447,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    15.4417,
+    7.216,
+    7.1505
+   ],
+   "replaces": [
+    "Base",
+    "TowerSegment1",
+    "TowerSegment2",
+    "TowerSegment3",
+    "TowerSegment4",
+    "SpineFin1",
+    "SpineFin2",
+    "SpineFin3",
+    "SpineFin4",
+    "CrownSpikeCluster",
+    "IlliciumSegment1",
+    "IlliciumSegment2",
+    "IlliciumSegment3",
+    "FoundationTrimBand",
+    "FoundationRivet1",
+    "FoundationRivet2",
+    "FoundationRivet3",
+    "FoundationRivet4"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "Cobblestone": 0.228,
+    "CorrodedMetal": 0.368,
+    "DiamondPlate": 0.008,
+    "Metal": 0.238,
+    "Neon": 0.064,
+    "SmoothPlastic": 0.095
+   },
+   "neon": {
+    "fraction": 0.0636,
+    "parts": [
+     "SpineFin1",
+     "SpineFin2",
+     "SpineFin3",
+     "SpineFin4",
+     "CrownSpikeCluster"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "AnglerfishTower_Stage3_Base_ColorMap.png",
+    "NormalMap": "AnglerfishTower_Stage3_Base_NormalMap.png",
+    "RoughnessMap": "AnglerfishTower_Stage3_Base_RoughnessMap.png",
+    "MetalnessMap": "AnglerfishTower_Stage3_Base_MetalnessMap.png",
+    "EmissiveMask": "AnglerfishTower_Stage3_Base_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 2277,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "LureOrb",
+   "primary": false,
+   "animated": true,
+   "file": "AnglerfishTower_Stage3_LureOrb.obj",
+   "glbNode": "LureOrb",
+   "sharedWith": null,
+   "pivot": [
+    13.91351,
+    4.44172,
+    0.0,
+    0.86603,
+    -0.5,
+    0.0,
+    0.5,
+    0.86603,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    13.49675,
+    4.3129,
+    0.00056,
+    0.86603,
+    -0.5,
+    0.0,
+    0.5,
+    0.86603,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.1916,
+    3.5773,
+    2.3756
+   ],
+   "replaces": [
+    "LureOrb",
+    "IlliciumSegment4"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.947,
+    "SmoothPlastic": 0.053
+   },
+   "neon": {
+    "fraction": 0.9468,
+    "parts": [
+     "LureOrb"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "AnglerfishTower_Stage3_LureOrb_ColorMap.png",
+    "NormalMap": "AnglerfishTower_Stage3_LureOrb_NormalMap.png",
+    "RoughnessMap": "AnglerfishTower_Stage3_LureOrb_RoughnessMap.png",
+    "MetalnessMap": "AnglerfishTower_Stage3_LureOrb_MetalnessMap.png",
+    "EmissiveMask": "AnglerfishTower_Stage3_LureOrb_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 332,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

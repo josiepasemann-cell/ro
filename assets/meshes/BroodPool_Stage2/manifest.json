@@ -1,0 +1,188 @@
+{
+ "model": "BroodPool_Stage2",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3360,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "BroodPool_Stage2_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.56042,
+    0.01609,
+    -0.00687,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.3835,
+    14.0319,
+    13.9609
+   ],
+   "replaces": [
+    "Base",
+    "Egg1",
+    "Egg2",
+    "Egg3",
+    "SupportPillar1",
+    "PillarGlowStrip1",
+    "SupportPillar2",
+    "PillarGlowStrip2",
+    "SupportPillar3",
+    "PillarGlowStrip3",
+    "SupportPillar4",
+    "PillarGlowStrip4",
+    "UpperCollarRing",
+    "FoundationPebble1",
+    "FoundationPebble2",
+    "FoundationPebble3",
+    "FoundationPebble4",
+    "FoundationPebble5",
+    "CoralNub1",
+    "CoralNub2",
+    "CoralNub3"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.569,
+    "CorrodedMetal": 0.05,
+    "Fabric": 0.003,
+    "Glass": 0.001,
+    "Metal": 0.143,
+    "Neon": 0.146,
+    "Pebble": 0.048,
+    "SmoothPlastic": 0.04
+   },
+   "neon": {
+    "fraction": 0.1464,
+    "parts": [
+     "PillarGlowStrip1",
+     "PillarGlowStrip2",
+     "PillarGlowStrip3",
+     "PillarGlowStrip4",
+     "UpperCollarRing"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "BroodPool_Stage2_Base_ColorMap.png",
+    "NormalMap": "BroodPool_Stage2_Base_NormalMap.png",
+    "RoughnessMap": "BroodPool_Stage2_Base_RoughnessMap.png",
+    "MetalnessMap": "BroodPool_Stage2_Base_MetalnessMap.png",
+    "EmissiveMask": "BroodPool_Stage2_Base_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 2619,
+   "textureSize": [
+    704,
+    704
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "GlowWater",
+   "primary": false,
+   "animated": true,
+   "file": "BroodPool_Stage2_GlowWater.obj",
+   "glbNode": "GlowWater",
+   "sharedWith": null,
+   "pivot": [
+    2.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    2.24206,
+    0.01828,
+    0.00743,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.5408,
+    10.9359,
+    10.9504
+   ],
+   "replaces": [
+    "GlowWater",
+    "PoolBasin",
+    "RimGlowRing"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.083,
+   "materialMix": {
+    "Neon": 0.384,
+    "SmoothPlastic": 0.616
+   },
+   "neon": {
+    "fraction": 0.3841,
+    "parts": [
+     "GlowWater",
+     "RimGlowRing"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "BroodPool_Stage2_GlowWater_ColorMap.png",
+    "NormalMap": "BroodPool_Stage2_GlowWater_NormalMap.png",
+    "RoughnessMap": "BroodPool_Stage2_GlowWater_RoughnessMap.png",
+    "MetalnessMap": "BroodPool_Stage2_GlowWater_MetalnessMap.png",
+    "EmissiveMask": "BroodPool_Stage2_GlowWater_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 347,
+   "textureSize": [
+    384,
+    384
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

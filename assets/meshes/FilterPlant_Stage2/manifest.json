@@ -1,0 +1,249 @@
+{
+ "model": "FilterPlant_Stage2",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3500,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "FilterPlant_Stage2_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00274,
+    3.89152,
+    -0.00112,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    10.848,
+    9.3376,
+    8.8424
+   ],
+   "replaces": [
+    "Base",
+    "MainTank",
+    "SideTank1",
+    "SideTank2",
+    "SideTank3",
+    "ConnectorPipe1",
+    "PipeGlowStripe1",
+    "ConnectorPipe2",
+    "PipeGlowStripe2",
+    "ConnectorPipe3",
+    "SupportLeg1",
+    "SupportLeg2",
+    "SupportLeg3",
+    "SupportLeg4",
+    "TankRivet1",
+    "TankRivet2",
+    "TankRivet3",
+    "TankRivet4",
+    "TankRivet5",
+    "FoundationFooting"
+   ],
+   "material": "Metal",
+   "transparency": 0.0,
+   "materialMix": {
+    "Concrete": 0.228,
+    "DiamondPlate": 0.197,
+    "Metal": 0.551,
+    "SmoothPlastic": 0.024
+   },
+   "neon": {
+    "fraction": 0.0002,
+    "parts": [
+     "PipeGlowStripe1",
+     "PipeGlowStripe2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "FilterPlant_Stage2_Base_ColorMap.png",
+    "NormalMap": "FilterPlant_Stage2_Base_NormalMap.png",
+    "RoughnessMap": "FilterPlant_Stage2_Base_RoughnessMap.png",
+    "MetalnessMap": "FilterPlant_Stage2_Base_MetalnessMap.png",
+    "EmissiveMask": "FilterPlant_Stage2_Base_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 3046,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "StatusLight",
+   "primary": false,
+   "animated": true,
+   "file": "FilterPlant_Stage2_StatusLight.obj",
+   "glbNode": "StatusLight",
+   "sharedWith": null,
+   "pivot": [
+    -1.2,
+    6.6,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.20029,
+    7.87247,
+    -0.00376,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.3689,
+    1.3681,
+    1.3678
+   ],
+   "replaces": [
+    "StatusLight"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Metal": 0.0,
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "StatusLight"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "FilterPlant_Stage2_StatusLight_ColorMap.png",
+    "NormalMap": "FilterPlant_Stage2_StatusLight_NormalMap.png",
+    "RoughnessMap": "FilterPlant_Stage2_StatusLight_RoughnessMap.png",
+    "MetalnessMap": "FilterPlant_Stage2_StatusLight_MetalnessMap.png",
+    "EmissiveMask": "FilterPlant_Stage2_StatusLight_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "StatusLight2",
+   "primary": false,
+   "animated": true,
+   "file": "FilterPlant_Stage2_StatusLight2.obj",
+   "glbNode": "StatusLight2",
+   "sharedWith": null,
+   "pivot": [
+    1.2,
+    6.6,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.19778,
+    7.87464,
+    -0.00055,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.3629,
+    1.368,
+    1.3636
+   ],
+   "replaces": [
+    "StatusLight2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Metal": 0.0,
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "StatusLight2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "FilterPlant_Stage2_StatusLight2_ColorMap.png",
+    "NormalMap": "FilterPlant_Stage2_StatusLight2_NormalMap.png",
+    "RoughnessMap": "FilterPlant_Stage2_StatusLight2_RoughnessMap.png",
+    "MetalnessMap": "FilterPlant_Stage2_StatusLight2_MetalnessMap.png",
+    "EmissiveMask": "FilterPlant_Stage2_StatusLight2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

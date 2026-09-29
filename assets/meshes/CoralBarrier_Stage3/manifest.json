@@ -1,0 +1,188 @@
+{
+ "model": "CoralBarrier_Stage3",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3040,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "CoralBarrier_Stage3_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.79591,
+    0.05002,
+    0.0072,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.8262,
+    7.1367,
+    7.0251
+   ],
+   "replaces": [
+    "Base",
+    "CoralMound",
+    "BaseGlowRing",
+    "CoralRing",
+    "InnerRing",
+    "SpikeTip1",
+    "SpikeTip2",
+    "SpikeTip3",
+    "SpikeTip4",
+    "SpikeTip5",
+    "SpikeTip6",
+    "SpikeTip7",
+    "SpikeTip8",
+    "PulseOrbit1",
+    "PulseOrbit2",
+    "BasePebble1",
+    "BasePebble2",
+    "BasePebble3",
+    "BasePebble4"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Cobblestone": 0.319,
+    "Metal": 0.022,
+    "Neon": 0.112,
+    "Pebble": 0.02,
+    "SmoothPlastic": 0.527
+   },
+   "neon": {
+    "fraction": 0.1122,
+    "parts": [
+     "BaseGlowRing",
+     "InnerRing",
+     "SpikeTip1",
+     "SpikeTip2",
+     "SpikeTip3",
+     "SpikeTip4",
+     "SpikeTip5",
+     "SpikeTip6",
+     "SpikeTip7",
+     "SpikeTip8",
+     "PulseOrbit1",
+     "PulseOrbit2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "CoralBarrier_Stage3_Base_ColorMap.png",
+    "NormalMap": "CoralBarrier_Stage3_Base_NormalMap.png",
+    "RoughnessMap": "CoralBarrier_Stage3_Base_RoughnessMap.png",
+    "MetalnessMap": "CoralBarrier_Stage3_Base_MetalnessMap.png",
+    "EmissiveMask": "CoralBarrier_Stage3_Base_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 2521,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "SlowPulseCore",
+   "primary": false,
+   "animated": true,
+   "file": "CoralBarrier_Stage3_SlowPulseCore.obj",
+   "glbNode": "SlowPulseCore",
+   "sharedWith": null,
+   "pivot": [
+    3.9,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    4.1147,
+    -0.01043,
+    0.00618,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.0617,
+    2.6277,
+    2.677
+   ],
+   "replaces": [
+    "SlowPulseCore",
+    "CrownSpikeCluster"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SlowPulseCore",
+     "CrownSpikeCluster"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CoralBarrier_Stage3_SlowPulseCore_ColorMap.png",
+    "NormalMap": "CoralBarrier_Stage3_SlowPulseCore_NormalMap.png",
+    "RoughnessMap": "CoralBarrier_Stage3_SlowPulseCore_RoughnessMap.png",
+    "MetalnessMap": "CoralBarrier_Stage3_SlowPulseCore_MetalnessMap.png",
+    "EmissiveMask": "CoralBarrier_Stage3_SlowPulseCore_EmissiveMask.png"
+   },
+   "tris": 440,
+   "verts": 436,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
