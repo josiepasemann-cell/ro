@@ -4,7 +4,7 @@
  "primaryPart": "Body",
  "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
  "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
- "totalTris": 16640,
+ "totalTris": 6656,
  "meshes": [
   {
    "name": "Body",
@@ -28,9 +28,9 @@
     1.0
    ],
    "center": [
-    -0.00726,
-    0.76776,
-    -0.43443,
+    0.00398,
+    0.77619,
+    -0.44956,
     1.0,
     0.0,
     0.0,
@@ -42,9 +42,9 @@
     1.0
    ],
    "size": [
-    3.5041,
-    3.1414,
-    5.8959
+    3.493,
+    3.1467,
+    5.8716
    ],
    "replaces": [
     "Body",
@@ -66,13 +66,13 @@
    "material": "SmoothPlastic",
    "transparency": 0.0,
    "materialMix": {
-    "Foil": 0.1,
-    "Neon": 0.01,
-    "Slate": 0.425,
-    "SmoothPlastic": 0.465
+    "Foil": 0.109,
+    "Neon": 0.009,
+    "Slate": 0.393,
+    "SmoothPlastic": 0.488
    },
    "neon": {
-    "fraction": 0.0097,
+    "fraction": 0.0094,
     "parts": [
      "KeyholeDetail"
     ],
@@ -84,8 +84,8 @@
     "RoughnessMap": "TreasureTurtle_Body_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_Body_MetalnessMap.png"
    },
-   "tris": 8000,
-   "verts": 5072,
+   "tris": 3200,
+   "verts": 2058,
    "textureSize": [
     1024,
     1024
@@ -115,9 +115,9 @@
     -1.0
    ],
    "center": [
-    -0.5,
-    0.65,
-    -3.05,
+    -0.44675,
+    0.62382,
+    -2.98904,
     -1.0,
     0.0,
     0.0,
@@ -157,8 +157,8 @@
     "MetalnessMap": "TreasureTurtle_Eye1_MetalnessMap.png",
     "EmissiveMask": "TreasureTurtle_Eye1_EmissiveMask.png"
    },
-   "tris": 720,
-   "verts": 425,
+   "tris": 288,
+   "verts": 187,
    "textureSize": [
     512,
     512
@@ -188,9 +188,9 @@
     -1.0
    ],
    "center": [
-    0.5,
-    0.65,
-    -3.05,
+    0.55325,
+    0.62382,
+    -2.98904,
     -1.0,
     0.0,
     0.0,
@@ -230,8 +230,8 @@
     "MetalnessMap": "TreasureTurtle_Eye1_MetalnessMap.png",
     "EmissiveMask": "TreasureTurtle_Eye1_EmissiveMask.png"
    },
-   "tris": 720,
-   "verts": 425,
+   "tris": 288,
+   "verts": 187,
    "textureSize": [
     512,
     512
@@ -261,9 +261,9 @@
     -1.0
    ],
    "center": [
-    -0.93009,
-    -0.25002,
-    -1.30352,
+    -0.93066,
+    -0.24929,
+    -1.29976,
     -1.0,
     0.0,
     0.0,
@@ -275,9 +275,9 @@
     -1.0
    ],
    "size": [
-    0.9535,
-    0.5477,
-    1.2959
+    0.939,
+    0.5459,
+    1.2955
    ],
    "replaces": [
     "LegFrontLeft"
@@ -298,8 +298,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 574,
+   "tris": 360,
+   "verts": 239,
    "textureSize": [
     256,
     256
@@ -329,9 +329,9 @@
     -1.0
    ],
    "center": [
-    -1.53014,
-    -0.30042,
-    -1.2972,
+    -1.52859,
+    -0.30184,
+    -1.30247,
     -1.0,
     0.0,
     0.0,
@@ -343,9 +343,9 @@
     -1.0
    ],
    "size": [
-    0.7018,
-    0.3983,
-    0.8479
+    0.6902,
+    0.398,
+    0.8471
    ],
    "replaces": [
     "LegFrontLeftTip"
@@ -366,8 +366,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 580,
+   "tris": 360,
+   "verts": 258,
    "textureSize": [
     256,
     256
@@ -397,9 +397,9 @@
     -1.0
    ],
    "center": [
-    0.92991,
-    -0.25002,
-    -1.30352,
+    0.92934,
+    -0.24929,
+    -1.29976,
     -1.0,
     0.0,
     0.0,
@@ -411,9 +411,9 @@
     -1.0
    ],
    "size": [
-    0.9535,
-    0.5477,
-    1.2959
+    0.939,
+    0.5459,
+    1.2955
    ],
    "replaces": [
     "LegFrontRight"
@@ -434,8 +434,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 574,
+   "tris": 360,
+   "verts": 239,
    "textureSize": [
     256,
     256
@@ -465,9 +465,9 @@
     -1.0
    ],
    "center": [
-    1.52986,
-    -0.30042,
-    -1.2972,
+    1.53141,
+    -0.30184,
+    -1.30247,
     -1.0,
     0.0,
     0.0,
@@ -479,9 +479,9 @@
     -1.0
    ],
    "size": [
-    0.7018,
-    0.3983,
-    0.8479
+    0.6902,
+    0.398,
+    0.8471
    ],
    "replaces": [
     "LegFrontRightTip"
@@ -502,8 +502,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 580,
+   "tris": 360,
+   "verts": 258,
    "textureSize": [
     256,
     256
@@ -533,9 +533,9 @@
     -1.0
    ],
    "center": [
-    -0.89909,
-    -0.25002,
-    1.59648,
+    -0.89966,
+    -0.24929,
+    1.60024,
     -1.0,
     0.0,
     0.0,
@@ -547,9 +547,9 @@
     -1.0
    ],
    "size": [
-    0.9535,
-    0.5477,
-    1.2959
+    0.939,
+    0.5459,
+    1.2955
    ],
    "replaces": [
     "LegBackLeft"
@@ -570,8 +570,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 574,
+   "tris": 360,
+   "verts": 239,
    "textureSize": [
     256,
     256
@@ -601,9 +601,9 @@
     -1.0
    ],
    "center": [
-    -1.49914,
-    -0.30042,
-    1.6028,
+    -1.49759,
+    -0.30184,
+    1.59753,
     -1.0,
     0.0,
     0.0,
@@ -615,9 +615,9 @@
     -1.0
    ],
    "size": [
-    0.7018,
-    0.3983,
-    0.8479
+    0.6902,
+    0.398,
+    0.8471
    ],
    "replaces": [
     "LegBackLeftTip"
@@ -638,8 +638,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 580,
+   "tris": 360,
+   "verts": 258,
    "textureSize": [
     256,
     256
@@ -669,9 +669,9 @@
     -1.0
    ],
    "center": [
-    0.89891,
-    -0.25002,
-    1.59648,
+    0.89834,
+    -0.24929,
+    1.60024,
     -1.0,
     0.0,
     0.0,
@@ -683,9 +683,9 @@
     -1.0
    ],
    "size": [
-    0.9535,
-    0.5477,
-    1.2959
+    0.939,
+    0.5459,
+    1.2955
    ],
    "replaces": [
     "LegBackRight"
@@ -706,8 +706,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeft_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeft_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 574,
+   "tris": 360,
+   "verts": 239,
    "textureSize": [
     256,
     256
@@ -737,9 +737,9 @@
     -1.0
    ],
    "center": [
-    1.49886,
-    -0.30042,
-    1.6028,
+    1.50041,
+    -0.30184,
+    1.59753,
     -1.0,
     0.0,
     0.0,
@@ -751,9 +751,9 @@
     -1.0
    ],
    "size": [
-    0.7018,
-    0.3983,
-    0.8479
+    0.6902,
+    0.398,
+    0.8471
    ],
    "replaces": [
     "LegBackRightTip"
@@ -774,8 +774,8 @@
     "RoughnessMap": "TreasureTurtle_LegFrontLeftTip_RoughnessMap.png",
     "MetalnessMap": "TreasureTurtle_LegFrontLeftTip_MetalnessMap.png"
    },
-   "tris": 900,
-   "verts": 580,
+   "tris": 360,
+   "verts": 258,
    "textureSize": [
     256,
     256

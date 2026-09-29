@@ -4,7 +4,7 @@
  "primaryPart": "Body",
  "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
  "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
- "totalTris": 9340,
+ "totalTris": 3736,
  "meshes": [
   {
    "name": "Body",
@@ -28,9 +28,9 @@
     1.0
    ],
    "center": [
-    -0.00148,
-    0.0008,
-    -0.00175,
+    -0.00354,
+    0.00515,
+    -0.00521,
     1.0,
     0.0,
     0.0,
@@ -42,9 +42,9 @@
     1.0
    ],
    "size": [
-    1.1571,
-    1.2528,
-    1.7422
+    1.1426,
+    1.258,
+    1.7543
    ],
    "replaces": [
     "Body"
@@ -65,8 +65,8 @@
     "RoughnessMap": "GoldGuppy_Body_RoughnessMap.png",
     "MetalnessMap": "GoldGuppy_Body_MetalnessMap.png"
    },
-   "tris": 4200,
-   "verts": 2396,
+   "tris": 1680,
+   "verts": 1069,
    "textureSize": [
     1024,
     1024
@@ -96,9 +96,9 @@
     -0.93969
    ],
    "center": [
-    -0.00067,
-    0.74906,
-    -0.09777,
+    -0.00109,
+    0.75046,
+    -0.09931,
     -1.0,
     0.0,
     0.0,
@@ -110,9 +110,9 @@
     -0.93969
    ],
    "size": [
-    0.1614,
-    0.5467,
-    0.6203
+    0.1616,
+    0.5451,
+    0.6259
    ],
    "replaces": [
     "DorsalFin"
@@ -133,8 +133,8 @@
     "RoughnessMap": "GoldGuppy_DorsalFin_RoughnessMap.png",
     "MetalnessMap": "GoldGuppy_DorsalFin_MetalnessMap.png"
    },
-   "tris": 700,
-   "verts": 467,
+   "tris": 280,
+   "verts": 214,
    "textureSize": [
     256,
     256
@@ -164,9 +164,9 @@
     -1.0
    ],
    "center": [
-    -0.4,
-    0.22,
-    -0.75,
+    -0.29019,
+    0.16718,
+    -0.65011,
     -1.0,
     0.0,
     0.0,
@@ -206,8 +206,8 @@
     "MetalnessMap": "GoldGuppy_Eye1_MetalnessMap.png",
     "EmissiveMask": "GoldGuppy_Eye1_EmissiveMask.png"
    },
-   "tris": 720,
-   "verts": 425,
+   "tris": 288,
+   "verts": 187,
    "textureSize": [
     512,
     512
@@ -237,9 +237,9 @@
     -1.0
    ],
    "center": [
-    0.4,
-    0.22,
-    -0.75,
+    0.50981,
+    0.16718,
+    -0.65011,
     -1.0,
     0.0,
     0.0,
@@ -279,8 +279,8 @@
     "MetalnessMap": "GoldGuppy_Eye1_MetalnessMap.png",
     "EmissiveMask": "GoldGuppy_Eye1_EmissiveMask.png"
    },
-   "tris": 720,
-   "verts": 425,
+   "tris": 288,
+   "verts": 187,
    "textureSize": [
     512,
     512
@@ -310,9 +310,9 @@
     -1.0
    ],
    "center": [
-    -0.00036,
-    -0.00135,
-    1.1695,
+    -0.00031,
+    -0.00025,
+    1.17548,
     -1.0,
     0.0,
     0.0,
@@ -324,9 +324,9 @@
     -1.0
    ],
    "size": [
-    0.8904,
-    0.5014,
-    0.9563
+    0.8811,
+    0.4978,
+    0.9559
    ],
    "replaces": [
     "TailFin",
@@ -340,11 +340,11 @@
    "material": "Foil",
    "transparency": 0.0,
    "materialMix": {
-    "Foil": 0.85,
-    "Neon": 0.15
+    "Foil": 0.848,
+    "Neon": 0.152
    },
    "neon": {
-    "fraction": 0.15,
+    "fraction": 0.1525,
     "parts": [
      "TailLamella1Tip",
      "TailLamella2Tip",
@@ -359,8 +359,8 @@
     "MetalnessMap": "GoldGuppy_TailFin_MetalnessMap.png",
     "EmissiveMask": "GoldGuppy_TailFin_EmissiveMask.png"
    },
-   "tris": 1600,
-   "verts": 1058,
+   "tris": 640,
+   "verts": 467,
    "textureSize": [
     512,
     512
@@ -390,9 +390,9 @@
     -1.0
    ],
    "center": [
-    -0.42201,
-    -0.11897,
-    -0.15204,
+    -0.41988,
+    -0.11988,
+    -0.15031,
     -0.90631,
     0.42262,
     0.0,
@@ -404,9 +404,9 @@
     -1.0
    ],
    "size": [
-    0.4499,
-    0.1372,
-    0.3979
+    0.4464,
+    0.1385,
+    0.3942
    ],
    "replaces": [
     "SideFin1"
@@ -427,8 +427,8 @@
     "RoughnessMap": "GoldGuppy_SideFin1_RoughnessMap.png",
     "MetalnessMap": "GoldGuppy_SideFin1_MetalnessMap.png"
    },
-   "tris": 700,
-   "verts": 462,
+   "tris": 280,
+   "verts": 206,
    "textureSize": [
     256,
     256
@@ -458,9 +458,9 @@
     -1.0
    ],
    "center": [
-    0.42022,
-    -0.11953,
-    -0.15012,
+    0.41956,
+    -0.12009,
+    -0.14867,
     -0.90631,
     -0.42262,
     0.0,
@@ -472,9 +472,9 @@
     -1.0
    ],
    "size": [
-    0.4451,
-    0.137,
-    0.3972
+    0.4506,
+    0.1375,
+    0.3991
    ],
    "replaces": [
     "SideFin2"
@@ -495,8 +495,8 @@
     "RoughnessMap": "GoldGuppy_SideFin2_RoughnessMap.png",
     "MetalnessMap": "GoldGuppy_SideFin2_MetalnessMap.png"
    },
-   "tris": 700,
-   "verts": 465,
+   "tris": 280,
+   "verts": 201,
    "textureSize": [
     256,
     256

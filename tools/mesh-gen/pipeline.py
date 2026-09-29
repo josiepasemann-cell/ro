@@ -389,7 +389,7 @@ def detail_eval(hfun, P, W, cfg, g):
 
 
 # ------------------------------------------------------------------ eyes
-def build_eye(group_name, members, anchor, cfg, log):
+def build_eye(group_name, members, anchor, cfg, log, host_sdf=None):
     ball = max([p for p in members if not p.hidden and p.kind == "ellipsoid" and not re.search(r"Pupil|Glint|Highlight", p.name)],
                key=lambda p: np.prod(p.size))
     Ainv = np.linalg.inv(anchor.cf)
@@ -410,7 +410,7 @@ def build_eye(group_name, members, anchor, cfg, log):
     hdirs = [(udir(p, dirv), np.arcsin(min(0.9, rel(p)))) for p in hl]
     # UV sphere with the pole along the gaze direction
     e1 = np.cross(dirv, [0, 1, 0] if abs(dirv[1]) < 0.9 else [1, 0, 0]); e1 /= np.linalg.norm(e1); e2 = np.cross(dirv, e1)
-    nth, nph = 16, 24
+    nth, nph = cfg.eye_segments
     th = np.linspace(0, np.pi, nth + 1); ph = np.linspace(0, 2 * np.pi, nph + 1)
     TH, PH = np.meshgrid(th, ph, indexing="ij")
     q = dirv[None, None] * np.cos(TH)[..., None] + np.sin(TH)[..., None] * (e1 * np.cos(PH)[..., None] + e2 * np.sin(PH)[..., None])
@@ -426,6 +426,24 @@ def build_eye(group_name, members, anchor, cfg, log):
             if i > 0: faces.append([a, c2, b])
             if i < nth - 1: faces.append([b, c2, d])
     faces = np.array(faces)
+    # Sink the eyeball into its host (body/head) so only a cap shows instead of a ball glued onto the surface:
+    # move it along the host's SDF gradient until its centre sits cfg.eye_inset * radius outside the host surface.
+    if host_sdf is not None and cfg.eye_inset is not None:
+        r = float(half.min())
+        target = cfg.eye_inset * r
+        shift = np.zeros(3)
+        for _ in range(6):
+            p0 = (c + shift)[None]
+            d0 = float(host_sdf(p0)[0])
+            eps = 0.01
+            g = np.array([float(host_sdf(p0 + np.eye(3)[i] * eps)[0] - host_sdf(p0 - np.eye(3)[i] * eps)[0]) for i in range(3)]) / (2 * eps)
+            gn = np.linalg.norm(g)
+            if gn < 1e-6 or d0 <= target + 1e-3:
+                break
+            shift -= (d0 - target) * g / gn
+        if np.linalg.norm(shift) > 1e-4:
+            log(f"    {group_name}: sunk {np.linalg.norm(shift):.3f} studs into host")
+        verts = verts + shift
     fn = np.cross(verts[faces[:, 1]] - verts[faces[:, 0]], verts[faces[:, 2]] - verts[faces[:, 0]])
     if (fn * nrm[faces].mean(1)).sum() < 0:
         faces = faces[:, ::-1]
@@ -532,7 +550,13 @@ def main():
         dedupe[key] = gname
         log(f"  {gname}: building ({len(members)} parts)")
         if is_eye:
-            v, f, n, uv, tex = build_eye(gname, members, anchor, cfg, log)
+            hosts = [q.shape(Ainv, cfg.rounding(q)) for gn2, lst in all_geo.items() if gn2 not in EXTRA_ROOTS for q in lst]
+            def host_sdf(Pq, hosts=hosts):
+                d = hosts[0](Pq)
+                for s_ in hosts[1:]:
+                    d = np.minimum(d, s_(Pq))
+                return d
+            v, f, n, uv, tex = build_eye(gname, members, anchor, cfg, log, host_sdf if hosts else None)
             stats = {"materials": {"SmoothPlastic": 1.0}, "neonFraction": 0.0}
             frame = None
         else:
@@ -556,7 +580,7 @@ def main():
             lo_, hi_ = lo - margin, hi + margin
             res_cells = cfg.cells(gname) // (2 if a.fast else 1)
             vs = float((hi_ - lo_).max()) / res_cells
-            v, f, n = mesh_from_field(field, lo_, hi_, vs, cfg.budget(gname), log)
+            v, f, n = mesh_from_field(field, lo_, hi_, vs, max(250, int(cfg.budget(gname) * cfg.poly_scale)), log)
             vmap, idx, uv = uv_unwrap(v, f, n, cfg.tex(gname) // (2 if a.fast else 1), log)
             v2, n2 = v[vmap], n[vmap]
             # occluders: every other group's geometry in this group's frame (hard union)

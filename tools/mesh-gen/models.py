@@ -134,6 +134,9 @@ class Cfg:
     iris_ratio = 1.25
     iris_color = (0.85, 0.5, 0.1)
     eye_tex = 512
+    poly_scale = 0.4          # low-poly: every triangle budget is scaled by this (detail lives in the normal maps)
+    eye_segments = (10, 16)   # eyeball sphere rings x segments
+    eye_inset = -0.35          # eyeball centre ends this many radii outside the host surface (lower = deeper)
     decal_re = r"Blush|Mouth|Smile|Seam|ShellMark|Highlight|Glint|Pupil"
 
     def is_decal(self, p):
