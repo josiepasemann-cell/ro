@@ -213,13 +213,13 @@ end
 -- 2b) Fangzähne (kleine weiche Ellipsoide statt harter Keile) ------------------------
 for i = 1, 4 do
 	local x = -0.75 + (i - 1) * 0.5
-	newBall("HeadTooth" .. i, Vector3.new(0.2, 0.4, 0.2), headCFrame * CFrame.new(x, -1.1, -0.55) * CFrame.Angles(math.rad(180), 0, 0), Color3.fromRGB(225, 225, 232), Enum.Material.SmoothPlastic, model)
+	newBall("HeadTooth" .. i, Vector3.new(0.24, 0.6, 0.24), headCFrame * CFrame.new(x * 0.9, -0.98, -0.94) * CFrame.Angles(math.rad(180), 0, 0), Color3.fromRGB(225, 225, 232), Enum.Material.SmoothPlastic, model)
 end
 
 -- 2c) Große, leuchtende Kulleraugen -------------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newCartoonEye("Eye" .. i, headCFrame * CFrame.new(side * 0.72, 0.4, -0.92), Vector3.new(0.8, 0.8, 0.42), SEAM_COLOR_B, model)
+	newCartoonEye("Eye" .. i, headCFrame * CFrame.new(side * 0.72, 0.4, -0.92), Vector3.new(0.8, 0.8, 0.42), Color3.fromRGB(12, 8, 18), model)
 end
 
 -- 2d) Leuchtendes Brust-Kernjuwel (Mythic-Flair), tief in den Hals eingebettet -----------
