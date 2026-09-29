@@ -132,7 +132,8 @@ for i = 1, SEGMENT_COUNT do
 	local segLength = 1.3
 	local halfZ = segLength / 2
 
-	local jointCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfZ + halfZ - SEG_OVERLAP))
+	-- Front is -Z (LookVector), so the body chain trails toward +Z behind the head.
+	local jointCFrame = prevCFrame * CFrame.new(0, 0, prevHalfZ + halfZ - SEG_OVERLAP)
 
 	local segment = newBall(
 		"Segment" .. i,
@@ -218,7 +219,7 @@ end
 -- 2c) Große, leuchtende Kulleraugen -------------------------------------------------------------
 for i = 1, 2 do
 	local side = (i == 1) and 1 or -1
-	newCartoonEye("Eye" .. i, headCFrame * CFrame.new(side * 0.95, 0.35, -0.6), Vector3.new(0.55, 0.55, 0.32), SEAM_COLOR_B, model)
+	newCartoonEye("Eye" .. i, headCFrame * CFrame.new(side * 0.72, 0.4, -0.92), Vector3.new(0.8, 0.8, 0.42), SEAM_COLOR_B, model)
 end
 
 -- 2d) Leuchtendes Brust-Kernjuwel (Mythic-Flair), tief in den Hals eingebettet -----------
@@ -234,7 +235,7 @@ for i = 1, 2 do
 end
 
 -- 3) Große, dramatische Schwanzflossen-Fächer-Spitze (statt kleinem Keil) -----------------------------------
-local tailCFrame = prevCFrame * CFrame.new(0, 0, -(prevHalfZ + 0.5 - SEG_OVERLAP))
+local tailCFrame = prevCFrame * CFrame.new(0, 0, prevHalfZ + 0.5 - SEG_OVERLAP)
 for i = 1, 3 do
 	local spread = math.rad(20 * (i - 2))
 	newBall(
