@@ -1,0 +1,583 @@
+{
+ "model": "IronMawBrute",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 6816,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "IronMawBrute_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.01054,
+    -0.18316,
+    -0.66345,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.3879,
+    3.7386,
+    5.4997
+   ],
+   "replaces": [
+    "Body",
+    "Jaw",
+    "JawUnderbite",
+    "ArmorPlate",
+    "Foot1",
+    "Foot2",
+    "Foot3",
+    "Foot4",
+    "Tooth1",
+    "Tooth2",
+    "Tooth3",
+    "Tooth4"
+   ],
+   "material": "Granite",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 0.002,
+    "Granite": 0.84,
+    "Metal": 0.126,
+    "SmoothPlastic": 0.032
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Body_ColorMap.png",
+    "NormalMap": "IronMawBrute_Body_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Body_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Body_MetalnessMap.png"
+   },
+   "tris": 3200,
+   "verts": 2129,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Mantle",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Mantle.obj",
+   "glbNode": "Mantle",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.6,
+    0.8,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00541,
+    1.72782,
+    0.79593,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.5863,
+    2.0368,
+    2.3858
+   ],
+   "replaces": [
+    "Mantle",
+    "BackSpike1",
+    "BackSpike2",
+    "BackSpike3"
+   ],
+   "material": "Granite",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 0.104,
+    "Granite": 0.896
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Mantle_ColorMap.png",
+    "NormalMap": "IronMawBrute_Mantle_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Mantle_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Mantle_MetalnessMap.png"
+   },
+   "tris": 960,
+   "verts": 593,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    1.3,
+    0.6,
+    -1.9,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.27564,
+    0.58967,
+    -1.92306,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.84,
+    0.84,
+    0.84
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Highlight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "Eye1Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Eye1_ColorMap.png",
+    "NormalMap": "IronMawBrute_Eye1_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Eye1_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Eye1_MetalnessMap.png",
+    "EmissiveMask": "IronMawBrute_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    -1.3,
+    0.6,
+    -1.9,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.27564,
+    0.58967,
+    -1.92306,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.84,
+    0.84,
+    0.84
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Highlight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "Eye2Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Eye2_ColorMap.png",
+    "NormalMap": "IronMawBrute_Eye2_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Eye2_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Eye2_MetalnessMap.png",
+    "EmissiveMask": "IronMawBrute_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Leg1.obj",
+   "glbNode": "Leg1",
+   "sharedWith": null,
+   "pivot": [
+    -1.4,
+    -1.7,
+    -1.4,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.40345,
+    -1.70154,
+    -1.39889,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.8481,
+    0.9421,
+    0.8463
+   ],
+   "replaces": [
+    "Leg1"
+   ],
+   "material": "Granite",
+   "transparency": 0.0,
+   "materialMix": {
+    "Granite": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Leg1_ColorMap.png",
+    "NormalMap": "IronMawBrute_Leg1_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Leg1_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Leg1_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 350,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Leg1.obj",
+   "glbNode": "Leg2",
+   "sharedWith": "Leg1",
+   "pivot": [
+    1.4,
+    -1.7,
+    -1.4,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.39655,
+    -1.70154,
+    -1.39889,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.8481,
+    0.9421,
+    0.8463
+   ],
+   "replaces": [
+    "Leg2"
+   ],
+   "material": "Granite",
+   "transparency": 0.0,
+   "materialMix": {
+    "Granite": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Leg1_ColorMap.png",
+    "NormalMap": "IronMawBrute_Leg1_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Leg1_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Leg1_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 350,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Leg1.obj",
+   "glbNode": "Leg3",
+   "sharedWith": "Leg1",
+   "pivot": [
+    -1.4,
+    -1.7,
+    1.4,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.40345,
+    -1.70154,
+    1.40111,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.8481,
+    0.9421,
+    0.8463
+   ],
+   "replaces": [
+    "Leg3"
+   ],
+   "material": "Granite",
+   "transparency": 0.0,
+   "materialMix": {
+    "Granite": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Leg1_ColorMap.png",
+    "NormalMap": "IronMawBrute_Leg1_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Leg1_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Leg1_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 350,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4",
+   "primary": false,
+   "animated": true,
+   "file": "IronMawBrute_Leg1.obj",
+   "glbNode": "Leg4",
+   "sharedWith": "Leg1",
+   "pivot": [
+    1.4,
+    -1.7,
+    1.4,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.39655,
+    -1.70154,
+    1.40111,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.8481,
+    0.9421,
+    0.8463
+   ],
+   "replaces": [
+    "Leg4"
+   ],
+   "material": "Granite",
+   "transparency": 0.0,
+   "materialMix": {
+    "Granite": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "IronMawBrute_Leg1_ColorMap.png",
+    "NormalMap": "IronMawBrute_Leg1_NormalMap.png",
+    "RoughnessMap": "IronMawBrute_Leg1_RoughnessMap.png",
+    "MetalnessMap": "IronMawBrute_Leg1_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 350,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

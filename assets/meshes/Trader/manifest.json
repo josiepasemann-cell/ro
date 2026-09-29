@@ -1,0 +1,786 @@
+{
+ "model": "Trader",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 6056,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "Trader_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    -0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00743,
+    -0.14613,
+    -0.03222,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.9024,
+    2.6016,
+    3.2377
+   ],
+   "replaces": [
+    "Body",
+    "StripeBlack1",
+    "StripeWhite1",
+    "StripeBlack2",
+    "StripeWhite2",
+    "TradeCrate",
+    "TradeCrateBandX"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 0.03,
+    "SmoothPlastic": 0.884,
+    "WoodPlanks": 0.086
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_Body_ColorMap.png",
+    "NormalMap": "Trader_Body_NormalMap.png",
+    "RoughnessMap": "Trader_Body_RoughnessMap.png",
+    "MetalnessMap": "Trader_Body_MetalnessMap.png"
+   },
+   "tris": 2600,
+   "verts": 1580,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFinEdge",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_DorsalFinEdge.obj",
+   "glbNode": "DorsalFinEdge",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.1,
+    0.3,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00135,
+    1.10066,
+    0.29359,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.0123,
+    0.1072,
+    0.8475
+   ],
+   "replaces": [
+    "DorsalFinEdge"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_DorsalFinEdge_ColorMap.png",
+    "NormalMap": "Trader_DorsalFinEdge_NormalMap.png",
+    "RoughnessMap": "Trader_DorsalFinEdge_RoughnessMap.png",
+    "MetalnessMap": "Trader_DorsalFinEdge_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_DorsalFin.obj",
+   "glbNode": "DorsalFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.12,
+    0.3,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00066,
+    1.12065,
+    0.30308,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.9334,
+    0.1598,
+    0.7702
+   ],
+   "replaces": [
+    "DorsalFin"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_DorsalFin_ColorMap.png",
+    "NormalMap": "Trader_DorsalFin_NormalMap.png",
+    "RoughnessMap": "Trader_DorsalFin_RoughnessMap.png",
+    "MetalnessMap": "Trader_DorsalFin_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 189,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFinEdge",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_TailFinEdge.obj",
+   "glbNode": "TailFinEdge",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    1.68,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00371,
+    0.00437,
+    1.40625,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.7919,
+    1.2273,
+    1.4516
+   ],
+   "replaces": [
+    "TailFinEdge",
+    "TailStalk"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_TailFinEdge_ColorMap.png",
+    "NormalMap": "Trader_TailFinEdge_NormalMap.png",
+    "RoughnessMap": "Trader_TailFinEdge_RoughnessMap.png",
+    "MetalnessMap": "Trader_TailFinEdge_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 261,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    1e-05,
+    0.0,
+    1.65,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -6e-05,
+    -0.00068,
+    1.6456,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1645,
+    1.1486,
+    0.8384
+   ],
+   "replaces": [
+    "TailFin"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_TailFin_ColorMap.png",
+    "NormalMap": "Trader_TailFin_NormalMap.png",
+    "RoughnessMap": "Trader_TailFin_RoughnessMap.png",
+    "MetalnessMap": "Trader_TailFin_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFinTip",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_TailFinTip.obj",
+   "glbNode": "TailFinTip",
+   "sharedWith": null,
+   "pivot": [
+    1e-05,
+    0.0,
+    1.8,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00011,
+    0.00082,
+    1.79767,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1382,
+    0.7428,
+    0.5729
+   ],
+   "replaces": [
+    "TailFinTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_TailFinTip_ColorMap.png",
+    "NormalMap": "Trader_TailFinTip_NormalMap.png",
+    "RoughnessMap": "Trader_TailFinTip_RoughnessMap.png",
+    "MetalnessMap": "Trader_TailFinTip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 193,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Head",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_Head.obj",
+   "glbNode": "Head",
+   "sharedWith": null,
+   "pivot": [
+    -1e-05,
+    0.05,
+    -1.35,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00084,
+    -0.0605,
+    -1.34873,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.0449,
+    1.3799,
+    0.7949
+   ],
+   "replaces": [
+    "Head",
+    "Mouth",
+    "TradeCrateGem"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.091,
+    "SmoothPlastic": 0.909
+   },
+   "neon": {
+    "fraction": 0.0912,
+    "parts": [
+     "TradeCrateGem"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Trader_Head_ColorMap.png",
+    "NormalMap": "Trader_Head_NormalMap.png",
+    "RoughnessMap": "Trader_Head_RoughnessMap.png",
+    "MetalnessMap": "Trader_Head_MetalnessMap.png",
+    "EmissiveMask": "Trader_Head_EmissiveMask.png"
+   },
+   "tris": 960,
+   "verts": 635,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.36,
+    0.22,
+    -1.6,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.31731,
+    0.20325,
+    -1.54816,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4641,
+    0.465,
+    0.4641
+   ],
+   "replaces": [
+    "Eye1",
+    "EyePupilL",
+    "EyeGlintL"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeGlintL"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Trader_Eye1_ColorMap.png",
+    "NormalMap": "Trader_Eye1_NormalMap.png",
+    "RoughnessMap": "Trader_Eye1_RoughnessMap.png",
+    "MetalnessMap": "Trader_Eye1_MetalnessMap.png",
+    "EmissiveMask": "Trader_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    0.36,
+    0.22,
+    -1.60001,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.3173,
+    0.20325,
+    -1.54816,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4641,
+    0.465,
+    0.4641
+   ],
+   "replaces": [
+    "Eye2",
+    "EyePupilR",
+    "EyeGlintR"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeGlintR"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Trader_Eye2_ColorMap.png",
+    "NormalMap": "Trader_Eye2_NormalMap.png",
+    "RoughnessMap": "Trader_Eye2_RoughnessMap.png",
+    "MetalnessMap": "Trader_Eye2_MetalnessMap.png",
+    "EmissiveMask": "Trader_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmL",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_ArmL.obj",
+   "glbNode": "ArmL",
+   "sharedWith": null,
+   "pivot": [
+    -1.35,
+    -0.2,
+    -0.29999,
+    0.9397,
+    -0.34202,
+    -0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    -0.0,
+    1.0
+   ],
+   "center": [
+    -1.55471,
+    -0.19798,
+    -0.30126,
+    0.9397,
+    -0.34202,
+    -0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    -0.0,
+    1.0
+   ],
+   "size": [
+    0.1967,
+    0.7438,
+    1.0265
+   ],
+   "replaces": [
+    "ArmL",
+    "ArmLEdge"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_ArmL_ColorMap.png",
+    "NormalMap": "Trader_ArmL_NormalMap.png",
+    "RoughnessMap": "Trader_ArmL_RoughnessMap.png",
+    "MetalnessMap": "Trader_ArmL_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 224,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmR",
+   "primary": false,
+   "animated": true,
+   "file": "Trader_ArmR.obj",
+   "glbNode": "ArmR",
+   "sharedWith": null,
+   "pivot": [
+    1.35,
+    -0.2,
+    -0.30001,
+    0.9397,
+    0.34202,
+    -0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.55448,
+    -0.20102,
+    -0.30085,
+    0.9397,
+    0.34202,
+    -0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.196,
+    0.735,
+    1.0281
+   ],
+   "replaces": [
+    "ArmR",
+    "ArmREdge"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Trader_ArmR_ColorMap.png",
+    "NormalMap": "Trader_ArmR_NormalMap.png",
+    "RoughnessMap": "Trader_ArmR_RoughnessMap.png",
+    "MetalnessMap": "Trader_ArmR_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 196,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

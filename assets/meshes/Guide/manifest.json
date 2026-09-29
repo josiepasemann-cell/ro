@@ -1,0 +1,1057 @@
+{
+ "model": "Guide",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 7176,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "Guide_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.01133,
+    -0.03935,
+    -0.00312,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.4191,
+    2.3804,
+    3.4152
+   ],
+   "replaces": [
+    "Body"
+   ],
+   "material": "Glass",
+   "transparency": 0.2,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Body_ColorMap.png",
+    "NormalMap": "Guide_Body_NormalMap.png",
+    "RoughnessMap": "Guide_Body_RoughnessMap.png",
+    "MetalnessMap": "Guide_Body_MetalnessMap.png"
+   },
+   "tris": 2000,
+   "verts": 1176,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "GlowCore",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_GlowCore.obj",
+   "glbNode": "GlowCore",
+   "sharedWith": null,
+   "pivot": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00223,
+    0.00068,
+    -0.00186,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.1375,
+    1.1431,
+    1.1509
+   ],
+   "replaces": [
+    "GlowCore"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "GlowCore"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "Guide_GlowCore_ColorMap.png",
+    "NormalMap": "Guide_GlowCore_NormalMap.png",
+    "RoughnessMap": "Guide_GlowCore_RoughnessMap.png",
+    "MetalnessMap": "Guide_GlowCore_MetalnessMap.png",
+    "EmissiveMask": "Guide_GlowCore_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 249,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Head",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Head.obj",
+   "glbNode": "Head",
+   "sharedWith": null,
+   "pivot": [
+    -1e-05,
+    -1.15,
+    -0.70001,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00119,
+    -1.05119,
+    -1.10156,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.3363,
+    1.2886,
+    1.298
+   ],
+   "replaces": [
+    "Head",
+    "Mouth"
+   ],
+   "material": "Glass",
+   "transparency": 0.1,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Head_ColorMap.png",
+    "NormalMap": "Guide_Head_NormalMap.png",
+    "RoughnessMap": "Guide_Head_RoughnessMap.png",
+    "MetalnessMap": "Guide_Head_MetalnessMap.png"
+   },
+   "tris": 880,
+   "verts": 556,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.34,
+    -1.05,
+    -1.25,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.30028,
+    -1.00584,
+    -1.57692,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.484,
+    0.484,
+    0.484
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Guide_Eye1_ColorMap.png",
+    "NormalMap": "Guide_Eye1_NormalMap.png",
+    "RoughnessMap": "Guide_Eye1_RoughnessMap.png",
+    "MetalnessMap": "Guide_Eye1_MetalnessMap.png",
+    "EmissiveMask": "Guide_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    0.34,
+    -1.05,
+    -1.25,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.30028,
+    -1.00584,
+    -1.57692,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.484,
+    0.484,
+    0.484
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Guide_Eye2_ColorMap.png",
+    "NormalMap": "Guide_Eye2_NormalMap.png",
+    "RoughnessMap": "Guide_Eye2_RoughnessMap.png",
+    "MetalnessMap": "Guide_Eye2_MetalnessMap.png",
+    "EmissiveMask": "Guide_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmL",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_ArmL.obj",
+   "glbNode": "ArmL",
+   "sharedWith": null,
+   "pivot": [
+    -1.40001,
+    -1.6,
+    -0.2,
+    0.98481,
+    -0.17365,
+    0.0,
+    0.17196,
+    0.97522,
+    -0.13917,
+    0.02416,
+    0.13706,
+    0.99027
+   ],
+   "center": [
+    -1.27164,
+    -2.02024,
+    -0.30184,
+    0.98481,
+    -0.17365,
+    0.0,
+    0.17196,
+    0.97522,
+    -0.13917,
+    0.02416,
+    0.13706,
+    0.99027
+   ],
+   "size": [
+    0.6086,
+    3.0682,
+    0.6151
+   ],
+   "replaces": [
+    "ArmL",
+    "ArmLTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_ArmL_ColorMap.png",
+    "NormalMap": "Guide_ArmL_NormalMap.png",
+    "RoughnessMap": "Guide_ArmL_RoughnessMap.png",
+    "MetalnessMap": "Guide_ArmL_MetalnessMap.png"
+   },
+   "tris": 560,
+   "verts": 349,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmR",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_ArmR.obj",
+   "glbNode": "ArmR",
+   "sharedWith": null,
+   "pivot": [
+    1.4,
+    -1.6,
+    -0.2,
+    0.98481,
+    0.17365,
+    0.0,
+    -0.17196,
+    0.97522,
+    -0.13917,
+    -0.02417,
+    0.13705,
+    0.99027
+   ],
+   "center": [
+    1.19325,
+    -2.46693,
+    -0.3632,
+    0.98481,
+    0.17365,
+    0.0,
+    -0.17196,
+    0.97522,
+    -0.13917,
+    -0.02417,
+    0.13705,
+    0.99027
+   ],
+   "size": [
+    0.6404,
+    3.9863,
+    0.6387
+   ],
+   "replaces": [
+    "ArmR",
+    "ArmRTip",
+    "Lantern",
+    "LanternGlow",
+    "LanternHandle"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.03,
+   "materialMix": {
+    "Foil": 0.031,
+    "Glass": 0.071,
+    "Neon": 0.022,
+    "SmoothPlastic": 0.877
+   },
+   "neon": {
+    "fraction": 0.022,
+    "parts": [
+     "LanternGlow"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Guide_ArmR_ColorMap.png",
+    "NormalMap": "Guide_ArmR_NormalMap.png",
+    "RoughnessMap": "Guide_ArmR_RoughnessMap.png",
+    "MetalnessMap": "Guide_ArmR_MetalnessMap.png"
+   },
+   "tris": 720,
+   "verts": 460,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle1.obj",
+   "glbNode": "Tentacle1",
+   "sharedWith": null,
+   "pivot": [
+    -0.7,
+    -1.7,
+    0.8,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    -0.70115,
+    -1.39482,
+    0.80191,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.5427,
+    1.2925,
+    0.5421
+   ],
+   "replaces": [
+    "Tentacle1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle1_ColorMap.png",
+    "NormalMap": "Guide_Tentacle1_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle1_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle1_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 184,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1Tip",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle1Tip.obj",
+   "glbNode": "Tentacle1Tip",
+   "sharedWith": null,
+   "pivot": [
+    -0.8531,
+    -2.78333,
+    0.68614,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    -0.85339,
+    -2.48115,
+    0.68668,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.3549,
+    1.1951,
+    0.3523
+   ],
+   "replaces": [
+    "Tentacle1Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle1Tip_ColorMap.png",
+    "NormalMap": "Guide_Tentacle1Tip_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle1Tip_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle1Tip_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle2.obj",
+   "glbNode": "Tentacle2",
+   "sharedWith": null,
+   "pivot": [
+    0.69999,
+    -1.7,
+    0.80001,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    0.70405,
+    -1.40232,
+    0.79997,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.5442,
+    1.2835,
+    0.5459
+   ],
+   "replaces": [
+    "Tentacle2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle2_ColorMap.png",
+    "NormalMap": "Guide_Tentacle2_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle2_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle2_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 181,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2Tip",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle2Tip.obj",
+   "glbNode": "Tentacle2Tip",
+   "sharedWith": null,
+   "pivot": [
+    0.85309,
+    -2.78333,
+    0.68614,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    0.85393,
+    -2.48283,
+    0.68683,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.3553,
+    1.1842,
+    0.3549
+   ],
+   "replaces": [
+    "Tentacle2Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle2Tip_ColorMap.png",
+    "NormalMap": "Guide_Tentacle2Tip_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle2Tip_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle2Tip_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 196,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle1.obj",
+   "glbNode": "Tentacle3",
+   "sharedWith": "Tentacle1",
+   "pivot": [
+    -1.0,
+    -1.7,
+    -0.6,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    -1.00116,
+    -1.39482,
+    -0.59809,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.5427,
+    1.2925,
+    0.5421
+   ],
+   "replaces": [
+    "Tentacle3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle1_ColorMap.png",
+    "NormalMap": "Guide_Tentacle1_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle1_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle1_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 184,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3Tip",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle1Tip.obj",
+   "glbNode": "Tentacle3Tip",
+   "sharedWith": "Tentacle1Tip",
+   "pivot": [
+    -1.1531,
+    -2.78333,
+    -0.71386,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    -1.15339,
+    -2.48115,
+    -0.71332,
+    0.99027,
+    0.13918,
+    -0.0,
+    -0.13841,
+    0.98484,
+    -0.10453,
+    -0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.3549,
+    1.1951,
+    0.3523
+   ],
+   "replaces": [
+    "Tentacle3Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle1Tip_ColorMap.png",
+    "NormalMap": "Guide_Tentacle1Tip_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle1Tip_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle1Tip_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle2.obj",
+   "glbNode": "Tentacle4",
+   "sharedWith": "Tentacle2",
+   "pivot": [
+    1.0,
+    -1.7,
+    -0.6,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    1.00405,
+    -1.40232,
+    -0.60004,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.5442,
+    1.2835,
+    0.5459
+   ],
+   "replaces": [
+    "Tentacle4"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle2_ColorMap.png",
+    "NormalMap": "Guide_Tentacle2_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle2_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle2_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 181,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4Tip",
+   "primary": false,
+   "animated": true,
+   "file": "Guide_Tentacle2Tip.obj",
+   "glbNode": "Tentacle4Tip",
+   "sharedWith": "Tentacle2Tip",
+   "pivot": [
+    1.15309,
+    -2.78333,
+    -0.71386,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "center": [
+    1.15392,
+    -2.48283,
+    -0.71317,
+    0.99027,
+    -0.13917,
+    -0.0,
+    0.13841,
+    0.98484,
+    -0.10453,
+    0.01455,
+    0.10351,
+    0.99452
+   ],
+   "size": [
+    0.3553,
+    1.1842,
+    0.3549
+   ],
+   "replaces": [
+    "Tentacle4Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Guide_Tentacle2Tip_ColorMap.png",
+    "NormalMap": "Guide_Tentacle2Tip_NormalMap.png",
+    "RoughnessMap": "Guide_Tentacle2Tip_RoughnessMap.png",
+    "MetalnessMap": "Guide_Tentacle2Tip_MetalnessMap.png"
+   },
+   "tris": 260,
+   "verts": 196,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

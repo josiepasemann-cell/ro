@@ -1,0 +1,386 @@
+{
+ "model": "ThornSwarmer",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 4336,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "ThornSwarmer_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.01321,
+    0.003,
+    -0.00075,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.4926,
+    2.1036,
+    3.0449
+   ],
+   "replaces": [
+    "Body",
+    "Thorn1",
+    "Thorn2",
+    "Thorn3",
+    "Thorn4",
+    "Thorn5",
+    "Thorn6",
+    "SmallThorn1",
+    "SmallThorn2",
+    "SmallThorn3",
+    "SmallThorn4",
+    "SmallThorn5",
+    "SmallThorn6",
+    "Jaw",
+    "Tooth1",
+    "Tooth2"
+   ],
+   "material": "Pebble",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.074,
+    "Pebble": 0.668,
+    "SmoothPlastic": 0.258
+   },
+   "neon": {
+    "fraction": 0.0736,
+    "parts": [
+     "SmallThorn1",
+     "SmallThorn2",
+     "SmallThorn3",
+     "SmallThorn4",
+     "SmallThorn5",
+     "SmallThorn6"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ThornSwarmer_Body_ColorMap.png",
+    "NormalMap": "ThornSwarmer_Body_NormalMap.png",
+    "RoughnessMap": "ThornSwarmer_Body_RoughnessMap.png",
+    "MetalnessMap": "ThornSwarmer_Body_MetalnessMap.png",
+    "EmissiveMask": "ThornSwarmer_Body_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 1838,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Mantle",
+   "primary": false,
+   "animated": true,
+   "file": "ThornSwarmer_Mantle.obj",
+   "glbNode": "Mantle",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.7,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00384,
+    0.70212,
+    -0.00132,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.8929,
+    0.8987,
+    0.894
+   ],
+   "replaces": [
+    "Mantle"
+   ],
+   "material": "Pebble",
+   "transparency": 0.0,
+   "materialMix": {
+    "Pebble": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ThornSwarmer_Mantle_ColorMap.png",
+    "NormalMap": "ThornSwarmer_Mantle_NormalMap.png",
+    "RoughnessMap": "ThornSwarmer_Mantle_RoughnessMap.png",
+    "MetalnessMap": "ThornSwarmer_Mantle_MetalnessMap.png"
+   },
+   "tris": 640,
+   "verts": 412,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "ThornSwarmer_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.62,
+    0.25,
+    -1.15,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.45189,
+    0.18221,
+    -0.83817,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.46,
+    0.46,
+    0.46
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Highlight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "Eye1Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ThornSwarmer_Eye1_ColorMap.png",
+    "NormalMap": "ThornSwarmer_Eye1_NormalMap.png",
+    "RoughnessMap": "ThornSwarmer_Eye1_RoughnessMap.png",
+    "MetalnessMap": "ThornSwarmer_Eye1_MetalnessMap.png",
+    "EmissiveMask": "ThornSwarmer_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "ThornSwarmer_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    -0.62,
+    0.25,
+    -1.15,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.45189,
+    0.18221,
+    -0.83817,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.46,
+    0.46,
+    0.46
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Highlight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "Eye2Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ThornSwarmer_Eye2_ColorMap.png",
+    "NormalMap": "ThornSwarmer_Eye2_NormalMap.png",
+    "RoughnessMap": "ThornSwarmer_Eye2_RoughnessMap.png",
+    "MetalnessMap": "ThornSwarmer_Eye2_MetalnessMap.png",
+    "EmissiveMask": "ThornSwarmer_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "ThornSwarmer_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.1,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00042,
+    0.10449,
+    0.99751,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1979,
+    0.8926,
+    0.743
+   ],
+   "replaces": [
+    "TailFin"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ThornSwarmer_TailFin_ColorMap.png",
+    "NormalMap": "ThornSwarmer_TailFin_NormalMap.png",
+    "RoughnessMap": "ThornSwarmer_TailFin_RoughnessMap.png",
+    "MetalnessMap": "ThornSwarmer_TailFin_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 356,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

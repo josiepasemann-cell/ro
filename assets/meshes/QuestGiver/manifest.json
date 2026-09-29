@@ -1,0 +1,590 @@
+{
+ "model": "QuestGiver",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 5356,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "QuestGiver_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.06799,
+    -0.22724,
+    0.48842,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.8545,
+    3.826,
+    2.6604
+   ],
+   "replaces": [
+    "Body",
+    "UpperChest",
+    "BellyPlate1",
+    "BellyPlate2",
+    "BellyPlate3",
+    "BellyPlate4",
+    "TailCurl1",
+    "TailCurl2",
+    "TailCurl3",
+    "Satchel",
+    "SatchelStrap",
+    "ScrollTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Fabric": 0.06,
+    "SmoothPlastic": 0.94
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_Body_ColorMap.png",
+    "NormalMap": "QuestGiver_Body_NormalMap.png",
+    "RoughnessMap": "QuestGiver_Body_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_Body_MetalnessMap.png"
+   },
+   "tris": 2600,
+   "verts": 1659,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_DorsalFin.obj",
+   "glbNode": "DorsalFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.7,
+    0.54999,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00032,
+    0.69905,
+    0.55075,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1841,
+    1.4918,
+    0.595
+   ],
+   "replaces": [
+    "DorsalFin"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_DorsalFin_ColorMap.png",
+    "NormalMap": "QuestGiver_DorsalFin_NormalMap.png",
+    "RoughnessMap": "QuestGiver_DorsalFin_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_DorsalFin_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFinTip",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_DorsalFinTip.obj",
+   "glbNode": "DorsalFinTip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.6,
+    0.65,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.0,
+    1.59828,
+    0.64932,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1473,
+    0.795,
+    0.4171
+   ],
+   "replaces": [
+    "DorsalFinTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_DorsalFinTip_ColorMap.png",
+    "NormalMap": "QuestGiver_DorsalFinTip_NormalMap.png",
+    "RoughnessMap": "QuestGiver_DorsalFinTip_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_DorsalFinTip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Head",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_Head.obj",
+   "glbNode": "Head",
+   "sharedWith": null,
+   "pivot": [
+    -0.0,
+    1.8,
+    -0.54999,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00431,
+    2.06279,
+    -0.64066,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.3385,
+    1.4317,
+    1.817
+   ],
+   "replaces": [
+    "Head",
+    "SnoutCrest",
+    "Mouth",
+    "BlushL",
+    "BlushR",
+    "CaptainHat",
+    "HatBrim",
+    "HatTrim",
+    "HatBadge"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Fabric": 0.423,
+    "Neon": 0.017,
+    "SmoothPlastic": 0.56
+   },
+   "neon": {
+    "fraction": 0.0165,
+    "parts": [
+     "HatBadge"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_Head_ColorMap.png",
+    "NormalMap": "QuestGiver_Head_NormalMap.png",
+    "RoughnessMap": "QuestGiver_Head_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_Head_MetalnessMap.png",
+    "EmissiveMask": "QuestGiver_Head_EmissiveMask.png"
+   },
+   "tris": 1120,
+   "verts": 820,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.28,
+    1.96,
+    -0.65,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.2915,
+    1.96467,
+    -0.97514,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4068,
+    0.408,
+    0.4068
+   ],
+   "replaces": [
+    "Eye1",
+    "EyePupilL",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_Eye1_ColorMap.png",
+    "NormalMap": "QuestGiver_Eye1_NormalMap.png",
+    "RoughnessMap": "QuestGiver_Eye1_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_Eye1_MetalnessMap.png",
+    "EmissiveMask": "QuestGiver_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    0.28,
+    1.96,
+    -0.65,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.2915,
+    1.96467,
+    -0.97514,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4068,
+    0.408,
+    0.4068
+   ],
+   "replaces": [
+    "Eye2",
+    "EyePupilR",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_Eye2_ColorMap.png",
+    "NormalMap": "QuestGiver_Eye2_NormalMap.png",
+    "RoughnessMap": "QuestGiver_Eye2_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_Eye2_MetalnessMap.png",
+    "EmissiveMask": "QuestGiver_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmL",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_ArmL.obj",
+   "glbNode": "ArmL",
+   "sharedWith": null,
+   "pivot": [
+    -0.84999,
+    0.9,
+    0.04999,
+    0.95105,
+    -0.30902,
+    -0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "center": [
+    -0.85059,
+    0.90012,
+    0.04957,
+    0.95105,
+    -0.30902,
+    -0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "size": [
+    0.201,
+    0.9449,
+    0.6447
+   ],
+   "replaces": [
+    "ArmL"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_ArmL_ColorMap.png",
+    "NormalMap": "QuestGiver_ArmL_NormalMap.png",
+    "RoughnessMap": "QuestGiver_ArmL_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_ArmL_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 205,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ArmR",
+   "primary": false,
+   "animated": true,
+   "file": "QuestGiver_ArmR.obj",
+   "glbNode": "ArmR",
+   "sharedWith": null,
+   "pivot": [
+    0.85,
+    0.9,
+    0.05,
+    0.95105,
+    0.30902,
+    -0.0,
+    -0.30902,
+    0.95106,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.85117,
+    0.90213,
+    0.05018,
+    0.95105,
+    0.30902,
+    -0.0,
+    -0.30902,
+    0.95106,
+    0.0,
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1956,
+    0.9474,
+    0.6473
+   ],
+   "replaces": [
+    "ArmR"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "QuestGiver_ArmR_ColorMap.png",
+    "NormalMap": "QuestGiver_ArmR_NormalMap.png",
+    "RoughnessMap": "QuestGiver_ArmR_RoughnessMap.png",
+    "MetalnessMap": "QuestGiver_ArmR_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 200,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

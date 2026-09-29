@@ -1,0 +1,582 @@
+{
+ "model": "SpineDrifter",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 5776,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "SpineDrifter_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00498,
+    0.12183,
+    -0.01358,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.5413,
+    2.0097,
+    4.0179
+   ],
+   "replaces": [
+    "Body",
+    "BellyStripe",
+    "DorsalSpine1",
+    "DorsalSpine2",
+    "DorsalSpine3",
+    "DorsalSpine4",
+    "DorsalSpine5",
+    "DorsalSpine6"
+   ],
+   "material": "Pebble",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.096,
+    "Pebble": 0.845,
+    "SmoothPlastic": 0.059
+   },
+   "neon": {
+    "fraction": 0.0964,
+    "parts": [
+     "DorsalSpine1",
+     "DorsalSpine3",
+     "DorsalSpine5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_Body_ColorMap.png",
+    "NormalMap": "SpineDrifter_Body_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_Body_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_Body_MetalnessMap.png",
+    "EmissiveMask": "SpineDrifter_Body_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 1831,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Mantle",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_Mantle.obj",
+   "glbNode": "Mantle",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.15,
+    -2.1,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.004,
+    0.14436,
+    -2.09847,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.2969,
+    1.1972,
+    1.5012
+   ],
+   "replaces": [
+    "Mantle",
+    "Eye1Highlight",
+    "Eye2Highlight"
+   ],
+   "material": "Pebble",
+   "transparency": 0.0,
+   "materialMix": {
+    "Pebble": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Highlight",
+     "Eye2Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_Mantle_ColorMap.png",
+    "NormalMap": "SpineDrifter_Mantle_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_Mantle_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_Mantle_MetalnessMap.png"
+   },
+   "tris": 1040,
+   "verts": 633,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.5,
+    0.2,
+    -2.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.43191,
+    0.19204,
+    -2.54856,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.406,
+    0.406,
+    0.406
+   ],
+   "replaces": [
+    "Eye1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_Eye1_ColorMap.png",
+    "NormalMap": "SpineDrifter_Eye1_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_Eye1_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_Eye1_MetalnessMap.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.5,
+    0.2,
+    -2.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.56809,
+    0.19204,
+    -2.54856,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.406,
+    0.406,
+    0.406
+   ],
+   "replaces": [
+    "Eye2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_Eye1_ColorMap.png",
+    "NormalMap": "SpineDrifter_Eye1_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_Eye1_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_Eye1_MetalnessMap.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFinL",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_SideFinL.obj",
+   "glbNode": "SideFinL",
+   "sharedWith": null,
+   "pivot": [
+    -0.75,
+    -0.1,
+    -0.3,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.74655,
+    -0.10107,
+    -0.2953,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.8958,
+    0.1799,
+    0.9953
+   ],
+   "replaces": [
+    "SideFinL"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_SideFinL_ColorMap.png",
+    "NormalMap": "SpineDrifter_SideFinL_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_SideFinL_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_SideFinL_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 218,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFinR",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_SideFinR.obj",
+   "glbNode": "SideFinR",
+   "sharedWith": null,
+   "pivot": [
+    0.75,
+    -0.1,
+    -0.3,
+    0.93969,
+    -0.34202,
+    0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.75035,
+    -0.10035,
+    -0.30269,
+    0.93969,
+    -0.34202,
+    0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.9031,
+    0.181,
+    0.9956
+   ],
+   "replaces": [
+    "SideFinR"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_SideFinR_ColorMap.png",
+    "NormalMap": "SpineDrifter_SideFinR_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_SideFinR_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_SideFinR_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 229,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    2.9,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.002,
+    -0.00144,
+    2.61828,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.5541,
+    1.1955,
+    1.6388
+   ],
+   "replaces": [
+    "TailFin",
+    "TailStalk"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_TailFin_ColorMap.png",
+    "NormalMap": "SpineDrifter_TailFin_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_TailFin_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_TailFin_MetalnessMap.png"
+   },
+   "tris": 600,
+   "verts": 389,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFinLower",
+   "primary": false,
+   "animated": true,
+   "file": "SpineDrifter_TailFinLower.obj",
+   "glbNode": "TailFinLower",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.55,
+    3.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00023,
+    -0.54834,
+    3.00018,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1547,
+    0.697,
+    0.7908
+   ],
+   "replaces": [
+    "TailFinLower"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailFinLower"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "SpineDrifter_TailFinLower_ColorMap.png",
+    "NormalMap": "SpineDrifter_TailFinLower_NormalMap.png",
+    "RoughnessMap": "SpineDrifter_TailFinLower_RoughnessMap.png",
+    "MetalnessMap": "SpineDrifter_TailFinLower_MetalnessMap.png",
+    "EmissiveMask": "SpineDrifter_TailFinLower_EmissiveMask.png"
+   },
+   "tris": 320,
+   "verts": 226,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

@@ -1,0 +1,2488 @@
+{
+ "model": "ShadowKraken",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 12456,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "ShadowKraken_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00855,
+    -0.01449,
+    -0.01788,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.8288,
+    4.3857,
+    4.6784
+   ],
+   "replaces": [
+    "Body",
+    "CrownRidge1",
+    "CrownRidge2",
+    "CrownRidge3",
+    "CrownRidge4",
+    "CrownRidge5",
+    "Barnacle1",
+    "Barnacle2",
+    "Barnacle3",
+    "Barnacle4",
+    "Barnacle5",
+    "Barnacle6",
+    "BeakUpper"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.971,
+    "CorrodedMetal": 0.029
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Body_ColorMap.png",
+    "NormalMap": "ShadowKraken_Body_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Body_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Body_MetalnessMap.png"
+   },
+   "tris": 3000,
+   "verts": 1758,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Mantle",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Mantle.obj",
+   "glbNode": "Mantle",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.6,
+    0.4,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00564,
+    1.62131,
+    0.40449,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.1714,
+    2.4295,
+    3.2096
+   ],
+   "replaces": [
+    "Mantle",
+    "MantleSeam1",
+    "MantleSeam2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Mantle_ColorMap.png",
+    "NormalMap": "ShadowKraken_Mantle_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Mantle_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Mantle_MetalnessMap.png"
+   },
+   "tris": 880,
+   "verts": 546,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    1.15,
+    0.5,
+    -2.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.03065,
+    0.43864,
+    -1.81903,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.0268,
+    1.035,
+    1.0268
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Highlight",
+    "Eyebrow1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "Eye1Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Eye1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Eye1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Eye1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Eye1_MetalnessMap.png",
+    "EmissiveMask": "ShadowKraken_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    -1.15,
+    0.5,
+    -2.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.03065,
+    0.43864,
+    -1.81903,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.0268,
+    1.035,
+    1.0268
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Highlight",
+    "Eyebrow2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "Eye2Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Eye2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Eye2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Eye2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Eye2_MetalnessMap.png",
+    "EmissiveMask": "ShadowKraken_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle1_Segment1.obj",
+   "glbNode": "Tentacle1_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    2.64578,
+    -1.874,
+    0.21168,
+    -0.08716,
+    0.9666,
+    -0.241,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.0,
+    0.24192,
+    0.9703
+   ],
+   "center": [
+    2.64251,
+    -1.87344,
+    0.21115,
+    -0.08716,
+    0.9666,
+    -0.241,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.0,
+    0.24192,
+    0.9703
+   ],
+   "size": [
+    0.693,
+    1.7477,
+    0.7093
+   ],
+   "replaces": [
+    "Tentacle1_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle1_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle1_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle1_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle1_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle1_Segment2.obj",
+   "glbNode": "Tentacle1_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    4.12517,
+    -2.00343,
+    0.8208,
+    -0.08716,
+    0.84482,
+    -0.5279,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.0,
+    0.52992,
+    0.84805
+   ],
+   "center": [
+    4.12515,
+    -2.00191,
+    0.81939,
+    -0.08716,
+    0.84482,
+    -0.5279,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.0,
+    0.52992,
+    0.84805
+   ],
+   "size": [
+    0.5269,
+    1.5046,
+    0.5316
+   ],
+   "replaces": [
+    "Tentacle1_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle1_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle1_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle1_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle1_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle1_Segment3.obj",
+   "glbNode": "Tentacle1_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    5.12476,
+    -2.09088,
+    1.72388,
+    -0.08716,
+    0.58555,
+    -0.80594,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.0,
+    0.80902,
+    0.58779
+   ],
+   "center": [
+    5.12033,
+    -2.09029,
+    1.72014,
+    -0.08716,
+    0.58555,
+    -0.80594,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.0,
+    0.80902,
+    0.58779
+   ],
+   "size": [
+    0.368,
+    1.2426,
+    0.3684
+   ],
+   "replaces": [
+    "Tentacle1_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle1_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle1_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle1_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle1_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle1_Segment4.obj",
+   "glbNode": "Tentacle1_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    5.57722,
+    -2.13046,
+    2.72192,
+    -0.08716,
+    0.17299,
+    -0.98106,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.0,
+    0.98481,
+    0.17365
+   ],
+   "center": [
+    5.57658,
+    -2.12959,
+    2.72196,
+    -0.08716,
+    0.17299,
+    -0.98106,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.0,
+    0.98481,
+    0.17365
+   ],
+   "size": [
+    0.2207,
+    0.9949,
+    0.2208
+   ],
+   "replaces": [
+    "Tentacle1_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle1_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle1_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle1_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle1_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle2_Segment1.obj",
+   "glbNode": "Tentacle2_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    2.02053,
+    -1.874,
+    0.82442,
+    -0.06163,
+    0.85456,
+    0.51569,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.06163,
+    -0.51243,
+    0.85652
+   ],
+   "center": [
+    2.01418,
+    -1.87419,
+    0.83105,
+    -0.06163,
+    0.85456,
+    0.51569,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.06163,
+    -0.51243,
+    0.85652
+   ],
+   "size": [
+    0.6956,
+    1.7455,
+    0.701
+   ],
+   "replaces": [
+    "Tentacle2_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle2_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle2_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle2_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle2_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle2_Segment2.obj",
+   "glbNode": "Tentacle2_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    3.49733,
+    -2.00343,
+    0.20904,
+    -0.06163,
+    0.97209,
+    0.22638,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.06163,
+    -0.22267,
+    0.97294
+   ],
+   "center": [
+    3.49836,
+    -2.0073,
+    0.21136,
+    -0.06163,
+    0.97209,
+    0.22638,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.06163,
+    -0.22267,
+    0.97294
+   ],
+   "size": [
+    0.5428,
+    1.4929,
+    0.5453
+   ],
+   "replaces": [
+    "Tentacle2_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle2_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle2_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle2_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle2_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle2_Segment3.obj",
+   "glbNode": "Tentacle2_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    4.84272,
+    -2.09088,
+    0.1408,
+    -0.06163,
+    0.98611,
+    -0.15426,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.06163,
+    0.15802,
+    0.98551
+   ],
+   "center": [
+    4.84159,
+    -2.09117,
+    0.14059,
+    -0.06163,
+    0.98611,
+    -0.15426,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.06163,
+    0.15802,
+    0.98551
+   ],
+   "size": [
+    0.3782,
+    1.2357,
+    0.3749
+   ],
+   "replaces": [
+    "Tentacle2_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle2_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle2_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle2_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle2_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle2_Segment4.obj",
+   "glbNode": "Tentacle2_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    5.86837,
+    -2.13046,
+    0.52658,
+    -0.06163,
+    0.81868,
+    -0.57093,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.06163,
+    0.57404,
+    0.8165
+   ],
+   "center": [
+    5.86712,
+    -2.13168,
+    0.52598,
+    -0.06163,
+    0.81868,
+    -0.57093,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.06163,
+    0.57404,
+    0.8165
+   ],
+   "size": [
+    0.2104,
+    0.9948,
+    0.2136
+   ],
+   "replaces": [
+    "Tentacle2_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle2_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle2_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle2_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle2_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 178,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle3_Segment1.obj",
+   "glbNode": "Tentacle3_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    0.21168,
+    -1.874,
+    0.95422,
+    0.0,
+    0.24192,
+    0.9703,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.08716,
+    -0.9666,
+    0.241
+   ],
+   "center": [
+    0.21236,
+    -1.87269,
+    0.95774,
+    0.0,
+    0.24192,
+    0.9703,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.08716,
+    -0.9666,
+    0.241
+   ],
+   "size": [
+    0.6861,
+    1.7418,
+    0.6891
+   ],
+   "replaces": [
+    "Tentacle3_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle3_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle3_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle3_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle3_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle3_Segment2.obj",
+   "glbNode": "Tentacle3_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    0.8208,
+    -2.00343,
+    -0.52517,
+    0.0,
+    0.52992,
+    0.84805,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.08716,
+    -0.84482,
+    0.5279
+   ],
+   "center": [
+    0.81921,
+    -2.00131,
+    -0.52192,
+    0.0,
+    0.52992,
+    0.84805,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.08716,
+    -0.84482,
+    0.5279
+   ],
+   "size": [
+    0.5289,
+    1.4958,
+    0.521
+   ],
+   "replaces": [
+    "Tentacle3_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle3_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle3_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle3_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle3_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle1_Segment3.obj",
+   "glbNode": "Tentacle3_Segment3",
+   "sharedWith": "Tentacle1_Segment3",
+   "pivot": [
+    1.72388,
+    -2.09088,
+    -1.52476,
+    0.0,
+    0.80902,
+    0.58779,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.08716,
+    -0.58555,
+    0.80594
+   ],
+   "center": [
+    1.72014,
+    -2.09029,
+    -1.52033,
+    0.0,
+    0.80902,
+    0.58779,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.08716,
+    -0.58555,
+    0.80594
+   ],
+   "size": [
+    0.368,
+    1.2426,
+    0.3684
+   ],
+   "replaces": [
+    "Tentacle3_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle1_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle1_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle1_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle1_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle3_Segment4.obj",
+   "glbNode": "Tentacle3_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    2.72192,
+    -2.13046,
+    -1.97722,
+    0.0,
+    0.98481,
+    0.17365,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.08716,
+    -0.17299,
+    0.98106
+   ],
+   "center": [
+    2.72088,
+    -2.13071,
+    -1.9772,
+    0.0,
+    0.98481,
+    0.17365,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.08716,
+    -0.17299,
+    0.98106
+   ],
+   "size": [
+    0.2191,
+    0.9953,
+    0.2215
+   ],
+   "replaces": [
+    "Tentacle3_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle3_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle3_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle3_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle3_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle4_Segment1.obj",
+   "glbNode": "Tentacle4_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    -1.72117,
+    -1.874,
+    0.52506,
+    0.06163,
+    -0.51243,
+    0.85652,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.06163,
+    -0.85456,
+    -0.51569
+   ],
+   "center": [
+    -1.72043,
+    -1.87814,
+    0.53003,
+    0.06163,
+    -0.51243,
+    0.85652,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.06163,
+    -0.85456,
+    -0.51569
+   ],
+   "size": [
+    0.6809,
+    1.7472,
+    0.6769
+   ],
+   "replaces": [
+    "Tentacle4_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle4_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle4_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle4_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle4_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 174,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle4_Segment2.obj",
+   "glbNode": "Tentacle4_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    -2.33654,
+    -2.00343,
+    -0.95175,
+    0.06163,
+    -0.22267,
+    0.97294,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.06163,
+    -0.97209,
+    -0.22638
+   ],
+   "center": [
+    -2.33418,
+    -2.003,
+    -0.95238,
+    0.06163,
+    -0.22267,
+    0.97294,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.06163,
+    -0.97209,
+    -0.22638
+   ],
+   "size": [
+    0.5311,
+    1.4881,
+    0.5215
+   ],
+   "replaces": [
+    "Tentacle4_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle4_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle4_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle4_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle4_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle4_Segment3.obj",
+   "glbNode": "Tentacle4_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -2.40478,
+    -2.09088,
+    -2.29713,
+    0.06163,
+    0.15802,
+    0.98551,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.06163,
+    -0.98611,
+    0.15426
+   ],
+   "center": [
+    -2.40605,
+    -2.08948,
+    -2.29449,
+    0.06163,
+    0.15802,
+    0.98551,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.06163,
+    -0.98611,
+    0.15426
+   ],
+   "size": [
+    0.3724,
+    1.2412,
+    0.3791
+   ],
+   "replaces": [
+    "Tentacle4_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle4_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle4_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle4_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle4_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle4_Segment4.obj",
+   "glbNode": "Tentacle4_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    -2.019,
+    -2.13046,
+    -3.32279,
+    0.06163,
+    0.57404,
+    0.8165,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.06163,
+    -0.81868,
+    0.57093
+   ],
+   "center": [
+    -2.01844,
+    -2.13016,
+    -3.32228,
+    0.06163,
+    0.57404,
+    0.8165,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.06163,
+    -0.81868,
+    0.57093
+   ],
+   "size": [
+    0.2183,
+    0.9931,
+    0.2192
+   ],
+   "replaces": [
+    "Tentacle4_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle4_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle4_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle4_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle4_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle5_Segment1.obj",
+   "glbNode": "Tentacle5_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    -2.64578,
+    -1.874,
+    -0.21168,
+    0.08716,
+    -0.9666,
+    0.241,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.0,
+    -0.24192,
+    -0.9703
+   ],
+   "center": [
+    -2.64553,
+    -1.87636,
+    -0.21231,
+    0.08716,
+    -0.9666,
+    0.241,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    0.0,
+    -0.24192,
+    -0.9703
+   ],
+   "size": [
+    0.6831,
+    1.7184,
+    0.6791
+   ],
+   "replaces": [
+    "Tentacle5_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle5_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle5_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle5_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle5_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle5_Segment2.obj",
+   "glbNode": "Tentacle5_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    -4.12517,
+    -2.00343,
+    -0.8208,
+    0.08716,
+    -0.84482,
+    0.5279,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.0,
+    -0.52992,
+    -0.84805
+   ],
+   "center": [
+    -4.12635,
+    -2.00137,
+    -0.82339,
+    0.08716,
+    -0.84482,
+    0.5279,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    0.0,
+    -0.52992,
+    -0.84805
+   ],
+   "size": [
+    0.5255,
+    1.5012,
+    0.5218
+   ],
+   "replaces": [
+    "Tentacle5_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle5_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle5_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle5_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle5_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle5_Segment3.obj",
+   "glbNode": "Tentacle5_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -5.12476,
+    -2.09088,
+    -1.72388,
+    0.08716,
+    -0.58555,
+    0.80594,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.0,
+    -0.80902,
+    -0.58779
+   ],
+   "center": [
+    -5.1274,
+    -2.09169,
+    -1.72188,
+    0.08716,
+    -0.58555,
+    0.80594,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    0.0,
+    -0.80902,
+    -0.58779
+   ],
+   "size": [
+    0.3866,
+    1.2425,
+    0.3824
+   ],
+   "replaces": [
+    "Tentacle5_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle5_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle5_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle5_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle5_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle5_Segment4.obj",
+   "glbNode": "Tentacle5_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    -5.57722,
+    -2.13046,
+    -2.72192,
+    0.08716,
+    -0.17299,
+    0.98106,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.0,
+    -0.98481,
+    -0.17365
+   ],
+   "center": [
+    -5.57704,
+    -2.13114,
+    -2.72046,
+    0.08716,
+    -0.17299,
+    0.98106,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    0.0,
+    -0.98481,
+    -0.17365
+   ],
+   "size": [
+    0.2093,
+    0.9949,
+    0.2118
+   ],
+   "replaces": [
+    "Tentacle5_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle5_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle5_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle5_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle5_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle6_Segment1.obj",
+   "glbNode": "Tentacle6_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    -2.02053,
+    -1.874,
+    -0.82442,
+    0.06163,
+    -0.85456,
+    -0.51569,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    -0.06163,
+    0.51243,
+    -0.85652
+   ],
+   "center": [
+    -2.01682,
+    -1.8746,
+    -0.82251,
+    0.06163,
+    -0.85456,
+    -0.51569,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    -0.06163,
+    0.51243,
+    -0.85652
+   ],
+   "size": [
+    0.6912,
+    1.7508,
+    0.695
+   ],
+   "replaces": [
+    "Tentacle6_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle6_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle6_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle6_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle6_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle6_Segment2.obj",
+   "glbNode": "Tentacle6_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    -3.49733,
+    -2.00343,
+    -0.20904,
+    0.06163,
+    -0.97209,
+    -0.22638,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    -0.06163,
+    0.22267,
+    -0.97294
+   ],
+   "center": [
+    -3.49628,
+    -2.00229,
+    -0.20521,
+    0.06163,
+    -0.97209,
+    -0.22638,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    -0.06163,
+    0.22267,
+    -0.97294
+   ],
+   "size": [
+    0.5298,
+    1.4749,
+    0.5233
+   ],
+   "replaces": [
+    "Tentacle6_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle6_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle6_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle6_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle6_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle6_Segment3.obj",
+   "glbNode": "Tentacle6_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -4.84272,
+    -2.09088,
+    -0.1408,
+    0.06163,
+    -0.98611,
+    0.15426,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    -0.06163,
+    -0.15802,
+    -0.98551
+   ],
+   "center": [
+    -4.83611,
+    -2.09242,
+    -0.14184,
+    0.06163,
+    -0.98611,
+    0.15426,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    -0.06163,
+    -0.15802,
+    -0.98551
+   ],
+   "size": [
+    0.3727,
+    1.2456,
+    0.3726
+   ],
+   "replaces": [
+    "Tentacle6_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle6_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle6_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle6_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle6_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle6_Segment4.obj",
+   "glbNode": "Tentacle6_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    -5.86837,
+    -2.13046,
+    -0.52658,
+    0.06163,
+    -0.81868,
+    0.57093,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    -0.06163,
+    -0.57404,
+    -0.8165
+   ],
+   "center": [
+    -5.86675,
+    -2.13104,
+    -0.52622,
+    0.06163,
+    -0.81868,
+    0.57093,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    -0.06163,
+    -0.57404,
+    -0.8165
+   ],
+   "size": [
+    0.2188,
+    0.9859,
+    0.2216
+   ],
+   "replaces": [
+    "Tentacle6_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle6_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle6_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle6_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle6_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle6_Segment1.obj",
+   "glbNode": "Tentacle7_Segment1",
+   "sharedWith": "Tentacle6_Segment1",
+   "pivot": [
+    -0.21168,
+    -1.874,
+    -0.95422,
+    0.0,
+    -0.24192,
+    -0.9703,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    -0.08716,
+    0.9666,
+    -0.241
+   ],
+   "center": [
+    -0.2077,
+    -1.8746,
+    -0.9555,
+    0.0,
+    -0.24192,
+    -0.9703,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    -0.08716,
+    0.9666,
+    -0.241
+   ],
+   "size": [
+    0.6912,
+    1.7508,
+    0.695
+   ],
+   "replaces": [
+    "Tentacle7_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle6_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle6_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle6_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle6_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle7_Segment2.obj",
+   "glbNode": "Tentacle7_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    -0.8208,
+    -2.00343,
+    0.52517,
+    0.0,
+    -0.52992,
+    -0.84805,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    -0.08716,
+    0.84482,
+    -0.5279
+   ],
+   "center": [
+    -0.81722,
+    -2.0042,
+    0.5236,
+    0.0,
+    -0.52992,
+    -0.84805,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    -0.08716,
+    0.84482,
+    -0.5279
+   ],
+   "size": [
+    0.527,
+    1.4971,
+    0.5341
+   ],
+   "replaces": [
+    "Tentacle7_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle7_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle7_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle7_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle7_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle5_Segment3.obj",
+   "glbNode": "Tentacle7_Segment3",
+   "sharedWith": "Tentacle5_Segment3",
+   "pivot": [
+    -1.72388,
+    -2.09088,
+    1.52476,
+    0.0,
+    -0.80902,
+    -0.58779,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    -0.08716,
+    0.58555,
+    -0.80594
+   ],
+   "center": [
+    -1.72188,
+    -2.09169,
+    1.5274,
+    0.0,
+    -0.80902,
+    -0.58779,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    -0.08716,
+    0.58555,
+    -0.80594
+   ],
+   "size": [
+    0.3866,
+    1.2425,
+    0.3824
+   ],
+   "replaces": [
+    "Tentacle7_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle5_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle5_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle5_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle5_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle3_Segment4.obj",
+   "glbNode": "Tentacle7_Segment4",
+   "sharedWith": "Tentacle3_Segment4",
+   "pivot": [
+    -2.72192,
+    -2.13046,
+    1.97722,
+    0.0,
+    -0.98481,
+    -0.17365,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    -0.08716,
+    0.17299,
+    -0.98106
+   ],
+   "center": [
+    -2.72088,
+    -2.13071,
+    1.9772,
+    0.0,
+    -0.98481,
+    -0.17365,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    -0.08716,
+    0.17299,
+    -0.98106
+   ],
+   "size": [
+    0.2191,
+    0.9953,
+    0.2215
+   ],
+   "replaces": [
+    "Tentacle7_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle3_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle3_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle3_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle3_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle8_Segment1.obj",
+   "glbNode": "Tentacle8_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    1.72117,
+    -1.874,
+    -0.52506,
+    -0.06163,
+    0.51243,
+    -0.85652,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    -0.06163,
+    0.85456,
+    0.51569
+   ],
+   "center": [
+    1.72479,
+    -1.87217,
+    -0.53124,
+    -0.06163,
+    0.51243,
+    -0.85652,
+    -0.99619,
+    -0.08457,
+    0.02108,
+    -0.06163,
+    0.85456,
+    0.51569
+   ],
+   "size": [
+    0.6875,
+    1.7329,
+    0.6881
+   ],
+   "replaces": [
+    "Tentacle8_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle8_Segment1_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle8_Segment1_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle8_Segment1_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle8_Segment1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle4_Segment2.obj",
+   "glbNode": "Tentacle8_Segment2",
+   "sharedWith": "Tentacle4_Segment2",
+   "pivot": [
+    2.33654,
+    -2.00343,
+    0.95175,
+    -0.06163,
+    0.22267,
+    -0.97294,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    -0.06163,
+    0.97209,
+    0.22638
+   ],
+   "center": [
+    2.33418,
+    -2.003,
+    0.95238,
+    -0.06163,
+    0.22267,
+    -0.97294,
+    -0.99619,
+    -0.07391,
+    0.04619,
+    -0.06163,
+    0.97209,
+    0.22638
+   ],
+   "size": [
+    0.5311,
+    1.4881,
+    0.5215
+   ],
+   "replaces": [
+    "Tentacle8_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle4_Segment2_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle4_Segment2_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle4_Segment2_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle4_Segment2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle8_Segment3.obj",
+   "glbNode": "Tentacle8_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    2.40478,
+    -2.09088,
+    2.29713,
+    -0.06163,
+    -0.15802,
+    -0.98551,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    -0.06163,
+    0.98611,
+    -0.15426
+   ],
+   "center": [
+    2.40493,
+    -2.09053,
+    2.29683,
+    -0.06163,
+    -0.15802,
+    -0.98551,
+    -0.99619,
+    -0.05123,
+    0.07051,
+    -0.06163,
+    0.98611,
+    -0.15426
+   ],
+   "size": [
+    0.3698,
+    1.2426,
+    0.3716
+   ],
+   "replaces": [
+    "Tentacle8_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle8_Segment3_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle8_Segment3_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle8_Segment3_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle8_Segment3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment4",
+   "primary": false,
+   "animated": true,
+   "file": "ShadowKraken_Tentacle8_Segment4.obj",
+   "glbNode": "Tentacle8_Segment4",
+   "sharedWith": null,
+   "pivot": [
+    2.019,
+    -2.13046,
+    3.32279,
+    -0.06163,
+    -0.57404,
+    -0.8165,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    -0.06163,
+    0.81868,
+    -0.57093
+   ],
+   "center": [
+    2.01914,
+    -2.13101,
+    3.32343,
+    -0.06163,
+    -0.57404,
+    -0.8165,
+    -0.99619,
+    -0.01513,
+    0.08583,
+    -0.06163,
+    0.81868,
+    -0.57093
+   ],
+   "size": [
+    0.2147,
+    0.9924,
+    0.2122
+   ],
+   "replaces": [
+    "Tentacle8_Segment4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ShadowKraken_Tentacle8_Segment4_ColorMap.png",
+    "NormalMap": "ShadowKraken_Tentacle8_Segment4_NormalMap.png",
+    "RoughnessMap": "ShadowKraken_Tentacle8_Segment4_RoughnessMap.png",
+    "MetalnessMap": "ShadowKraken_Tentacle8_Segment4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

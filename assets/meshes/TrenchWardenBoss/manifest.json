@@ -1,0 +1,2033 @@
+{
+ "model": "TrenchWardenBoss",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 13736,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "TrenchWardenBoss_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00617,
+    0.00464,
+    -0.42214,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    9.5255,
+    8.0361,
+    9.0516
+   ],
+   "replaces": [
+    "Body",
+    "ChestPlate1",
+    "ChestPlate2",
+    "ChestPlate3",
+    "WeakSpotCore",
+    "Beak",
+    "UpperSnout",
+    "Tooth1",
+    "Tooth2",
+    "Tooth3",
+    "Tooth4"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.769,
+    "Foil": 0.199,
+    "Granite": 0.017,
+    "Neon": 0.007,
+    "SmoothPlastic": 0.007
+   },
+   "neon": {
+    "fraction": 0.0073,
+    "parts": [
+     "WeakSpotCore"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Body_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Body_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Body_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Body_MetalnessMap.png",
+    "EmissiveMask": "TrenchWardenBoss_Body_EmissiveMask.png"
+   },
+   "tris": 3400,
+   "verts": 2276,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Mantle",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Mantle.obj",
+   "glbNode": "Mantle",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    2.9,
+    -0.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00282,
+    3.34136,
+    -0.6784,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    5.8304,
+    4.8763,
+    5.9478
+   ],
+   "replaces": [
+    "Mantle",
+    "MantleGoldBand",
+    "CrownSpike1",
+    "CrownSpike2",
+    "CrownSpike3",
+    "CrownSpike4",
+    "CrownSpike5"
+   ],
+   "material": "Foil",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.479,
+    "Foil": 0.521
+   },
+   "neon": {
+    "fraction": 0.521,
+    "parts": [
+     "MantleGoldBand",
+     "CrownSpike1",
+     "CrownSpike2",
+     "CrownSpike3",
+     "CrownSpike4",
+     "CrownSpike5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Mantle_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Mantle_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Mantle_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Mantle_MetalnessMap.png",
+    "EmissiveMask": "TrenchWardenBoss_Mantle_EmissiveMask.png"
+   },
+   "tris": 1680,
+   "verts": 1395,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    2.0,
+    0.9,
+    -3.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.79894,
+    0.79572,
+    -3.20259,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.17,
+    2.17,
+    2.17
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Highlight",
+    "Eyebrow1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "Eye1Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Eye1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Eye1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Eye1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Eye1_MetalnessMap.png",
+    "EmissiveMask": "TrenchWardenBoss_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Eye2.obj",
+   "glbNode": "Eye2",
+   "sharedWith": null,
+   "pivot": [
+    -2.0,
+    0.9,
+    -3.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.79894,
+    0.79572,
+    -3.20259,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.17,
+    2.17,
+    2.17
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Highlight",
+    "Eyebrow2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "Eye2Highlight"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Eye2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Eye2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Eye2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Eye2_MetalnessMap.png",
+    "EmissiveMask": "TrenchWardenBoss_Eye2_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LureOrb",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_LureOrb.obj",
+   "glbNode": "LureOrb",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    6.1104,
+    -1.71397,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.66913,
+    0.74314,
+    0.0,
+    -0.74314,
+    0.66913
+   ],
+   "center": [
+    -0.00144,
+    5.18604,
+    -1.07936,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.66913,
+    0.74314,
+    0.0,
+    -0.74314,
+    0.66913
+   ],
+   "size": [
+    0.8888,
+    3.0925,
+    1.4128
+   ],
+   "replaces": [
+    "LureOrb",
+    "LureStalk1",
+    "LureStalk2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.491,
+    "Neon": 0.509
+   },
+   "neon": {
+    "fraction": 0.509,
+    "parts": [
+     "LureOrb"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_LureOrb_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_LureOrb_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_LureOrb_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_LureOrb_MetalnessMap.png",
+    "EmissiveMask": "TrenchWardenBoss_LureOrb_EmissiveMask.png"
+   },
+   "tris": 400,
+   "verts": 318,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle1_Segment1.obj",
+   "glbNode": "Tentacle1_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    4.24338,
+    -2.92628,
+    0.38823,
+    -0.08716,
+    0.96225,
+    -0.25783,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.0,
+    0.25882,
+    0.96593
+   ],
+   "center": [
+    4.2526,
+    -2.92462,
+    0.39476,
+    -0.08716,
+    0.96225,
+    -0.25783,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.0,
+    0.25882,
+    0.96593
+   ],
+   "size": [
+    1.2174,
+    2.9936,
+    1.21
+   ],
+   "replaces": [
+    "Tentacle1_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle1_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle1_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle1_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle1_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 220,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle1_Segment2.obj",
+   "glbNode": "Tentacle1_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    6.7476,
+    -3.14537,
+    1.52211,
+    -0.08716,
+    0.81603,
+    -0.57139,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.0,
+    0.57358,
+    0.81915
+   ],
+   "center": [
+    6.74881,
+    -3.14957,
+    1.52404,
+    -0.08716,
+    0.81603,
+    -0.57139,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.0,
+    0.57358,
+    0.81915
+   ],
+   "size": [
+    0.9779,
+    2.5583,
+    0.9611
+   ],
+   "replaces": [
+    "Tentacle1_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle1_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle1_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle1_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle1_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 226,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle1_Segment3.obj",
+   "glbNode": "Tentacle1_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    8.35635,
+    -3.28612,
+    3.22038,
+    -0.08716,
+    0.4981,
+    -0.86273,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.0,
+    0.86603,
+    0.5
+   ],
+   "center": [
+    8.34994,
+    -3.2921,
+    3.22463,
+    -0.08716,
+    0.4981,
+    -0.86273,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.0,
+    0.86603,
+    0.5
+   ],
+   "size": [
+    0.7231,
+    2.1981,
+    0.7204
+   ],
+   "replaces": [
+    "Tentacle1_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle1_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle1_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle1_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle1_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 216,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle2_Segment1.obj",
+   "glbNode": "Tentacle2_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    3.27504,
+    -2.92628,
+    1.2338,
+    -0.06163,
+    0.86343,
+    0.5007,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.06163,
+    -0.4974,
+    0.86533
+   ],
+   "center": [
+    3.26579,
+    -2.92342,
+    1.23443,
+    -0.06163,
+    0.86343,
+    0.5007,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.06163,
+    -0.4974,
+    0.86533
+   ],
+   "size": [
+    1.234,
+    2.9967,
+    1.2219
+   ],
+   "replaces": [
+    "Tentacle2_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle2_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle2_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle2_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle2_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 218,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle2_Segment2.obj",
+   "glbNode": "Tentacle2_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    5.84756,
+    -3.14537,
+    0.26482,
+    -0.06163,
+    0.9826,
+    0.17519,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.06163,
+    -0.17144,
+    0.98326
+   ],
+   "center": [
+    5.83991,
+    -3.14485,
+    0.2628,
+    -0.06163,
+    0.9826,
+    0.17519,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.06163,
+    -0.17144,
+    0.98326
+   ],
+   "size": [
+    0.978,
+    2.5837,
+    0.9801
+   ],
+   "replaces": [
+    "Tentacle2_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle2_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle2_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle2_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle2_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 223,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle2_Segment3.obj",
+   "glbNode": "Tentacle2_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    8.18599,
+    -3.28612,
+    0.32812,
+    -0.06163,
+    0.96458,
+    -0.25649,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.06163,
+    0.26016,
+    0.9636
+   ],
+   "center": [
+    8.19162,
+    -3.28708,
+    0.33229,
+    -0.06163,
+    0.96458,
+    -0.25649,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.06163,
+    0.26016,
+    0.9636
+   ],
+   "size": [
+    0.7263,
+    2.1784,
+    0.7305
+   ],
+   "replaces": [
+    "Tentacle2_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle2_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle2_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle2_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle2_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 220,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle3_Segment1.obj",
+   "glbNode": "Tentacle3_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    0.38823,
+    -2.92628,
+    1.35662,
+    0.0,
+    0.25882,
+    0.96593,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.08716,
+    -0.96225,
+    0.25783
+   ],
+   "center": [
+    0.37988,
+    -2.9216,
+    1.36697,
+    0.0,
+    0.25882,
+    0.96593,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.08716,
+    -0.96225,
+    0.25783
+   ],
+   "size": [
+    1.2566,
+    2.9769,
+    1.2306
+   ],
+   "replaces": [
+    "Tentacle3_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle3_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle3_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle3_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle3_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 219,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle3_Segment2.obj",
+   "glbNode": "Tentacle3_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    1.52211,
+    -3.14537,
+    -1.1476,
+    0.0,
+    0.57358,
+    0.81915,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.08716,
+    -0.81603,
+    0.57139
+   ],
+   "center": [
+    1.52391,
+    -3.14335,
+    -1.15159,
+    0.0,
+    0.57358,
+    0.81915,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.08716,
+    -0.81603,
+    0.57139
+   ],
+   "size": [
+    0.9596,
+    2.5732,
+    0.9661
+   ],
+   "replaces": [
+    "Tentacle3_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle3_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle3_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle3_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle3_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 220,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle3_Segment3.obj",
+   "glbNode": "Tentacle3_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    3.22038,
+    -3.28612,
+    -2.75635,
+    0.0,
+    0.86603,
+    0.5,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.08716,
+    -0.4981,
+    0.86273
+   ],
+   "center": [
+    3.22176,
+    -3.28849,
+    -2.75322,
+    0.0,
+    0.86603,
+    0.5,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.08716,
+    -0.4981,
+    0.86273
+   ],
+   "size": [
+    0.7213,
+    2.1971,
+    0.7226
+   ],
+   "replaces": [
+    "Tentacle3_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle3_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle3_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle3_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle3_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 234,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle4_Segment1.obj",
+   "glbNode": "Tentacle4_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    -2.726,
+    -2.92628,
+    0.68476,
+    0.06163,
+    -0.4974,
+    0.86533,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.06163,
+    -0.86343,
+    -0.5007
+   ],
+   "center": [
+    -2.72423,
+    -2.92878,
+    0.67044,
+    0.06163,
+    -0.4974,
+    0.86533,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.06163,
+    -0.86343,
+    -0.5007
+   ],
+   "size": [
+    1.2189,
+    2.9583,
+    1.2198
+   ],
+   "replaces": [
+    "Tentacle4_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle4_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle4_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle4_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle4_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 217,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle4_Segment2.obj",
+   "glbNode": "Tentacle4_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    -3.69498,
+    -3.14537,
+    -1.88776,
+    0.06163,
+    -0.17144,
+    0.98326,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.06163,
+    -0.9826,
+    -0.17519
+   ],
+   "center": [
+    -3.70169,
+    -3.14772,
+    -1.90182,
+    0.06163,
+    -0.17144,
+    0.98326,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.06163,
+    -0.9826,
+    -0.17519
+   ],
+   "size": [
+    0.9666,
+    2.588,
+    0.9784
+   ],
+   "replaces": [
+    "Tentacle4_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle4_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle4_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle4_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle4_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 219,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle4_Segment3.obj",
+   "glbNode": "Tentacle4_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -3.63168,
+    -3.28612,
+    -4.22619,
+    0.06163,
+    0.26016,
+    0.9636,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.06163,
+    -0.96458,
+    0.25649
+   ],
+   "center": [
+    -3.62934,
+    -3.28567,
+    -4.22949,
+    0.06163,
+    0.26016,
+    0.9636,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.06163,
+    -0.96458,
+    0.25649
+   ],
+   "size": [
+    0.7356,
+    2.2094,
+    0.7363
+   ],
+   "replaces": [
+    "Tentacle4_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle4_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle4_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle4_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle4_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 217,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle1_Segment1.obj",
+   "glbNode": "Tentacle5_Segment1",
+   "sharedWith": "Tentacle1_Segment1",
+   "pivot": [
+    -4.24338,
+    -2.92628,
+    -0.38823,
+    0.08716,
+    -0.96225,
+    0.25783,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.0,
+    -0.25882,
+    -0.96593
+   ],
+   "center": [
+    -4.2526,
+    -2.92462,
+    -0.39476,
+    0.08716,
+    -0.96225,
+    0.25783,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    0.0,
+    -0.25882,
+    -0.96593
+   ],
+   "size": [
+    1.2174,
+    2.9936,
+    1.21
+   ],
+   "replaces": [
+    "Tentacle5_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle1_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle1_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle1_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle1_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 220,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle1_Segment2.obj",
+   "glbNode": "Tentacle5_Segment2",
+   "sharedWith": "Tentacle1_Segment2",
+   "pivot": [
+    -6.7476,
+    -3.14537,
+    -1.52211,
+    0.08716,
+    -0.81603,
+    0.57139,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.0,
+    -0.57358,
+    -0.81915
+   ],
+   "center": [
+    -6.74881,
+    -3.14957,
+    -1.52404,
+    0.08716,
+    -0.81603,
+    0.57139,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    0.0,
+    -0.57358,
+    -0.81915
+   ],
+   "size": [
+    0.9779,
+    2.5583,
+    0.9611
+   ],
+   "replaces": [
+    "Tentacle5_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle1_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle1_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle1_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle1_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 226,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle5_Segment3.obj",
+   "glbNode": "Tentacle5_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -8.35635,
+    -3.28612,
+    -3.22038,
+    0.08716,
+    -0.4981,
+    0.86273,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.0,
+    -0.86603,
+    -0.5
+   ],
+   "center": [
+    -8.35744,
+    -3.28646,
+    -3.22009,
+    0.08716,
+    -0.4981,
+    0.86273,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    0.0,
+    -0.86603,
+    -0.5
+   ],
+   "size": [
+    0.7371,
+    2.2026,
+    0.736
+   ],
+   "replaces": [
+    "Tentacle5_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle5_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle5_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle5_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle5_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 212,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle2_Segment1.obj",
+   "glbNode": "Tentacle6_Segment1",
+   "sharedWith": "Tentacle2_Segment1",
+   "pivot": [
+    -3.27504,
+    -2.92628,
+    -1.2338,
+    0.06163,
+    -0.86343,
+    -0.5007,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    -0.06163,
+    0.4974,
+    -0.86533
+   ],
+   "center": [
+    -3.26579,
+    -2.92342,
+    -1.23443,
+    0.06163,
+    -0.86343,
+    -0.5007,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    -0.06163,
+    0.4974,
+    -0.86533
+   ],
+   "size": [
+    1.234,
+    2.9967,
+    1.2219
+   ],
+   "replaces": [
+    "Tentacle6_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle2_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle2_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle2_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle2_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 218,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle2_Segment2.obj",
+   "glbNode": "Tentacle6_Segment2",
+   "sharedWith": "Tentacle2_Segment2",
+   "pivot": [
+    -5.84756,
+    -3.14537,
+    -0.26482,
+    0.06163,
+    -0.9826,
+    -0.17519,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    -0.06163,
+    0.17144,
+    -0.98326
+   ],
+   "center": [
+    -5.83991,
+    -3.14485,
+    -0.2628,
+    0.06163,
+    -0.9826,
+    -0.17519,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    -0.06163,
+    0.17144,
+    -0.98326
+   ],
+   "size": [
+    0.978,
+    2.5837,
+    0.9801
+   ],
+   "replaces": [
+    "Tentacle6_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle2_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle2_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle2_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle2_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 223,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle6_Segment3.obj",
+   "glbNode": "Tentacle6_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -8.18599,
+    -3.28612,
+    -0.32812,
+    0.06163,
+    -0.96458,
+    0.25649,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    -0.06163,
+    -0.26016,
+    -0.9636
+   ],
+   "center": [
+    -8.19047,
+    -3.28806,
+    -0.32898,
+    0.06163,
+    -0.96458,
+    0.25649,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    -0.06163,
+    -0.26016,
+    -0.9636
+   ],
+   "size": [
+    0.7294,
+    2.2033,
+    0.7363
+   ],
+   "replaces": [
+    "Tentacle6_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle6_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle6_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle6_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle6_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 217,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle7_Segment1.obj",
+   "glbNode": "Tentacle7_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    -0.38823,
+    -2.92628,
+    -1.35662,
+    0.0,
+    -0.25882,
+    -0.96593,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    -0.08716,
+    0.96225,
+    -0.25783
+   ],
+   "center": [
+    -0.38993,
+    -2.92261,
+    -1.35519,
+    0.0,
+    -0.25882,
+    -0.96593,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    -0.08716,
+    0.96225,
+    -0.25783
+   ],
+   "size": [
+    1.2299,
+    2.9728,
+    1.2353
+   ],
+   "replaces": [
+    "Tentacle7_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle7_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle7_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle7_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle7_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 223,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle7_Segment2.obj",
+   "glbNode": "Tentacle7_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    -1.52211,
+    -3.14537,
+    1.1476,
+    0.0,
+    -0.57358,
+    -0.81915,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    -0.08716,
+    0.81603,
+    -0.57139
+   ],
+   "center": [
+    -1.52481,
+    -3.14446,
+    1.14667,
+    0.0,
+    -0.57358,
+    -0.81915,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    -0.08716,
+    0.81603,
+    -0.57139
+   ],
+   "size": [
+    0.9793,
+    2.5953,
+    0.9967
+   ],
+   "replaces": [
+    "Tentacle7_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle7_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle7_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle7_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle7_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 221,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle7_Segment3.obj",
+   "glbNode": "Tentacle7_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    -3.22038,
+    -3.28612,
+    2.75635,
+    0.0,
+    -0.86603,
+    -0.5,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    -0.08716,
+    0.4981,
+    -0.86273
+   ],
+   "center": [
+    -3.22217,
+    -3.28765,
+    2.75583,
+    0.0,
+    -0.86603,
+    -0.5,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    -0.08716,
+    0.4981,
+    -0.86273
+   ],
+   "size": [
+    0.7296,
+    2.1693,
+    0.747
+   ],
+   "replaces": [
+    "Tentacle7_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle7_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle7_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle7_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle7_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 216,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle8_Segment1.obj",
+   "glbNode": "Tentacle8_Segment1",
+   "sharedWith": null,
+   "pivot": [
+    2.726,
+    -2.92628,
+    -0.68476,
+    -0.06163,
+    0.4974,
+    -0.86533,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    -0.06163,
+    0.86343,
+    0.5007
+   ],
+   "center": [
+    2.72298,
+    -2.92735,
+    -0.68654,
+    -0.06163,
+    0.4974,
+    -0.86533,
+    -0.99619,
+    -0.08419,
+    0.02256,
+    -0.06163,
+    0.86343,
+    0.5007
+   ],
+   "size": [
+    1.236,
+    2.9962,
+    1.2542
+   ],
+   "replaces": [
+    "Tentacle8_Segment1"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle8_Segment1_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle8_Segment1_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle8_Segment1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle8_Segment1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 217,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle8_Segment2.obj",
+   "glbNode": "Tentacle8_Segment2",
+   "sharedWith": null,
+   "pivot": [
+    3.69498,
+    -3.14537,
+    1.88776,
+    -0.06163,
+    0.17144,
+    -0.98326,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    -0.06163,
+    0.9826,
+    0.17519
+   ],
+   "center": [
+    3.69699,
+    -3.14048,
+    1.895,
+    -0.06163,
+    0.17144,
+    -0.98326,
+    -0.99619,
+    -0.07139,
+    0.04999,
+    -0.06163,
+    0.9826,
+    0.17519
+   ],
+   "size": [
+    0.9819,
+    2.58,
+    0.9959
+   ],
+   "replaces": [
+    "Tentacle8_Segment2"
+   ],
+   "material": "Basalt",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle8_Segment2_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle8_Segment2_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle8_Segment2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle8_Segment2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 217,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8_Segment3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWardenBoss_Tentacle8_Segment3.obj",
+   "glbNode": "Tentacle8_Segment3",
+   "sharedWith": null,
+   "pivot": [
+    3.63168,
+    -3.28612,
+    4.22619,
+    -0.06163,
+    -0.26016,
+    -0.9636,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    -0.06163,
+    0.96458,
+    -0.25649
+   ],
+   "center": [
+    3.63019,
+    -3.28554,
+    4.22063,
+    -0.06163,
+    -0.26016,
+    -0.9636,
+    -0.99619,
+    -0.04358,
+    0.07548,
+    -0.06163,
+    0.96458,
+    -0.25649
+   ],
+   "size": [
+    0.7277,
+    2.1846,
+    0.7125
+   ],
+   "replaces": [
+    "Tentacle8_Segment3"
+   ],
+   "material": "CorrodedMetal",
+   "transparency": 0.0,
+   "materialMix": {
+    "CorrodedMetal": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWardenBoss_Tentacle8_Segment3_ColorMap.png",
+    "NormalMap": "TrenchWardenBoss_Tentacle8_Segment3_NormalMap.png",
+    "RoughnessMap": "TrenchWardenBoss_Tentacle8_Segment3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWardenBoss_Tentacle8_Segment3_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 216,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
