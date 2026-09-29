@@ -8,7 +8,9 @@ class Config(CreatureCfg):
     name = "GlowRay"
     iris_color = (0.2, 0.4, 0.85)
     ao_radius = 0.1
-    eye_inset = -0.1
+    eye_inset = 0.0
+    eye_gaze_forward = True
+    eye_gaze = (0.0, 0.6, -1.0)          # thin flat body: look forward and up so the pupils show from above
     wobble = 0.004
     blend_tau = 0.025
     decal_re = r"Blush|Mouth|Smile|Seam|Highlight|Glint|Pupil|GlowRim|Spot|GillSlit"

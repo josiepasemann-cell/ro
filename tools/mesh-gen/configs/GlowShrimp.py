@@ -8,6 +8,7 @@ class Config(CreatureCfg):
     name = "GlowShrimp"
     iris_color = (0.3, 0.15, 0.05)
     ao_radius = 0.09
+    eye_gaze_forward = True
     eye_inset = -0.1
     wobble = 0.004
     blend_tau = 0.03

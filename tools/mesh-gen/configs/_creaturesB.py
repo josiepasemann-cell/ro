@@ -188,6 +188,32 @@ def install():
         extra = cfg.paint(g, field) if hasattr(cfg, "paint") else []
         return orig(g, field, geo, list(decals) + list(extra), occluders, cfg, *a, **kw)
     pm.bake_surface = wrapped
+
+    orig_eye = pm.build_eye
+
+    def eye(gname, members, anchor, cfg, log, *a, **kw):
+        if getattr(cfg, "eye_gaze_forward", False):        # old buildscript pupils look sideways/backwards: rotate them to -Z
+            import re as _re
+            balls = [p for p in members if not p.hidden and p.kind == "ellipsoid" and not _re.search(r"Pupil|Glint|Highlight", p.name)]
+            ball = max(balls, key=lambda p: np.prod(p.size))
+            c = ball.M[:3, 3].copy()
+            pup = next((p for p in members if p is not ball and "Pupil" in p.name), None)
+            if pup is not None:
+                o = pup.M[:3, 3] - c
+                a0 = o / np.linalg.norm(o)
+                b0 = np.asarray(getattr(cfg, "eye_gaze", (0.0, 0.0, -1.0)), float); b0 = b0 / np.linalg.norm(b0)
+                v = np.cross(a0, b0)
+                cs = float(a0 @ b0)
+                if np.linalg.norm(v) > 1e-6:
+                    K = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+                    Rm = np.eye(3) + K + K @ K / (1 + cs)
+                    for p in members:
+                        if p is not ball and _re.search(r"Pupil|Glint|Highlight", p.name):
+                            p.M = p.M.copy()
+                            p.M[:3, 3] = c + Rm @ (p.M[:3, 3] - c)
+                            p.cf = p.M if False else p.cf
+        return orig_eye(gname, members, anchor, cfg, log, *a, **kw)
+    pm.build_eye = eye
     _installed = True
 
 

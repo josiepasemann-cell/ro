@@ -1,0 +1,780 @@
+{
+ "model": "FrostAnglerPup",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 5296,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "FrostAnglerPup_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00269,
+    0.08763,
+    0.14934,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.7952,
+    1.8445,
+    2.6821
+   ],
+   "replaces": [
+    "Body",
+    "Belly",
+    "FrostCrystal1",
+    "FrostCrystal2",
+    "FrostCrystal3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Ice": 0.035,
+    "SmoothPlastic": 0.965
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_Body_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_Body_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_Body_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_Body_MetalnessMap.png"
+   },
+   "tris": 2400,
+   "verts": 1553,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.42,
+    0.23,
+    -1.25,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.34247,
+    0.18038,
+    -1.02282,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.42,
+    0.4188,
+    0.3191
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeWhite1",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_Eye1_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_Eye1_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_Eye1_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_Eye1_MetalnessMap.png",
+    "EmissiveMask": "FrostAnglerPup_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.42,
+    0.23,
+    -1.25,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.49753,
+    0.18038,
+    -1.02282,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.42,
+    0.4188,
+    0.3191
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeWhite2",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_Eye1_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_Eye1_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_Eye1_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_Eye1_MetalnessMap.png",
+    "EmissiveMask": "FrostAnglerPup_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LureOrb",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_LureOrb.obj",
+   "glbNode": "LureOrb",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.02973,
+    -0.53304,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "center": [
+    0.00217,
+    0.78075,
+    -0.67386,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "size": [
+    0.3479,
+    0.9166,
+    0.3913
+   ],
+   "replaces": [
+    "LureOrb",
+    "LureStalk",
+    "LureStalkTip"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Ice": 0.432,
+    "Neon": 0.568
+   },
+   "neon": {
+    "fraction": 0.5683,
+    "parts": [
+     "LureOrb"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_LureOrb_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_LureOrb_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_LureOrb_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_LureOrb_MetalnessMap.png",
+    "EmissiveMask": "FrostAnglerPup_LureOrb_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 290,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    -0.65,
+    -0.1,
+    0.3,
+    -0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.65113,
+    -0.09864,
+    0.29681,
+    -0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1352,
+    0.4939,
+    0.6883
+   ],
+   "replaces": [
+    "SideFin1"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_SideFin1_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_SideFin1_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_SideFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 206,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1B",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_SideFin1B.obj",
+   "glbNode": "SideFin1B",
+   "sharedWith": null,
+   "pivot": [
+    -0.81407,
+    -0.19991,
+    0.55,
+    -0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.8147,
+    -0.19871,
+    0.55007,
+    -0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1146,
+    0.3483,
+    0.4493
+   ],
+   "replaces": [
+    "SideFin1B"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_SideFin1B_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_SideFin1B_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_SideFin1B_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_SideFin1B_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 214,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    0.65,
+    -0.1,
+    0.3,
+    -0.93969,
+    -0.34202,
+    0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.65006,
+    -0.0995,
+    0.30108,
+    -0.93969,
+    -0.34202,
+    0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1401,
+    0.4991,
+    0.6955
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_SideFin2_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_SideFin2_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_SideFin2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 196,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2B",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_SideFin2B.obj",
+   "glbNode": "SideFin2B",
+   "sharedWith": null,
+   "pivot": [
+    0.81407,
+    -0.19991,
+    0.55,
+    -0.93969,
+    -0.34202,
+    0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.81417,
+    -0.19975,
+    0.55028,
+    -0.93969,
+    -0.34202,
+    0.0,
+    -0.34202,
+    0.93969,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1204,
+    0.3412,
+    0.447
+   ],
+   "replaces": [
+    "SideFin2B"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_SideFin2B_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_SideFin2B_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_SideFin2B_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_SideFin2B_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin1",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_TailFin1.obj",
+   "glbNode": "TailFin1",
+   "sharedWith": null,
+   "pivot": [
+    -0.09365,
+    0.0,
+    1.2818,
+    -0.92718,
+    0.0,
+    0.37461,
+    0.0,
+    1.0,
+    0.0,
+    -0.37461,
+    0.0,
+    -0.92718
+   ],
+   "center": [
+    -0.09464,
+    -0.00049,
+    1.28289,
+    -0.92718,
+    0.0,
+    0.37461,
+    0.0,
+    1.0,
+    0.0,
+    -0.37461,
+    0.0,
+    -0.92718
+   ],
+   "size": [
+    0.1197,
+    0.5414,
+    0.492
+   ],
+   "replaces": [
+    "TailFin1"
+   ],
+   "material": "Glass",
+   "transparency": 0.35,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_TailFin1_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_TailFin1_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_TailFin1_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_TailFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 200,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_TailFin1.obj",
+   "glbNode": "TailFin",
+   "sharedWith": "TailFin1",
+   "pivot": [
+    0.0,
+    0.0,
+    1.3,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.00051,
+    -0.00049,
+    1.30138,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1197,
+    0.5414,
+    0.492
+   ],
+   "replaces": [
+    "TailFin"
+   ],
+   "material": "Glass",
+   "transparency": 0.35,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_TailFin1_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_TailFin1_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_TailFin1_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_TailFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 200,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin3",
+   "primary": false,
+   "animated": true,
+   "file": "FrostAnglerPup_TailFin3.obj",
+   "glbNode": "TailFin3",
+   "sharedWith": null,
+   "pivot": [
+    0.09365,
+    0.0,
+    1.2818,
+    -0.92718,
+    0.0,
+    -0.37461,
+    0.0,
+    1.0,
+    0.0,
+    0.37461,
+    0.0,
+    -0.92718
+   ],
+   "center": [
+    0.0936,
+    0.00043,
+    1.28025,
+    -0.92718,
+    0.0,
+    -0.37461,
+    0.0,
+    1.0,
+    0.0,
+    0.37461,
+    0.0,
+    -0.92718
+   ],
+   "size": [
+    0.1176,
+    0.5417,
+    0.4891
+   ],
+   "replaces": [
+    "TailFin3"
+   ],
+   "material": "Glass",
+   "transparency": 0.35,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "FrostAnglerPup_TailFin3_ColorMap.png",
+    "NormalMap": "FrostAnglerPup_TailFin3_NormalMap.png",
+    "RoughnessMap": "FrostAnglerPup_TailFin3_RoughnessMap.png",
+    "MetalnessMap": "FrostAnglerPup_TailFin3_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 210,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
