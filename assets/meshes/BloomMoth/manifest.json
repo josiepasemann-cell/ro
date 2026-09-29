@@ -1,0 +1,1351 @@
+{
+ "model": "BloomMoth",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 6996,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "BloomMoth_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00068,
+    -0.0568,
+    -0.19495,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.0008,
+    1.014,
+    2.392
+   ],
+   "replaces": [
+    "Body",
+    "Belly",
+    "Head"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_Body_ColorMap.png",
+    "NormalMap": "BloomMoth_Body_NormalMap.png",
+    "RoughnessMap": "BloomMoth_Body_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_Body_MetalnessMap.png"
+   },
+   "tris": 2200,
+   "verts": 1303,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "WingRight",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingRight.obj",
+   "glbNode": "WingRight",
+   "sharedWith": null,
+   "pivot": [
+    -0.80373,
+    0.23577,
+    -0.1,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.80344,
+    0.23565,
+    -0.10047,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.894,
+    0.098,
+    0.9902
+   ],
+   "replaces": [
+    "WingRight"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingRight_ColorMap.png",
+    "NormalMap": "BloomMoth_WingRight_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingRight_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingRight_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 234,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingRightFore",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingRightFore.obj",
+   "glbNode": "WingRightFore",
+   "sharedWith": null,
+   "pivot": [
+    -1.14427,
+    0.35422,
+    0.3,
+    -0.99452,
+    0.10453,
+    0.0,
+    0.10453,
+    0.99452,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.14177,
+    0.35421,
+    0.30197,
+    -0.99452,
+    0.10453,
+    0.0,
+    0.10453,
+    0.99452,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.5852,
+    0.077,
+    0.6871
+   ],
+   "replaces": [
+    "WingRightFore"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingRightFore_ColorMap.png",
+    "NormalMap": "BloomMoth_WingRightFore_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingRightFore_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingRightFore_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 166,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingSpot1",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingSpot1.obj",
+   "glbNode": "WingSpot1",
+   "sharedWith": null,
+   "pivot": [
+    -0.86685,
+    0.30588,
+    -0.04,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.86617,
+    0.30583,
+    -0.03841,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2188,
+    0.0797,
+    0.2148
+   ],
+   "replaces": [
+    "WingSpot1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingSpot1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingSpot1_ColorMap.png",
+    "NormalMap": "BloomMoth_WingSpot1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingSpot1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingSpot1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingSpot1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingEdge1_1",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingEdge1_1.obj",
+   "glbNode": "WingEdge1_1",
+   "sharedWith": null,
+   "pivot": [
+    -1.20746,
+    0.35154,
+    0.22,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.20767,
+    0.35143,
+    0.21876,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2177,
+    0.0875,
+    0.2346
+   ],
+   "replaces": [
+    "WingEdge1_1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingEdge1_1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingEdge1_1_ColorMap.png",
+    "NormalMap": "BloomMoth_WingEdge1_1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingEdge1_1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingEdge1_1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingEdge1_1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingEdge1_2",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingEdge1_2.obj",
+   "glbNode": "WingEdge1_2",
+   "sharedWith": null,
+   "pivot": [
+    -1.20746,
+    0.35154,
+    -0.1,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.20858,
+    0.35155,
+    -0.1009,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2169,
+    0.0891,
+    0.2362
+   ],
+   "replaces": [
+    "WingEdge1_2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingEdge1_2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingEdge1_2_ColorMap.png",
+    "NormalMap": "BloomMoth_WingEdge1_2_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingEdge1_2_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingEdge1_2_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingEdge1_2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingEdge1_3",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingEdge1_3.obj",
+   "glbNode": "WingEdge1_3",
+   "sharedWith": null,
+   "pivot": [
+    -1.20746,
+    0.35154,
+    -0.42,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.20742,
+    0.35178,
+    -0.41993,
+    -0.96126,
+    0.27564,
+    0.0,
+    0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2188,
+    0.0891,
+    0.2359
+   ],
+   "replaces": [
+    "WingEdge1_3"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingEdge1_3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingEdge1_3_ColorMap.png",
+    "NormalMap": "BloomMoth_WingEdge1_3_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingEdge1_3_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingEdge1_3_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingEdge1_3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 210,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingLeft",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingLeft.obj",
+   "glbNode": "WingLeft",
+   "sharedWith": null,
+   "pivot": [
+    0.80373,
+    0.23577,
+    -0.1,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.80263,
+    0.23545,
+    -0.10194,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.8969,
+    0.1005,
+    0.9907
+   ],
+   "replaces": [
+    "WingLeft"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingLeft_ColorMap.png",
+    "NormalMap": "BloomMoth_WingLeft_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingLeft_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingLeft_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 245,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingLeftFore",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingLeftFore.obj",
+   "glbNode": "WingLeftFore",
+   "sharedWith": null,
+   "pivot": [
+    1.14427,
+    0.35422,
+    0.3,
+    -0.99452,
+    -0.10453,
+    0.0,
+    -0.10453,
+    0.99452,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.14224,
+    0.35384,
+    0.30058,
+    -0.99452,
+    -0.10453,
+    0.0,
+    -0.10453,
+    0.99452,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.5912,
+    0.0783,
+    0.6815
+   ],
+   "replaces": [
+    "WingLeftFore"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingLeftFore_ColorMap.png",
+    "NormalMap": "BloomMoth_WingLeftFore_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingLeftFore_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingLeftFore_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 167,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingSpot2",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingSpot2.obj",
+   "glbNode": "WingSpot2",
+   "sharedWith": null,
+   "pivot": [
+    0.86685,
+    0.30588,
+    -0.04,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.86726,
+    0.30599,
+    -0.0407,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2194,
+    0.079,
+    0.2168
+   ],
+   "replaces": [
+    "WingSpot2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingSpot2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingSpot2_ColorMap.png",
+    "NormalMap": "BloomMoth_WingSpot2_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingSpot2_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingSpot2_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingSpot2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingEdge2_1",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingEdge2_1.obj",
+   "glbNode": "WingEdge2_1",
+   "sharedWith": null,
+   "pivot": [
+    1.20746,
+    0.35154,
+    0.22,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.20556,
+    0.35085,
+    0.22108,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.215,
+    0.0896,
+    0.2364
+   ],
+   "replaces": [
+    "WingEdge2_1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingEdge2_1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingEdge2_1_ColorMap.png",
+    "NormalMap": "BloomMoth_WingEdge2_1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingEdge2_1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingEdge2_1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingEdge2_1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingEdge2_2",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingEdge2_2.obj",
+   "glbNode": "WingEdge2_2",
+   "sharedWith": null,
+   "pivot": [
+    1.20746,
+    0.35154,
+    -0.1,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.20653,
+    0.35111,
+    -0.1008,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2168,
+    0.0895,
+    0.2378
+   ],
+   "replaces": [
+    "WingEdge2_2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingEdge2_2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingEdge2_2_ColorMap.png",
+    "NormalMap": "BloomMoth_WingEdge2_2_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingEdge2_2_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingEdge2_2_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingEdge2_2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 194,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "WingEdge2_3",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_WingEdge2_3.obj",
+   "glbNode": "WingEdge2_3",
+   "sharedWith": null,
+   "pivot": [
+    1.20746,
+    0.35154,
+    -0.42,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.20788,
+    0.3513,
+    -0.41961,
+    -0.96126,
+    -0.27564,
+    0.0,
+    -0.27564,
+    0.96126,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2177,
+    0.0882,
+    0.2366
+   ],
+   "replaces": [
+    "WingEdge2_3"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "WingEdge2_3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_WingEdge2_3_ColorMap.png",
+    "NormalMap": "BloomMoth_WingEdge2_3_NormalMap.png",
+    "RoughnessMap": "BloomMoth_WingEdge2_3_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_WingEdge2_3_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_WingEdge2_3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 190,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.26,
+    0.16,
+    -1.38,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.23684,
+    0.15783,
+    -1.271,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.3,
+    0.2985,
+    0.2388
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeWhite1",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_Eye1_ColorMap.png",
+    "NormalMap": "BloomMoth_Eye1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_Eye1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_Eye1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.26,
+    0.16,
+    -1.38,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.28316,
+    0.15783,
+    -1.271,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.3,
+    0.2985,
+    0.2388
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeWhite2",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_Eye1_ColorMap.png",
+    "NormalMap": "BloomMoth_Eye1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_Eye1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_Eye1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna1",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_Antenna1.obj",
+   "glbNode": "Antenna1",
+   "sharedWith": null,
+   "pivot": [
+    -0.22341,
+    0.56322,
+    -1.0269,
+    -0.98481,
+    -0.17365,
+    0.0,
+    -0.15038,
+    0.85287,
+    0.5,
+    -0.08682,
+    0.4924,
+    -0.86603
+   ],
+   "center": [
+    -0.22405,
+    0.56617,
+    -1.02566,
+    -0.98481,
+    -0.17365,
+    0.0,
+    -0.15038,
+    0.85287,
+    0.5,
+    -0.08682,
+    0.4924,
+    -0.86603
+   ],
+   "size": [
+    0.0995,
+    0.4953,
+    0.0997
+   ],
+   "replaces": [
+    "Antenna1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Antenna1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_Antenna1_ColorMap.png",
+    "NormalMap": "BloomMoth_Antenna1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_Antenna1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_Antenna1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_Antenna1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "AntennaTip1",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_AntennaTip1.obj",
+   "glbNode": "AntennaTip1",
+   "sharedWith": null,
+   "pivot": [
+    -0.26682,
+    0.77643,
+    -0.9038,
+    -0.98481,
+    -0.17365,
+    0.0,
+    -0.15038,
+    0.85287,
+    0.5,
+    -0.08682,
+    0.4924,
+    -0.86603
+   ],
+   "center": [
+    -0.26688,
+    0.77671,
+    -0.90339,
+    -0.98481,
+    -0.17365,
+    0.0,
+    -0.15038,
+    0.85287,
+    0.5,
+    -0.08682,
+    0.4924,
+    -0.86603
+   ],
+   "size": [
+    0.1392,
+    0.1381,
+    0.1388
+   ],
+   "replaces": [
+    "AntennaTip1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "AntennaTip1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_AntennaTip1_ColorMap.png",
+    "NormalMap": "BloomMoth_AntennaTip1_NormalMap.png",
+    "RoughnessMap": "BloomMoth_AntennaTip1_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_AntennaTip1_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_AntennaTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 193,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna2",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_Antenna2.obj",
+   "glbNode": "Antenna2",
+   "sharedWith": null,
+   "pivot": [
+    0.22341,
+    0.56322,
+    -1.2731,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.15038,
+    0.85287,
+    -0.5,
+    -0.08682,
+    -0.4924,
+    -0.86603
+   ],
+   "center": [
+    0.22305,
+    0.56141,
+    -1.27229,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.15038,
+    0.85287,
+    -0.5,
+    -0.08682,
+    -0.4924,
+    -0.86603
+   ],
+   "size": [
+    0.0996,
+    0.4947,
+    0.0996
+   ],
+   "replaces": [
+    "Antenna2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Antenna2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_Antenna2_ColorMap.png",
+    "NormalMap": "BloomMoth_Antenna2_NormalMap.png",
+    "RoughnessMap": "BloomMoth_Antenna2_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_Antenna2_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_Antenna2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 187,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "AntennaTip2",
+   "primary": false,
+   "animated": true,
+   "file": "BloomMoth_AntennaTip2.obj",
+   "glbNode": "AntennaTip2",
+   "sharedWith": null,
+   "pivot": [
+    0.26682,
+    0.77643,
+    -1.3962,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.15038,
+    0.85287,
+    -0.5,
+    -0.08682,
+    -0.4924,
+    -0.86603
+   ],
+   "center": [
+    0.2669,
+    0.77636,
+    -1.39637,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.15038,
+    0.85287,
+    -0.5,
+    -0.08682,
+    -0.4924,
+    -0.86603
+   ],
+   "size": [
+    0.1398,
+    0.1385,
+    0.1399
+   ],
+   "replaces": [
+    "AntennaTip2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "AntennaTip2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "BloomMoth_AntennaTip2_ColorMap.png",
+    "NormalMap": "BloomMoth_AntennaTip2_NormalMap.png",
+    "RoughnessMap": "BloomMoth_AntennaTip2_RoughnessMap.png",
+    "MetalnessMap": "BloomMoth_AntennaTip2_MetalnessMap.png",
+    "EmissiveMask": "BloomMoth_AntennaTip2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 188,
+   "textureSize": [
+    32,
+    32
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

@@ -1,0 +1,1322 @@
+{
+ "model": "AbyssalIsopod",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 7656,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "AbyssalIsopod_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00229,
+    -0.11938,
+    -0.05001,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.9313,
+    1.8266,
+    4.305
+   ],
+   "replaces": [
+    "Body",
+    "Segment1",
+    "Segment2",
+    "Segment4",
+    "Segment5",
+    "Belly",
+    "UndersideSeam"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0936,
+    "parts": [
+     "UndersideSeam"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Body_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Body_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Body_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Body_MetalnessMap.png",
+    "EmissiveMask": "AbyssalIsopod_Body_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 1951,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Antenna1.obj",
+   "glbNode": "Antenna1",
+   "sharedWith": null,
+   "pivot": [
+    0.32,
+    0.04,
+    -2.2,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969
+   ],
+   "center": [
+    0.3202,
+    0.03977,
+    -2.19851,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969
+   ],
+   "size": [
+    0.1363,
+    0.1338,
+    0.5979
+   ],
+   "replaces": [
+    "Antenna1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Antenna1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Antenna1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Antenna1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Antenna1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 212,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Antenna2.obj",
+   "glbNode": "Antenna2",
+   "sharedWith": null,
+   "pivot": [
+    -0.32,
+    0.04,
+    -2.2,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    -0.34202,
+    0.0,
+    0.34202,
+    0.93969
+   ],
+   "center": [
+    -0.32,
+    0.04039,
+    -2.19757,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    -0.34202,
+    0.0,
+    0.34202,
+    0.93969
+   ],
+   "size": [
+    0.1421,
+    0.1396,
+    0.5923
+   ],
+   "replaces": [
+    "Antenna2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Antenna2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Antenna2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Antenna2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Antenna2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 206,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.55,
+    -0.06,
+    -2.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.55,
+    -0.06,
+    -2.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.32,
+    0.32,
+    0.2
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Eye1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Eye1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Eye1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Eye1_MetalnessMap.png",
+    "EmissiveMask": "AbyssalIsopod_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.55,
+    -0.06,
+    -2.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.55,
+    -0.06,
+    -2.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.32,
+    0.32,
+    0.2
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Eye1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Eye1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Eye1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Eye1_MetalnessMap.png",
+    "EmissiveMask": "AbyssalIsopod_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg1_1",
+   "sharedWith": null,
+   "pivot": [
+    1.12488,
+    -0.78127,
+    -1.6,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    -1.59995,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg1_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg1_2",
+   "sharedWith": null,
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    -1.6,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    -1.59925,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg1_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg2_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    1.12488,
+    -0.78127,
+    -1.1,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    -1.09995,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg2_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg2_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    -1.1,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    -1.09925,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg2_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg3_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    1.12488,
+    -0.78127,
+    -0.6,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    -0.59995,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg3_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg3_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    -0.6,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    -0.59925,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg3_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg4_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    1.12488,
+    -0.78127,
+    -0.1,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    -0.09995,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg4_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg4_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    -0.1,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    -0.09925,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg4_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg5_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg5_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    1.12488,
+    -0.78127,
+    0.4,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    0.40005,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg5_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg5_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg5_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    0.4,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    0.40075,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg5_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg6_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg6_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    1.12488,
+    -0.78127,
+    0.9,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    0.90005,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg6_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg6_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg6_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    0.9,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    0.90075,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg6_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg7_1",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_1.obj",
+   "glbNode": "Leg7_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    1.12488,
+    -0.78127,
+    1.4,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.12492,
+    -0.7823,
+    1.40005,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1773,
+    0.3955,
+    0.217
+   ],
+   "replaces": [
+    "Leg7_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_1_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_1_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg7_2",
+   "primary": false,
+   "animated": true,
+   "file": "AbyssalIsopod_Leg1_2.obj",
+   "glbNode": "Leg7_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -1.12488,
+    -0.78127,
+    1.4,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.12514,
+    -0.7812,
+    1.40075,
+    0.88295,
+    -0.46947,
+    0.0,
+    0.46947,
+    0.88295,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1819,
+    0.3958,
+    0.2169
+   ],
+   "replaces": [
+    "Leg7_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "AbyssalIsopod_Leg1_2_ColorMap.png",
+    "NormalMap": "AbyssalIsopod_Leg1_2_NormalMap.png",
+    "RoughnessMap": "AbyssalIsopod_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "AbyssalIsopod_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

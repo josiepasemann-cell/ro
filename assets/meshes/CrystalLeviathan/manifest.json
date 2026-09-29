@@ -1,0 +1,2032 @@
+{
+ "model": "CrystalLeviathan",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 11046,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "CrystalLeviathan_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00227,
+    0.37441,
+    -3.9055,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.2227,
+    3.5811,
+    9.9017
+   ],
+   "replaces": [
+    "Body",
+    "SegmentShade1",
+    "Segment2",
+    "SegmentShade2",
+    "Seam2",
+    "Segment3",
+    "SegmentShade3",
+    "Seam3",
+    "Segment4",
+    "SegmentShade4",
+    "Seam4",
+    "Segment5",
+    "SegmentShade5",
+    "Seam5",
+    "Segment6",
+    "Seam6",
+    "Segment7",
+    "Seam7",
+    "Segment8",
+    "Seam8",
+    "Segment9",
+    "Seam9",
+    "Crown1",
+    "Crown5",
+    "HeadTooth1",
+    "HeadTooth2",
+    "HeadTooth3",
+    "HeadTooth4",
+    "CoreGem"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.002,
+   "materialMix": {
+    "Neon": 0.125,
+    "SmoothPlastic": 0.959
+   },
+   "neon": {
+    "fraction": 0.1221,
+    "parts": [
+     "Seam2",
+     "Seam3",
+     "Seam4",
+     "Seam5",
+     "Seam6",
+     "Seam7",
+     "Seam8",
+     "Seam9",
+     "Crown1",
+     "Crown5",
+     "CoreGem"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Body_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Body_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Body_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Body_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_Body_EmissiveMask.png"
+   },
+   "tris": 4000,
+   "verts": 2629,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Facet1",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet1.obj",
+   "glbNode": "Facet1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.42,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.0027,
+    1.69554,
+    0.00028,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.4393,
+    1.2482,
+    1.4451
+   ],
+   "replaces": [
+    "Facet1",
+    "Crown2",
+    "Crown3",
+    "Crown4"
+   ],
+   "material": "Glass",
+   "transparency": 0.037,
+   "materialMix": {
+    "Glass": 0.797,
+    "Neon": 0.203
+   },
+   "neon": {
+    "fraction": 0.2027,
+    "parts": [
+     "Crown2",
+     "Crown3",
+     "Crown4"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_Facet1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 245,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike1",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike1.obj",
+   "glbNode": "SpineSpike1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.8,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00059,
+    1.80106,
+    -0.0007,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3133,
+    0.7995,
+    1.0057
+   ],
+   "replaces": [
+    "SpineSpike1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet2",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet2.obj",
+   "glbNode": "Facet2",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.30125,
+    -0.98,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00046,
+    1.30188,
+    -0.97993,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.2483,
+    0.5548,
+    1.1288
+   ],
+   "replaces": [
+    "Facet2"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet2_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet2_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet2_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike2",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike2.obj",
+   "glbNode": "SpineSpike2",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.68125,
+    -0.98,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00071,
+    1.68133,
+    -0.9796,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3149,
+    0.8011,
+    1.0067
+   ],
+   "replaces": [
+    "SpineSpike2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike2_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike2_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike2_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike2_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet3",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet3.obj",
+   "glbNode": "Facet3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.1825,
+    -1.96,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00016,
+    1.18169,
+    -1.96126,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.1245,
+    0.5526,
+    1.136
+   ],
+   "replaces": [
+    "Facet3"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet3_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet3_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet3_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike3",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike1.obj",
+   "glbNode": "SpineSpike3",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.0,
+    1.5625,
+    -1.96,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00059,
+    1.56356,
+    -1.9607,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3133,
+    0.7995,
+    1.0057
+   ],
+   "replaces": [
+    "SpineSpike3"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet4",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet4.obj",
+   "glbNode": "Facet4",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.06375,
+    -2.94,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00125,
+    1.06319,
+    -2.94134,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.9999,
+    0.5533,
+    1.1343
+   ],
+   "replaces": [
+    "Facet4"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet4_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet4_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet4_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 174,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike4",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike2.obj",
+   "glbNode": "SpineSpike4",
+   "sharedWith": "SpineSpike2",
+   "pivot": [
+    0.0,
+    1.44375,
+    -2.94,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00071,
+    1.44383,
+    -2.9396,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3149,
+    0.8011,
+    1.0067
+   ],
+   "replaces": [
+    "SpineSpike4"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike4"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike2_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike2_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike2_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike2_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet5",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet5.obj",
+   "glbNode": "Facet5",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.945,
+    -3.92,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.0026,
+    0.94483,
+    -3.91997,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.8765,
+    0.5527,
+    1.1304
+   ],
+   "replaces": [
+    "Facet5"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet5_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet5_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet5_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet5_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike5",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike1.obj",
+   "glbNode": "SpineSpike5",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.0,
+    1.325,
+    -3.92,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00059,
+    1.32606,
+    -3.9207,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3133,
+    0.7995,
+    1.0057
+   ],
+   "replaces": [
+    "SpineSpike5"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike5"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet6",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet6.obj",
+   "glbNode": "Facet6",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.82625,
+    -4.9,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00119,
+    0.6204,
+    -4.89839,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.6815,
+    0.963,
+    1.124
+   ],
+   "replaces": [
+    "Facet6",
+    "SegmentShade6"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.075,
+   "materialMix": {
+    "Glass": 0.424,
+    "SmoothPlastic": 0.576
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet6_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet6_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet6_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet6_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike6",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike2.obj",
+   "glbNode": "SpineSpike6",
+   "sharedWith": "SpineSpike2",
+   "pivot": [
+    0.0,
+    1.20625,
+    -4.9,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00071,
+    1.20633,
+    -4.8996,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3149,
+    0.8011,
+    1.0067
+   ],
+   "replaces": [
+    "SpineSpike6"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike6"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike2_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike2_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike2_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike2_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet7",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet7.obj",
+   "glbNode": "Facet7",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.7075,
+    -5.88,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00118,
+    0.55029,
+    -5.88112,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.6698,
+    0.8652,
+    1.1229
+   ],
+   "replaces": [
+    "Facet7",
+    "SegmentShade7"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.075,
+   "materialMix": {
+    "Glass": 0.456,
+    "SmoothPlastic": 0.544
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet7_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet7_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet7_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet7_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 194,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike7",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike1.obj",
+   "glbNode": "SpineSpike7",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.0,
+    1.0875,
+    -5.88,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00059,
+    1.08856,
+    -5.8807,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3133,
+    0.7995,
+    1.0057
+   ],
+   "replaces": [
+    "SpineSpike7"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike7"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet8",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet8.obj",
+   "glbNode": "Facet8",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.58875,
+    -6.86,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00079,
+    0.47796,
+    -6.86139,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.6825,
+    0.774,
+    1.1304
+   ],
+   "replaces": [
+    "Facet8",
+    "SegmentShade8"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.075,
+   "materialMix": {
+    "Glass": 0.472,
+    "SmoothPlastic": 0.528
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet8_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet8_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet8_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet8_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 217,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike8",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike2.obj",
+   "glbNode": "SpineSpike8",
+   "sharedWith": "SpineSpike2",
+   "pivot": [
+    0.0,
+    0.96875,
+    -6.86,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00071,
+    0.96883,
+    -6.8596,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3149,
+    0.8011,
+    1.0067
+   ],
+   "replaces": [
+    "SpineSpike8"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike8"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike2_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike2_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike2_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike2_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet9",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Facet9.obj",
+   "glbNode": "Facet9",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.47,
+    -7.84,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.00156,
+    0.40935,
+    -7.84477,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    1.6166,
+    0.6758,
+    1.1313
+   ],
+   "replaces": [
+    "Facet9",
+    "SegmentShade9"
+   ],
+   "material": "Glass",
+   "transparency": 0.075,
+   "materialMix": {
+    "Glass": 0.534,
+    "SmoothPlastic": 0.466
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Facet9_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Facet9_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Facet9_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Facet9_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 208,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike9",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SpineSpike1.obj",
+   "glbNode": "SpineSpike9",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.0,
+    0.85,
+    -7.84,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.00059,
+    0.85106,
+    -7.8407,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.3133,
+    0.7995,
+    1.0057
+   ],
+   "replaces": [
+    "SpineSpike9"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike9"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SpineSpike1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.95,
+    0.35,
+    -0.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.95,
+    0.35,
+    -0.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.55,
+    0.55,
+    0.32
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Pupil",
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Eye1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Eye1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Eye1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Eye1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.95,
+    0.35,
+    -0.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.95,
+    0.35,
+    -0.6,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.55,
+    0.55,
+    0.32
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Pupil",
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_Eye1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_Eye1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_Eye1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_Eye1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    1.65,
+    -0.2,
+    0.4,
+    0.17365,
+    0.98481,
+    0.0,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.6561,
+    -0.19984,
+    0.40121,
+    0.17365,
+    0.98481,
+    0.0,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.239,
+    0.9907,
+    1.7744
+   ],
+   "replaces": [
+    "SideFin1",
+    "Seam1"
+   ],
+   "material": "Glass",
+   "transparency": 0.2,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.3186,
+    "parts": [
+     "Seam1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SideFin1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SideFin1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SideFin1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SideFin1_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 256,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1Tip",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SideFin1Tip.obj",
+   "glbNode": "SideFin1Tip",
+   "sharedWith": null,
+   "pivot": [
+    2.38861,
+    -0.06976,
+    0.4,
+    0.17365,
+    0.98481,
+    0.0,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    2.3881,
+    -0.07062,
+    0.40024,
+    0.17365,
+    0.98481,
+    0.0,
+    -0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1574,
+    0.59,
+    0.9856
+   ],
+   "replaces": [
+    "SideFin1Tip"
+   ],
+   "material": "Neon",
+   "transparency": 0.35,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SideFin1Tip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SideFin1Tip_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SideFin1Tip_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SideFin1Tip_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SideFin1Tip_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SideFin1Tip_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    -1.65,
+    -0.2,
+    0.4,
+    0.17365,
+    -0.98481,
+    0.0,
+    0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.65464,
+    -0.19887,
+    0.39434,
+    0.17365,
+    -0.98481,
+    0.0,
+    0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.242,
+    0.992,
+    1.7759
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "Glass",
+   "transparency": 0.2,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SideFin2_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SideFin2_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SideFin2_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 245,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2Tip",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_SideFin2Tip.obj",
+   "glbNode": "SideFin2Tip",
+   "sharedWith": null,
+   "pivot": [
+    -2.38861,
+    -0.06976,
+    0.4,
+    0.17365,
+    -0.98481,
+    0.0,
+    0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -2.39092,
+    -0.06811,
+    0.40372,
+    0.17365,
+    -0.98481,
+    0.0,
+    0.98481,
+    0.17365,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1569,
+    0.5863,
+    0.9961
+   ],
+   "replaces": [
+    "SideFin2Tip"
+   ],
+   "material": "Neon",
+   "transparency": 0.35,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SideFin2Tip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_SideFin2Tip_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_SideFin2Tip_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_SideFin2Tip_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_SideFin2Tip_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_SideFin2Tip_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 166,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailTip1",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_TailTip1.obj",
+   "glbNode": "TailTip1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    -8.67,
+    0.93969,
+    0.0,
+    -0.34202,
+    0.0,
+    1.0,
+    0.0,
+    0.34202,
+    0.0,
+    0.93969
+   ],
+   "center": [
+    0.00052,
+    0.00275,
+    -8.66586,
+    0.93969,
+    0.0,
+    -0.34202,
+    0.0,
+    1.0,
+    0.0,
+    0.34202,
+    0.0,
+    0.93969
+   ],
+   "size": [
+    0.2189,
+    0.8865,
+    0.9943
+   ],
+   "replaces": [
+    "TailTip1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailTip1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_TailTip1_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_TailTip1_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_TailTip1_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_TailTip1_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_TailTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailTip",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_TailTip.obj",
+   "glbNode": "TailTip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    -8.67,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00033,
+    0.00193,
+    -8.66915,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2133,
+    1.2909,
+    0.9943
+   ],
+   "replaces": [
+    "TailTip"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailTip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_TailTip_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_TailTip_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_TailTip_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_TailTip_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_TailTip_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 172,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailTip3",
+   "primary": false,
+   "animated": true,
+   "file": "CrystalLeviathan_TailTip3.obj",
+   "glbNode": "TailTip3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    -8.67,
+    0.93969,
+    0.0,
+    0.34202,
+    0.0,
+    1.0,
+    0.0,
+    -0.34202,
+    0.0,
+    0.93969
+   ],
+   "center": [
+    -0.00045,
+    0.00223,
+    -8.67184,
+    0.93969,
+    0.0,
+    0.34202,
+    0.0,
+    1.0,
+    0.0,
+    -0.34202,
+    0.0,
+    0.93969
+   ],
+   "size": [
+    0.2179,
+    0.8854,
+    0.9922
+   ],
+   "replaces": [
+    "TailTip3"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailTip3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "CrystalLeviathan_TailTip3_ColorMap.png",
+    "NormalMap": "CrystalLeviathan_TailTip3_NormalMap.png",
+    "RoughnessMap": "CrystalLeviathan_TailTip3_RoughnessMap.png",
+    "MetalnessMap": "CrystalLeviathan_TailTip3_MetalnessMap.png",
+    "EmissiveMask": "CrystalLeviathan_TailTip3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

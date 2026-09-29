@@ -1,0 +1,526 @@
+{
+ "model": "EmberSlug",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 4776,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "EmberSlug_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00559,
+    0.01613,
+    -0.00732,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.5354,
+    1.7902,
+    4.0509
+   ],
+   "replaces": [
+    "Body",
+    "BellyPlate",
+    "RidgeSegment1",
+    "EmberCrack1",
+    "RidgeSegment2",
+    "EmberCrack2",
+    "RidgeSegment3",
+    "EmberCrack3",
+    "RidgeSegment4",
+    "EmberCrack4",
+    "Head",
+    "TailRidge"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "CrackedLava": 0.388,
+    "Neon": 0.203,
+    "SmoothPlastic": 0.409
+   },
+   "neon": {
+    "fraction": 0.2027,
+    "parts": [
+     "RidgeSegment1",
+     "EmberCrack1",
+     "RidgeSegment2",
+     "EmberCrack2",
+     "RidgeSegment3",
+     "EmberCrack3",
+     "RidgeSegment4",
+     "EmberCrack4"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_Body_ColorMap.png",
+    "NormalMap": "EmberSlug_Body_NormalMap.png",
+    "RoughnessMap": "EmberSlug_Body_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_Body_MetalnessMap.png",
+    "EmissiveMask": "EmberSlug_Body_EmissiveMask.png"
+   },
+   "tris": 3200,
+   "verts": 2349,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "EmberSlug_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.4,
+    0.35,
+    -1.95,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.4,
+    0.35,
+    -1.95,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.24,
+    0.24,
+    0.22
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_Eye1_ColorMap.png",
+    "NormalMap": "EmberSlug_Eye1_NormalMap.png",
+    "RoughnessMap": "EmberSlug_Eye1_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_Eye1_MetalnessMap.png",
+    "EmissiveMask": "EmberSlug_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "EmberSlug_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.4,
+    0.35,
+    -1.95,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.4,
+    0.35,
+    -1.95,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.24,
+    0.24,
+    0.22
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_Eye1_ColorMap.png",
+    "NormalMap": "EmberSlug_Eye1_NormalMap.png",
+    "RoughnessMap": "EmberSlug_Eye1_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_Eye1_MetalnessMap.png",
+    "EmissiveMask": "EmberSlug_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna1",
+   "primary": false,
+   "animated": true,
+   "file": "EmberSlug_Antenna1.obj",
+   "glbNode": "Antenna1",
+   "sharedWith": null,
+   "pivot": [
+    -0.35,
+    0.75673,
+    -1.77476,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "center": [
+    -0.3497,
+    0.75462,
+    -1.77488,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "size": [
+    0.1411,
+    0.4405,
+    0.1393
+   ],
+   "replaces": [
+    "Antenna1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_Antenna1_ColorMap.png",
+    "NormalMap": "EmberSlug_Antenna1_NormalMap.png",
+    "RoughnessMap": "EmberSlug_Antenna1_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_Antenna1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "AntennaTip1",
+   "primary": false,
+   "animated": true,
+   "file": "EmberSlug_AntennaTip1.obj",
+   "glbNode": "AntennaTip1",
+   "sharedWith": null,
+   "pivot": [
+    -0.35,
+    0.98226,
+    -1.69267,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "center": [
+    -0.35005,
+    0.98214,
+    -1.69251,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "size": [
+    0.1591,
+    0.156,
+    0.1552
+   ],
+   "replaces": [
+    "AntennaTip1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "AntennaTip1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_AntennaTip1_ColorMap.png",
+    "NormalMap": "EmberSlug_AntennaTip1_NormalMap.png",
+    "RoughnessMap": "EmberSlug_AntennaTip1_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_AntennaTip1_MetalnessMap.png",
+    "EmissiveMask": "EmberSlug_AntennaTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna2",
+   "primary": false,
+   "animated": true,
+   "file": "EmberSlug_Antenna1.obj",
+   "glbNode": "Antenna2",
+   "sharedWith": "Antenna1",
+   "pivot": [
+    0.35,
+    0.75673,
+    -1.77476,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "center": [
+    0.3503,
+    0.75462,
+    -1.77488,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "size": [
+    0.1411,
+    0.4405,
+    0.1393
+   ],
+   "replaces": [
+    "Antenna2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_Antenna1_ColorMap.png",
+    "NormalMap": "EmberSlug_Antenna1_NormalMap.png",
+    "RoughnessMap": "EmberSlug_Antenna1_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_Antenna1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "AntennaTip2",
+   "primary": false,
+   "animated": true,
+   "file": "EmberSlug_AntennaTip1.obj",
+   "glbNode": "AntennaTip2",
+   "sharedWith": "AntennaTip1",
+   "pivot": [
+    0.35,
+    0.98226,
+    -1.69267,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "center": [
+    0.34995,
+    0.98214,
+    -1.69251,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.34202,
+    -0.93969
+   ],
+   "size": [
+    0.1591,
+    0.156,
+    0.1552
+   ],
+   "replaces": [
+    "AntennaTip2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "AntennaTip2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "EmberSlug_AntennaTip1_ColorMap.png",
+    "NormalMap": "EmberSlug_AntennaTip1_NormalMap.png",
+    "RoughnessMap": "EmberSlug_AntennaTip1_RoughnessMap.png",
+    "MetalnessMap": "EmberSlug_AntennaTip1_MetalnessMap.png",
+    "EmissiveMask": "EmberSlug_AntennaTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

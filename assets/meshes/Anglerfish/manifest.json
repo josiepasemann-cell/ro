@@ -1,0 +1,587 @@
+{
+ "model": "Anglerfish",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 5446,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "Anglerfish_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00147,
+    0.3037,
+    -0.2216,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.7816,
+    3.4196,
+    3.41
+   ],
+   "replaces": [
+    "Body",
+    "BackShade",
+    "Belly",
+    "UpperJaw",
+    "ToothUpper1",
+    "ToothUpper2",
+    "ToothUpper3",
+    "ToothUpper4",
+    "ToothUpper5",
+    "DorsalSpike1",
+    "DorsalSpike2",
+    "DorsalSpike3",
+    "IlliciumBase",
+    "IlliciumTipRod"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_Body_ColorMap.png",
+    "NormalMap": "Anglerfish_Body_NormalMap.png",
+    "RoughnessMap": "Anglerfish_Body_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_Body_MetalnessMap.png"
+   },
+   "tris": 3000,
+   "verts": 1917,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "LowerJaw",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_LowerJaw.obj",
+   "glbNode": "LowerJaw",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.7,
+    -1.3,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.9703,
+    -0.24192,
+    0.0,
+    -0.24192,
+    -0.9703
+   ],
+   "center": [
+    0.00254,
+    -0.65581,
+    -1.31496,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.9703,
+    -0.24192,
+    0.0,
+    -0.24192,
+    -0.9703
+   ],
+   "size": [
+    1.6878,
+    0.9396,
+    1.299
+   ],
+   "replaces": [
+    "LowerJaw",
+    "ToothLower1",
+    "ToothLower2",
+    "ToothLower3",
+    "ToothLower4",
+    "ToothLower5"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_LowerJaw_ColorMap.png",
+    "NormalMap": "Anglerfish_LowerJaw_NormalMap.png",
+    "RoughnessMap": "Anglerfish_LowerJaw_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_LowerJaw_MetalnessMap.png"
+   },
+   "tris": 640,
+   "verts": 462,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    2.55,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.00069,
+    -0.00153,
+    2.1393,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.8432,
+    1.3964,
+    1.969
+   ],
+   "replaces": [
+    "TailFin",
+    "TailPeduncle"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_TailFin_ColorMap.png",
+    "NormalMap": "Anglerfish_TailFin_NormalMap.png",
+    "RoughnessMap": "Anglerfish_TailFin_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_TailFin_MetalnessMap.png"
+   },
+   "tris": 480,
+   "verts": 328,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    -1.35,
+    -0.3,
+    -0.4,
+    -0.20791,
+    -0.97815,
+    0.0,
+    -0.97815,
+    0.20791,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.35165,
+    -0.30072,
+    -0.40003,
+    -0.20791,
+    -0.97815,
+    0.0,
+    -0.97815,
+    0.20791,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1734,
+    0.8396,
+    1.0329
+   ],
+   "replaces": [
+    "SideFin1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_SideFin1_ColorMap.png",
+    "NormalMap": "Anglerfish_SideFin1_NormalMap.png",
+    "RoughnessMap": "Anglerfish_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_SideFin1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    1.35,
+    -0.3,
+    -0.4,
+    -0.20791,
+    0.97815,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.34555,
+    -0.30064,
+    -0.40204,
+    -0.20791,
+    0.97815,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.1724,
+    0.8455,
+    1.0481
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_SideFin2_ColorMap.png",
+    "NormalMap": "Anglerfish_SideFin2_NormalMap.png",
+    "RoughnessMap": "Anglerfish_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_SideFin2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 192,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LureOrb",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_LureOrb.obj",
+   "glbNode": "LureOrb",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    2.19134,
+    -0.47452,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "center": [
+    -0.004,
+    2.19348,
+    -0.47693,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "size": [
+    0.7051,
+    0.7143,
+    0.7085
+   ],
+   "replaces": [
+    "LureOrb"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "LureOrb"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_LureOrb_ColorMap.png",
+    "NormalMap": "Anglerfish_LureOrb_NormalMap.png",
+    "RoughnessMap": "Anglerfish_LureOrb_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_LureOrb_MetalnessMap.png",
+    "EmissiveMask": "Anglerfish_LureOrb_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.85,
+    0.6,
+    -1.25,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.78927,
+    0.54433,
+    -1.17093,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.5,
+    0.5,
+    0.3
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_Eye1_ColorMap.png",
+    "NormalMap": "Anglerfish_Eye1_NormalMap.png",
+    "RoughnessMap": "Anglerfish_Eye1_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_Eye1_MetalnessMap.png",
+    "EmissiveMask": "Anglerfish_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "Anglerfish_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.85,
+    0.6,
+    -1.25,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.91073,
+    0.54433,
+    -1.17093,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.5,
+    0.5,
+    0.3
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "Anglerfish_Eye1_ColorMap.png",
+    "NormalMap": "Anglerfish_Eye1_NormalMap.png",
+    "RoughnessMap": "Anglerfish_Eye1_RoughnessMap.png",
+    "MetalnessMap": "Anglerfish_Eye1_MetalnessMap.png",
+    "EmissiveMask": "Anglerfish_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
