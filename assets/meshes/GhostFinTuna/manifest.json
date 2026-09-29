@@ -1,0 +1,709 @@
+{
+ "model": "GhostFinTuna",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 5186,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "GhostFinTuna_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00569,
+    -0.21931,
+    0.19514,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.8849,
+    2.4621,
+    5.6
+   ],
+   "replaces": [
+    "Body",
+    "Belly",
+    "VentralFin",
+    "TailPeduncle"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.075,
+   "materialMix": {
+    "Glass": 0.031,
+    "SmoothPlastic": 0.969
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_Body_ColorMap.png",
+    "NormalMap": "GhostFinTuna_Body_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_Body_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_Body_MetalnessMap.png"
+   },
+   "tris": 2600,
+   "verts": 1663,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Nose",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_Nose.obj",
+   "glbNode": "Nose",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    -2.65,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00084,
+    -0.00154,
+    -2.64683,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.2932,
+    1.1393,
+    1.0862
+   ],
+   "replaces": [
+    "Nose",
+    "GillLine1",
+    "GillLine2",
+    "GillLine3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_Nose_ColorMap.png",
+    "NormalMap": "GhostFinTuna_Nose_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_Nose_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_Nose_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 260,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_DorsalFin.obj",
+   "glbNode": "DorsalFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.15,
+    0.3,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00038,
+    1.15082,
+    0.29993,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.234,
+    1.3426,
+    0.9915
+   ],
+   "replaces": [
+    "DorsalFin",
+    "BackStripe"
+   ],
+   "material": "Glass",
+   "transparency": 0.3,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_DorsalFin_ColorMap.png",
+    "NormalMap": "GhostFinTuna_DorsalFin_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_DorsalFin_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_DorsalFin_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 163,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFinTip",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_DorsalFinTip.obj",
+   "glbNode": "DorsalFinTip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.75,
+    0.55,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.0015,
+    1.74887,
+    0.55098,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1553,
+    0.6944,
+    0.5953
+   ],
+   "replaces": [
+    "DorsalFinTip"
+   ],
+   "material": "Glass",
+   "transparency": 0.35,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_DorsalFinTip_ColorMap.png",
+    "NormalMap": "GhostFinTuna_DorsalFinTip_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_DorsalFinTip_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_DorsalFinTip_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 198,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.9,
+    -0.1,
+    0.4,
+    0.92718,
+    -0.37461,
+    0.0,
+    0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.90031,
+    -0.10237,
+    0.39977,
+    0.92718,
+    -0.37461,
+    0.0,
+    0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1777,
+    0.5937,
+    1.1512
+   ],
+   "replaces": [
+    "SideFin1"
+   ],
+   "material": "Glass",
+   "transparency": 0.35,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_SideFin1_ColorMap.png",
+    "NormalMap": "GhostFinTuna_SideFin1_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_SideFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 196,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    -0.9,
+    -0.1,
+    0.4,
+    0.92718,
+    0.37461,
+    0.0,
+    -0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.89998,
+    -0.10124,
+    0.40044,
+    0.92718,
+    0.37461,
+    0.0,
+    -0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.177,
+    0.5944,
+    1.1471
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "Glass",
+   "transparency": 0.35,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_SideFin2_ColorMap.png",
+    "NormalMap": "GhostFinTuna_SideFin2_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_SideFin2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 205,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin1",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_TailFin1.obj",
+   "glbNode": "TailFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.35,
+    3.3,
+    0.52992,
+    -0.84805,
+    0.0,
+    0.84805,
+    0.52992,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00084,
+    0.35075,
+    3.30091,
+    0.52992,
+    -0.84805,
+    0.0,
+    0.84805,
+    0.52992,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1786,
+    1.0836,
+    1.0319
+   ],
+   "replaces": [
+    "TailFin1"
+   ],
+   "material": "Glass",
+   "transparency": 0.3,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_TailFin1_ColorMap.png",
+    "NormalMap": "GhostFinTuna_TailFin1_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_TailFin1_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_TailFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 201,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin2",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_TailFin2.obj",
+   "glbNode": "TailFin2",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.35,
+    3.3,
+    0.52992,
+    0.84805,
+    0.0,
+    -0.84805,
+    0.52992,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00131,
+    -0.35028,
+    3.30176,
+    0.52992,
+    0.84805,
+    0.0,
+    -0.84805,
+    0.52992,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1847,
+    1.0911,
+    1.0369
+   ],
+   "replaces": [
+    "TailFin2"
+   ],
+   "material": "Glass",
+   "transparency": 0.3,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_TailFin2_ColorMap.png",
+    "NormalMap": "GhostFinTuna_TailFin2_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_TailFin2_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_TailFin2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 208,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.65,
+    0.22,
+    -2.3,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.5242,
+    0.16817,
+    -2.3882,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4,
+    0.4,
+    0.24
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_Eye1_ColorMap.png",
+    "NormalMap": "GhostFinTuna_Eye1_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GhostFinTuna_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "GhostFinTuna_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.65,
+    0.22,
+    -2.3,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.7758,
+    0.16817,
+    -2.3882,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4,
+    0.4,
+    0.24
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GhostFinTuna_Eye1_ColorMap.png",
+    "NormalMap": "GhostFinTuna_Eye1_NormalMap.png",
+    "RoughnessMap": "GhostFinTuna_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GhostFinTuna_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GhostFinTuna_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

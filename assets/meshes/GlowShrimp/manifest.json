@@ -1,0 +1,1272 @@
+{
+ "model": "GlowShrimp",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 6816,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "GlowShrimp_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00072,
+    0.06167,
+    -0.05132,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.103,
+    1.2317,
+    3.0353
+   ],
+   "replaces": [
+    "Body",
+    "HeadSegment",
+    "TailSegment1",
+    "TailSegment2",
+    "Belly",
+    "Rostrum",
+    "GlowSpot1",
+    "GlowSpot2",
+    "GlowSpot3",
+    "GlowSpot4",
+    "GlowSpot5"
+   ],
+   "material": "Pebble",
+   "transparency": 0.0,
+   "materialMix": {
+    "Pebble": 0.734,
+    "SmoothPlastic": 0.266
+   },
+   "neon": {
+    "fraction": 0.0208,
+    "parts": [
+     "GlowSpot1",
+     "GlowSpot2",
+     "GlowSpot3",
+     "GlowSpot4",
+     "GlowSpot5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Body_ColorMap.png",
+    "NormalMap": "GlowShrimp_Body_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Body_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Body_MetalnessMap.png",
+    "EmissiveMask": "GlowShrimp_Body_EmissiveMask.png"
+   },
+   "tris": 2400,
+   "verts": 1498,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.34,
+    0.4,
+    -1.05,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    0.32697,
+    0.39199,
+    -1.04197,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.4,
+    0.4,
+    0.24
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Eye1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Eye1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GlowShrimp_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.34,
+    0.4,
+    -1.05,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "center": [
+    -0.35303,
+    0.39199,
+    -1.04197,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "size": [
+    0.4,
+    0.4,
+    0.24
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Eye1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Eye1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GlowShrimp_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_TailFin1.obj",
+   "glbNode": "TailFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.42,
+    1.55,
+    0.30741,
+    -0.14993,
+    0.93969,
+    0.43837,
+    0.89879,
+    0.0,
+    -0.84459,
+    0.41193,
+    0.34202
+   ],
+   "center": [
+    0.00031,
+    -0.42147,
+    1.54913,
+    0.30741,
+    -0.14993,
+    0.93969,
+    0.43837,
+    0.89879,
+    0.0,
+    -0.84459,
+    0.41193,
+    0.34202
+   ],
+   "size": [
+    0.1614,
+    0.7406,
+    0.9464
+   ],
+   "replaces": [
+    "TailFin1"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailFin1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_TailFin1_ColorMap.png",
+    "NormalMap": "GlowShrimp_TailFin1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_TailFin1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_TailFin1_MetalnessMap.png",
+    "EmissiveMask": "GlowShrimp_TailFin1_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 201,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.42,
+    1.55,
+    0.0,
+    0.0,
+    1.0,
+    0.43837,
+    0.89879,
+    0.0,
+    -0.89879,
+    0.43837,
+    0.0
+   ],
+   "center": [
+    -0.00064,
+    -0.41836,
+    1.55007,
+    0.0,
+    0.0,
+    1.0,
+    0.43837,
+    0.89879,
+    0.0,
+    -0.89879,
+    0.43837,
+    0.0
+   ],
+   "size": [
+    0.1601,
+    0.7491,
+    0.9471
+   ],
+   "replaces": [
+    "TailFin"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailFin"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_TailFin_ColorMap.png",
+    "NormalMap": "GlowShrimp_TailFin_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_TailFin_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_TailFin_MetalnessMap.png",
+    "EmissiveMask": "GlowShrimp_TailFin_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 189,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin3",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_TailFin3.obj",
+   "glbNode": "TailFin3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.42,
+    1.55,
+    -0.30741,
+    0.14993,
+    0.93969,
+    0.43837,
+    0.89879,
+    0.0,
+    -0.84459,
+    0.41193,
+    -0.34202
+   ],
+   "center": [
+    -0.00217,
+    -0.4214,
+    1.55001,
+    -0.30741,
+    0.14993,
+    0.93969,
+    0.43837,
+    0.89879,
+    0.0,
+    -0.84459,
+    0.41193,
+    -0.34202
+   ],
+   "size": [
+    0.159,
+    0.7426,
+    0.948
+   ],
+   "replaces": [
+    "TailFin3"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TailFin3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_TailFin3_ColorMap.png",
+    "NormalMap": "GlowShrimp_TailFin3_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_TailFin3_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_TailFin3_MetalnessMap.png",
+    "EmissiveMask": "GlowShrimp_TailFin3_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Antenna1.obj",
+   "glbNode": "Antenna1",
+   "sharedWith": null,
+   "pivot": [
+    0.28,
+    0.7152,
+    -1.34626,
+    0.0,
+    0.0,
+    1.0,
+    -0.61566,
+    0.78801,
+    0.0,
+    -0.78801,
+    -0.61566,
+    0.0
+   ],
+   "center": [
+    0.28068,
+    0.71472,
+    -1.34708,
+    0.0,
+    0.0,
+    1.0,
+    -0.61566,
+    0.78801,
+    0.0,
+    -0.78801,
+    -0.61566,
+    0.0
+   ],
+   "size": [
+    0.1241,
+    0.844,
+    0.1252
+   ],
+   "replaces": [
+    "Antenna1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Antenna1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Antenna1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Antenna1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Antenna1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "AntennaTip1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_AntennaTip1.obj",
+   "glbNode": "AntennaTip1",
+   "sharedWith": null,
+   "pivot": [
+    0.28,
+    1.27728,
+    -1.93232,
+    0.0,
+    0.0,
+    1.0,
+    -0.80902,
+    0.58779,
+    0.0,
+    -0.58779,
+    -0.80902,
+    0.0
+   ],
+   "center": [
+    0.27971,
+    1.27917,
+    -1.9349,
+    0.0,
+    0.0,
+    1.0,
+    -0.80902,
+    0.58779,
+    0.0,
+    -0.58779,
+    -0.80902,
+    0.0
+   ],
+   "size": [
+    0.0797,
+    0.8828,
+    0.0798
+   ],
+   "replaces": [
+    "AntennaTip1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_AntennaTip1_ColorMap.png",
+    "NormalMap": "GlowShrimp_AntennaTip1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_AntennaTip1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_AntennaTip1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Antenna2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Antenna1.obj",
+   "glbNode": "Antenna2",
+   "sharedWith": "Antenna1",
+   "pivot": [
+    -0.28,
+    0.7152,
+    -1.34626,
+    0.0,
+    0.0,
+    1.0,
+    -0.61566,
+    0.78801,
+    0.0,
+    -0.78801,
+    -0.61566,
+    0.0
+   ],
+   "center": [
+    -0.27932,
+    0.71472,
+    -1.34708,
+    0.0,
+    0.0,
+    1.0,
+    -0.61566,
+    0.78801,
+    0.0,
+    -0.78801,
+    -0.61566,
+    0.0
+   ],
+   "size": [
+    0.1241,
+    0.844,
+    0.1252
+   ],
+   "replaces": [
+    "Antenna2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Antenna1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Antenna1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Antenna1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Antenna1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "AntennaTip2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_AntennaTip2.obj",
+   "glbNode": "AntennaTip2",
+   "sharedWith": null,
+   "pivot": [
+    -0.28,
+    1.41983,
+    -1.74986,
+    0.0,
+    0.0,
+    1.0,
+    -0.37461,
+    0.92718,
+    0.0,
+    -0.92718,
+    -0.37461,
+    0.0
+   ],
+   "center": [
+    -0.28004,
+    1.41926,
+    -1.74937,
+    0.0,
+    0.0,
+    1.0,
+    -0.37461,
+    0.92718,
+    0.0,
+    -0.92718,
+    -0.37461,
+    0.0
+   ],
+   "size": [
+    0.0806,
+    0.8709,
+    0.0808
+   ],
+   "replaces": [
+    "AntennaTip2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_AntennaTip2_ColorMap.png",
+    "NormalMap": "GlowShrimp_AntennaTip2_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_AntennaTip2_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_AntennaTip2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 187,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1_1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_1.obj",
+   "glbNode": "Leg1_1",
+   "sharedWith": null,
+   "pivot": [
+    0.3,
+    -0.57525,
+    -0.36129,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "center": [
+    0.30127,
+    -0.57524,
+    -0.36208,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "size": [
+    0.1575,
+    0.3189,
+    0.1582
+   ],
+   "replaces": [
+    "Leg1_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1_2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_2.obj",
+   "glbNode": "Leg1_2",
+   "sharedWith": null,
+   "pivot": [
+    -0.3,
+    -0.57525,
+    -0.43871,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "center": [
+    -0.29991,
+    -0.57503,
+    -0.43859,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "size": [
+    0.1597,
+    0.3168,
+    0.1593
+   ],
+   "replaces": [
+    "Leg1_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_2_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_2_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2_1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_1.obj",
+   "glbNode": "Leg2_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    0.3,
+    -0.57525,
+    0.03871,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "center": [
+    0.30127,
+    -0.57524,
+    0.03792,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "size": [
+    0.1575,
+    0.3189,
+    0.1582
+   ],
+   "replaces": [
+    "Leg2_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2_2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg2_2.obj",
+   "glbNode": "Leg2_2",
+   "sharedWith": null,
+   "pivot": [
+    -0.3,
+    -0.57525,
+    -0.03871,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "center": [
+    -0.29914,
+    -0.57548,
+    -0.03904,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "size": [
+    0.1569,
+    0.3116,
+    0.1591
+   ],
+   "replaces": [
+    "Leg2_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg2_2_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg2_2_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg2_2_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg2_2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3_1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_1.obj",
+   "glbNode": "Leg3_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    0.3,
+    -0.57525,
+    0.43871,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "center": [
+    0.30127,
+    -0.57524,
+    0.43792,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "size": [
+    0.1575,
+    0.3189,
+    0.1582
+   ],
+   "replaces": [
+    "Leg3_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3_2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_2.obj",
+   "glbNode": "Leg3_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -0.3,
+    -0.57525,
+    0.36129,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "center": [
+    -0.29991,
+    -0.57503,
+    0.36141,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "size": [
+    0.1597,
+    0.3168,
+    0.1593
+   ],
+   "replaces": [
+    "Leg3_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_2_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_2_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4_1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_1.obj",
+   "glbNode": "Leg4_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    0.3,
+    -0.57525,
+    0.83871,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "center": [
+    0.30127,
+    -0.57524,
+    0.83792,
+    0.0,
+    0.0,
+    1.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    -0.24192,
+    0.0
+   ],
+   "size": [
+    0.1575,
+    0.3189,
+    0.1582
+   ],
+   "replaces": [
+    "Leg4_1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_1_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_1_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4_2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowShrimp_Leg1_2.obj",
+   "glbNode": "Leg4_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -0.3,
+    -0.57525,
+    0.76129,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "center": [
+    -0.29991,
+    -0.57503,
+    0.76141,
+    0.0,
+    0.0,
+    1.0,
+    0.24192,
+    0.9703,
+    0.0,
+    -0.9703,
+    0.24192,
+    0.0
+   ],
+   "size": [
+    0.1597,
+    0.3168,
+    0.1593
+   ],
+   "replaces": [
+    "Leg4_2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowShrimp_Leg1_2_ColorMap.png",
+    "NormalMap": "GlowShrimp_Leg1_2_NormalMap.png",
+    "RoughnessMap": "GlowShrimp_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "GlowShrimp_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

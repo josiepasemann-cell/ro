@@ -1,0 +1,2038 @@
+{
+ "model": "GlowJelly",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 9256,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "GlowJelly_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00109,
+    -0.3524,
+    0.00185,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.5877,
+    3.0327,
+    2.5975
+   ],
+   "replaces": [
+    "Body",
+    "BellCrown",
+    "Smile",
+    "OralArm1",
+    "OralArm1Tip",
+    "OralArm2",
+    "OralArm2Tip",
+    "OralArm3",
+    "OralArm3Tip",
+    "OralArm4",
+    "OralArm4Tip"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.857,
+    "Neon": 0.12,
+    "SmoothPlastic": 0.027
+   },
+   "neon": {
+    "fraction": 0.1196,
+    "parts": [
+     "OralArm1",
+     "OralArm1Tip",
+     "OralArm2",
+     "OralArm2Tip",
+     "OralArm3",
+     "OralArm3Tip",
+     "OralArm4",
+     "OralArm4Tip"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Body_ColorMap.png",
+    "NormalMap": "GlowJelly_Body_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Body_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Body_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Body_EmissiveMask.png"
+   },
+   "tris": 2400,
+   "verts": 1593,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "GlowCore",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_GlowCore.obj",
+   "glbNode": "GlowCore",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.05,
+    0.1,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00076,
+    -0.04957,
+    0.09648,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.1984,
+    0.9396,
+    1.1847
+   ],
+   "replaces": [
+    "GlowCore"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "GlowCore"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_GlowCore_ColorMap.png",
+    "NormalMap": "GlowJelly_GlowCore_NormalMap.png",
+    "RoughnessMap": "GlowJelly_GlowCore_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_GlowCore_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_GlowCore_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 191,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.55,
+    0.15,
+    -1.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.55,
+    0.15,
+    -1.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.42,
+    0.42,
+    0.24
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Eye1_ColorMap.png",
+    "NormalMap": "GlowJelly_Eye1_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.55,
+    0.15,
+    -1.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.55,
+    0.15,
+    -1.05,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.42,
+    0.42,
+    0.24
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Eye1_ColorMap.png",
+    "NormalMap": "GlowJelly_Eye1_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle1.obj",
+   "glbNode": "Tentacle1",
+   "sharedWith": null,
+   "pivot": [
+    1.0,
+    -1.04239,
+    0.03073,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "center": [
+    1.1345,
+    -1.00334,
+    0.01844,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "size": [
+    0.5282,
+    0.7743,
+    0.4225
+   ],
+   "replaces": [
+    "Tentacle1",
+    "Frill1"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.559,
+    "Neon": 0.441
+   },
+   "neon": {
+    "fraction": 0.441,
+    "parts": [
+     "Tentacle1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle1_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle1_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle1_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle1_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 201,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle1Mid.obj",
+   "glbNode": "Tentacle1Mid",
+   "sharedWith": null,
+   "pivot": [
+    1.0,
+    -1.58127,
+    0.11386,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "center": [
+    1.00021,
+    -1.58192,
+    0.11446,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "size": [
+    0.1901,
+    0.6016,
+    0.1887
+   ],
+   "replaces": [
+    "Tentacle1Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle1Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle1Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle1Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle1Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle1Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle1Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip1.obj",
+   "glbNode": "TentacleTip1",
+   "sharedWith": null,
+   "pivot": [
+    1.0,
+    -2.04746,
+    0.23763,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "center": [
+    1.0003,
+    -2.04777,
+    0.23817,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1271,
+    0.549,
+    0.1266
+   ],
+   "replaces": [
+    "TentacleTip1"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip1_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip1_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip1_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip1_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle2.obj",
+   "glbNode": "Tentacle2",
+   "sharedWith": null,
+   "pivot": [
+    0.70711,
+    -1.04239,
+    0.67638,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "center": [
+    0.8058,
+    -0.98833,
+    0.77429,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "size": [
+    0.4555,
+    0.8111,
+    0.4489
+   ],
+   "replaces": [
+    "Tentacle2",
+    "Frill2"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.551,
+    "Neon": 0.449
+   },
+   "neon": {
+    "fraction": 0.4493,
+    "parts": [
+     "Tentacle2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle2_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle2_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle2_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle2_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 186,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle2Mid.obj",
+   "glbNode": "Tentacle2Mid",
+   "sharedWith": null,
+   "pivot": [
+    0.70711,
+    -1.58127,
+    0.59325,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "center": [
+    0.70745,
+    -1.58128,
+    0.5929,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "size": [
+    0.189,
+    0.6019,
+    0.1879
+   ],
+   "replaces": [
+    "Tentacle2Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle2Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle2Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle2Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle2Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle2Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle2Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip2.obj",
+   "glbNode": "TentacleTip2",
+   "sharedWith": null,
+   "pivot": [
+    0.70711,
+    -2.04746,
+    0.46947,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "center": [
+    0.70782,
+    -2.04823,
+    0.46961,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1289,
+    0.5488,
+    0.1279
+   ],
+   "replaces": [
+    "TentacleTip2"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip2_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip2_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip2_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip2_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle3.obj",
+   "glbNode": "Tentacle3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -1.04239,
+    1.03073,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "center": [
+    0.00286,
+    -0.98498,
+    1.1488,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "size": [
+    0.374,
+    0.7823,
+    0.5128
+   ],
+   "replaces": [
+    "Tentacle3",
+    "Frill3"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.548,
+    "Neon": 0.452
+   },
+   "neon": {
+    "fraction": 0.4525,
+    "parts": [
+     "Tentacle3"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle3_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle3_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle3_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle3_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 198,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle1Mid.obj",
+   "glbNode": "Tentacle3Mid",
+   "sharedWith": "Tentacle1Mid",
+   "pivot": [
+    0.0,
+    -1.58127,
+    1.11386,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "center": [
+    0.00021,
+    -1.58192,
+    1.11446,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "size": [
+    0.1901,
+    0.6016,
+    0.1887
+   ],
+   "replaces": [
+    "Tentacle3Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle3Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle1Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle1Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle1Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle1Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle1Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip3",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip3.obj",
+   "glbNode": "TentacleTip3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -2.04746,
+    1.23763,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "center": [
+    0.00034,
+    -2.04796,
+    1.23778,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1263,
+    0.5461,
+    0.1272
+   ],
+   "replaces": [
+    "TentacleTip3"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip3_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip3_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip3_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip3_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 190,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle4.obj",
+   "glbNode": "Tentacle4",
+   "sharedWith": null,
+   "pivot": [
+    -0.70711,
+    -1.04239,
+    0.67638,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "center": [
+    -0.7993,
+    -1.0072,
+    0.79278,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "size": [
+    0.4582,
+    0.7971,
+    0.4753
+   ],
+   "replaces": [
+    "Tentacle4",
+    "Frill4"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.539,
+    "Neon": 0.461
+   },
+   "neon": {
+    "fraction": 0.4613,
+    "parts": [
+     "Tentacle4"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle4_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle4_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle4_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle4_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle4_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle2Mid.obj",
+   "glbNode": "Tentacle4Mid",
+   "sharedWith": "Tentacle2Mid",
+   "pivot": [
+    -0.70711,
+    -1.58127,
+    0.59325,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "center": [
+    -0.70677,
+    -1.58128,
+    0.5929,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "size": [
+    0.189,
+    0.6019,
+    0.1879
+   ],
+   "replaces": [
+    "Tentacle4Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle4Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle2Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle2Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle2Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle2Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle2Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip4",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip2.obj",
+   "glbNode": "TentacleTip4",
+   "sharedWith": "TentacleTip2",
+   "pivot": [
+    -0.70711,
+    -2.04746,
+    0.46947,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "center": [
+    -0.7064,
+    -2.04823,
+    0.46961,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1289,
+    0.5488,
+    0.1279
+   ],
+   "replaces": [
+    "TentacleTip4"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip4"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip2_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip2_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip2_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip2_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle5.obj",
+   "glbNode": "Tentacle5",
+   "sharedWith": null,
+   "pivot": [
+    -1.0,
+    -1.04239,
+    0.03073,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "center": [
+    -1.1337,
+    -0.98042,
+    0.01544,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "size": [
+    0.5187,
+    0.8072,
+    0.3269
+   ],
+   "replaces": [
+    "Tentacle5",
+    "Frill5"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.537,
+    "Neon": 0.463
+   },
+   "neon": {
+    "fraction": 0.4629,
+    "parts": [
+     "Tentacle5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle5_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle5_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle5_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle5_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle5_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle1Mid.obj",
+   "glbNode": "Tentacle5Mid",
+   "sharedWith": "Tentacle1Mid",
+   "pivot": [
+    -1.0,
+    -1.58127,
+    0.11386,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "center": [
+    -0.99979,
+    -1.58192,
+    0.11446,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "size": [
+    0.1901,
+    0.6016,
+    0.1887
+   ],
+   "replaces": [
+    "Tentacle5Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle5Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle1Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle1Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle1Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle1Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle1Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip5",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip1.obj",
+   "glbNode": "TentacleTip5",
+   "sharedWith": "TentacleTip1",
+   "pivot": [
+    -1.0,
+    -2.04746,
+    0.23763,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "center": [
+    -0.9997,
+    -2.04777,
+    0.23817,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1271,
+    0.549,
+    0.1266
+   ],
+   "replaces": [
+    "TentacleTip5"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip5"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip1_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip1_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip1_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip1_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle6.obj",
+   "glbNode": "Tentacle6",
+   "sharedWith": null,
+   "pivot": [
+    -0.70711,
+    -1.04239,
+    -0.73784,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "center": [
+    -0.80619,
+    -0.99673,
+    -0.82405,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "size": [
+    0.454,
+    0.7723,
+    0.4761
+   ],
+   "replaces": [
+    "Tentacle6",
+    "Frill6"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.549,
+    "Neon": 0.451
+   },
+   "neon": {
+    "fraction": 0.4511,
+    "parts": [
+     "Tentacle6"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle6_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle6_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle6_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle6_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle6_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle6Mid.obj",
+   "glbNode": "Tentacle6Mid",
+   "sharedWith": null,
+   "pivot": [
+    -0.70711,
+    -1.58127,
+    -0.82096,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "center": [
+    -0.70662,
+    -1.5823,
+    -0.82121,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "size": [
+    0.1897,
+    0.5969,
+    0.1899
+   ],
+   "replaces": [
+    "Tentacle6Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle6Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle6Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle6Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle6Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle6Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle6Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip6",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip2.obj",
+   "glbNode": "TentacleTip6",
+   "sharedWith": "TentacleTip2",
+   "pivot": [
+    -0.70711,
+    -2.04746,
+    -0.94474,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "center": [
+    -0.7064,
+    -2.04823,
+    -0.9446,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1289,
+    0.5488,
+    0.1279
+   ],
+   "replaces": [
+    "TentacleTip6"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip6"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip2_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip2_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip2_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip2_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle7.obj",
+   "glbNode": "Tentacle7",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -1.04239,
+    -0.96927,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "center": [
+    0.0011,
+    -0.99543,
+    -1.11515,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    0.10453,
+    0.0,
+    -0.10453,
+    0.99452
+   ],
+   "size": [
+    0.3759,
+    0.8108,
+    0.5331
+   ],
+   "replaces": [
+    "Tentacle7",
+    "Frill7"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.547,
+    "Neon": 0.453
+   },
+   "neon": {
+    "fraction": 0.4528,
+    "parts": [
+     "Tentacle7"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle7_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle7_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle7_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle7_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle7_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 192,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle7Mid.obj",
+   "glbNode": "Tentacle7Mid",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -1.58127,
+    -0.88614,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "center": [
+    0.00046,
+    -1.58124,
+    -0.88672,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    -0.20791,
+    0.97815
+   ],
+   "size": [
+    0.188,
+    0.5986,
+    0.1885
+   ],
+   "replaces": [
+    "Tentacle7Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle7Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle7Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle7Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle7Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle7Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle7Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip7",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip3.obj",
+   "glbNode": "TentacleTip7",
+   "sharedWith": "TentacleTip3",
+   "pivot": [
+    0.0,
+    -2.04746,
+    -0.76237,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "center": [
+    0.00034,
+    -2.04796,
+    -0.76222,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1263,
+    0.5461,
+    0.1272
+   ],
+   "replaces": [
+    "TentacleTip7"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip7"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip3_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip3_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip3_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip3_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 190,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle8.obj",
+   "glbNode": "Tentacle8",
+   "sharedWith": null,
+   "pivot": [
+    0.70711,
+    -1.04239,
+    -0.73784,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "center": [
+    0.79587,
+    -0.98353,
+    -0.81411,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99452,
+    -0.10453,
+    0.0,
+    0.10453,
+    0.99452
+   ],
+   "size": [
+    0.4658,
+    0.7931,
+    0.4238
+   ],
+   "replaces": [
+    "Tentacle8",
+    "Frill8"
+   ],
+   "material": "Glass",
+   "transparency": 0.15,
+   "materialMix": {
+    "Glass": 0.541,
+    "Neon": 0.459
+   },
+   "neon": {
+    "fraction": 0.4592,
+    "parts": [
+     "Tentacle8"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle8_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle8_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle8_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle8_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle8_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 174,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8Mid",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_Tentacle6Mid.obj",
+   "glbNode": "Tentacle8Mid",
+   "sharedWith": "Tentacle6Mid",
+   "pivot": [
+    0.70711,
+    -1.58127,
+    -0.82096,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "center": [
+    0.7076,
+    -1.5823,
+    -0.82121,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    -0.20791,
+    0.0,
+    0.20791,
+    0.97815
+   ],
+   "size": [
+    0.1897,
+    0.5969,
+    0.1899
+   ],
+   "replaces": [
+    "Tentacle8Mid"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle8Mid"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_Tentacle6Mid_ColorMap.png",
+    "NormalMap": "GlowJelly_Tentacle6Mid_NormalMap.png",
+    "RoughnessMap": "GlowJelly_Tentacle6Mid_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_Tentacle6Mid_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_Tentacle6Mid_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip8",
+   "primary": false,
+   "animated": true,
+   "file": "GlowJelly_TentacleTip2.obj",
+   "glbNode": "TentacleTip8",
+   "sharedWith": "TentacleTip2",
+   "pivot": [
+    0.70711,
+    -2.04746,
+    -0.94474,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "center": [
+    0.70782,
+    -2.04823,
+    -0.9446,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106
+   ],
+   "size": [
+    0.1289,
+    0.5488,
+    0.1279
+   ],
+   "replaces": [
+    "TentacleTip8"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip8"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowJelly_TentacleTip2_ColorMap.png",
+    "NormalMap": "GlowJelly_TentacleTip2_NormalMap.png",
+    "RoughnessMap": "GlowJelly_TentacleTip2_RoughnessMap.png",
+    "MetalnessMap": "GlowJelly_TentacleTip2_MetalnessMap.png",
+    "EmissiveMask": "GlowJelly_TentacleTip2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

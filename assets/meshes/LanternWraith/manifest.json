@@ -1,0 +1,927 @@
+{
+ "model": "LanternWraith",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 6056,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "LanternWraith_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00095,
+    0.16182,
+    0.25024,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.0928,
+    2.1131,
+    4.5935
+   ],
+   "replaces": [
+    "Body",
+    "Head",
+    "TailBase",
+    "GhostShimmer",
+    "Tooth1",
+    "Tooth2",
+    "Tooth3",
+    "Tooth4"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0023,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_Body_ColorMap.png",
+    "NormalMap": "LanternWraith_Body_NormalMap.png",
+    "RoughnessMap": "LanternWraith_Body_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_Body_MetalnessMap.png",
+    "EmissiveMask": "LanternWraith_Body_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 1821,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "LowerJaw",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_LowerJaw.obj",
+   "glbNode": "LowerJaw",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.55,
+    -1.9,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99027,
+    -0.13917,
+    0.0,
+    0.13917,
+    0.99027
+   ],
+   "center": [
+    0.00296,
+    -0.51517,
+    -1.89675,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99027,
+    -0.13917,
+    0.0,
+    0.13917,
+    0.99027
+   ],
+   "size": [
+    1.0812,
+    0.613,
+    0.9008
+   ],
+   "replaces": [
+    "LowerJaw"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_LowerJaw_ColorMap.png",
+    "NormalMap": "LanternWraith_LowerJaw_NormalMap.png",
+    "RoughnessMap": "LanternWraith_LowerJaw_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_LowerJaw_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 246,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LureTip",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_LureTip.obj",
+   "glbNode": "LureTip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    2.00844,
+    -3.58082,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    -0.95106,
+    0.30902
+   ],
+   "center": [
+    0.00072,
+    1.49238,
+    -2.76747,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    -0.95106,
+    0.30902
+   ],
+   "size": [
+    0.4639,
+    2.324,
+    0.9483
+   ],
+   "replaces": [
+    "LureTip",
+    "LureStalk1",
+    "LureStalk2",
+    "LureStalk3",
+    "LureStalk4"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "LureTip",
+     "LureStalk1",
+     "LureStalk2",
+     "LureStalk3",
+     "LureStalk4"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_LureTip_ColorMap.png",
+    "NormalMap": "LanternWraith_LureTip_NormalMap.png",
+    "RoughnessMap": "LanternWraith_LureTip_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_LureTip_MetalnessMap.png",
+    "EmissiveMask": "LanternWraith_LureTip_EmissiveMask.png"
+   },
+   "tris": 360,
+   "verts": 288,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin1",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_DorsalFin1.obj",
+   "glbNode": "DorsalFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.05,
+    0.5,
+    0.96126,
+    0.0,
+    -0.27564,
+    0.0,
+    1.0,
+    0.0,
+    0.27564,
+    0.0,
+    0.96126
+   ],
+   "center": [
+    -0.00109,
+    1.05348,
+    0.50477,
+    0.96126,
+    0.0,
+    -0.27564,
+    0.0,
+    1.0,
+    0.0,
+    0.27564,
+    0.0,
+    0.96126
+   ],
+   "size": [
+    0.1598,
+    0.9391,
+    0.7465
+   ],
+   "replaces": [
+    "DorsalFin1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_DorsalFin1_ColorMap.png",
+    "NormalMap": "LanternWraith_DorsalFin1_NormalMap.png",
+    "RoughnessMap": "LanternWraith_DorsalFin1_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_DorsalFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 189,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_DorsalFin.obj",
+   "glbNode": "DorsalFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.05,
+    0.5,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00103,
+    1.04792,
+    0.50178,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.154,
+    0.9472,
+    0.7403
+   ],
+   "replaces": [
+    "DorsalFin",
+    "BackStripe"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_DorsalFin_ColorMap.png",
+    "NormalMap": "LanternWraith_DorsalFin_NormalMap.png",
+    "RoughnessMap": "LanternWraith_DorsalFin_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_DorsalFin_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin3",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_DorsalFin3.obj",
+   "glbNode": "DorsalFin3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.05,
+    0.5,
+    0.96126,
+    0.0,
+    0.27564,
+    0.0,
+    1.0,
+    0.0,
+    -0.27564,
+    0.0,
+    0.96126
+   ],
+   "center": [
+    0.00022,
+    1.0539,
+    0.49958,
+    0.96126,
+    0.0,
+    0.27564,
+    0.0,
+    1.0,
+    0.0,
+    -0.27564,
+    0.0,
+    0.96126
+   ],
+   "size": [
+    0.1612,
+    0.9334,
+    0.7416
+   ],
+   "replaces": [
+    "DorsalFin3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_DorsalFin3_ColorMap.png",
+    "NormalMap": "LanternWraith_DorsalFin3_NormalMap.png",
+    "RoughnessMap": "LanternWraith_DorsalFin3_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_DorsalFin3_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 191,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin1",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_TailFin1.obj",
+   "glbNode": "TailFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    2.7,
+    0.9703,
+    0.0,
+    -0.24192,
+    0.0,
+    1.0,
+    0.0,
+    0.24192,
+    0.0,
+    0.9703
+   ],
+   "center": [
+    -8e-05,
+    0.00557,
+    2.70515,
+    0.9703,
+    0.0,
+    -0.24192,
+    0.0,
+    1.0,
+    0.0,
+    0.24192,
+    0.0,
+    0.9703
+   ],
+   "size": [
+    0.146,
+    1.4855,
+    0.6842
+   ],
+   "replaces": [
+    "TailFin1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_TailFin1_ColorMap.png",
+    "NormalMap": "LanternWraith_TailFin1_NormalMap.png",
+    "RoughnessMap": "LanternWraith_TailFin1_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_TailFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 205,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_TailFin.obj",
+   "glbNode": "TailFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    2.7,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00016,
+    0.00333,
+    2.69962,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.154,
+    1.4738,
+    0.697
+   ],
+   "replaces": [
+    "TailFin"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_TailFin_ColorMap.png",
+    "NormalMap": "LanternWraith_TailFin_NormalMap.png",
+    "RoughnessMap": "LanternWraith_TailFin_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_TailFin_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 186,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin3",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_TailFin.obj",
+   "glbNode": "TailFin3",
+   "sharedWith": "TailFin",
+   "pivot": [
+    0.0,
+    0.0,
+    2.7,
+    0.9703,
+    0.0,
+    0.24192,
+    0.0,
+    1.0,
+    0.0,
+    -0.24192,
+    0.0,
+    0.9703
+   ],
+   "center": [
+    6e-05,
+    0.00333,
+    2.69959,
+    0.9703,
+    0.0,
+    0.24192,
+    0.0,
+    1.0,
+    0.0,
+    -0.24192,
+    0.0,
+    0.9703
+   ],
+   "size": [
+    0.154,
+    1.4738,
+    0.697
+   ],
+   "replaces": [
+    "TailFin3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_TailFin_ColorMap.png",
+    "NormalMap": "LanternWraith_TailFin_NormalMap.png",
+    "RoughnessMap": "LanternWraith_TailFin_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_TailFin_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 186,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.95,
+    0.1,
+    0.6,
+    0.93969,
+    0.0,
+    0.34202,
+    0.0,
+    1.0,
+    0.0,
+    -0.34202,
+    0.0,
+    0.93969
+   ],
+   "center": [
+    0.95121,
+    0.10548,
+    0.60054,
+    0.93969,
+    0.0,
+    0.34202,
+    0.0,
+    1.0,
+    0.0,
+    -0.34202,
+    0.0,
+    0.93969
+   ],
+   "size": [
+    0.1489,
+    1.1808,
+    1.4711
+   ],
+   "replaces": [
+    "SideFin1"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_SideFin1_ColorMap.png",
+    "NormalMap": "LanternWraith_SideFin1_NormalMap.png",
+    "RoughnessMap": "LanternWraith_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_SideFin1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 205,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    -0.95,
+    0.1,
+    0.6,
+    0.93969,
+    0.0,
+    -0.34202,
+    0.0,
+    1.0,
+    0.0,
+    0.34202,
+    0.0,
+    0.93969
+   ],
+   "center": [
+    -0.94879,
+    0.10398,
+    0.59827,
+    0.93969,
+    0.0,
+    -0.34202,
+    0.0,
+    1.0,
+    0.0,
+    0.34202,
+    0.0,
+    0.93969
+   ],
+   "size": [
+    0.1517,
+    1.1815,
+    1.4989
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_SideFin2_ColorMap.png",
+    "NormalMap": "LanternWraith_SideFin2_NormalMap.png",
+    "RoughnessMap": "LanternWraith_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_SideFin2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 201,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.6,
+    0.4,
+    -1.9,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.56795,
+    0.38384,
+    -1.84828,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.46,
+    0.46,
+    0.26
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1",
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_Eye1_ColorMap.png",
+    "NormalMap": "LanternWraith_Eye1_NormalMap.png",
+    "RoughnessMap": "LanternWraith_Eye1_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_Eye1_MetalnessMap.png",
+    "EmissiveMask": "LanternWraith_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "LanternWraith_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.6,
+    0.4,
+    -1.9,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.63205,
+    0.38384,
+    -1.84828,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.46,
+    0.46,
+    0.26
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2",
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "LanternWraith_Eye1_ColorMap.png",
+    "NormalMap": "LanternWraith_Eye1_NormalMap.png",
+    "RoughnessMap": "LanternWraith_Eye1_RoughnessMap.png",
+    "MetalnessMap": "LanternWraith_Eye1_MetalnessMap.png",
+    "EmissiveMask": "LanternWraith_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

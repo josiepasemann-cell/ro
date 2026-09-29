@@ -1,0 +1,2707 @@
+{
+ "model": "MagmaSquid",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 12296,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "MagmaSquid_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.0025,
+    0.1795,
+    0.00306,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.7125,
+    3.4839,
+    3.1063
+   ],
+   "replaces": [
+    "Body",
+    "MantleTip",
+    "MantleBelly"
+   ],
+   "material": "CrackedLava",
+   "transparency": 0.0,
+   "materialMix": {
+    "CrackedLava": 0.966,
+    "SmoothPlastic": 0.034
+   },
+   "neon": {
+    "fraction": 0.2144,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Body_ColorMap.png",
+    "NormalMap": "MagmaSquid_Body_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Body_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Body_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_Body_EmissiveMask.png"
+   },
+   "tris": 2600,
+   "verts": 1587,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Wing1",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Wing1.obj",
+   "glbNode": "Wing1",
+   "sharedWith": null,
+   "pivot": [
+    1.4,
+    0.4,
+    -0.3,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.40078,
+    0.39778,
+    -0.30228,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2688,
+    1.1385,
+    1.3428
+   ],
+   "replaces": [
+    "Wing1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Wing1_ColorMap.png",
+    "NormalMap": "MagmaSquid_Wing1_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Wing1_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Wing1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 198,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing1Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Wing1Tip.obj",
+   "glbNode": "Wing1Tip",
+   "sharedWith": null,
+   "pivot": [
+    1.56996,
+    0.92308,
+    -0.45,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.57033,
+    0.92529,
+    -0.4464,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2066,
+    0.69,
+    0.8492
+   ],
+   "replaces": [
+    "Wing1Tip"
+   ],
+   "material": "Neon",
+   "transparency": 0.4,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Wing1Tip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Wing1Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Wing1Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Wing1Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Wing1Tip_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_Wing1Tip_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 193,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing2",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Wing2.obj",
+   "glbNode": "Wing2",
+   "sharedWith": null,
+   "pivot": [
+    -1.4,
+    0.4,
+    -0.3,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.40084,
+    0.40445,
+    -0.30052,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.2724,
+    1.1429,
+    1.3395
+   ],
+   "replaces": [
+    "Wing2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Wing2_ColorMap.png",
+    "NormalMap": "MagmaSquid_Wing2_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Wing2_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Wing2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 207,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing2Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Wing2Tip.obj",
+   "glbNode": "Wing2Tip",
+   "sharedWith": null,
+   "pivot": [
+    -1.56996,
+    0.92308,
+    -0.45,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.56887,
+    0.9249,
+    -0.45271,
+    0.95106,
+    -0.30902,
+    0.0,
+    0.30902,
+    0.95106,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1955,
+    0.6924,
+    0.8486
+   ],
+   "replaces": [
+    "Wing2Tip"
+   ],
+   "material": "Neon",
+   "transparency": 0.4,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Wing2Tip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Wing2Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Wing2Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Wing2Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Wing2Tip_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_Wing2Tip_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 189,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.55,
+    0.3,
+    -1.5,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.4981,
+    0.27352,
+    -1.39041,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.6,
+    0.6,
+    0.32
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Eye1_ColorMap.png",
+    "NormalMap": "MagmaSquid_Eye1_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Eye1_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Eye1_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.55,
+    0.3,
+    -1.5,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.6019,
+    0.27352,
+    -1.39041,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.6,
+    0.6,
+    0.32
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Eye1_ColorMap.png",
+    "NormalMap": "MagmaSquid_Eye1_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Eye1_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Eye1_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle1.obj",
+   "glbNode": "Tentacle1",
+   "sharedWith": null,
+   "pivot": [
+    0.9,
+    -1.61154,
+    0.58498,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "center": [
+    0.90023,
+    -1.61225,
+    0.58395,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.95106,
+    0.30902,
+    0.0,
+    -0.30902,
+    0.95106
+   ],
+   "size": [
+    0.4131,
+    0.8371,
+    0.4113
+   ],
+   "replaces": [
+    "Tentacle1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle1_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle1_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle1_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle1Mid.obj",
+   "glbNode": "Tentacle1Mid",
+   "sharedWith": null,
+   "pivot": [
+    0.9,
+    -2.14131,
+    0.86666,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295
+   ],
+   "center": [
+    0.9006,
+    -2.14261,
+    0.86793,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.88295,
+    0.46947,
+    0.0,
+    -0.46947,
+    0.88295
+   ],
+   "size": [
+    0.2956,
+    0.7375,
+    0.2985
+   ],
+   "replaces": [
+    "Tentacle1Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle1Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle1Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle1Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle1Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle1Tip.obj",
+   "glbNode": "Tentacle1Tip",
+   "sharedWith": null,
+   "pivot": [
+    0.9,
+    -2.53531,
+    1.17449,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.78801,
+    0.61566,
+    0.0,
+    -0.61566,
+    0.78801
+   ],
+   "center": [
+    0.90162,
+    -2.53446,
+    1.1742,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.78801,
+    0.61566,
+    0.0,
+    -0.61566,
+    0.78801
+   ],
+   "size": [
+    0.1967,
+    0.6436,
+    0.2008
+   ],
+   "replaces": [
+    "Tentacle1Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle1Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle1Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle1Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle1Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein1",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein1.obj",
+   "glbNode": "TentacleVein1",
+   "sharedWith": null,
+   "pivot": [
+    0.98,
+    -2.48606,
+    1.23753,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.78801,
+    0.61566,
+    0.0,
+    -0.61566,
+    0.78801
+   ],
+   "center": [
+    0.98005,
+    -2.48518,
+    1.23739,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.78801,
+    0.61566,
+    0.0,
+    -0.61566,
+    0.78801
+   ],
+   "size": [
+    0.0818,
+    0.5784,
+    0.0816
+   ],
+   "replaces": [
+    "TentacleVein1"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein1_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein1_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein1_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein1_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle2.obj",
+   "glbNode": "Tentacle2",
+   "sharedWith": null,
+   "pivot": [
+    0.60263,
+    -1.62289,
+    1.14065,
+    0.70711,
+    0.12279,
+    0.69636,
+    -0.09841,
+    0.99231,
+    -0.07504,
+    -0.70023,
+    -0.01547,
+    0.71375
+   ],
+   "center": [
+    0.60178,
+    -1.62376,
+    1.13949,
+    0.70711,
+    0.12279,
+    0.69636,
+    -0.09841,
+    0.99231,
+    -0.07504,
+    -0.70023,
+    -0.01547,
+    0.71375
+   ],
+   "size": [
+    0.4192,
+    0.8346,
+    0.4213
+   ],
+   "replaces": [
+    "Tentacle2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle2_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle2_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle2_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle2_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle2Mid.obj",
+   "glbNode": "Tentacle2Mid",
+   "sharedWith": null,
+   "pivot": [
+    0.45752,
+    -2.20141,
+    1.07542,
+    0.70711,
+    0.24184,
+    0.66446,
+    -0.09841,
+    0.96421,
+    -0.24622,
+    -0.70023,
+    0.10871,
+    0.7056
+   ],
+   "center": [
+    0.45714,
+    -2.20144,
+    1.07654,
+    0.70711,
+    0.24184,
+    0.66446,
+    -0.09841,
+    0.96421,
+    -0.24622,
+    -0.70023,
+    0.10871,
+    0.7056
+   ],
+   "size": [
+    0.2983,
+    0.7359,
+    0.2943
+   ],
+   "replaces": [
+    "Tentacle2Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle2Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle2Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle2Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle2Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle2Tip.obj",
+   "glbNode": "Tentacle2Tip",
+   "sharedWith": null,
+   "pivot": [
+    0.28075,
+    -2.65481,
+    0.96063,
+    0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.9068,
+    -0.40991,
+    -0.70023,
+    0.22959,
+    0.676
+   ],
+   "center": [
+    0.28036,
+    -2.655,
+    0.96048,
+    0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.9068,
+    -0.40991,
+    -0.70023,
+    0.22959,
+    0.676
+   ],
+   "size": [
+    0.2021,
+    0.6466,
+    0.202
+   ],
+   "replaces": [
+    "Tentacle2Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle2Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle2Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle2Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle2Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein2",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein2.obj",
+   "glbNode": "TentacleVein2",
+   "sharedWith": null,
+   "pivot": [
+    0.3863,
+    -2.69548,
+    0.95869,
+    0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.9068,
+    -0.40991,
+    -0.70023,
+    0.22959,
+    0.676
+   ],
+   "center": [
+    0.38586,
+    -2.69538,
+    0.95826,
+    0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.9068,
+    -0.40991,
+    -0.70023,
+    0.22959,
+    0.676
+   ],
+   "size": [
+    0.0816,
+    0.5805,
+    0.0814
+   ],
+   "replaces": [
+    "TentacleVein2"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein2_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein2_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein2_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein2_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 187,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle3.obj",
+   "glbNode": "Tentacle3",
+   "sharedWith": null,
+   "pivot": [
+    0.04775,
+    -1.61819,
+    1.43769,
+    0.0,
+    -0.17365,
+    0.98481,
+    -0.13917,
+    0.97522,
+    0.17196,
+    -0.99027,
+    -0.13706,
+    -0.02417
+   ],
+   "center": [
+    0.04805,
+    -1.61809,
+    1.43769,
+    0.0,
+    -0.17365,
+    0.98481,
+    -0.13917,
+    0.97522,
+    0.17196,
+    -0.99027,
+    -0.13706,
+    -0.02417
+   ],
+   "size": [
+    0.4158,
+    0.84,
+    0.4168
+   ],
+   "replaces": [
+    "Tentacle3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle3_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle3_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle3_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 185,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle3Mid.obj",
+   "glbNode": "Tentacle3Mid",
+   "sharedWith": null,
+   "pivot": [
+    0.25297,
+    -2.17652,
+    1.51616,
+    0.0,
+    -0.34202,
+    0.93969,
+    -0.13917,
+    0.93055,
+    0.33869,
+    -0.99027,
+    -0.13078,
+    -0.0476
+   ],
+   "center": [
+    0.25271,
+    -2.17649,
+    1.5137,
+    0.0,
+    -0.34202,
+    0.93969,
+    -0.13917,
+    0.93055,
+    0.33869,
+    -0.99027,
+    -0.13078,
+    -0.0476
+   ],
+   "size": [
+    0.2937,
+    0.7522,
+    0.2947
+   ],
+   "replaces": [
+    "Tentacle3Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle3Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle3Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle3Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle3Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 174,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle3Tip.obj",
+   "glbNode": "Tentacle3Tip",
+   "sharedWith": null,
+   "pivot": [
+    0.50297,
+    -2.60531,
+    1.57642,
+    0.0,
+    -0.5,
+    0.86603,
+    -0.13917,
+    0.8576,
+    0.49513,
+    -0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "center": [
+    0.5044,
+    -2.60748,
+    1.57629,
+    0.0,
+    -0.5,
+    0.86603,
+    -0.13917,
+    0.8576,
+    0.49513,
+    -0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "size": [
+    0.2017,
+    0.6485,
+    0.2003
+   ],
+   "replaces": [
+    "Tentacle3Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle3Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle3Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle3Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle3Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein3",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein3.obj",
+   "glbNode": "TentacleVein3",
+   "sharedWith": null,
+   "pivot": [
+    0.57225,
+    -2.57684,
+    1.49163,
+    0.0,
+    -0.5,
+    0.86603,
+    -0.13917,
+    0.8576,
+    0.49513,
+    -0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "center": [
+    0.57215,
+    -2.57691,
+    1.49132,
+    0.0,
+    -0.5,
+    0.86603,
+    -0.13917,
+    0.8576,
+    0.49513,
+    -0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "size": [
+    0.0802,
+    0.5726,
+    0.0797
+   ],
+   "replaces": [
+    "TentacleVein3"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein3_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein3_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein3_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein3_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle4.obj",
+   "glbNode": "Tentacle4",
+   "sharedWith": null,
+   "pivot": [
+    -0.67016,
+    -1.61349,
+    1.20753,
+    -0.70711,
+    0.12279,
+    0.69636,
+    -0.09841,
+    0.95813,
+    -0.26887,
+    -0.70023,
+    -0.25865,
+    -0.66542
+   ],
+   "center": [
+    -0.67399,
+    -1.6141,
+    1.20765,
+    -0.70711,
+    0.12279,
+    0.69636,
+    -0.09841,
+    0.95813,
+    -0.26887,
+    -0.70023,
+    -0.25865,
+    -0.66542
+   ],
+   "size": [
+    0.4136,
+    0.8393,
+    0.4178
+   ],
+   "replaces": [
+    "Tentacle4"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle4_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle4_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle4_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle4_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle4Mid.obj",
+   "glbNode": "Tentacle4Mid",
+   "sharedWith": null,
+   "pivot": [
+    -0.81527,
+    -2.15162,
+    1.42969,
+    -0.70711,
+    0.24184,
+    0.66446,
+    -0.09841,
+    0.89689,
+    -0.43117,
+    -0.70023,
+    -0.37027,
+    -0.6104
+   ],
+   "center": [
+    -0.81775,
+    -2.1548,
+    1.42923,
+    -0.70711,
+    0.24184,
+    0.66446,
+    -0.09841,
+    0.89689,
+    -0.43117,
+    -0.70023,
+    -0.37027,
+    -0.6104
+   ],
+   "size": [
+    0.2952,
+    0.7464,
+    0.3014
+   ],
+   "replaces": [
+    "Tentacle4Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle4Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle4Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle4Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle4Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 179,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle4Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle4Tip.obj",
+   "glbNode": "Tentacle4Tip",
+   "sharedWith": null,
+   "pivot": [
+    -0.99205,
+    -2.55582,
+    1.66501,
+    -0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.80839,
+    -0.58036,
+    -0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "center": [
+    -0.99096,
+    -2.55522,
+    1.66351,
+    -0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.80839,
+    -0.58036,
+    -0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "size": [
+    0.2008,
+    0.6473,
+    0.1983
+   ],
+   "replaces": [
+    "Tentacle4Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle4Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle4Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle4Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle4Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 178,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein4",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein4.obj",
+   "glbNode": "TentacleVein4",
+   "sharedWith": null,
+   "pivot": [
+    -0.99963,
+    -2.61012,
+    1.56604,
+    -0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.80839,
+    -0.58036,
+    -0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "center": [
+    -0.99966,
+    -2.60766,
+    1.56525,
+    -0.70711,
+    0.35355,
+    0.61237,
+    -0.09841,
+    0.80839,
+    -0.58036,
+    -0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "size": [
+    0.0822,
+    0.5727,
+    0.0802
+   ],
+   "replaces": [
+    "TentacleVein4"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein4"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein4_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein4_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein4_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein4_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein4_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 191,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle5.obj",
+   "glbNode": "Tentacle5",
+   "sharedWith": null,
+   "pivot": [
+    -0.9,
+    -1.62483,
+    0.4904,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99939,
+    0.0349,
+    0.0,
+    0.0349,
+    -0.99939
+   ],
+   "center": [
+    -0.89969,
+    -1.62135,
+    0.48902,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.99939,
+    0.0349,
+    0.0,
+    0.0349,
+    -0.99939
+   ],
+   "size": [
+    0.4143,
+    0.8461,
+    0.4105
+   ],
+   "replaces": [
+    "Tentacle5"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle5_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle5_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle5_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle5_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 174,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle5Mid.obj",
+   "glbNode": "Tentacle5Mid",
+   "sharedWith": null,
+   "pivot": [
+    -0.9,
+    -2.21172,
+    0.36566,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    0.20791,
+    -0.97815
+   ],
+   "center": [
+    -0.89933,
+    -2.21127,
+    0.3651,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.97815,
+    0.20791,
+    0.0,
+    0.20791,
+    -0.97815
+   ],
+   "size": [
+    0.2909,
+    0.7521,
+    0.2917
+   ],
+   "replaces": [
+    "Tentacle5Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle5Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle5Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle5Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle5Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle5Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle5Tip.obj",
+   "glbNode": "Tentacle5Tip",
+   "sharedWith": null,
+   "pivot": [
+    -0.9,
+    -2.67531,
+    0.17835,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.92718,
+    0.37461,
+    0.0,
+    0.37461,
+    -0.92718
+   ],
+   "center": [
+    -0.90112,
+    -2.67418,
+    0.17811,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.92718,
+    0.37461,
+    0.0,
+    0.37461,
+    -0.92718
+   ],
+   "size": [
+    0.197,
+    0.6442,
+    0.1964
+   ],
+   "replaces": [
+    "Tentacle5Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle5Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle5Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle5Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle5Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein5",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein5.obj",
+   "glbNode": "TentacleVein5",
+   "sharedWith": null,
+   "pivot": [
+    -0.98,
+    -2.64534,
+    0.10418,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.92718,
+    0.37461,
+    0.0,
+    0.37461,
+    -0.92718
+   ],
+   "center": [
+    -0.98028,
+    -2.64561,
+    0.10435,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.92718,
+    0.37461,
+    0.0,
+    0.37461,
+    -0.92718
+   ],
+   "size": [
+    0.0777,
+    0.5781,
+    0.0779
+   ],
+   "replaces": [
+    "TentacleVein5"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein5"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein5_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein5_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein5_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein5_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein5_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle6.obj",
+   "glbNode": "Tentacle6",
+   "sharedWith": null,
+   "pivot": [
+    -0.60263,
+    -1.61349,
+    -0.06527,
+    -0.70711,
+    -0.12279,
+    -0.69636,
+    0.09841,
+    0.95813,
+    -0.26887,
+    0.70023,
+    -0.25865,
+    -0.66542
+   ],
+   "center": [
+    -0.60308,
+    -1.61158,
+    -0.06442,
+    -0.70711,
+    -0.12279,
+    -0.69636,
+    0.09841,
+    0.95813,
+    -0.26887,
+    0.70023,
+    -0.25865,
+    -0.66542
+   ],
+   "size": [
+    0.4147,
+    0.8432,
+    0.4152
+   ],
+   "replaces": [
+    "Tentacle6"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle6_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle6_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle6_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle6_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle6Mid.obj",
+   "glbNode": "Tentacle6Mid",
+   "sharedWith": null,
+   "pivot": [
+    -0.45752,
+    -2.15162,
+    0.1569,
+    -0.70711,
+    -0.24184,
+    -0.66446,
+    0.09841,
+    0.89689,
+    -0.43117,
+    0.70023,
+    -0.37027,
+    -0.6104
+   ],
+   "center": [
+    -0.45819,
+    -2.15365,
+    0.15861,
+    -0.70711,
+    -0.24184,
+    -0.66446,
+    0.09841,
+    0.89689,
+    -0.43117,
+    0.70023,
+    -0.37027,
+    -0.6104
+   ],
+   "size": [
+    0.2953,
+    0.7455,
+    0.2944
+   ],
+   "replaces": [
+    "Tentacle6Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle6Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle6Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle6Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle6Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle6Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle6Tip.obj",
+   "glbNode": "Tentacle6Tip",
+   "sharedWith": null,
+   "pivot": [
+    -0.28075,
+    -2.55582,
+    0.39222,
+    -0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.80839,
+    -0.58036,
+    0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "center": [
+    -0.27983,
+    -2.55777,
+    0.39326,
+    -0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.80839,
+    -0.58036,
+    0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "size": [
+    0.197,
+    0.6432,
+    0.1961
+   ],
+   "replaces": [
+    "Tentacle6Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle6Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle6Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle6Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle6Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 177,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein6",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein6.obj",
+   "glbNode": "TentacleVein6",
+   "sharedWith": null,
+   "pivot": [
+    -0.3863,
+    -2.59437,
+    0.40529,
+    -0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.80839,
+    -0.58036,
+    0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "center": [
+    -0.38551,
+    -2.59665,
+    0.40712,
+    -0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.80839,
+    -0.58036,
+    0.70023,
+    -0.47064,
+    -0.53683
+   ],
+   "size": [
+    0.0785,
+    0.58,
+    0.0795
+   ],
+   "replaces": [
+    "TentacleVein6"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein6"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein6_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein6_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein6_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein6_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein6_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 188,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle7.obj",
+   "glbNode": "Tentacle7",
+   "sharedWith": null,
+   "pivot": [
+    -0.04775,
+    -1.61819,
+    -0.36231,
+    0.0,
+    0.17365,
+    -0.98481,
+    0.13917,
+    0.97522,
+    0.17196,
+    0.99027,
+    -0.13706,
+    -0.02417
+   ],
+   "center": [
+    -0.04721,
+    -1.61919,
+    -0.36212,
+    0.0,
+    0.17365,
+    -0.98481,
+    0.13917,
+    0.97522,
+    0.17196,
+    0.99027,
+    -0.13706,
+    -0.02417
+   ],
+   "size": [
+    0.4095,
+    0.8434,
+    0.4147
+   ],
+   "replaces": [
+    "Tentacle7"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle7_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle7_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle7_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle7_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle7Mid.obj",
+   "glbNode": "Tentacle7Mid",
+   "sharedWith": null,
+   "pivot": [
+    -0.25297,
+    -2.17652,
+    -0.28384,
+    0.0,
+    0.34202,
+    -0.93969,
+    0.13917,
+    0.93055,
+    0.33869,
+    0.99027,
+    -0.13078,
+    -0.0476
+   ],
+   "center": [
+    -0.25425,
+    -2.17607,
+    -0.28202,
+    0.0,
+    0.34202,
+    -0.93969,
+    0.13917,
+    0.93055,
+    0.33869,
+    0.99027,
+    -0.13078,
+    -0.0476
+   ],
+   "size": [
+    0.2902,
+    0.7501,
+    0.2992
+   ],
+   "replaces": [
+    "Tentacle7Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle7Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle7Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle7Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle7Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 178,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle7Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle5Tip.obj",
+   "glbNode": "Tentacle7Tip",
+   "sharedWith": "Tentacle5Tip",
+   "pivot": [
+    -0.50297,
+    -2.60531,
+    -0.22358,
+    0.0,
+    0.5,
+    -0.86603,
+    0.13917,
+    0.8576,
+    0.49513,
+    0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "center": [
+    -0.50305,
+    -2.60402,
+    -0.22263,
+    0.0,
+    0.5,
+    -0.86603,
+    0.13917,
+    0.8576,
+    0.49513,
+    0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "size": [
+    0.197,
+    0.6442,
+    0.1964
+   ],
+   "replaces": [
+    "Tentacle7Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle5Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle5Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle5Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle5Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 182,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein7",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein5.obj",
+   "glbNode": "TentacleVein7",
+   "sharedWith": "TentacleVein5",
+   "pivot": [
+    -0.57225,
+    -2.55457,
+    -0.14992,
+    0.0,
+    0.5,
+    -0.86603,
+    0.13917,
+    0.8576,
+    0.49513,
+    0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "center": [
+    -0.57212,
+    -2.55482,
+    -0.1496,
+    0.0,
+    0.5,
+    -0.86603,
+    0.13917,
+    0.8576,
+    0.49513,
+    0.99027,
+    -0.12053,
+    -0.06959
+   ],
+   "size": [
+    0.0777,
+    0.5781,
+    0.0779
+   ],
+   "replaces": [
+    "TentacleVein7"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein7"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein5_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein5_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein5_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein5_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein5_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle8.obj",
+   "glbNode": "Tentacle8",
+   "sharedWith": null,
+   "pivot": [
+    0.67016,
+    -1.62289,
+    -0.13214,
+    0.70711,
+    -0.12279,
+    -0.69636,
+    0.09841,
+    0.99231,
+    -0.07504,
+    0.70023,
+    -0.01547,
+    0.71375
+   ],
+   "center": [
+    0.67323,
+    -1.62264,
+    -0.1345,
+    0.70711,
+    -0.12279,
+    -0.69636,
+    0.09841,
+    0.99231,
+    -0.07504,
+    0.70023,
+    -0.01547,
+    0.71375
+   ],
+   "size": [
+    0.4139,
+    0.8476,
+    0.4142
+   ],
+   "replaces": [
+    "Tentacle8"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle8_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle8_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle8_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle8_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 184,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8Mid",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle8Mid.obj",
+   "glbNode": "Tentacle8Mid",
+   "sharedWith": null,
+   "pivot": [
+    0.81527,
+    -2.20141,
+    -0.19737,
+    0.70711,
+    -0.24184,
+    -0.66446,
+    0.09841,
+    0.96421,
+    -0.24622,
+    0.70023,
+    0.10871,
+    0.7056
+   ],
+   "center": [
+    0.81526,
+    -2.20225,
+    -0.19604,
+    0.70711,
+    -0.24184,
+    -0.66446,
+    0.09841,
+    0.96421,
+    -0.24622,
+    0.70023,
+    0.10871,
+    0.7056
+   ],
+   "size": [
+    0.2934,
+    0.7517,
+    0.2986
+   ],
+   "replaces": [
+    "Tentacle8Mid"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle8Mid_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle8Mid_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle8Mid_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle8Mid_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    96,
+    96
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle8Tip",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_Tentacle8Tip.obj",
+   "glbNode": "Tentacle8Tip",
+   "sharedWith": null,
+   "pivot": [
+    0.99205,
+    -2.65481,
+    -0.31216,
+    0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.9068,
+    -0.40991,
+    0.70023,
+    0.22959,
+    0.676
+   ],
+   "center": [
+    0.99328,
+    -2.65509,
+    -0.31113,
+    0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.9068,
+    -0.40991,
+    0.70023,
+    0.22959,
+    0.676
+   ],
+   "size": [
+    0.1946,
+    0.6528,
+    0.1983
+   ],
+   "replaces": [
+    "Tentacle8Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_Tentacle8Tip_ColorMap.png",
+    "NormalMap": "MagmaSquid_Tentacle8Tip_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_Tentacle8Tip_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_Tentacle8Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 175,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleVein8",
+   "primary": false,
+   "animated": true,
+   "file": "MagmaSquid_TentacleVein8.obj",
+   "glbNode": "TentacleVein8",
+   "sharedWith": null,
+   "pivot": [
+    0.99963,
+    -2.67973,
+    -0.20206,
+    0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.9068,
+    -0.40991,
+    0.70023,
+    0.22959,
+    0.676
+   ],
+   "center": [
+    1.00114,
+    -2.68133,
+    -0.20165,
+    0.70711,
+    -0.35355,
+    -0.61237,
+    0.09841,
+    0.9068,
+    -0.40991,
+    0.70023,
+    0.22959,
+    0.676
+   ],
+   "size": [
+    0.0774,
+    0.5732,
+    0.0799
+   ],
+   "replaces": [
+    "TentacleVein8"
+   ],
+   "material": "Neon",
+   "transparency": 0.1,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleVein8"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "MagmaSquid_TentacleVein8_ColorMap.png",
+    "NormalMap": "MagmaSquid_TentacleVein8_NormalMap.png",
+    "RoughnessMap": "MagmaSquid_TentacleVein8_RoughnessMap.png",
+    "MetalnessMap": "MagmaSquid_TentacleVein8_MetalnessMap.png",
+    "EmissiveMask": "MagmaSquid_TentacleVein8_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 192,
+   "textureSize": [
+    64,
+    64
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

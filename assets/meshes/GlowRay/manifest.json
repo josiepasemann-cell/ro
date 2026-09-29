@@ -1,0 +1,599 @@
+{
+ "model": "GlowRay",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 4446,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "GlowRay_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00565,
+    0.03183,
+    0.11509,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.9997,
+    0.899,
+    3.3359
+   ],
+   "replaces": [
+    "Body",
+    "BackDome",
+    "Belly",
+    "GlowRim",
+    "EdgeBump3",
+    "EdgeBump4",
+    "Spot1",
+    "Spot2",
+    "Spot3",
+    "Spot4",
+    "Spot5",
+    "GillSlit1",
+    "GillSlit2",
+    "GillSlit3",
+    "GillSlit4",
+    "GillSlit5"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.3361,
+    "parts": [
+     "GlowRim",
+     "Spot1",
+     "Spot2",
+     "Spot3",
+     "Spot4",
+     "Spot5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_Body_ColorMap.png",
+    "NormalMap": "GlowRay_Body_NormalMap.png",
+    "RoughnessMap": "GlowRay_Body_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_Body_MetalnessMap.png",
+    "EmissiveMask": "GlowRay_Body_EmissiveMask.png"
+   },
+   "tris": 2400,
+   "verts": 1620,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    -1.75,
+    0.05,
+    -0.1,
+    -0.9703,
+    -0.24192,
+    0.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.68272,
+    -0.04084,
+    -0.10169,
+    -0.9703,
+    -0.24192,
+    0.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    1.569,
+    0.4849,
+    1.6861
+   ],
+   "replaces": [
+    "SideFin1",
+    "EdgeBump1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_SideFin1_ColorMap.png",
+    "NormalMap": "GlowRay_SideFin1_NormalMap.png",
+    "RoughnessMap": "GlowRay_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_SideFin1_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 285,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1Tip",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_SideFin1Tip.obj",
+   "glbNode": "SideFin1Tip",
+   "sharedWith": null,
+   "pivot": [
+    -2.47288,
+    -0.15085,
+    0.05,
+    -0.91355,
+    -0.40674,
+    0.0,
+    -0.40674,
+    0.91355,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -2.47003,
+    -0.15036,
+    0.04775,
+    -0.91355,
+    -0.40674,
+    0.0,
+    -0.40674,
+    0.91355,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.894,
+    0.2034,
+    1.1023
+   ],
+   "replaces": [
+    "SideFin1Tip"
+   ],
+   "material": "Neon",
+   "transparency": 0.3,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SideFin1Tip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_SideFin1Tip_ColorMap.png",
+    "NormalMap": "GlowRay_SideFin1Tip_NormalMap.png",
+    "RoughnessMap": "GlowRay_SideFin1Tip_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_SideFin1Tip_MetalnessMap.png",
+    "EmissiveMask": "GlowRay_SideFin1Tip_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    1.75,
+    0.05,
+    -0.1,
+    -0.9703,
+    0.24192,
+    0.0,
+    0.24192,
+    0.9703,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.67984,
+    -0.03914,
+    -0.09853,
+    -0.9703,
+    0.24192,
+    0.0,
+    0.24192,
+    0.9703,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    1.5752,
+    0.4929,
+    1.6903
+   ],
+   "replaces": [
+    "SideFin2",
+    "EdgeBump2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_SideFin2_ColorMap.png",
+    "NormalMap": "GlowRay_SideFin2_NormalMap.png",
+    "RoughnessMap": "GlowRay_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_SideFin2_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 296,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2Tip",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_SideFin2Tip.obj",
+   "glbNode": "SideFin2Tip",
+   "sharedWith": null,
+   "pivot": [
+    2.47288,
+    -0.15085,
+    0.05,
+    -0.91355,
+    0.40674,
+    0.0,
+    0.40674,
+    0.91355,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    2.47547,
+    -0.15209,
+    0.05038,
+    -0.91355,
+    0.40674,
+    0.0,
+    0.40674,
+    0.91355,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.9004,
+    0.1913,
+    1.0901
+   ],
+   "replaces": [
+    "SideFin2Tip"
+   ],
+   "material": "Neon",
+   "transparency": 0.3,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SideFin2Tip"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_SideFin2Tip_ColorMap.png",
+    "NormalMap": "GlowRay_SideFin2Tip_NormalMap.png",
+    "RoughnessMap": "GlowRay_SideFin2Tip_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_SideFin2Tip_MetalnessMap.png",
+    "EmissiveMask": "GlowRay_SideFin2Tip_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailTip",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_TailTip.obj",
+   "glbNode": "TailTip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    3.43,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.00079,
+    -0.00088,
+    2.43441,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.2288,
+    0.2263,
+    2.4033
+   ],
+   "replaces": [
+    "TailTip",
+    "TailSegment1",
+    "TailSegment2",
+    "TailSegment3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_TailTip_ColorMap.png",
+    "NormalMap": "GlowRay_TailTip_NormalMap.png",
+    "RoughnessMap": "GlowRay_TailTip_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_TailTip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 188,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.55,
+    0.2,
+    -1.15,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.53688,
+    0.11589,
+    -1.11624,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.42,
+    0.42,
+    0.26
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_Eye1_ColorMap.png",
+    "NormalMap": "GlowRay_Eye1_NormalMap.png",
+    "RoughnessMap": "GlowRay_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GlowRay_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "GlowRay_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.55,
+    0.2,
+    -1.15,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.56312,
+    0.11589,
+    -1.11624,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.42,
+    0.42,
+    0.26
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "GlowRay_Eye1_ColorMap.png",
+    "NormalMap": "GlowRay_Eye1_NormalMap.png",
+    "RoughnessMap": "GlowRay_Eye1_RoughnessMap.png",
+    "MetalnessMap": "GlowRay_Eye1_MetalnessMap.png",
+    "EmissiveMask": "GlowRay_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
