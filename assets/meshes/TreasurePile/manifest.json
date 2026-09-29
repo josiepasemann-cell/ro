@@ -1,0 +1,109 @@
+{
+ "model": "TreasurePile",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3000,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "TreasurePile_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.06304,
+    0.83312,
+    0.00031,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.1421,
+    2.6594,
+    3.9963
+   ],
+   "replaces": [
+    "Base",
+    "ChestBody",
+    "ChestLid",
+    "ChestTrim",
+    "ChestCornerL",
+    "ChestCornerR",
+    "Coin1",
+    "Coin2",
+    "Coin3",
+    "Coin4",
+    "Coin5",
+    "Coin6",
+    "Coin7",
+    "Coin8",
+    "Coin9",
+    "Coin10",
+    "JewelRing1",
+    "JewelRing2",
+    "Sparkle1",
+    "Sparkle2",
+    "Sparkle3"
+   ],
+   "material": "Sand",
+   "transparency": 0.0,
+   "materialMix": {
+    "Foil": 0.277,
+    "Glass": 0.038,
+    "Metal": 0.004,
+    "Neon": 0.01,
+    "Sand": 0.461,
+    "WoodPlanks": 0.211
+   },
+   "neon": {
+    "fraction": 0.0097,
+    "parts": [
+     "Sparkle1",
+     "Sparkle2",
+     "Sparkle3"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TreasurePile_Base_ColorMap.png",
+    "NormalMap": "TreasurePile_Base_NormalMap.png",
+    "RoughnessMap": "TreasurePile_Base_RoughnessMap.png",
+    "MetalnessMap": "TreasurePile_Base_MetalnessMap.png",
+    "EmissiveMask": "TreasurePile_Base_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 2789,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

@@ -1,0 +1,101 @@
+{
+ "model": "MysteryEgg_Epic",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Shell",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 2400,
+ "meshes": [
+  {
+   "name": "Shell",
+   "primary": true,
+   "animated": false,
+   "file": "MysteryEgg_Epic_Shell.obj",
+   "glbNode": "Shell",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00184,
+    0.11304,
+    0.00066,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.9343,
+    3.4912,
+    2.9424
+   ],
+   "replaces": [
+    "Shell",
+    "Shard1",
+    "Shard2",
+    "Shard3",
+    "Shard4",
+    "Shard5",
+    "Shard6",
+    "Shard7",
+    "Vein1",
+    "Vein2",
+    "Vein3",
+    "Vein4",
+    "FootRing",
+    "CrownTip"
+   ],
+   "material": "Glass",
+   "transparency": 0.032,
+   "materialMix": {
+    "Glass": 0.753,
+    "Metal": 0.083,
+    "Neon": 0.165
+   },
+   "neon": {
+    "fraction": 0.1647,
+    "parts": [
+     "Vein1",
+     "Vein2",
+     "Vein3",
+     "Vein4",
+     "CrownTip"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Epic_Shell_ColorMap.png",
+    "NormalMap": "MysteryEgg_Epic_Shell_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Epic_Shell_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Epic_Shell_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Epic_Shell_EmissiveMask.png"
+   },
+   "tris": 2400,
+   "verts": 1701,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

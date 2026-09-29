@@ -1,0 +1,92 @@
+{
+ "model": "MysteryEgg_Common",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Shell",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 1120,
+ "meshes": [
+  {
+   "name": "Shell",
+   "primary": true,
+   "animated": false,
+   "file": "MysteryEgg_Common_Shell.obj",
+   "glbNode": "Shell",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00076,
+    0.05814,
+    -0.00803,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.6312,
+    3.2873,
+    2.6166
+   ],
+   "replaces": [
+    "Shell",
+    "SeamRing",
+    "FootRing",
+    "TopHighlight",
+    "Speckle1",
+    "Speckle2",
+    "Speckle3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.074,
+    "SmoothPlastic": 0.979
+   },
+   "neon": {
+    "fraction": 0.0744,
+    "parts": [
+     "SeamRing",
+     "Speckle1",
+     "Speckle2",
+     "Speckle3"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Common_Shell_ColorMap.png",
+    "NormalMap": "MysteryEgg_Common_Shell_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Common_Shell_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Common_Shell_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Common_Shell_EmissiveMask.png"
+   },
+   "tris": 1120,
+   "verts": 673,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

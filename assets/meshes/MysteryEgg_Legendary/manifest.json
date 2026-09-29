@@ -1,0 +1,125 @@
+{
+ "model": "MysteryEgg_Legendary",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Shell",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3000,
+ "meshes": [
+  {
+   "name": "Shell",
+   "primary": true,
+   "animated": false,
+   "file": "MysteryEgg_Legendary_Shell.obj",
+   "glbNode": "Shell",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1e-05,
+    0.15942,
+    -0.00013,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.3832,
+    3.6869,
+    3.155
+   ],
+   "replaces": [
+    "Shell",
+    "Shard1",
+    "Shard2",
+    "Shard3",
+    "Shard4",
+    "Shard5",
+    "Shard6",
+    "Shard7",
+    "Shard8",
+    "CrownSpike1",
+    "CrownSpike2",
+    "CrownSpike3",
+    "CrownSpike4",
+    "CrownSpike5",
+    "RuneRing",
+    "RuneGem1",
+    "RuneGem2",
+    "RuneGem3",
+    "RuneGem4",
+    "RuneGem5",
+    "RuneGem6",
+    "CrackGlow1",
+    "CrackGlow2",
+    "CrackGlow3",
+    "CrackGlow4",
+    "FootRing"
+   ],
+   "material": "Glass",
+   "transparency": 0.018,
+   "materialMix": {
+    "Glass": 0.713,
+    "Metal": 0.041,
+    "Neon": 0.167,
+    "Plastic": 0.078
+   },
+   "neon": {
+    "fraction": 0.1674,
+    "parts": [
+     "CrownSpike1",
+     "CrownSpike2",
+     "CrownSpike3",
+     "CrownSpike4",
+     "CrownSpike5",
+     "RuneRing",
+     "RuneGem1",
+     "RuneGem2",
+     "RuneGem3",
+     "RuneGem4",
+     "RuneGem5",
+     "RuneGem6",
+     "CrackGlow1",
+     "CrackGlow2",
+     "CrackGlow3",
+     "CrackGlow4"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Legendary_Shell_ColorMap.png",
+    "NormalMap": "MysteryEgg_Legendary_Shell_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Legendary_Shell_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Legendary_Shell_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Legendary_Shell_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 2265,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

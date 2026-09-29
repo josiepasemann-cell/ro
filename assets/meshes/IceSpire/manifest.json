@@ -1,0 +1,102 @@
+{
+ "model": "IceSpire",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 1680,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "IceSpire_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00632,
+    2.63861,
+    -0.00229,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.983,
+    6.2764,
+    3.9918
+   ],
+   "replaces": [
+    "Base",
+    "IceSpike1",
+    "IceSpikeCore1",
+    "IceSpike2",
+    "IceSpikeCore2",
+    "IceSpike3",
+    "IceSpikeCore3",
+    "IceSpike4",
+    "IceSpikeCore4",
+    "IceSpike5",
+    "IceSpikeCore5",
+    "FrostShard1",
+    "FrostShard2",
+    "FrostShard3",
+    "FrostShard4"
+   ],
+   "material": "Glass",
+   "transparency": 0.23,
+   "materialMix": {
+    "Glass": 0.478,
+    "Ice": 0.312,
+    "Neon": 0.209
+   },
+   "neon": {
+    "fraction": 0.2094,
+    "parts": [
+     "IceSpikeCore1",
+     "IceSpikeCore2",
+     "IceSpikeCore3",
+     "IceSpikeCore4",
+     "IceSpikeCore5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "IceSpire_Base_ColorMap.png",
+    "NormalMap": "IceSpire_Base_NormalMap.png",
+    "RoughnessMap": "IceSpire_Base_RoughnessMap.png",
+    "MetalnessMap": "IceSpire_Base_MetalnessMap.png",
+    "EmissiveMask": "IceSpire_Base_EmissiveMask.png"
+   },
+   "tris": 1680,
+   "verts": 1222,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

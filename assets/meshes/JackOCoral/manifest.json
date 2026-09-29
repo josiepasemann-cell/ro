@@ -1,0 +1,94 @@
+{
+ "model": "JackOCoral",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3200,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "JackOCoral_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00067,
+    2.0265,
+    0.00219,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.4835,
+    5.042,
+    3.5021
+   ],
+   "replaces": [
+    "Base",
+    "Stalk",
+    "BasePolyp1",
+    "BasePolyp2",
+    "BasePolyp3",
+    "BasePolyp4",
+    "CoralHead",
+    "Mouth"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Basalt": 0.256,
+    "Neon": 0.005,
+    "SmoothPlastic": 0.739
+   },
+   "neon": {
+    "fraction": 0.0052,
+    "parts": [
+     "Mouth"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "JackOCoral_Base_ColorMap.png",
+    "NormalMap": "JackOCoral_Base_NormalMap.png",
+    "RoughnessMap": "JackOCoral_Base_RoughnessMap.png",
+    "MetalnessMap": "JackOCoral_Base_MetalnessMap.png",
+    "EmissiveMask": "JackOCoral_Base_EmissiveMask.png"
+   },
+   "tris": 3200,
+   "verts": 2504,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": [
+  "Eye1",
+  "Eye2"
+ ]
+}

@@ -1,0 +1,97 @@
+{
+ "model": "SunkenChest",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 1680,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "SunkenChest_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    7e-05,
+    0.17359,
+    -0.049,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.9875,
+    1.7536,
+    1.6328
+   ],
+   "replaces": [
+    "Body",
+    "ChestCase",
+    "ChestLidAccent",
+    "ChestBand1",
+    "ChestBand2",
+    "GlimmerSpeck1",
+    "GlimmerSpeck2",
+    "GlimmerSpeck3"
+   ],
+   "material": "Wood",
+   "transparency": 0.0,
+   "materialMix": {
+    "Metal": 0.144,
+    "Neon": 0.041,
+    "SmoothPlastic": 0.179,
+    "Wood": 0.636
+   },
+   "neon": {
+    "fraction": 0.0415,
+    "parts": [
+     "Body",
+     "GlimmerSpeck1",
+     "GlimmerSpeck2",
+     "GlimmerSpeck3"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "SunkenChest_Body_ColorMap.png",
+    "NormalMap": "SunkenChest_Body_NormalMap.png",
+    "RoughnessMap": "SunkenChest_Body_RoughnessMap.png",
+    "MetalnessMap": "SunkenChest_Body_MetalnessMap.png",
+    "EmissiveMask": "SunkenChest_Body_EmissiveMask.png"
+   },
+   "tris": 1680,
+   "verts": 1250,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": [
+  "OuterShell"
+ ]
+}

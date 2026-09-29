@@ -1,0 +1,104 @@
+{
+ "model": "GlowSporePickup",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 1040,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "GlowSporePickup_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00653,
+    -0.00068,
+    -0.0336,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.5958,
+    1.6682,
+    1.6488
+   ],
+   "replaces": [
+    "Body",
+    "GlimmerSpeck1",
+    "GlimmerSpeck2",
+    "GlimmerSpeck3",
+    "SporeFilament1",
+    "SporeFilament2",
+    "BioVein1",
+    "BioVein2",
+    "BioVein3",
+    "BioVein4",
+    "BioVein5"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Body",
+     "GlimmerSpeck1",
+     "GlimmerSpeck2",
+     "GlimmerSpeck3",
+     "SporeFilament1",
+     "SporeFilament2",
+     "BioVein1",
+     "BioVein2",
+     "BioVein3",
+     "BioVein4",
+     "BioVein5"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "GlowSporePickup_Body_ColorMap.png",
+    "NormalMap": "GlowSporePickup_Body_NormalMap.png",
+    "RoughnessMap": "GlowSporePickup_Body_RoughnessMap.png",
+    "MetalnessMap": "GlowSporePickup_Body_MetalnessMap.png",
+    "EmissiveMask": "GlowSporePickup_Body_EmissiveMask.png"
+   },
+   "tris": 1040,
+   "verts": 887,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": [
+  "OuterShell"
+ ]
+}

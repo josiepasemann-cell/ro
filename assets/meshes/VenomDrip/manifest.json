@@ -1,0 +1,102 @@
+{
+ "model": "VenomDrip",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Base",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 2080,
+ "meshes": [
+  {
+   "name": "Base",
+   "primary": true,
+   "animated": false,
+   "file": "VenomDrip_Base.obj",
+   "glbNode": "Base",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -3e-05,
+    2.49727,
+    0.00157,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.994,
+    5.9775,
+    4.0126
+   ],
+   "replaces": [
+    "Base",
+    "SpikeSegment1",
+    "SpikeSegment2",
+    "SpikeSegment3",
+    "GlowCore",
+    "MinorSpike1",
+    "MinorSpike2",
+    "VenomDrop1",
+    "VenomDrop2",
+    "VenomDrop3",
+    "VenomBubble1",
+    "VenomBubble2",
+    "VenomBubble3"
+   ],
+   "material": "Glass",
+   "transparency": 0.065,
+   "materialMix": {
+    "Basalt": 0.351,
+    "Glass": 0.384,
+    "Neon": 0.265
+   },
+   "neon": {
+    "fraction": 0.2647,
+    "parts": [
+     "GlowCore",
+     "VenomDrop1",
+     "VenomDrop2",
+     "VenomDrop3",
+     "VenomBubble1",
+     "VenomBubble2",
+     "VenomBubble3"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "VenomDrip_Base_ColorMap.png",
+    "NormalMap": "VenomDrip_Base_NormalMap.png",
+    "RoughnessMap": "VenomDrip_Base_RoughnessMap.png",
+    "MetalnessMap": "VenomDrip_Base_MetalnessMap.png",
+    "EmissiveMask": "VenomDrip_Base_EmissiveMask.png"
+   },
+   "tris": 2080,
+   "verts": 1597,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

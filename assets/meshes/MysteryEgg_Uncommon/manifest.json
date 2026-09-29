@@ -1,0 +1,99 @@
+{
+ "model": "MysteryEgg_Uncommon",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Shell",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 1440,
+ "meshes": [
+  {
+   "name": "Shell",
+   "primary": true,
+   "animated": false,
+   "file": "MysteryEgg_Uncommon_Shell.obj",
+   "glbNode": "Shell",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00065,
+    0.06858,
+    0.00599,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.8711,
+    3.4015,
+    2.823
+   ],
+   "replaces": [
+    "Shell",
+    "SeamRing1",
+    "SeamRing2",
+    "FootRing",
+    "TopTip",
+    "Spot1",
+    "Spot2",
+    "Spot3",
+    "Spot4",
+    "Spot5"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.125,
+    "SmoothPlastic": 0.967
+   },
+   "neon": {
+    "fraction": 0.1249,
+    "parts": [
+     "SeamRing1",
+     "SeamRing2",
+     "TopTip",
+     "Spot1",
+     "Spot2",
+     "Spot3",
+     "Spot4",
+     "Spot5"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Uncommon_Shell_ColorMap.png",
+    "NormalMap": "MysteryEgg_Uncommon_Shell_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Uncommon_Shell_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Uncommon_Shell_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Uncommon_Shell_EmissiveMask.png"
+   },
+   "tris": 1440,
+   "verts": 913,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

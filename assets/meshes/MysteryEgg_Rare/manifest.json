@@ -1,0 +1,524 @@
+{
+ "model": "MysteryEgg_Rare",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Shell",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3599,
+ "meshes": [
+  {
+   "name": "Shell",
+   "primary": true,
+   "animated": false,
+   "file": "MysteryEgg_Rare_Shell.obj",
+   "glbNode": "Shell",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00394,
+    0.25905,
+    0.00023,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.7116,
+    3.8716,
+    2.8724
+   ],
+   "replaces": [
+    "Shell",
+    "SeamRing1",
+    "SeamRing2",
+    "FootRing",
+    "Spot1",
+    "Spot2",
+    "Spot3",
+    "Spot4",
+    "Spot5",
+    "Spot6"
+   ],
+   "material": "Glass",
+   "transparency": 0.019,
+   "materialMix": {
+    "Glass": 0.897,
+    "Metal": 0.073,
+    "Neon": 0.088
+   },
+   "neon": {
+    "fraction": 0.0882,
+    "parts": [
+     "SeamRing1",
+     "SeamRing2",
+     "Spot1",
+     "Spot2",
+     "Spot3",
+     "Spot4",
+     "Spot5",
+     "Spot6"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Shell_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Shell_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Shell_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Shell_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Rare_Shell_EmissiveMask.png"
+   },
+   "tris": 1920,
+   "verts": 1223,
+   "textureSize": [
+    1024,
+    1024
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Facet1",
+   "primary": false,
+   "animated": true,
+   "file": "MysteryEgg_Rare_Facet1.obj",
+   "glbNode": "Facet1",
+   "sharedWith": null,
+   "pivot": [
+    1.19164,
+    0.2,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.17557,
+    0.21948,
+    -0.00378,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4075,
+    0.4384,
+    0.3027
+   ],
+   "replaces": [
+    "Facet1"
+   ],
+   "material": "Glass",
+   "transparency": 0.05,
+   "materialMix": {
+    "Glass": 1.0,
+    "Metal": 0.0,
+    "Neon": 0.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Facet1_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Facet1_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Facet1_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Facet1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 200,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet2",
+   "primary": false,
+   "animated": true,
+   "file": "MysteryEgg_Rare_Facet2.obj",
+   "glbNode": "Facet2",
+   "sharedWith": null,
+   "pivot": [
+    0.59582,
+    0.2,
+    1.03199,
+    0.5,
+    0.0,
+    0.86603,
+    0.0,
+    1.0,
+    0.0,
+    -0.86603,
+    0.0,
+    0.5
+   ],
+   "center": [
+    0.75366,
+    0.17278,
+    0.95403,
+    0.5,
+    0.0,
+    0.86603,
+    0.0,
+    1.0,
+    0.0,
+    -0.86603,
+    0.0,
+    0.5
+   ],
+   "size": [
+    0.6662,
+    0.5312,
+    0.5222
+   ],
+   "replaces": [
+    "Facet2"
+   ],
+   "material": "Glass",
+   "transparency": 0.05,
+   "materialMix": {
+    "Glass": 0.97,
+    "Metal": 0.0,
+    "Neon": 0.03
+   },
+   "neon": {
+    "fraction": 0.0302,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Facet2_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Facet2_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Facet2_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Facet2_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Rare_Facet2_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 212,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet3",
+   "primary": false,
+   "animated": true,
+   "file": "MysteryEgg_Rare_Facet3.obj",
+   "glbNode": "Facet3",
+   "sharedWith": null,
+   "pivot": [
+    -0.59582,
+    0.2,
+    1.03199,
+    -0.5,
+    0.0,
+    0.86603,
+    0.0,
+    1.0,
+    0.0,
+    -0.86603,
+    0.0,
+    -0.5
+   ],
+   "center": [
+    -0.75059,
+    0.17264,
+    0.95818,
+    -0.5,
+    0.0,
+    0.86603,
+    0.0,
+    1.0,
+    0.0,
+    -0.86603,
+    0.0,
+    -0.5
+   ],
+   "size": [
+    0.6787,
+    0.5252,
+    0.5318
+   ],
+   "replaces": [
+    "Facet3"
+   ],
+   "material": "Glass",
+   "transparency": 0.05,
+   "materialMix": {
+    "Glass": 0.972,
+    "Metal": 0.0,
+    "Neon": 0.028
+   },
+   "neon": {
+    "fraction": 0.0281,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Facet3_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Facet3_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Facet3_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Facet3_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Rare_Facet3_EmissiveMask.png"
+   },
+   "tris": 279,
+   "verts": 203,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet4",
+   "primary": false,
+   "animated": true,
+   "file": "MysteryEgg_Rare_Facet1.obj",
+   "glbNode": "Facet4",
+   "sharedWith": "Facet1",
+   "pivot": [
+    -1.19164,
+    0.2,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.17557,
+    0.21948,
+    0.00378,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.4075,
+    0.4384,
+    0.3027
+   ],
+   "replaces": [
+    "Facet4"
+   ],
+   "material": "Glass",
+   "transparency": 0.05,
+   "materialMix": {
+    "Glass": 1.0,
+    "Metal": 0.0,
+    "Neon": 0.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Facet1_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Facet1_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Facet1_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Facet1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 200,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet5",
+   "primary": false,
+   "animated": true,
+   "file": "MysteryEgg_Rare_Facet5.obj",
+   "glbNode": "Facet5",
+   "sharedWith": null,
+   "pivot": [
+    -0.59582,
+    0.2,
+    -1.03199,
+    -0.5,
+    0.0,
+    -0.86603,
+    0.0,
+    1.0,
+    0.0,
+    0.86603,
+    0.0,
+    -0.5
+   ],
+   "center": [
+    -0.75435,
+    0.17342,
+    -0.95348,
+    -0.5,
+    0.0,
+    -0.86603,
+    0.0,
+    1.0,
+    0.0,
+    0.86603,
+    0.0,
+    -0.5
+   ],
+   "size": [
+    0.6657,
+    0.5323,
+    0.524
+   ],
+   "replaces": [
+    "Facet5"
+   ],
+   "material": "Glass",
+   "transparency": 0.05,
+   "materialMix": {
+    "Glass": 0.969,
+    "Metal": 0.0,
+    "Neon": 0.031
+   },
+   "neon": {
+    "fraction": 0.0314,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Facet5_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Facet5_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Facet5_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Facet5_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Rare_Facet5_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 212,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Facet6",
+   "primary": false,
+   "animated": true,
+   "file": "MysteryEgg_Rare_Facet6.obj",
+   "glbNode": "Facet6",
+   "sharedWith": null,
+   "pivot": [
+    0.59582,
+    0.2,
+    -1.03199,
+    0.5,
+    0.0,
+    -0.86603,
+    0.0,
+    1.0,
+    0.0,
+    0.86603,
+    0.0,
+    0.5
+   ],
+   "center": [
+    0.74909,
+    0.17226,
+    -0.95962,
+    0.5,
+    0.0,
+    -0.86603,
+    0.0,
+    1.0,
+    0.0,
+    0.86603,
+    0.0,
+    0.5
+   ],
+   "size": [
+    0.6802,
+    0.5314,
+    0.5295
+   ],
+   "replaces": [
+    "Facet6"
+   ],
+   "material": "Glass",
+   "transparency": 0.05,
+   "materialMix": {
+    "Glass": 0.973,
+    "Metal": 0.0,
+    "Neon": 0.027
+   },
+   "neon": {
+    "fraction": 0.0267,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "MysteryEgg_Rare_Facet6_ColorMap.png",
+    "NormalMap": "MysteryEgg_Rare_Facet6_NormalMap.png",
+    "RoughnessMap": "MysteryEgg_Rare_Facet6_RoughnessMap.png",
+    "MetalnessMap": "MysteryEgg_Rare_Facet6_MetalnessMap.png",
+    "EmissiveMask": "MysteryEgg_Rare_Facet6_EmissiveMask.png"
+   },
+   "tris": 280,
+   "verts": 208,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
