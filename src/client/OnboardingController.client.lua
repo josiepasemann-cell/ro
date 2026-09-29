@@ -466,14 +466,14 @@ local STEPS: { Step } = {
 	},
 	{
 		Title = "Build your first building 🛠️",
-		Body = "This button starts Build Mode. Place your first building on your plot to start earning Tide Coins!",
+		Body = "This button starts Build Mode. You start with 150 Tide Coins - exactly enough for a Glow Buoy Station! Place it on your plot to start earning.",
 		FindTarget = function()
 			return findButtonByLabelText("Build")
 		end,
 	},
 	{
 		Title = "Collect Glow Spores! ✨",
-		Body = "Look around your plot: Glow Spores are glowing there! Collect them and bring them to the drop-off station for Tide Coins.",
+		Body = "Look around your plot: Glow Spores are glowing there! Walk up, press the Pick Up button, then carry the spore to your Glow Buoy Station and press Deposit to earn Tide Coins.",
 	},
 	{
 		Title = "Brood Pool & Mystery Eggs 🥚",

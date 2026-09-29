@@ -88,6 +88,12 @@ local MIN_OFFLINE_SECONDS_TO_NOTIFY = 60
 
 local JOIN_DATA_TIMEOUT_SECONDS = 15
 
+-- Spieler, deren Offline-Einkommen bereits abgerechnet wurde. Der Online-Tick
+-- ueberspringt alle anderen: sonst koennte ein Tick zwischen "Daten geladen"
+-- und grantOfflineProgress LastIncomeAt auf "jetzt" setzen und damit das
+-- gesamte Offline-Einkommen (bis 4 h) verschlucken.
+local offlineSettled: { [number]: boolean } = {}
+
 -- // Produktionsberechnung ----------------------------------------------------
 
 --- Summiert die Tide-Coin-Produktion/Minute aller aktuell platzierten
@@ -179,7 +185,7 @@ end
 --- IncomeGranted NUR bei tatsächlich positivem Betrag - kein Spam für
 --- Spieler ohne Produktionsgebäude.
 local function grantOnlineTick(player: Player)
-	if not PlayerDataService.IsDataLoaded(player) then
+	if not PlayerDataService.IsDataLoaded(player) or not offlineSettled[player.UserId] then
 		return
 	end
 
@@ -248,6 +254,7 @@ local function grantOfflineProgress(player: Player)
 	-- Zeitstempel IMMER fortschreiben (auch bei amount == 0) - schließt die
 	-- Lücke zum Online-Tick-Loop sauber, siehe Kopfkommentar.
 	PlayerDataService.SetLastIncomeAt(player, now)
+	offlineSettled[player.UserId] = true
 
 	if amount > 0 then
 		PlayerDataService.AddCurrency(player, "TideCoins", amount)
@@ -285,6 +292,9 @@ end
 -- // Bootstrap ------------------------------------------------------------------
 
 Players.PlayerAdded:Connect(onPlayerAdded)
+Players.PlayerRemoving:Connect(function(leavingPlayer: Player)
+	offlineSettled[leavingPlayer.UserId] = nil
+end)
 
 -- Falls dieses Modul erst nach PlayerAdded-Events requiret wird (z. B.
 -- Studio-Playtest-Timing), bereits verbundene Spieler nachträglich einbuchen

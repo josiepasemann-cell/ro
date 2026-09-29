@@ -40,6 +40,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local IdleIncomeService = require(script.Parent:WaitForChild("IdleIncomeService"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
 local HUDRemotes = require(ReplicatedStorage:WaitForChild("HUDRemotes"))
 
@@ -99,5 +100,20 @@ PlayerDataService.DataChanged:Connect(function(player: Player, changeKind: strin
 
 	HUDRemotes.HUDStateChanged:FireClient(player, statePush)
 end)
+
+-- Beim Bauen/Upgraden wird die Muenze VOR dem Gebaeude abgebucht (DataChanged-
+-- Push oben rechnet das Einkommen also noch ohne das neue Gebaeude). Nach dem
+-- Bauen/Upgraden daher das Einkommen/Minute nochmal nachschieben, sonst zeigt
+-- das HUD bis zum naechsten Coin-Wechsel (bis 20 s) "0/min".
+local function pushIncome(player: Player)
+	if not Players:GetPlayerByUserId(player.UserId) or not PlayerDataService.IsDataLoaded(player) then
+		return
+	end
+	HUDRemotes.HUDStateChanged:FireClient(player, {
+		IncomePerMinute = IdleIncomeService.GetIncomePerMinute(player),
+	})
+end
+GameEvents.Connect(GameEvents.Events.BuildingPlaced, pushIncome)
+GameEvents.Connect(GameEvents.Events.BuildingUpgraded, pushIncome)
 
 print("[Abyssara] HUDServer ready (GetHUDState wired up, DataChanged forwarding active).")

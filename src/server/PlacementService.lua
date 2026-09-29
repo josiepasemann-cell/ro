@@ -306,7 +306,10 @@ end
 --- aus. `buildingId`, `fieldIndex`, `rotationY` sind unvertraute,
 --- angebliche Client-Werte - keiner davon wird ungeprüft übernommen.
 function PlacementService.RequestPlace(player: Player, buildingId: any, fieldIndex: any, rotationY: any): PlaceResult
-	if not PlayerDataService.IsDataLoaded(player) then
+	if not PlayerDataService.IsDataLoaded(player) or not placementsByUser[player.UserId] then
+		-- Layout noch nicht wiederhergestellt (RestorePlayerLayout setzt die
+		-- Belegungstabellen zurueck) - sonst koennte ein sehr frueher Request
+		-- ein Gebaeude "verwaist" hinterlassen.
 		return { Success = false, Reason = "DataNotLoaded" }
 	end
 

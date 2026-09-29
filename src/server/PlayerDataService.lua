@@ -526,6 +526,8 @@ end
 
 --- Erzeugt frische Startdaten für einen neuen Spieler (GDD Abschnitt 6:
 --- Level 1, 0 Währungen, leeres Inventar/Layout, kein Prestige, Pity 0).
+local STARTING_TIDE_COINS = 150
+
 local function createDefaultData(userId: number): PlayerData
 	local now = os.time()
 	return {
@@ -536,7 +538,11 @@ local function createDefaultData(userId: number): PlayerData
 		XP = 0,
 
 		Currencies = {
-			TideCoins = 0,
+			-- Startkapital = exakt der Preis einer Glow Buoy Station (150,
+			-- BuildingConfig): ohne Startgeld gab es einen Soft-Lock, denn
+			-- Glow Spores lassen sich nur an einer Station abgeben und die
+			-- Station kostet Coins.
+			TideCoins = STARTING_TIDE_COINS,
 			AbyssalShards = 0,
 		},
 
@@ -770,6 +776,13 @@ local function pushSave(userId: number, data: PlayerData, releaseLock: boolean):
 
 	local ok = withRetry(("Speichern UserId %d"):format(userId), function()
 		playerDataStore:UpdateAsync(key, function(oldValue)
+			if not releaseLock and dataCache[userId] ~= data then
+				-- Auto-Save, der nach dem Abschluss-Save des Spielers (Leave)
+				-- an der Reihe ist: wuerde sonst den bereits freigegebenen
+				-- Session-Lock neu setzen und Rejoins bis zum Stale-Timeout
+				-- als "SessionLocked" abweisen.
+				return oldValue
+			end
 			local existingSession = oldValue and (oldValue :: any).ActiveSession
 			if existingSession and existingSession.SessionId ~= SESSION_ID then
 				-- Lock wurde von einem anderen Server übernommen (Stale-

@@ -129,12 +129,17 @@ end
 --- Castet einen Strahl senkrecht nach unten über `approxPosition` und liefert
 --- eine sichere Landungs-CFrame (siehe Kopfkommentar). `lookAtPosition`
 --- (optional) bestimmt die Blickrichtung nach der Landung.
-local function findSafeLandingCFrame(approxPosition: Vector3, lookAtPosition: Vector3?): CFrame
+local function findSafeLandingCFrame(approxPosition: Vector3, lookAtPosition: Vector3?, landOnPlots: boolean?): CFrame
 	local rayOrigin = approxPosition + Vector3.new(0, LANDING_RAY_HEIGHT_STUDS, 0)
 
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { Workspace:FindFirstChild("PlayerPlots") } :: { Instance }
+	local excluded: { Instance } = {}
+	local plotsFolder = Workspace:FindFirstChild("PlayerPlots")
+	if plotsFolder and not landOnPlots then
+		table.insert(excluded, plotsFolder)
+	end
+	params.FilterDescendantsInstances = excluded
 	-- PlayerPlots wird bewusst ausgeschlossen: eine Landung "in einem fremden
 	-- Habitat-Gebäude" wäre unerwünscht, wenn ein Plot-Slot zufällig unter
 	-- einer Zonen-/Hub-Zielposition liegt (siehe PlotRegistry-Slot-Rasterung).
@@ -187,7 +192,7 @@ function TravelService.RequestTravelToPlot(player: Player)
 		return
 	end
 
-	local cframe = findSafeLandingCFrame(plot.PrimaryPart.Position)
+	local cframe = findSafeLandingCFrame(plot.PrimaryPart.Position, nil, true)
 	if not teleportCharacter(player, cframe) then
 		fireResult(player, { Success = false, Reason = "NoCharacter", Destination = "Plot" })
 		return

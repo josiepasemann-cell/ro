@@ -384,14 +384,20 @@ end)
 -- // Initialer Sync -----------------------------------------------------------------
 
 task.spawn(function()
-	local ok, initialState = pcall(function()
-		return HUDRemotes.GetHUDState:InvokeServer()
-	end)
-	if ok and type(initialState) == "table" then
-		applyPartialState(initialState)
-	else
-		warn("[HUDController] Initial HUD sync failed.")
+	-- Der Server wartet bis zu 15 s auf das Laden der Spielerdaten und
+	-- antwortet sonst mit nil - dann ein paar Mal erneut fragen, statt das HUD
+	-- dauerhaft auf 0/Level 1 stehen zu lassen.
+	for attempt = 1, 5 do
+		local ok, initialState = pcall(function()
+			return HUDRemotes.GetHUDState:InvokeServer()
+		end)
+		if ok and type(initialState) == "table" then
+			applyPartialState(initialState)
+			return
+		end
+		warn(("[HUDController] Initial HUD sync failed (attempt %d/5)."):format(attempt))
 		refreshDisplay()
+		task.wait(3)
 	end
 end)
 

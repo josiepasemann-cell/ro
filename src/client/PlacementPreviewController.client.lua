@@ -56,6 +56,7 @@ local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local HabitatRemotes = require(ReplicatedStorage:WaitForChild("HabitatRemotes"))
 local HUDRemotes = require(ReplicatedStorage:WaitForChild("HUDRemotes"))
+local TravelRemotes = require(ReplicatedStorage:WaitForChild("TravelRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
@@ -94,9 +95,11 @@ local toggleBuildModeEvent = getOrCreateBridgeEvent("ToggleBuildMode")
 -- ein paar Sekunden dauern.
 local playerPlotsFolder = Workspace:WaitForChild("PlayerPlots")
 local plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
-if not plot then
-	warn("[PlacementPreviewController] Kein eigener Plot gefunden - Bauvorschau deaktiviert.")
-	return
+while not plot do
+	-- Datenladen (DataStore-Retries) kann laenger als 30 s dauern - weiter
+	-- warten statt den Baumodus dauerhaft abzuschalten.
+	warn("[PlacementPreviewController] Own plot not replicated yet - still waiting.")
+	plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
 end
 
 local plotPrimaryPart = plot.PrimaryPart :: BasePart
@@ -477,11 +480,37 @@ buildModeUpgradeButton.Clicked:Connect(confirmUpgrade)
 
 -- // Baumodus umschalten (über MainMenuController-Bridge) ------------------------
 
+local FAR_FROM_PLOT_STUDS = 90
+
 local function enterBuildMode()
 	buildModeActive = true
 	previewVisible = true
 	screenGui.Enabled = true
 	refreshBuildingCards()
+
+	-- Touch/Gamepad haben keinen Mauszeiger: gleich das erste freie Baufeld
+	-- vorwaehlen, damit "Build" sofort etwas tut (statt "no build field
+	-- targeted"). Mit Maus ueberschreibt der RenderStepped-Loop das laufend.
+	if not targetField then
+		for _, field in ipairs(fields) do
+			if not isFieldLocallyOccupied(field.Index) then
+				targetField = field
+				break
+			end
+		end
+		if not targetField then
+			targetField = fields[1]
+		end
+	end
+
+	-- Steht der Spieler noch im Hub (Plot liegt weit weg), sieht er die
+	-- Bauvorschau gar nicht - dann direkt zum eigenen Plot bringen.
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if root and root:IsA("BasePart") and (root.Position - plotPrimaryPart.Position).Magnitude > FAR_FROM_PLOT_STUDS then
+		TravelRemotes.RequestTravelToPlot:FireServer()
+		Toast.Show({ Text = "Taking you to your reef plot to build ...", Type = "Info", Duration = 3 })
+	end
 end
 
 local function toggleBuildMode()
@@ -820,6 +849,26 @@ local buildingsUpgradeChildAddedConnection = buildingsFolder.ChildAdded:Connect(
 	end
 end)
 
+-- Server-Reason-Codes in kindgerechte Saetze uebersetzen (nie rohe Codes zeigen).
+local FAILURE_TEXT: { [string]: string } = {
+	InsufficientFunds = "Not enough Tide Coins yet!",
+	FieldOccupied = "There is already a building on this field.",
+	InvalidField = "Pick one of the glowing build fields.",
+	LevelTooLow = "You need a higher level for that.",
+	BroodPoolLimitReached = "You can't build another Brood Pool yet - reach level 6 for a second one!",
+	TemplateMissing = "That building isn't ready yet. Try again in a moment.",
+	NoPlot = "Your plot isn't ready yet. Try again in a moment.",
+	DataNotLoaded = "Still loading your reef ... try again in a moment.",
+	MaxStageReached = "This building is already at its maximum stage!",
+	IncubationActive = "Collect the egg from this Brood Pool first, then upgrade.",
+	NotFound = "There is no building there.",
+	InvalidPlacement = "There is no building there.",
+}
+
+local function friendlyFailure(reason: any, fallback: string): string
+	return FAILURE_TEXT[tostring(reason)] or fallback
+end
+
 HabitatRemotes.UpgradeBuildingResult.OnClientEvent:Connect(function(result)
 	if not result then
 		return
@@ -830,8 +879,9 @@ HabitatRemotes.UpgradeBuildingResult.OnClientEvent:Connect(function(result)
 		Toast.Show({ Text = "Building upgraded!", Type = "Success" })
 		ScreenFX.BigMoment(if result.NewStage and result.NewStage >= 3 then Theme.Neon.Violet else Theme.Neon.Cyan)
 	else
-		infoLabel.Text = ("Upgrade failed: %s"):format(tostring(result.Reason or "Unknown"))
-		Toast.Show({ Text = "Upgrade failed.", Type = "Error" })
+		local text = friendlyFailure(result.Reason, "Couldn't upgrade that. Please try again.")
+		infoLabel.Text = text
+		Toast.Show({ Text = text, Type = "Error" })
 	end
 
 	if activeUpgradePlacementId and result.PlacementId == activeUpgradePlacementId then
@@ -848,8 +898,9 @@ HabitatRemotes.PlaceBuildingResult.OnClientEvent:Connect(function(result)
 		infoLabel.Text = ("Built! New balance: %s Tide Coins."):format(tostring(result.NewBalance))
 		Toast.Show({ Text = "Building placed!", Type = "Success" })
 	else
-		infoLabel.Text = ("Build failed: %s"):format(tostring(result and result.Reason or "Unknown"))
-		Toast.Show({ Text = "Build failed.", Type = "Error" })
+		local text = friendlyFailure(result and result.Reason, "Couldn't build that. Please try again.")
+		infoLabel.Text = text
+		Toast.Show({ Text = text, Type = "Error" })
 	end
 end)
 
@@ -858,8 +909,9 @@ HabitatRemotes.RemoveBuildingResult.OnClientEvent:Connect(function(result)
 		infoLabel.Text = ("Sold! Refund: %s Tide Coins."):format(tostring(result.RefundAmount))
 		Toast.Show({ Text = "Building sold.", Type = "Info" })
 	else
-		infoLabel.Text = ("Sale failed: %s"):format(tostring(result and result.Reason or "Unknown"))
-		Toast.Show({ Text = "Sale failed.", Type = "Error" })
+		local text = friendlyFailure(result and result.Reason, "Couldn't sell that. Please try again.")
+		infoLabel.Text = text
+		Toast.Show({ Text = text, Type = "Error" })
 	end
 end)
 

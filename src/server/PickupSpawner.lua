@@ -60,6 +60,7 @@ local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local HeldItemService = require(script.Parent:WaitForChild("HeldItemService"))
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
+local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local LiveEventService = require(script.Parent:WaitForChild("LiveEventService"))
 local HeldItemConfig = require(ReplicatedStorage:WaitForChild("HeldItemConfig"))
 local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
@@ -567,6 +568,7 @@ local function onDepositTriggered(player: Player, station: Model)
 	-- Tagesquest bzw. die Event-Währungsbilanz - siehe GameEvents-
 	-- Kopfkommentar. NUR bei tatsächlich erfolgreicher Gutschrift gefeuert.
 	GameEvents.Fire(GameEvents.Events.SporeDelivered, player, { Amount = 1 })
+	ProgressionService.AwardXP(player, "SporeDelivered")
 end
 
 local function attachDepositPrompt(station: Model)
@@ -807,6 +809,17 @@ local function plotSpawnLoop(player: Player)
 	local plot = waitForPlot(player)
 	if not plot then
 		return
+	end
+
+	-- Abgabe-Prompt sofort anbringen, sobald ein Gebaeude (neu platziert,
+	-- beim Join wiederhergestellt oder beim Upgrade ausgetauscht) im Plot
+	-- erscheint - statt bis zu 20 s auf den naechsten Spawn-Tick zu warten
+	-- (Kinder sahen sonst nach dem ersten Bau "keinen Deposit-Knopf").
+	local buildingsFolder = plot:FindFirstChild("Buildings")
+	if buildingsFolder then
+		buildingsFolder.ChildAdded:Connect(function()
+			task.defer(ensureDepositPrompts, player)
+		end)
 	end
 
 	while activeUsers[player.UserId] and plot.Parent do

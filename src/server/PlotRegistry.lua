@@ -47,6 +47,11 @@ local PlotRegistry = {}
 local SLOT_SPACING = 200 -- Studs zwischen Plot-Ursprüngen (Plot ~60 Studs flat-to-flat + Gebäude-Überstand + Sicherheitsabstand)
 local SLOTS_PER_ROW = 10
 local PLOT_Y = 0
+-- Plot-Raster bewusst weit weg vom Zonen-Chunk-Cluster (Radius ~170 um 0,0,0)
+-- und vom Hub (-500,0,-500): sonst wuerde Plot #1 mitten in den vier Zonen
+-- stehen (Terrain-Ueberlappung, Spieler koennten fremde Plots/Zonen sehen).
+local GRID_ORIGIN_X = 1000
+local GRID_ORIGIN_Z = 1000
 -- // ----------------------------------------------------------------------
 
 local plotsFolder: Folder = (function()
@@ -71,7 +76,7 @@ local plotByUserId: { [number]: Model } = {}
 local function slotOrigin(slotIndex: number): CFrame
 	local col = (slotIndex - 1) % SLOTS_PER_ROW
 	local row = math.floor((slotIndex - 1) / SLOTS_PER_ROW)
-	return CFrame.new(col * SLOT_SPACING, PLOT_Y, row * SLOT_SPACING)
+	return CFrame.new(GRID_ORIGIN_X + col * SLOT_SPACING, PLOT_Y, GRID_ORIGIN_Z + row * SLOT_SPACING)
 end
 
 local function claimSlot(): number
@@ -114,8 +119,20 @@ function PlotRegistry.AssignPlot(player: Player): Model?
 	buildingsFolder.Name = "Buildings"
 	buildingsFolder.Parent = plot
 
+	-- Der eigene Plot liegt weit weg vom Hub (Spawn). Mit StreamingEnabled
+	-- (siehe Release-Checkliste) wuerde er sonst nie zum Besitzer replizieren,
+	-- solange dieser im Hub steht - Bau-/Zucht-UI fanden dann "keinen Plot".
+	-- PersistentPerPlayer: nur der Besitzer bekommt den Plot dauerhaft (samt
+	-- allen spaeter darunter erzeugten Gebaeuden/Sporen/Kreaturen).
+	pcall(function()
+		(plot :: any).ModelStreamingMode = Enum.ModelStreamingMode.PersistentPerPlayer
+	end)
+
 	plot.Parent = plotsFolder
 	plot:PivotTo(slotOrigin(slot))
+	pcall(function()
+		(plot :: any):AddPersistentPlayer(player)
+	end)
 
 	plotByUserId[userId] = plot
 	return plot

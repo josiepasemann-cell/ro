@@ -82,8 +82,8 @@ type ZoneMeta = {
 local ZONES: { ZoneMeta } = {
 	{ Id = "SunZone", Label = "Sun Zone", Glyph = "☀️", RequiredLevel = 1, ComingSoon = false, Color = Theme.Neon.Yellow },
 	{ Id = "TwilightZone", Label = "Twilight Zone", Glyph = "🌅", RequiredLevel = 10, ComingSoon = false, Color = Theme.Neon.Orange },
-	{ Id = "MidnightZone", Label = "Midnight Zone", Glyph = "🌑", RequiredLevel = 25, ComingSoon = true, Color = Theme.Neon.Violet },
-	{ Id = "HadalDepths", Label = "Hadal Depths", Glyph = "🕳️", RequiredLevel = 45, ComingSoon = true, Color = Theme.Neon.Magenta },
+	{ Id = "MidnightZone", Label = "Midnight Zone", Glyph = "🌑", RequiredLevel = 25, ComingSoon = false, Color = Theme.Neon.Violet },
+	{ Id = "HadalDepths", Label = "Hadal Depths", Glyph = "🕳️", RequiredLevel = 45, ComingSoon = false, Color = Theme.Neon.Magenta },
 }
 
 local REASON_MESSAGES: { [string]: string } = {
@@ -427,6 +427,9 @@ TravelRemotes.TravelResult.OnClientEvent:Connect(function(payload: {
 	if payload.Success then
 		playTravelFade()
 		Toast.Show({ Text = "Arrived!", Type = "Success", Duration = 2.5 })
+		if panelHandle then
+			panelHandle:Close() -- Menue nach erfolgreicher Reise schliessen (Sicht frei)
+		end
 	else
 		Toast.Show({ Text = friendlyReason(payload), Type = "Warning", Duration = 4 })
 	end

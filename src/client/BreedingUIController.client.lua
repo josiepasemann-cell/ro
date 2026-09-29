@@ -74,9 +74,11 @@ local openOverviewEvent = getOrCreateBridgeEvent("OpenBreedingOverview")
 -- // Auf eigenen Plot warten (gleiches Muster wie PlacementPreviewController) --
 local playerPlotsFolder = Workspace:WaitForChild("PlayerPlots")
 local plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
-if not plot then
-	warn("[BreedingUIController] No own plot found - Brood Pool UI disabled.")
-	return
+while not plot do
+	-- Datenladen (DataStore-Retries) kann laenger als 30 s dauern - weiter
+	-- warten statt die Bruetbecken-UI dauerhaft abzuschalten.
+	warn("[BreedingUIController] Own plot not replicated yet - still waiting.")
+	plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
 end
 
 local buildingsFolder = plot:WaitForChild("Buildings") :: Folder

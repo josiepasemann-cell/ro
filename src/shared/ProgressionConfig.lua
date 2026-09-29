@@ -63,6 +63,7 @@ export type ProgressionEventSource =
 	| "MysteryEggOpened"
 	| "QuestCompleted"
 	| "DailyLoginClaimed"
+	| "SporeDelivered"
 
 export type UnlockEntry = {
 	Level: number,
@@ -112,6 +113,10 @@ ProgressionConfig.XP_REWARDS = {
 	MysteryEggOpened = 25,
 	QuestCompleted = 20,
 	DailyLoginClaimed = 10,
+	-- Glow Spore an der Glow Buoy Station abgegeben: der Kern-Loop der ersten
+	-- Minuten gab bisher KEINE XP (nur Bauen/Eier/Quests) - kleiner Bonus, damit
+	-- sich jede Runde "nach Fortschritt anfuehlt".
+	SporeDelivered = 4,
 } :: { [ProgressionEventSource]: number }
 
 -- // Level-Unlock-Tabelle (GDD Abschnitt 6: "Unlocks pro Level") -------------
