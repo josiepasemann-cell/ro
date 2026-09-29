@@ -28,9 +28,9 @@
     1.0
    ],
    "center": [
-    0.00257,
-    -0.00257,
-    0.01351,
+    -0.00272,
+    -0.00014,
+    0.01903,
     1.0,
     0.0,
     -0.0,
@@ -42,9 +42,9 @@
     1.0
    ],
    "size": [
-    3.6778,
-    2.5939,
-    3.3075
+    3.6566,
+    2.587,
+    3.2985
    ],
    "replaces": [
     "Body",
@@ -84,7 +84,7 @@
     "EmissiveMask": "Shopkeeper_Body_EmissiveMask.png"
    },
    "tris": 2600,
-   "verts": 1531,
+   "verts": 1501,
    "textureSize": [
     1024,
     1024
@@ -114,9 +114,9 @@
     1.0
    ],
    "center": [
-    -0.00713,
-    -0.70325,
-    -1.6497,
+    -0.00219,
+    -0.70391,
+    -1.64987,
     1.0,
     0.0,
     -0.0,
@@ -128,9 +128,9 @@
     1.0
    ],
    "size": [
-    1.396,
-    1.14,
-    1.0921
+    1.3994,
+    1.1438,
+    1.0892
    ],
    "replaces": [
     "Head",
@@ -153,7 +153,7 @@
     "MetalnessMap": "Shopkeeper_Head_MetalnessMap.png"
    },
    "tris": 1040,
-   "verts": 635,
+   "verts": 632,
    "textureSize": [
     512,
     512
@@ -329,9 +329,9 @@
     0.91354
    ],
    "center": [
-    -1.63413,
-    0.10106,
-    -0.36701,
+    -1.63096,
+    0.10145,
+    -0.36965,
     0.91354,
     0.0,
     0.40674,
@@ -343,9 +343,9 @@
     0.91354
    ],
    "size": [
-    1.311,
-    0.8478,
-    1.1138
+    1.3073,
+    0.8406,
+    1.1191
    ],
    "replaces": [
     "ArmL",
@@ -354,15 +354,15 @@
    "material": "Neon",
    "transparency": 0.0,
    "materialMix": {
-    "Neon": 0.606,
-    "SmoothPlastic": 0.394
+    "Neon": 0.599,
+    "SmoothPlastic": 0.401
    },
    "neon": {
-    "fraction": 0.6055,
+    "fraction": 0.5994,
     "parts": [
      "ArmL"
     ],
-    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
    },
    "textures": {
     "ColorMap": "Shopkeeper_ArmL_ColorMap.png",
@@ -372,7 +372,7 @@
     "EmissiveMask": "Shopkeeper_ArmL_EmissiveMask.png"
    },
    "tris": 560,
-   "verts": 363,
+   "verts": 373,
    "textureSize": [
     256,
     256
@@ -402,9 +402,9 @@
     0.91354
    ],
    "center": [
-    1.63221,
-    0.10103,
-    -0.36721,
+    1.63205,
+    0.10371,
+    -0.37065,
     0.91354,
     0.0,
     -0.40674,
@@ -416,9 +416,9 @@
     0.91354
    ],
    "size": [
-    1.3098,
-    0.8411,
-    1.1235
+    1.3056,
+    0.8482,
+    1.1254
    ],
    "replaces": [
     "ArmR",
@@ -427,11 +427,11 @@
    "material": "Neon",
    "transparency": 0.0,
    "materialMix": {
-    "Neon": 0.594,
-    "SmoothPlastic": 0.406
+    "Neon": 0.596,
+    "SmoothPlastic": 0.404
    },
    "neon": {
-    "fraction": 0.5938,
+    "fraction": 0.5964,
     "parts": [
      "ArmR"
     ],
@@ -445,7 +445,7 @@
     "EmissiveMask": "Shopkeeper_ArmR_EmissiveMask.png"
    },
    "tris": 560,
-   "verts": 357,
+   "verts": 366,
    "textureSize": [
     256,
     256
@@ -475,9 +475,9 @@
     0.91354
    ],
    "center": [
-    -2.35034,
-    0.14949,
-    -0.59845,
+    -2.35009,
+    0.14999,
+    -0.60003,
     0.91354,
     0.0,
     0.40674,
@@ -489,9 +489,9 @@
     0.91354
    ],
    "size": [
-    0.4523,
-    0.3163,
-    0.5423
+    0.4469,
+    0.3134,
+    0.5489
    ],
    "replaces": [
     "ClawTipL"
@@ -516,7 +516,7 @@
     "EmissiveMask": "Shopkeeper_ClawTipL_EmissiveMask.png"
    },
    "tris": 280,
-   "verts": 200,
+   "verts": 201,
    "textureSize": [
     256,
     256
@@ -546,9 +546,9 @@
     0.91354
    ],
    "center": [
-    2.35362,
-    0.15024,
-    -0.60195,
+    2.34864,
+    0.15069,
+    -0.60399,
     0.91354,
     0.0,
     -0.40674,
@@ -560,9 +560,9 @@
     0.91354
    ],
    "size": [
-    0.4471,
-    0.3165,
-    0.5438
+    0.4459,
+    0.3184,
+    0.5433
    ],
    "replaces": [
     "ClawTipR"
@@ -587,7 +587,7 @@
     "EmissiveMask": "Shopkeeper_ClawTipR_EmissiveMask.png"
    },
    "tris": 280,
-   "verts": 200,
+   "verts": 196,
    "textureSize": [
     256,
     256
@@ -617,9 +617,9 @@
     1.0
    ],
    "center": [
-    -1.10245,
-    -1.00194,
-    0.80046,
+    -1.09978,
+    -1.00238,
+    0.80026,
     0.88295,
     0.46947,
     -0.0,
@@ -631,9 +631,9 @@
     1.0
    ],
    "size": [
-    0.2996,
-    0.8364,
-    0.2958
+    0.2959,
+    0.8422,
+    0.2939
    ],
    "replaces": [
     "Leg1"
@@ -655,7 +655,7 @@
     "MetalnessMap": "Shopkeeper_Leg1_MetalnessMap.png"
    },
    "tris": 280,
-   "verts": 191,
+   "verts": 198,
    "textureSize": [
     256,
     256
@@ -685,9 +685,9 @@
     1.0
    ],
    "center": [
-    -1.30245,
-    -1.00194,
-    -0.29954,
+    -1.29978,
+    -1.00238,
+    -0.29974,
     0.88295,
     0.46947,
     -0.0,
@@ -699,9 +699,9 @@
     1.0
    ],
    "size": [
-    0.2996,
-    0.8364,
-    0.2958
+    0.2959,
+    0.8422,
+    0.2939
    ],
    "replaces": [
     "Leg2"
@@ -723,7 +723,7 @@
     "MetalnessMap": "Shopkeeper_Leg1_MetalnessMap.png"
    },
    "tris": 280,
-   "verts": 191,
+   "verts": 198,
    "textureSize": [
     256,
     256
@@ -753,9 +753,9 @@
     1.0
    ],
    "center": [
-    1.10251,
-    -1.00196,
-    0.80183,
+    1.09801,
+    -0.99662,
+    0.79901,
     0.88295,
     -0.46947,
     -0.0,
@@ -767,9 +767,9 @@
     1.0
    ],
    "size": [
-    0.2977,
-    0.8417,
-    0.2945
+    0.3059,
+    0.8496,
+    0.3036
    ],
    "replaces": [
     "Leg3"
@@ -791,7 +791,7 @@
     "MetalnessMap": "Shopkeeper_Leg3_MetalnessMap.png"
    },
    "tris": 280,
-   "verts": 200,
+   "verts": 192,
    "textureSize": [
     256,
     256
@@ -821,9 +821,9 @@
     1.0
    ],
    "center": [
-    1.29936,
-    -1.00032,
-    -0.30065,
+    1.29999,
+    -1.00074,
+    -0.30144,
     0.88295,
     -0.46947,
     -0.0,
@@ -835,9 +835,9 @@
     1.0
    ],
    "size": [
-    0.2949,
-    0.8461,
-    0.2971
+    0.3005,
+    0.8473,
+    0.302
    ],
    "replaces": [
     "Leg4"
@@ -859,7 +859,7 @@
     "MetalnessMap": "Shopkeeper_Leg4_MetalnessMap.png"
    },
    "tris": 280,
-   "verts": 203,
+   "verts": 195,
    "textureSize": [
     256,
     256
@@ -867,5 +867,6 @@
    "collisionFidelity": "Box",
    "canCollide": false
   }
- ]
+ ],
+ "kept": []
 }
