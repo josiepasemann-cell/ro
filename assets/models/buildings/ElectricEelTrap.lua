@@ -105,7 +105,7 @@ local STRIPE_COLOR = Color3.fromRGB(255, 230, 80)
 local ROCK_COLOR = Color3.fromRGB(55, 52, 50)
 
 -- 1) Fundament (identische Form/Maße wie AnglerfishTower.Base für Grid-Kompatibilität)
-local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
+local base = newPart("Base", Vector3.new(1.2, 7, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 

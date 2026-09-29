@@ -85,7 +85,7 @@ model.Name = "BroodPool_Stage3"
 model.Parent = buildingsFolder
 
 -- 1) Fundament (IDENTISCH zu BroodPool_Basic.Base für Grid-Kompatibilität) --
-local base = newPart("Base", Vector3.new(14, 1.2, 14), ORIGIN, Color3.fromRGB(110, 118, 128), Enum.Material.Basalt, model)
+local base = newPart("Base", Vector3.new(1.2, 14, 14), ORIGIN, Color3.fromRGB(110, 118, 128), Enum.Material.Basalt, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
@@ -227,7 +227,7 @@ local CROWN_SPIKE_COUNT = 6
 local CROWN_RADIUS = 5.2
 for i = 1, CROWN_SPIKE_COUNT do
 	local angle = math.rad(360 / CROWN_SPIKE_COUNT * (i - 1))
-	local offset = Vector3.new(math.cos(angle) * CROWN_RADIUS, 5.6, math.sin(angle) * CROWN_RADIUS)
+	local offset = Vector3.new(math.cos(angle) * CROWN_RADIUS, 5.2, math.sin(angle) * CROWN_RADIUS) -- spike feet rest on the Upper Collar Ring
 	local spikeCFrame = ORIGIN * CFrame.new(offset) * CFrame.Angles(0, angle, math.rad(20))
 	local spike = newPart("CrownSpikePiece" .. i, Vector3.new(0.5, 2.2, 0.5), spikeCFrame, Color3.fromRGB(255, 0, 220), Enum.Material.Neon, Workspace)
 	table.insert(crownSpikes, spike)
@@ -264,6 +264,19 @@ local crownCore = newPart(
 )
 crownCore.Shape = Enum.PartType.Ball
 crownCore.CanCollide = false
+
+-- Energy beam from the water up into the core, so the core is held by something instead of floating.
+local coreBeam = newPart(
+	"CrownCoreBeam",
+	Vector3.new(4.8, 0.5, 0.5),
+	ORIGIN * CFrame.new(0, 4.9, 0) * CFrame.Angles(0, 0, math.rad(90)),
+	Color3.fromRGB(0, 255, 255),
+	Enum.Material.Neon,
+	model
+)
+coreBeam.Shape = Enum.PartType.Cylinder
+coreBeam.Transparency = 0.35
+coreBeam.CanCollide = false
 
 local crownLight = Instance.new("PointLight")
 crownLight.Name = "CrownCoreLight"

@@ -345,7 +345,7 @@ for i = 1, LAVA_POOL_COUNT do
 	pz = math.clamp(pz, -HALF + 28, arenaLocalZ - 16)
 	local pool = newPart(
 		"LavaPool" .. i,
-		Vector3.new(rng:NextNumber(4, 6), 0.3, rng:NextNumber(4, 6)),
+		Vector3.new(0.3, rng:NextNumber(4, 6), rng:NextNumber(4, 6)), -- Cylinder axis is X: thickness first, then diameter
 		ORIGIN * CFrame.new(px, BASE_TOP_Y + 0.15, pz),
 		LAVA_COLOR,
 		Enum.Material.Neon,

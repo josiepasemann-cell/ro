@@ -278,7 +278,7 @@ newTexture("GoldFoil", Enum.NormalId.Front, satchelFlap, { studsU = 1, studsV = 
 for i = 1, 3 do
 	local coin = newPart(
 		"SatchelCoin" .. i,
-		Vector3.new(0.3, 0.3, 0.07),
+		Vector3.new(0.07, 0.3, 0.3),
 		rootCFrame * CFrame.new(-0.32 + (i - 1) * 0.32, -0.8, 1.45) * CFrame.Angles(0, math.rad(15 * i), math.rad(90)),
 		Color3.fromRGB(255, 215, 90),
 		Enum.Material.Foil,

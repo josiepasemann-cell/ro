@@ -87,7 +87,7 @@ model.Name = "AnglerfishTower_Stage3"
 model.Parent = buildingsFolder
 
 -- 1) Fundament (IDENTISCH zu AnglerfishTower.Base für Grid-Kompatibilität) --
-local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
+local base = newPart("Base", Vector3.new(1.2, 7, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 

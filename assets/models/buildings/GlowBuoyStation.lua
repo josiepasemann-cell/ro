@@ -81,7 +81,7 @@ model.Name = "GlowBuoyStation"
 model.Parent = buildingsFolder
 
 -- 1) Fundament-Plattform ---------------------------------------------------
-local base = newPart("Base", Vector3.new(8, 1, 8), ORIGIN, Color3.fromRGB(100, 108, 118), Enum.Material.WoodPlanks, model)
+local base = newPart("Base", Vector3.new(1, 8, 8), ORIGIN, Color3.fromRGB(100, 108, 118), Enum.Material.WoodPlanks, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 

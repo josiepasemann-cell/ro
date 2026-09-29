@@ -160,7 +160,7 @@ end
 for i = 1, 2 do
 	local ring = newPart(
 		"JewelRing" .. i,
-		Vector3.new(0.35, 0.35, 0.1),
+		Vector3.new(0.1, 0.35, 0.35),
 		ORIGIN * CFrame.new(1.3 + i * 0.35, 0.15, -0.3 + i * 0.5) * CFrame.Angles(math.rad(70), math.rad(20 * i), 0),
 		Color3.fromRGB(255, 225, 130),
 		Enum.Material.Metal,

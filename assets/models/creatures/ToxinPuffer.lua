@@ -105,7 +105,7 @@ for i = 1, 4 do
 end
 
 -- 2) Leuchtende Bauchnaht ------------------------------------------------------
-local belly = newPart("BellySeam", Vector3.new(2.6, 0.3, 2.6), ORIGIN * CFrame.new(0, -1.3, 0), GLOW_COLOR, Enum.Material.Neon, model)
+local belly = newPart("BellySeam", Vector3.new(0.3, 2.6, 2.6), ORIGIN * CFrame.new(0, -1.3, 0), GLOW_COLOR, Enum.Material.Neon, model)
 belly.Shape = Enum.PartType.Cylinder
 belly.CFrame = belly.CFrame * CFrame.Angles(0, 0, math.rad(90))
 

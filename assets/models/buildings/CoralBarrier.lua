@@ -101,14 +101,14 @@ local CORAL_COLOR = Color3.fromRGB(255, 140, 120)
 local TEAL_GLOW = Color3.fromRGB(80, 230, 210)
 
 -- 1) Fundament (identische Form/Maße wie AnglerfishTower.Base für Grid-Kompatibilität)
-local base = newPart("Base", Vector3.new(7, 1.2, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
+local base = newPart("Base", Vector3.new(1.2, 7, 7), ORIGIN, Color3.fromRGB(70, 74, 82), Enum.Material.Cobblestone, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
 -- 2) Gerundeter Sockel-Aufbau in Korallenfarbe ------------------------------------
 local mound = newPart(
 	"CoralMound",
-	Vector3.new(4.6, 1.4, 4.6),
+	Vector3.new(1.4, 4.6, 4.6),
 	ORIGIN * CFrame.new(0, 1.3, 0),
 	CORAL_COLOR,
 	Enum.Material.SmoothPlastic,

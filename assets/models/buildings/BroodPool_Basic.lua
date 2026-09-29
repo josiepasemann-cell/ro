@@ -81,7 +81,7 @@ model.Name = "BroodPool_Basic"
 model.Parent = buildingsFolder
 
 -- 1) Fundament / Sockel ---------------------------------------------------
-local base = newPart("Base", Vector3.new(14, 1.2, 14), ORIGIN, Color3.fromRGB(110, 118, 128), Enum.Material.Basalt, model)
+local base = newPart("Base", Vector3.new(1.2, 14, 14), ORIGIN, Color3.fromRGB(110, 118, 128), Enum.Material.Basalt, model)
 base.Shape = Enum.PartType.Cylinder
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 
