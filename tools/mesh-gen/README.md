@@ -112,3 +112,9 @@ plus a `mesh-ids.json` filled in after upload.
    attachments, prompts and lights carried over; `MeshSwapped = true` is set). Models without
    an import keep their parts.
 4. Delete `MeshImports`, then save or publish.
+
+Offline check (no Studio): `python3 tools/mesh-gen/test_apply.py --luau <luau>` runs every meshed
+buildscript through the model-preview shim, fakes `MeshImports` from the manifests, runs
+`ApplyMeshes.lua` and checks that each model is swapped, every mesh exists and no replaced part is left.
+After a swap, a model's PrimaryPart is the new bbox-centred mesh; `GetPivot()`/`PivotTo()` keep the
+original pivot through `PivotOffset`, so code should move models with PivotTo (all game code does).
