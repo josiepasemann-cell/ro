@@ -1,0 +1,251 @@
+{
+ "model": "ToxinPuffer",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 3576,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "ToxinPuffer_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00727,
+    -0.14071,
+    0.03113,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    3.874,
+    3.4017,
+    4.3535
+   ],
+   "replaces": [
+    "Body",
+    "BellyPatch",
+    "ToxicBlotch1",
+    "ToxicBlotch2",
+    "ToxicBlotch3",
+    "ToxicBlotch4",
+    "BellySeam",
+    "Blush1",
+    "Blush2",
+    "Mouth",
+    "Spine1",
+    "Spine2",
+    "Spine3",
+    "Spine4",
+    "Spine5",
+    "Spine6",
+    "Spine7",
+    "Spine8",
+    "SpineTop1",
+    "SpineTop2",
+    "SpineTop3",
+    "SpineTop4",
+    "SpineTop5"
+   ],
+   "material": "Pebble",
+   "transparency": 0.0,
+   "materialMix": {
+    "Pebble": 0.826,
+    "SmoothPlastic": 0.174
+   },
+   "neon": {
+    "fraction": 0.0017,
+    "parts": [
+     "BellySeam"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ToxinPuffer_Body_ColorMap.png",
+    "NormalMap": "ToxinPuffer_Body_NormalMap.png",
+    "RoughnessMap": "ToxinPuffer_Body_RoughnessMap.png",
+    "MetalnessMap": "ToxinPuffer_Body_MetalnessMap.png",
+    "EmissiveMask": "ToxinPuffer_Body_EmissiveMask.png"
+   },
+   "tris": 3000,
+   "verts": 2047,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "ToxinPuffer_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.62,
+    0.28,
+    -1.72,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.62,
+    0.3,
+    -1.5,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.62,
+    0.6183,
+    0.4987
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeWhite1",
+    "EyeHighlight1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ToxinPuffer_Eye1_ColorMap.png",
+    "NormalMap": "ToxinPuffer_Eye1_NormalMap.png",
+    "RoughnessMap": "ToxinPuffer_Eye1_RoughnessMap.png",
+    "MetalnessMap": "ToxinPuffer_Eye1_MetalnessMap.png",
+    "EmissiveMask": "ToxinPuffer_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "ToxinPuffer_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.62,
+    0.28,
+    -1.72,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.62,
+    0.3,
+    -1.5,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.62,
+    0.6183,
+    0.4987
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeWhite2",
+    "EyeHighlight2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "EyeHighlight2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ToxinPuffer_Eye1_ColorMap.png",
+    "NormalMap": "ToxinPuffer_Eye1_NormalMap.png",
+    "RoughnessMap": "ToxinPuffer_Eye1_RoughnessMap.png",
+    "MetalnessMap": "ToxinPuffer_Eye1_MetalnessMap.png",
+    "EmissiveMask": "ToxinPuffer_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

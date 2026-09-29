@@ -1,0 +1,1129 @@
+{
+ "model": "VentDrake",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 7766,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "VentDrake_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.30348,
+    -0.00487,
+    -0.46446,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    2.0992,
+    1.7777,
+    6.6984
+   ],
+   "replaces": [
+    "Body",
+    "BodySegment1",
+    "BodySegment2",
+    "BodySegment4",
+    "BodySegment5",
+    "Snout",
+    "SnoutTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Body_ColorMap.png",
+    "NormalMap": "VentDrake_Body_NormalMap.png",
+    "RoughnessMap": "VentDrake_Body_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Body_MetalnessMap.png"
+   },
+   "tris": 3400,
+   "verts": 2179,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Horn1",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Horn1.obj",
+   "glbNode": "Horn1",
+   "sharedWith": null,
+   "pivot": [
+    0.82476,
+    0.5,
+    -2.7,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "center": [
+    0.82459,
+    0.50058,
+    -2.69873,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "size": [
+    0.2183,
+    0.5465,
+    0.2178
+   ],
+   "replaces": [
+    "Horn1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Horn1_ColorMap.png",
+    "NormalMap": "VentDrake_Horn1_NormalMap.png",
+    "RoughnessMap": "VentDrake_Horn1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Horn1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Horn2",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Horn1.obj",
+   "glbNode": "Horn2",
+   "sharedWith": "Horn1",
+   "pivot": [
+    0.47476,
+    0.5,
+    -2.7,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "center": [
+    0.47459,
+    0.50058,
+    -2.69873,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "size": [
+    0.2183,
+    0.5465,
+    0.2178
+   ],
+   "replaces": [
+    "Horn2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Horn1_ColorMap.png",
+    "NormalMap": "VentDrake_Horn1_NormalMap.png",
+    "RoughnessMap": "VentDrake_Horn1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Horn1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Horn3",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Horn1.obj",
+   "glbNode": "Horn3",
+   "sharedWith": "Horn1",
+   "pivot": [
+    0.12476,
+    0.5,
+    -2.7,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "center": [
+    0.12459,
+    0.50058,
+    -2.69873,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.90631,
+    0.42262,
+    0.0,
+    0.42262,
+    -0.90631
+   ],
+   "size": [
+    0.2183,
+    0.5465,
+    0.2178
+   ],
+   "replaces": [
+    "Horn3"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Horn1_ColorMap.png",
+    "NormalMap": "VentDrake_Horn1_NormalMap.png",
+    "RoughnessMap": "VentDrake_Horn1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Horn1_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 181,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike1",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_SpineSpike1.obj",
+   "glbNode": "SpineSpike1",
+   "sharedWith": null,
+   "pivot": [
+    0.47476,
+    0.975,
+    -2.2,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.47388,
+    0.91421,
+    -2.19984,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.338,
+    0.7698,
+    0.3556
+   ],
+   "replaces": [
+    "SpineSpike1"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_SpineSpike1_ColorMap.png",
+    "NormalMap": "VentDrake_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "VentDrake_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "VentDrake_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike2",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_SpineSpike1.obj",
+   "glbNode": "SpineSpike2",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.09309,
+    0.877,
+    -1.2,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.09221,
+    0.81621,
+    -1.19984,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.338,
+    0.7698,
+    0.3556
+   ],
+   "replaces": [
+    "SpineSpike2"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_SpineSpike1_ColorMap.png",
+    "NormalMap": "VentDrake_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "VentDrake_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "VentDrake_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike3",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_SpineSpike1.obj",
+   "glbNode": "SpineSpike3",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    -0.00093,
+    0.779,
+    -0.2,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.00181,
+    0.71821,
+    -0.19984,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.338,
+    0.7698,
+    0.3556
+   ],
+   "replaces": [
+    "SpineSpike3"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_SpineSpike1_ColorMap.png",
+    "NormalMap": "VentDrake_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "VentDrake_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "VentDrake_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike4",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_SpineSpike1.obj",
+   "glbNode": "SpineSpike4",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.19175,
+    0.681,
+    0.8,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.19087,
+    0.62021,
+    0.80016,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.338,
+    0.7698,
+    0.3556
+   ],
+   "replaces": [
+    "SpineSpike4"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike4"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_SpineSpike1_ColorMap.png",
+    "NormalMap": "VentDrake_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "VentDrake_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "VentDrake_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike5",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_SpineSpike1.obj",
+   "glbNode": "SpineSpike5",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.57433,
+    0.583,
+    1.8,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.57345,
+    0.52221,
+    1.80016,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.338,
+    0.7698,
+    0.3556
+   ],
+   "replaces": [
+    "SpineSpike5"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike5"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_SpineSpike1_ColorMap.png",
+    "NormalMap": "VentDrake_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "VentDrake_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "VentDrake_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SpineSpike6",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_SpineSpike1.obj",
+   "glbNode": "SpineSpike6",
+   "sharedWith": "SpineSpike1",
+   "pivot": [
+    0.95413,
+    0.485,
+    2.8,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.95325,
+    0.42421,
+    2.80016,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.338,
+    0.7698,
+    0.3556
+   ],
+   "replaces": [
+    "SpineSpike6"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "SpineSpike6"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_SpineSpike1_ColorMap.png",
+    "NormalMap": "VentDrake_SpineSpike1_NormalMap.png",
+    "RoughnessMap": "VentDrake_SpineSpike1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_SpineSpike1_MetalnessMap.png",
+    "EmissiveMask": "VentDrake_SpineSpike1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 173,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing1",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Wing1.obj",
+   "glbNode": "Wing1",
+   "sharedWith": null,
+   "pivot": [
+    -1.05232,
+    0.1,
+    -0.9,
+    -0.97815,
+    0.20791,
+    0.0,
+    0.20791,
+    0.97815,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.05114,
+    0.11161,
+    -0.89389,
+    -0.97815,
+    0.20791,
+    0.0,
+    0.20791,
+    0.97815,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    1.2994,
+    0.234,
+    0.9683
+   ],
+   "replaces": [
+    "Wing1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Wing1_ColorMap.png",
+    "NormalMap": "VentDrake_Wing1_NormalMap.png",
+    "RoughnessMap": "VentDrake_Wing1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Wing1_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 357,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing1Tip",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Wing1Tip.obj",
+   "glbNode": "Wing1Tip",
+   "sharedWith": null,
+   "pivot": [
+    -1.60232,
+    0.15,
+    -0.65,
+    -0.92718,
+    0.37461,
+    0.0,
+    0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -1.60219,
+    0.15026,
+    -0.64796,
+    -0.92718,
+    0.37461,
+    0.0,
+    0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.8928,
+    0.1384,
+    0.6915
+   ],
+   "replaces": [
+    "Wing1Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Wing1Tip_ColorMap.png",
+    "NormalMap": "VentDrake_Wing1Tip_NormalMap.png",
+    "RoughnessMap": "VentDrake_Wing1Tip_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Wing1Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 170,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing2",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Wing2.obj",
+   "glbNode": "Wing2",
+   "sharedWith": null,
+   "pivot": [
+    1.04768,
+    0.1,
+    -0.9,
+    -0.97815,
+    -0.20791,
+    0.0,
+    -0.20791,
+    0.97815,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.04539,
+    0.11081,
+    -0.89544,
+    -0.97815,
+    -0.20791,
+    0.0,
+    -0.20791,
+    0.97815,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    1.3033,
+    0.2454,
+    0.9687
+   ],
+   "replaces": [
+    "Wing2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Wing2_ColorMap.png",
+    "NormalMap": "VentDrake_Wing2_NormalMap.png",
+    "RoughnessMap": "VentDrake_Wing2_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Wing2_MetalnessMap.png"
+   },
+   "tris": 520,
+   "verts": 360,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Wing2Tip",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Wing2Tip.obj",
+   "glbNode": "Wing2Tip",
+   "sharedWith": null,
+   "pivot": [
+    1.59768,
+    0.15,
+    -0.65,
+    -0.92718,
+    -0.37461,
+    0.0,
+    -0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    1.60021,
+    0.15148,
+    -0.64815,
+    -0.92718,
+    -0.37461,
+    0.0,
+    -0.37461,
+    0.92718,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.8924,
+    0.1377,
+    0.6884
+   ],
+   "replaces": [
+    "Wing2Tip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Wing2Tip_ColorMap.png",
+    "NormalMap": "VentDrake_Wing2Tip_NormalMap.png",
+    "RoughnessMap": "VentDrake_Wing2Tip_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Wing2Tip_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    -0.02524,
+    0.4,
+    -2.75,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    -0.02524,
+    0.4,
+    -2.55,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.42,
+    0.4,
+    0.32
+   ],
+   "replaces": [
+    "Eye1",
+    "EyeWhite1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Eye1_ColorMap.png",
+    "NormalMap": "VentDrake_Eye1_NormalMap.png",
+    "RoughnessMap": "VentDrake_Eye1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Eye1_MetalnessMap.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "VentDrake_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    0.97476,
+    0.4,
+    -2.75,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "center": [
+    0.97476,
+    0.4,
+    -2.55,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "size": [
+    0.42,
+    0.4,
+    0.32
+   ],
+   "replaces": [
+    "Eye2",
+    "EyeWhite2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "VentDrake_Eye1_ColorMap.png",
+    "NormalMap": "VentDrake_Eye1_NormalMap.png",
+    "RoughnessMap": "VentDrake_Eye1_RoughnessMap.png",
+    "MetalnessMap": "VentDrake_Eye1_MetalnessMap.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

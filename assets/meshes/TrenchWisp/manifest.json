@@ -1,0 +1,936 @@
+{
+ "model": "TrenchWisp",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 4872,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "TrenchWisp_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00116,
+    -0.0026,
+    0.00048,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.502,
+    1.5975,
+    1.4907
+   ],
+   "replaces": [
+    "Body"
+   ],
+   "material": "Glass",
+   "transparency": 0.2,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Body_ColorMap.png",
+    "NormalMap": "TrenchWisp_Body_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Body_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Body_MetalnessMap.png"
+   },
+   "tris": 1800,
+   "verts": 1068,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "Tip",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Tip.obj",
+   "glbNode": "Tip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -1.15,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    6e-05,
+    -1.08932,
+    -0.00218,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.5691,
+    0.8702,
+    0.5791
+   ],
+   "replaces": [
+    "Tip"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Tip_ColorMap.png",
+    "NormalMap": "TrenchWisp_Tip_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Tip_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Tip_MetalnessMap.png"
+   },
+   "tris": 249,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tip2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Tip2.obj",
+   "glbNode": "Tip2",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -1.61,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00265,
+    -1.55093,
+    -0.0008,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4447,
+    0.7078,
+    0.446
+   ],
+   "replaces": [
+    "Tip2"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Tip2_ColorMap.png",
+    "NormalMap": "TrenchWisp_Tip2_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Tip2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Tip2_MetalnessMap.png"
+   },
+   "tris": 249,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tip3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Tip3.obj",
+   "glbNode": "Tip3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -1.91,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -8e-05,
+    -1.85623,
+    -0.00047,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3117,
+    0.5342,
+    0.3097
+   ],
+   "replaces": [
+    "Tip3"
+   ],
+   "material": "Glass",
+   "transparency": 0.4,
+   "materialMix": {
+    "Glass": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Tip3_ColorMap.png",
+    "NormalMap": "TrenchWisp_Tip3_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Tip3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Tip3_MetalnessMap.png"
+   },
+   "tris": 250,
+   "verts": 176,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "GlowCore",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_GlowCore.obj",
+   "glbNode": "GlowCore",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00166,
+    -0.00107,
+    -0.00031,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4957,
+    0.4947,
+    0.4963
+   ],
+   "replaces": [
+    "GlowCore"
+   ],
+   "material": "Neon",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "GlowCore"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_GlowCore_ColorMap.png",
+    "NormalMap": "TrenchWisp_GlowCore_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_GlowCore_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_GlowCore_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_GlowCore_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 183,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.32,
+    0.15,
+    -0.62,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.32,
+    0.15,
+    -0.62,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.32,
+    0.32,
+    0.2
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Pupil",
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Eye1_ColorMap.png",
+    "NormalMap": "TrenchWisp_Eye1_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Eye1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Eye1_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.32,
+    0.15,
+    -0.62,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.32,
+    0.15,
+    -0.62,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.32,
+    0.32,
+    0.2
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Pupil",
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Eye1_ColorMap.png",
+    "NormalMap": "TrenchWisp_Eye1_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Eye1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Eye1_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Tentacle1.obj",
+   "glbNode": "Tentacle1",
+   "sharedWith": null,
+   "pivot": [
+    0.47631,
+    -0.4966,
+    0.13734,
+    0.86603,
+    0.0,
+    0.5,
+    0.28679,
+    0.81915,
+    -0.49673,
+    -0.40958,
+    0.57358,
+    0.70941
+   ],
+   "center": [
+    0.47757,
+    -0.45341,
+    0.16871,
+    0.86603,
+    0.0,
+    0.5,
+    0.28679,
+    0.81915,
+    -0.49673,
+    -0.40958,
+    0.57358,
+    0.70941
+   ],
+   "size": [
+    0.2008,
+    0.7291,
+    0.2003
+   ],
+   "replaces": [
+    "Tentacle1"
+   ],
+   "material": "Neon",
+   "transparency": 0.2,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Tentacle1_ColorMap.png",
+    "NormalMap": "TrenchWisp_Tentacle1_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Tentacle1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Tentacle1_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_Tentacle1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 180,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip1",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_TentacleTip1.obj",
+   "glbNode": "TentacleTip1",
+   "sharedWith": null,
+   "pivot": [
+    0.50293,
+    -0.91087,
+    -0.09647,
+    0.86603,
+    -0.12096,
+    0.48515,
+    0.28679,
+    0.91499,
+    -0.28381,
+    -0.40958,
+    0.38492,
+    0.82709
+   ],
+   "center": [
+    0.49754,
+    -0.86506,
+    -0.077,
+    0.86603,
+    -0.12096,
+    0.48515,
+    0.28679,
+    0.91499,
+    -0.28381,
+    -0.40958,
+    0.38492,
+    0.82709
+   ],
+   "size": [
+    0.1401,
+    0.6777,
+    0.1409
+   ],
+   "replaces": [
+    "TentacleTip1"
+   ],
+   "material": "Neon",
+   "transparency": 0.15,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip1"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_TentacleTip1_ColorMap.png",
+    "NormalMap": "TrenchWisp_TentacleTip1_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_TentacleTip1_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_TentacleTip1_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_TentacleTip1_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 190,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Tentacle2.obj",
+   "glbNode": "Tentacle2",
+   "sharedWith": null,
+   "pivot": [
+    -0.47631,
+    -0.4966,
+    0.13734,
+    -0.86603,
+    0.0,
+    0.5,
+    0.28679,
+    0.81915,
+    0.49673,
+    -0.40958,
+    0.57358,
+    -0.70941
+   ],
+   "center": [
+    -0.47715,
+    -0.45258,
+    0.17016,
+    -0.86603,
+    0.0,
+    0.5,
+    0.28679,
+    0.81915,
+    0.49673,
+    -0.40958,
+    0.57358,
+    -0.70941
+   ],
+   "size": [
+    0.197,
+    0.7265,
+    0.1964
+   ],
+   "replaces": [
+    "Tentacle2"
+   ],
+   "material": "Neon",
+   "transparency": 0.2,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Tentacle2_ColorMap.png",
+    "NormalMap": "TrenchWisp_Tentacle2_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Tentacle2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Tentacle2_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_Tentacle2_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 189,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip2",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_TentacleTip2.obj",
+   "glbNode": "TentacleTip2",
+   "sharedWith": null,
+   "pivot": [
+    -0.50293,
+    -0.91087,
+    -0.09647,
+    -0.86603,
+    0.12096,
+    0.48515,
+    0.28679,
+    0.91499,
+    0.28381,
+    -0.40958,
+    0.38492,
+    -0.82709
+   ],
+   "center": [
+    -0.49924,
+    -0.86841,
+    -0.07834,
+    -0.86603,
+    0.12096,
+    0.48515,
+    0.28679,
+    0.91499,
+    0.28381,
+    -0.40958,
+    0.38492,
+    -0.82709
+   ],
+   "size": [
+    0.1397,
+    0.6864,
+    0.1399
+   ],
+   "replaces": [
+    "TentacleTip2"
+   ],
+   "material": "Neon",
+   "transparency": 0.15,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip2"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_TentacleTip2_ColorMap.png",
+    "NormalMap": "TrenchWisp_TentacleTip2_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_TentacleTip2_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_TentacleTip2_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_TentacleTip2_EmissiveMask.png"
+   },
+   "tris": 249,
+   "verts": 195,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Tentacle3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_Tentacle3.obj",
+   "glbNode": "Tentacle3",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.4966,
+    -0.68766,
+    0.0,
+    0.0,
+    -1.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.81915,
+    0.57358,
+    0.0
+   ],
+   "center": [
+    0.0005,
+    -0.45368,
+    -0.6563,
+    0.0,
+    0.0,
+    -1.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.81915,
+    0.57358,
+    0.0
+   ],
+   "size": [
+    0.1981,
+    0.7301,
+    0.2
+   ],
+   "replaces": [
+    "Tentacle3",
+    "Smile"
+   ],
+   "material": "Neon",
+   "transparency": 0.2,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "Tentacle3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_Tentacle3_ColorMap.png",
+    "NormalMap": "TrenchWisp_Tentacle3_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_Tentacle3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_Tentacle3_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_Tentacle3_EmissiveMask.png"
+   },
+   "tris": 250,
+   "verts": 187,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TentacleTip3",
+   "primary": false,
+   "animated": true,
+   "file": "TrenchWisp_TentacleTip3.obj",
+   "glbNode": "TentacleTip3",
+   "sharedWith": null,
+   "pivot": [
+    -0.05322,
+    -0.88444,
+    -0.95923,
+    0.0,
+    0.24192,
+    -0.9703,
+    -0.57358,
+    0.79482,
+    0.19817,
+    0.81915,
+    0.55654,
+    0.13876
+   ],
+   "center": [
+    -0.04006,
+    -0.8466,
+    -0.93268,
+    0.0,
+    0.24192,
+    -0.9703,
+    -0.57358,
+    0.79482,
+    0.19817,
+    0.81915,
+    0.55654,
+    0.13876
+   ],
+   "size": [
+    0.1398,
+    0.6821,
+    0.1394
+   ],
+   "replaces": [
+    "TentacleTip3"
+   ],
+   "material": "Neon",
+   "transparency": 0.15,
+   "materialMix": {
+    "Neon": 1.0
+   },
+   "neon": {
+    "fraction": 1.0,
+    "parts": [
+     "TentacleTip3"
+    ],
+    "advice": "Set MeshPart.Material = Neon (whole mesh glows)"
+   },
+   "textures": {
+    "ColorMap": "TrenchWisp_TentacleTip3_ColorMap.png",
+    "NormalMap": "TrenchWisp_TentacleTip3_NormalMap.png",
+    "RoughnessMap": "TrenchWisp_TentacleTip3_RoughnessMap.png",
+    "MetalnessMap": "TrenchWisp_TentacleTip3_MetalnessMap.png",
+    "EmissiveMask": "TrenchWisp_TentacleTip3_EmissiveMask.png"
+   },
+   "tris": 249,
+   "verts": 186,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": [
+  "GlimmerAura",
+  "GlimmerSpeck1",
+  "GlimmerSpeck2",
+  "GlimmerSpeck3",
+  "GlimmerSpeck4",
+  "GlimmerSpeck5"
+ ]
+}

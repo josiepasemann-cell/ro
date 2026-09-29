@@ -1,0 +1,652 @@
+{
+ "model": "VoidHammerhead",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 6336,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "VoidHammerhead_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.01331,
+    -0.10121,
+    0.22918,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    6.574,
+    2.3942,
+    7.8766
+   ],
+   "replaces": [
+    "Body",
+    "Head",
+    "TailBase",
+    "Belly",
+    "HammerLobe1",
+    "HammerLobe2",
+    "HammerBridge",
+    "GillLine1",
+    "GillLine2",
+    "GillLine3",
+    "GillLine4",
+    "TailPeduncle",
+    "StripeGlow"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "Neon": 0.075,
+    "SmoothPlastic": 0.925
+   },
+   "neon": {
+    "fraction": 0.0746,
+    "parts": [
+     "StripeGlow"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_Body_ColorMap.png",
+    "NormalMap": "VoidHammerhead_Body_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_Body_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_Body_MetalnessMap.png",
+    "EmissiveMask": "VoidHammerhead_Body_EmissiveMask.png"
+   },
+   "tris": 3600,
+   "verts": 2611,
+   "textureSize": [
+    768,
+    768
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFin",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_DorsalFin.obj",
+   "glbNode": "DorsalFin",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.35,
+    0.3,
+    0.99027,
+    0.13917,
+    0.0,
+    -0.13917,
+    0.99027,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.08192,
+    1.23545,
+    -0.00249,
+    0.99027,
+    0.13917,
+    0.0,
+    -0.13917,
+    0.99027,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    1.2686,
+    1.7699,
+    3.5955
+   ],
+   "replaces": [
+    "DorsalFin",
+    "BackShade"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_DorsalFin_ColorMap.png",
+    "NormalMap": "VoidHammerhead_DorsalFin_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_DorsalFin_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_DorsalFin_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 283,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "DorsalFinTip",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_DorsalFinTip.obj",
+   "glbNode": "DorsalFinTip",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    1.95,
+    0.55,
+    0.9703,
+    0.24192,
+    0.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00051,
+    1.95027,
+    0.5516,
+    0.9703,
+    0.24192,
+    0.0,
+    -0.24192,
+    0.9703,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.162,
+    0.8967,
+    0.8944
+   ],
+   "replaces": [
+    "DorsalFinTip"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_DorsalFinTip_ColorMap.png",
+    "NormalMap": "VoidHammerhead_DorsalFinTip_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_DorsalFinTip_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_DorsalFinTip_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 245,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin1",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_SideFin1.obj",
+   "glbNode": "SideFin1",
+   "sharedWith": null,
+   "pivot": [
+    1.1,
+    -0.2,
+    -0.8,
+    0.34202,
+    0.93969,
+    0.0,
+    -0.93969,
+    0.34202,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.09816,
+    -0.20073,
+    -0.79874,
+    0.34202,
+    0.93969,
+    0.0,
+    -0.93969,
+    0.34202,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1958,
+    0.5451,
+    1.6913
+   ],
+   "replaces": [
+    "SideFin1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_SideFin1_ColorMap.png",
+    "NormalMap": "VoidHammerhead_SideFin1_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_SideFin1_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_SideFin1_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 244,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "SideFin2",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_SideFin2.obj",
+   "glbNode": "SideFin2",
+   "sharedWith": null,
+   "pivot": [
+    -1.1,
+    -0.2,
+    -0.8,
+    0.34202,
+    -0.93969,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.10052,
+    -0.1996,
+    -0.80119,
+    0.34202,
+    -0.93969,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1928,
+    0.5373,
+    1.6813
+   ],
+   "replaces": [
+    "SideFin2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_SideFin2_ColorMap.png",
+    "NormalMap": "VoidHammerhead_SideFin2_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_SideFin2_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_SideFin2_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 266,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin1",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_TailFin1.obj",
+   "glbNode": "TailFin1",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.6,
+    4.3,
+    0.46947,
+    -0.88295,
+    0.0,
+    0.88295,
+    0.46947,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00025,
+    0.59963,
+    4.30494,
+    0.46947,
+    -0.88295,
+    0.0,
+    0.88295,
+    0.46947,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1884,
+    1.3962,
+    1.3884
+   ],
+   "replaces": [
+    "TailFin1"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_TailFin1_ColorMap.png",
+    "NormalMap": "VoidHammerhead_TailFin1_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_TailFin1_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_TailFin1_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 235,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "TailFin2",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_TailFin2.obj",
+   "glbNode": "TailFin2",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    -0.6,
+    4.3,
+    0.46947,
+    0.88295,
+    0.0,
+    -0.88295,
+    0.46947,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.00072,
+    -0.59985,
+    4.30016,
+    0.46947,
+    0.88295,
+    0.0,
+    -0.88295,
+    0.46947,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1975,
+    1.4012,
+    1.3986
+   ],
+   "replaces": [
+    "TailFin2"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_TailFin2_ColorMap.png",
+    "NormalMap": "VoidHammerhead_TailFin2_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_TailFin2_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_TailFin2_MetalnessMap.png"
+   },
+   "tris": 360,
+   "verts": 249,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    3.05,
+    0.15,
+    -3.15,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    3.05,
+    0.15,
+    -3.15,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.5,
+    0.5,
+    0.3
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Pupil",
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_Eye1_ColorMap.png",
+    "NormalMap": "VoidHammerhead_Eye1_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_Eye1_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_Eye1_MetalnessMap.png",
+    "EmissiveMask": "VoidHammerhead_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "VoidHammerhead_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -3.05,
+    0.15,
+    -3.15,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -3.05,
+    0.15,
+    -3.15,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.5,
+    0.5,
+    0.3
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Pupil",
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "VoidHammerhead_Eye1_ColorMap.png",
+    "NormalMap": "VoidHammerhead_Eye1_NormalMap.png",
+    "RoughnessMap": "VoidHammerhead_Eye1_RoughnessMap.png",
+    "MetalnessMap": "VoidHammerhead_Eye1_MetalnessMap.png",
+    "EmissiveMask": "VoidHammerhead_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}

@@ -1,0 +1,2272 @@
+{
+ "model": "ObsidianCrab",
+ "generator": "tools/mesh-gen/pipeline.py",
+ "primaryPart": "Body",
+ "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
+ "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
+ "totalTris": 13336,
+ "meshes": [
+  {
+   "name": "Body",
+   "primary": true,
+   "animated": false,
+   "file": "ObsidianCrab_Body.obj",
+   "glbNode": "Body",
+   "sharedWith": null,
+   "pivot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.00231,
+    0.00377,
+    0.06826,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    4.0199,
+    1.9504,
+    3.5352
+   ],
+   "replaces": [
+    "Body",
+    "CarapaceBase",
+    "CarapaceHighlight",
+    "CarapaceRim",
+    "Belly",
+    "EyeStalk1",
+    "EyeStalk2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 0.887,
+    "SmoothPlastic": 0.113
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Body_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Body_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Body_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Body_MetalnessMap.png"
+   },
+   "tris": 3000,
+   "verts": 2172,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Hull",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper1_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_1.obj",
+   "glbNode": "LegUpper1_1",
+   "sharedWith": null,
+   "pivot": [
+    1.35087,
+    -0.66298,
+    0.95,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.35122,
+    -0.66209,
+    0.94856,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.448,
+    0.8561,
+    0.4518
+   ],
+   "replaces": [
+    "LegUpper1_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_1.obj",
+   "glbNode": "Leg1_1",
+   "sharedWith": null,
+   "pivot": [
+    0.98738,
+    -0.92545,
+    0.95,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.98446,
+    -0.92563,
+    0.95114,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3566,
+    0.7863,
+    0.3512
+   ],
+   "replaces": [
+    "Leg1_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 195,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot1_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_1.obj",
+   "glbNode": "LegFoot1_1",
+   "sharedWith": null,
+   "pivot": [
+    0.71456,
+    -0.98843,
+    0.95,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.7143,
+    -0.98823,
+    0.9508,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1586,
+    0.1595,
+    0.1588
+   ],
+   "replaces": [
+    "LegFoot1_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 216,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper1_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_2.obj",
+   "glbNode": "LegUpper1_2",
+   "sharedWith": null,
+   "pivot": [
+    -1.35087,
+    -0.66298,
+    0.95,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.35124,
+    -0.66178,
+    0.94782,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4464,
+    0.8535,
+    0.4412
+   ],
+   "replaces": [
+    "LegUpper1_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg1_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_2.obj",
+   "glbNode": "Leg1_2",
+   "sharedWith": null,
+   "pivot": [
+    -0.98738,
+    -0.92545,
+    0.95,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.98602,
+    -0.92553,
+    0.95116,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3514,
+    0.7825,
+    0.3532
+   ],
+   "replaces": [
+    "Leg1_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 192,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot1_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_2.obj",
+   "glbNode": "LegFoot1_2",
+   "sharedWith": null,
+   "pivot": [
+    -0.71456,
+    -0.98843,
+    0.95,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.71491,
+    -0.98821,
+    0.95019,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1574,
+    0.1577,
+    0.1598
+   ],
+   "replaces": [
+    "LegFoot1_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper2_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_1.obj",
+   "glbNode": "LegUpper2_1",
+   "sharedWith": "LegUpper1_1",
+   "pivot": [
+    1.35087,
+    -0.66298,
+    0.32,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.35122,
+    -0.66209,
+    0.31856,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.448,
+    0.8561,
+    0.4518
+   ],
+   "replaces": [
+    "LegUpper2_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_1.obj",
+   "glbNode": "Leg2_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    0.98738,
+    -0.92545,
+    0.32,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.98446,
+    -0.92563,
+    0.32114,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3566,
+    0.7863,
+    0.3512
+   ],
+   "replaces": [
+    "Leg2_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 195,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot2_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_1.obj",
+   "glbNode": "LegFoot2_1",
+   "sharedWith": "LegFoot1_1",
+   "pivot": [
+    0.71456,
+    -0.98843,
+    0.32,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.7143,
+    -0.98823,
+    0.3208,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1586,
+    0.1595,
+    0.1588
+   ],
+   "replaces": [
+    "LegFoot2_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 216,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper2_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_2.obj",
+   "glbNode": "LegUpper2_2",
+   "sharedWith": "LegUpper1_2",
+   "pivot": [
+    -1.35087,
+    -0.66298,
+    0.32,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.35124,
+    -0.66178,
+    0.31782,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4464,
+    0.8535,
+    0.4412
+   ],
+   "replaces": [
+    "LegUpper2_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg2_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_2.obj",
+   "glbNode": "Leg2_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -0.98738,
+    -0.92545,
+    0.32,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.98602,
+    -0.92553,
+    0.32116,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3514,
+    0.7825,
+    0.3532
+   ],
+   "replaces": [
+    "Leg2_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 192,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot2_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_2.obj",
+   "glbNode": "LegFoot2_2",
+   "sharedWith": "LegFoot1_2",
+   "pivot": [
+    -0.71456,
+    -0.98843,
+    0.32,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.71491,
+    -0.98821,
+    0.32019,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1574,
+    0.1577,
+    0.1598
+   ],
+   "replaces": [
+    "LegFoot2_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper3_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_1.obj",
+   "glbNode": "LegUpper3_1",
+   "sharedWith": "LegUpper1_1",
+   "pivot": [
+    1.35087,
+    -0.66298,
+    -0.32,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.35122,
+    -0.66209,
+    -0.32144,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.448,
+    0.8561,
+    0.4518
+   ],
+   "replaces": [
+    "LegUpper3_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_1.obj",
+   "glbNode": "Leg3_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    0.98738,
+    -0.92545,
+    -0.32,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.98446,
+    -0.92563,
+    -0.31886,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3566,
+    0.7863,
+    0.3512
+   ],
+   "replaces": [
+    "Leg3_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 195,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot3_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_1.obj",
+   "glbNode": "LegFoot3_1",
+   "sharedWith": "LegFoot1_1",
+   "pivot": [
+    0.71456,
+    -0.98843,
+    -0.32,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.7143,
+    -0.98823,
+    -0.3192,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1586,
+    0.1595,
+    0.1588
+   ],
+   "replaces": [
+    "LegFoot3_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 216,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper3_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_2.obj",
+   "glbNode": "LegUpper3_2",
+   "sharedWith": "LegUpper1_2",
+   "pivot": [
+    -1.35087,
+    -0.66298,
+    -0.32,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.35124,
+    -0.66178,
+    -0.32218,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4464,
+    0.8535,
+    0.4412
+   ],
+   "replaces": [
+    "LegUpper3_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg3_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_2.obj",
+   "glbNode": "Leg3_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -0.98738,
+    -0.92545,
+    -0.32,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.98602,
+    -0.92553,
+    -0.31884,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3514,
+    0.7825,
+    0.3532
+   ],
+   "replaces": [
+    "Leg3_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 192,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot3_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_2.obj",
+   "glbNode": "LegFoot3_2",
+   "sharedWith": "LegFoot1_2",
+   "pivot": [
+    -0.71456,
+    -0.98843,
+    -0.32,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.71491,
+    -0.98821,
+    -0.31981,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1574,
+    0.1577,
+    0.1598
+   ],
+   "replaces": [
+    "LegFoot3_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper4_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_1.obj",
+   "glbNode": "LegUpper4_1",
+   "sharedWith": "LegUpper1_1",
+   "pivot": [
+    1.35087,
+    -0.66298,
+    -0.95,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    1.35122,
+    -0.66209,
+    -0.95144,
+    0.81915,
+    0.57358,
+    0.0,
+    -0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.448,
+    0.8561,
+    0.4518
+   ],
+   "replaces": [
+    "LegUpper4_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 202,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_1.obj",
+   "glbNode": "Leg4_1",
+   "sharedWith": "Leg1_1",
+   "pivot": [
+    0.98738,
+    -0.92545,
+    -0.95,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.98446,
+    -0.92563,
+    -0.94886,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3566,
+    0.7863,
+    0.3512
+   ],
+   "replaces": [
+    "Leg4_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 195,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot4_1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_1.obj",
+   "glbNode": "LegFoot4_1",
+   "sharedWith": "LegFoot1_1",
+   "pivot": [
+    0.71456,
+    -0.98843,
+    -0.95,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    0.7143,
+    -0.98823,
+    -0.9492,
+    0.22495,
+    0.97437,
+    0.0,
+    -0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1586,
+    0.1595,
+    0.1588
+   ],
+   "replaces": [
+    "LegFoot4_1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_1_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 216,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegUpper4_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegUpper1_2.obj",
+   "glbNode": "LegUpper4_2",
+   "sharedWith": "LegUpper1_2",
+   "pivot": [
+    -1.35087,
+    -0.66298,
+    -0.95,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -1.35124,
+    -0.66178,
+    -0.95218,
+    0.81915,
+    -0.57358,
+    0.0,
+    0.57358,
+    0.81915,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.4464,
+    0.8535,
+    0.4412
+   ],
+   "replaces": [
+    "LegUpper4_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegUpper1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegUpper1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegUpper1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegUpper1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Leg4_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Leg1_2.obj",
+   "glbNode": "Leg4_2",
+   "sharedWith": "Leg1_2",
+   "pivot": [
+    -0.98738,
+    -0.92545,
+    -0.95,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.98602,
+    -0.92553,
+    -0.94884,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.3514,
+    0.7825,
+    0.3532
+   ],
+   "replaces": [
+    "Leg4_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Leg1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Leg1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Leg1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Leg1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 192,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "LegFoot4_2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_LegFoot1_2.obj",
+   "glbNode": "LegFoot4_2",
+   "sharedWith": "LegFoot1_2",
+   "pivot": [
+    -0.71456,
+    -0.98843,
+    -0.95,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "center": [
+    -0.71491,
+    -0.98821,
+    -0.94981,
+    0.22495,
+    -0.97437,
+    0.0,
+    0.97437,
+    0.22495,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "size": [
+    0.1574,
+    0.1577,
+    0.1598
+   ],
+   "replaces": [
+    "LegFoot4_2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_LegFoot1_2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_LegFoot1_2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_LegFoot1_2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_LegFoot1_2_MetalnessMap.png"
+   },
+   "tris": 280,
+   "verts": 199,
+   "textureSize": [
+    128,
+    128
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawArm1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_ClawArm1.obj",
+   "glbNode": "ClawArm1",
+   "sharedWith": null,
+   "pivot": [
+    1.83111,
+    0.0,
+    -1.72451,
+    0.92718,
+    0.0,
+    -0.37461,
+    0.0,
+    1.0,
+    0.0,
+    0.37461,
+    0.0,
+    0.92718
+   ],
+   "center": [
+    1.83094,
+    0.00095,
+    -1.72241,
+    0.92718,
+    0.0,
+    -0.37461,
+    0.0,
+    1.0,
+    0.0,
+    0.37461,
+    0.0,
+    0.92718
+   ],
+   "size": [
+    0.6432,
+    0.5443,
+    0.8474
+   ],
+   "replaces": [
+    "ClawArm1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_ClawArm1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_ClawArm1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_ClawArm1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_ClawArm1_MetalnessMap.png"
+   },
+   "tris": 600,
+   "verts": 394,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawLeft",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_ClawLeft.obj",
+   "glbNode": "ClawLeft",
+   "sharedWith": null,
+   "pivot": [
+    2.1308,
+    0.05,
+    -2.46626,
+    0.92718,
+    0.0,
+    -0.37461,
+    0.0,
+    1.0,
+    0.0,
+    0.37461,
+    0.0,
+    0.92718
+   ],
+   "center": [
+    2.12725,
+    0.0491,
+    -2.45759,
+    0.92718,
+    0.0,
+    -0.37461,
+    0.0,
+    1.0,
+    0.0,
+    0.37461,
+    0.0,
+    0.92718
+   ],
+   "size": [
+    1.2533,
+    0.9457,
+    1.4091
+   ],
+   "replaces": [
+    "ClawLeft"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_ClawLeft_ColorMap.png",
+    "NormalMap": "ObsidianCrab_ClawLeft_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_ClawLeft_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_ClawLeft_MetalnessMap.png"
+   },
+   "tris": 600,
+   "verts": 415,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawPincer1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_ClawPincer1.obj",
+   "glbNode": "ClawPincer1",
+   "sharedWith": null,
+   "pivot": [
+    2.28064,
+    0.5,
+    -2.83713,
+    0.92718,
+    0.06505,
+    -0.36892,
+    0.0,
+    0.98481,
+    0.17365,
+    0.37461,
+    -0.161,
+    0.9131
+   ],
+   "center": [
+    2.2789,
+    0.49938,
+    -2.83507,
+    0.92718,
+    0.06505,
+    -0.36892,
+    0.0,
+    0.98481,
+    0.17365,
+    0.37461,
+    -0.161,
+    0.9131
+   ],
+   "size": [
+    0.8435,
+    0.3158,
+    0.7006
+   ],
+   "replaces": [
+    "ClawPincer1"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_ClawPincer1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_ClawPincer1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_ClawPincer1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_ClawPincer1_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 224,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawArm2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_ClawArm2.obj",
+   "glbNode": "ClawArm2",
+   "sharedWith": null,
+   "pivot": [
+    -1.83111,
+    0.0,
+    -1.72451,
+    0.92718,
+    0.0,
+    0.37461,
+    0.0,
+    1.0,
+    0.0,
+    -0.37461,
+    0.0,
+    0.92718
+   ],
+   "center": [
+    -1.83262,
+    0.00076,
+    -1.72459,
+    0.92718,
+    0.0,
+    0.37461,
+    0.0,
+    1.0,
+    0.0,
+    -0.37461,
+    0.0,
+    0.92718
+   ],
+   "size": [
+    0.6447,
+    0.5482,
+    0.847
+   ],
+   "replaces": [
+    "ClawArm2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_ClawArm2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_ClawArm2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_ClawArm2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_ClawArm2_MetalnessMap.png"
+   },
+   "tris": 600,
+   "verts": 399,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawRight",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_ClawRight.obj",
+   "glbNode": "ClawRight",
+   "sharedWith": null,
+   "pivot": [
+    -2.1308,
+    0.05,
+    -2.46626,
+    0.92718,
+    0.0,
+    0.37461,
+    0.0,
+    1.0,
+    0.0,
+    -0.37461,
+    0.0,
+    0.92718
+   ],
+   "center": [
+    -2.12505,
+    0.05175,
+    -2.4534,
+    0.92718,
+    0.0,
+    0.37461,
+    0.0,
+    1.0,
+    0.0,
+    -0.37461,
+    0.0,
+    0.92718
+   ],
+   "size": [
+    1.2428,
+    0.9442,
+    1.4139
+   ],
+   "replaces": [
+    "ClawRight"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_ClawRight_ColorMap.png",
+    "NormalMap": "ObsidianCrab_ClawRight_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_ClawRight_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_ClawRight_MetalnessMap.png"
+   },
+   "tris": 600,
+   "verts": 414,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "ClawPincer2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_ClawPincer2.obj",
+   "glbNode": "ClawPincer2",
+   "sharedWith": null,
+   "pivot": [
+    -2.28064,
+    0.5,
+    -2.83713,
+    0.92718,
+    -0.06505,
+    0.36892,
+    0.0,
+    0.98481,
+    0.17365,
+    -0.37461,
+    -0.161,
+    0.9131
+   ],
+   "center": [
+    -2.28063,
+    0.49892,
+    -2.83841,
+    0.92718,
+    -0.06505,
+    0.36892,
+    0.0,
+    0.98481,
+    0.17365,
+    -0.37461,
+    -0.161,
+    0.9131
+   ],
+   "size": [
+    0.8391,
+    0.3114,
+    0.6962
+   ],
+   "replaces": [
+    "ClawPincer2"
+   ],
+   "material": "Slate",
+   "transparency": 0.0,
+   "materialMix": {
+    "Slate": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [],
+    "advice": "none"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_ClawPincer2_ColorMap.png",
+    "NormalMap": "ObsidianCrab_ClawPincer2_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_ClawPincer2_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_ClawPincer2_MetalnessMap.png"
+   },
+   "tris": 320,
+   "verts": 237,
+   "textureSize": [
+    256,
+    256
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye1",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Eye1.obj",
+   "glbNode": "Eye1",
+   "sharedWith": null,
+   "pivot": [
+    0.5,
+    0.72588,
+    -1.43681,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969
+   ],
+   "center": [
+    0.5,
+    0.57787,
+    -1.38294,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969
+   ],
+   "size": [
+    0.4,
+    0.4,
+    0.26
+   ],
+   "replaces": [
+    "Eye1",
+    "Eye1Pupil",
+    "Eye1Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye1Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Eye1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Eye1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Eye1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Eye1_MetalnessMap.png",
+    "EmissiveMask": "ObsidianCrab_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  },
+  {
+   "name": "Eye2",
+   "primary": false,
+   "animated": true,
+   "file": "ObsidianCrab_Eye1.obj",
+   "glbNode": "Eye2",
+   "sharedWith": "Eye1",
+   "pivot": [
+    -0.5,
+    0.72588,
+    -1.43681,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969
+   ],
+   "center": [
+    -0.5,
+    0.57787,
+    -1.38294,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.93969,
+    0.34202,
+    0.0,
+    -0.34202,
+    0.93969
+   ],
+   "size": [
+    0.4,
+    0.4,
+    0.26
+   ],
+   "replaces": [
+    "Eye2",
+    "Eye2Pupil",
+    "Eye2Glint"
+   ],
+   "material": "SmoothPlastic",
+   "transparency": 0.0,
+   "materialMix": {
+    "SmoothPlastic": 1.0
+   },
+   "neon": {
+    "fraction": 0.0,
+    "parts": [
+     "Eye2Glint"
+    ],
+    "advice": "Use EmissiveMask via SurfaceAppearance (EmissiveStrength) or overlay a small Neon mesh"
+   },
+   "textures": {
+    "ColorMap": "ObsidianCrab_Eye1_ColorMap.png",
+    "NormalMap": "ObsidianCrab_Eye1_NormalMap.png",
+    "RoughnessMap": "ObsidianCrab_Eye1_RoughnessMap.png",
+    "MetalnessMap": "ObsidianCrab_Eye1_MetalnessMap.png",
+    "EmissiveMask": "ObsidianCrab_Eye1_EmissiveMask.png"
+   },
+   "tris": 288,
+   "verts": 187,
+   "textureSize": [
+    512,
+    512
+   ],
+   "collisionFidelity": "Box",
+   "canCollide": false
+  }
+ ],
+ "kept": []
+}
