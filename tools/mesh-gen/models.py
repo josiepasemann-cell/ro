@@ -149,7 +149,7 @@ class Cfg:
     def part_k(self, name, kg): return kg
     def budget(self, g): return 3000
     def cells(self, g): return 200
-    def tex(self, g): return 1024
+    def tex(self, g): return 512
     def amp(self, g): return 0.02
 
     def sculpt(self, g, ctx, dim): return None
@@ -365,4 +365,15 @@ CONFIGS = {"GoldGuppy": GoldGuppy, "TreasureTurtle": TreasureTurtle, "Shopkeeper
 
 
 def get(name):
-    return CONFIGS.get(name, Cfg)()
+    """Per-model config: CONFIGS above, else configs/<name>.py defining `Config(Cfg)`, else the generic Cfg."""
+    if name in CONFIGS:
+        return CONFIGS[name]()
+    import importlib.util
+    import pathlib
+    path = pathlib.Path(__file__).parent / "configs" / f"{name}.py"
+    if path.exists():
+        spec = importlib.util.spec_from_file_location(f"configs.{name}", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.Config()
+    return Cfg()

@@ -28,8 +28,10 @@ def world_cf(cf):
 
 
 def main():
-    export = json.loads((HERE / "cache" / "models.json").read_text())
-    models = {m["name"]: m for m in export["models"]}
+    models = {}
+    for cache in sorted((HERE / "cache").glob("models*.json")):
+        for m in json.loads(cache.read_text())["models"]:
+            models[m["name"]] = m
 
     lines = ["local LAYOUT = {"]
     for manifest_path in sorted(MESHES.glob("*/manifest.json")):

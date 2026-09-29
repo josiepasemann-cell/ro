@@ -16,6 +16,7 @@ from skimage import measure
 
 import sdf as S
 import models as M
+HERE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -28,6 +29,10 @@ NPC_ROOTS = {"Head", "ArmL", "ArmR"}                 # + eyes, for NPC models
 ATTACH_TOL = 0.15                                    # studs: child joins a root if its centre is this close to the root's surface
 MESH_KIND = {"Sphere": "ellipsoid", "Cylinder": "cylx", "CylinderMesh": "cyly", "Head": "cyly"}
 HIDDEN_TRANSP = 0.95
+# Parts the game code looks up by name. Visible ones become their own mesh (name kept, so FindFirstChild still works);
+# invisible markers are never meshed or replaced at all (see "kept" in the manifest). Configs can extend both.
+FUNCTIONAL_ROOTS = r"^(Mantle|LureOrb|SlowPulseCore|EelHead|ChargeCore|MainOrb|StatusLight)$"
+KEEP_NAMES = r"^(MuzzlePoint|Muzzle|ShellCrackPoint|LightBurstPoint|InteractionPoint|EggSlot\d*|EggDisplaySlot\d*|Hitbox\w*|PromptAnchor\w*)$"
 
 
 def cfmat(cf):
@@ -79,9 +84,12 @@ class Part:
         return S.Shape(self.kind, self.size, self.M, rounding)
 
 
-def is_anim(name, npc):
+def is_anim(name, npc, cfg=None):
+    """Separate-mesh root: animated name prefix, eyes, NPC head/arms, functional names (+ cfg.extra_roots regex)."""
     l = name.lower()
-    return any(l.startswith(p) for p in ANIM_PREFIXES) or name in EXTRA_ROOTS or (npc and name in NPC_ROOTS)
+    extra = getattr(cfg, "extra_roots", None)
+    return (any(l.startswith(p) for p in ANIM_PREFIXES) or name in EXTRA_ROOTS or (npc and name in NPC_ROOTS)
+            or bool(re.search(FUNCTIONAL_ROOTS, name)) or bool(extra and re.search(extra, name)))
 
 
 def first_word(n):
@@ -89,14 +97,27 @@ def first_word(n):
     return m.group(0) if m else n
 
 
-def group_parts(parts, primary, npc):
+def split_kept(parts, primary, npc, cfg):
+    """Remove parts that must stay untouched Roblox parts: KEEP_NAMES / cfg.keep_re, and invisible parts that are not
+    animation roots (hitboxes, prompt carriers, markers)."""
+    keep_re = re.compile(KEEP_NAMES + ("|" + cfg.keep_re if getattr(cfg, "keep_re", None) else ""))
+    kept, rest = [], []
+    for p in parts:
+        if p is not primary and (keep_re.search(p.name) or (p.hidden and not is_anim(p.name, npc, cfg))):
+            kept.append(p)
+        else:
+            rest.append(p)
+    return kept, rest
+
+
+def group_parts(parts, primary, npc, cfg=None):
     """Grouping rule (documented in README):
        1. Primary part (Body) and everything not claimed below -> body mesh.
        2. Parts matching the animated-name list (+ Eye1/Eye2, + Head/ArmL/ArmR for NPCs) are roots: one separate mesh each.
        3. Every other part attaches to a root if (a) it shares the first CamelCase word with exactly one root
           (TailLamella1 -> TailFin) or (b) its centre lies within ATTACH_TOL studs of the root's surface (smallest SDF wins:
           EyeWhite1/Highlight -> Eye1, EyeStalkL -> Head, ArmStalkL -> ArmL). Otherwise it stays in the body."""
-    roots = [p for p in parts if p is not primary and is_anim(p.name, npc)]
+    roots = [p for p in parts if p is not primary and is_anim(p.name, npc, cfg)]
     groups = {primary.name: [primary]}
     for r in roots:
         groups[r.name] = [r]
@@ -507,7 +528,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", required=True)
     ap.add_argument("--model", required=True)
-    ap.add_argument("--out", default=os.path.join(REPO, "assets", "meshes"))
+    ap.add_argument("--out", default=os.path.join(REPO, "assets", "meshes"), help="committed output: <Model>.glb + manifest.json")
+    ap.add_argument("--loose", default=os.path.join(HERE_DIR, "build"), help="git-ignored output: per-mesh .obj + PNG maps (+ manifest copy) for preview/bulk import")
     ap.add_argument("--fast", action="store_true", help="lower resolution, for quick iteration")
     a = ap.parse_args()
     t0 = time.time()
@@ -523,12 +545,15 @@ def main():
         else next(p for p in parts if np.allclose(p.cf, Ap, atol=1e-4))
     for p in parts:
         p.decal = bool(cfg.is_decal(p))
-    roots, groups = group_parts(parts, primary, npc)
+    kept, parts = split_kept(parts, primary, npc, cfg)
+    roots, groups = group_parts(parts, primary, npc, cfg)
     log(f"{a.model}: {len(parts)} parts -> {len(groups)} groups: " + ", ".join(f"{k}[{len(v)}]" for k, v in groups.items()))
-    outdir = os.path.join(a.out, a.model)
-    os.makedirs(outdir, exist_ok=True)
-    for fn in os.listdir(outdir):
-        os.remove(os.path.join(outdir, fn))
+    glbdir = os.path.join(a.out, a.model)
+    outdir = os.path.join(a.loose, a.model)
+    for d in (glbdir, outdir):
+        os.makedirs(d, exist_ok=True)
+        for fn in os.listdir(d):
+            os.remove(os.path.join(d, fn))
     Apinv = np.linalg.inv(Ap)
 
     # global occluder shapes per group (world frame), used for AO contact shadows
@@ -660,14 +685,16 @@ def main():
         else:
             scene.graph.update(frame_to=gname, frame_from=scene.graph.base_frame, matrix=center_rel, geometry=f"{src}_mesh")
     glb = scene.export(file_type="glb", include_normals=True)
-    open(os.path.join(outdir, f"{a.model}.glb"), "wb").write(glb)
+    for d in (glbdir, outdir):
+        open(os.path.join(d, f"{a.model}.glb"), "wb").write(glb)
     man = {"model": a.model, "generator": "tools/mesh-gen/pipeline.py", "primaryPart": primary.name,
            "convention": "original coordinates, -Z = front, studs = glTF metres; obj vertices are bbox-centred in the local frame of the pivot part",
            "cframeFormat": "x,y,z,R00,R01,R02,R10,R11,R12,R20,R21,R22 (row-major, Roblox CFrame:GetComponents order), relative to PrimaryPart",
-           "totalTris": int(total_tris), "meshes": manifest_meshes}
-    json.dump(man, open(os.path.join(outdir, "manifest.json"), "w"), indent=1)
-    size = sum(os.path.getsize(os.path.join(outdir, x)) for x in os.listdir(outdir))
-    log(f"done: {len(manifest_meshes)} nodes, {len(built)} unique meshes, {total_tris} tris, {size / 1e6:.2f} MB in {outdir}")
+           "totalTris": int(total_tris), "meshes": manifest_meshes, "kept": [q.name for q in kept]}
+    for d in (glbdir, outdir):
+        json.dump(man, open(os.path.join(d, "manifest.json"), "w"), indent=1)
+    size = sum(os.path.getsize(os.path.join(glbdir, x)) for x in os.listdir(glbdir))
+    log(f"done: {len(manifest_meshes)} nodes, {len(built)} unique meshes, {total_tris} tris, {size / 1e6:.2f} MB committed in {glbdir}")
 
 
 if __name__ == "__main__":
