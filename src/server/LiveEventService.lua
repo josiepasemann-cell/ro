@@ -647,6 +647,18 @@ end
 switchToEvent(resolveCurrentEventId(), true, false)
 task.spawn(runEventSchedulerLoop)
 
+-- WorldSetup.server.lua setzt die Standard-Unterwasserstimmung direkt (ohne
+-- Reihenfolge-Garantie zu diesem Modul). Laeuft es NACH der ersten Anwendung
+-- oben, wuerde es die Event-Stimmung bis zum naechsten 12h-Slot ueberschreiben.
+-- Deshalb kurz nach dem Start die aktuelle Event-Stimmung nochmal (sofort)
+-- anwenden.
+task.delay(3, function()
+	local def = currentEventDef
+	if def then
+		applyLighting(def.Lighting, true)
+	end
+end)
+
 task.spawn(function()
 	while true do
 		task.wait(DECORATION_REFRESH_INTERVAL_SECONDS)
@@ -805,6 +817,10 @@ function LiveEventService.RequestPurchaseShopItem(player: Player, itemId: any): 
 	end
 
 	local state = ensureCurrentSlotState(player)
+	if item.Type == "Cosmetic" and PlayerDataService.OwnsCosmetic(player, item.Id) then
+		-- Deko ist einmalig: nicht ein zweites Mal Event-Waehrung dafuer verbrennen.
+		return { Success = false, Reason = "AlreadyOwned" }
+	end
 	if state.Currency.Balance < item.Cost then
 		return { Success = false, Reason = "InsufficientFunds" }
 	end

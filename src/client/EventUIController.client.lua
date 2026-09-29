@@ -81,6 +81,7 @@ local SHOP_REASON_MESSAGES: { [string]: string } = {
 	NoActiveEvent = "No event is active right now.",
 	UnknownItem = "This item is no longer available.",
 	InsufficientFunds = "Not enough event currency.",
+	AlreadyOwned = "You already own this decoration!",
 	EggRollFailed = "Egg could not be opened - please try again.",
 	PersistenceFailed = "Save failed - please try again.",
 }

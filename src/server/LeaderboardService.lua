@@ -156,7 +156,7 @@ local function resolveName(userId: number): string
 	local ok, name = pcall(function()
 		return Players:GetNameFromUserIdAsync(userId)
 	end)
-	local resolved = if ok and type(name) == "string" then name else ("Spieler_" .. tostring(userId))
+	local resolved = if ok and type(name) == "string" then name else ("Player_" .. tostring(userId))
 	nameCache[userId] = resolved
 	return resolved
 end
@@ -433,8 +433,29 @@ end
 -- // Bootstrap ------------------------------------------------------------------
 
 local function onPlayerRemoving(player: Player)
-	dirtyPlayers[player.UserId] = nil
-	lastWrittenScore[player.UserId] = nil
+	local userId = player.UserId
+
+	-- Letzten Stand noch schreiben: sonst geht alles verloren, was seit dem
+	-- letzten 90-s-Tick passiert ist (z. B. Level-Up kurz vor dem Verlassen).
+	-- Scores werden SYNCHRON berechnet (Daten sind hier noch im Cache), das
+	-- eigentliche Schreiben laeuft im eigenen Thread.
+	if dirtyPlayers[userId] and PlayerDataService.IsDataLoaded(player) then
+		local scores = computeScores(player)
+		local lastScores = lastWrittenScore[userId] or {}
+		task.spawn(function()
+			for _, category in ipairs(CATEGORIES) do
+				if lastScores[category] ~= scores[category] then
+					withRetry(("Final write %s for UserId %d"):format(category, userId), function()
+						orderedStores[category]:SetAsync(tostring(userId), scores[category])
+						return true
+					end)
+				end
+			end
+		end)
+	end
+
+	dirtyPlayers[userId] = nil
+	lastWrittenScore[userId] = nil
 end
 Players.PlayerRemoving:Connect(onPlayerRemoving)
 

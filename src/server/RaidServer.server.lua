@@ -54,11 +54,15 @@ RaidRemotes.RequestRescueCreature.OnServerEvent:Connect(function(player: Player,
 	RaidRemotes.RescueResult:FireClient(player, result)
 end)
 
-RaidRemotes.RequestRescueWithToken.OnServerEvent:Connect(function(player: Player, instanceId)
-	local success, reason = RaidService.RequestRescueWithToken(player, instanceId)
+-- SICHERHEIT: Der Rettungs-Token ist ein Robux-Produkt (ShopConfig
+-- DEV_PRODUCTS.RescueToken) und wird AUSSCHLIESSLICH von
+-- MonetizationService.ProcessReceipt nach verifiziertem Kauf eingeloest. Dieser
+-- Remote darf NIE selbst retten, sonst koennte jeder Client die bezahlte
+-- Rettung gratis ausloesen. Er antwortet nur noch mit einem Hinweis.
+RaidRemotes.RequestRescueWithToken.OnServerEvent:Connect(function(player: Player, _instanceId)
 	RaidRemotes.RescueWithTokenResult:FireClient(player, {
-		Success = success,
-		Reason = reason,
+		Success = false,
+		Reason = "PurchaseRequired",
 	})
 end)
 

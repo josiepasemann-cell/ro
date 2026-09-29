@@ -94,13 +94,14 @@ local toggleBuildModeEvent = getOrCreateBridgeEvent("ToggleBuildMode")
 -- Workspace.PlayerPlots.<UserId> an; das kann (Datenladen inkl. Retries)
 -- ein paar Sekunden dauern.
 local playerPlotsFolder = Workspace:WaitForChild("PlayerPlots")
-local plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
-while not plot do
+local plotOrNil = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
+while not plotOrNil do
 	-- Datenladen (DataStore-Retries) kann laenger als 30 s dauern - weiter
 	-- warten statt den Baumodus dauerhaft abzuschalten.
 	warn("[PlacementPreviewController] Own plot not replicated yet - still waiting.")
-	plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
+	plotOrNil = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
 end
+local plot = (plotOrNil :: any) :: Model
 
 local plotPrimaryPart = plot.PrimaryPart :: BasePart
 local buildingsFolder = plot:WaitForChild("Buildings") :: Folder

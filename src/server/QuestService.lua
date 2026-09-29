@@ -38,6 +38,7 @@ local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local QuestConfig = require(ReplicatedStorage:WaitForChild("QuestConfig"))
 local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
 local QuestRemotes = require(ReplicatedStorage:WaitForChild("QuestRemotes"))
+local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 
 type QuestProgress = PlayerDataService.QuestProgress
 type QuestState = PlayerDataService.QuestState
@@ -54,8 +55,13 @@ local rng = Random.new()
 --- QuestConfig.QUEST_TEMPLATES (kein Duplikat am selben Tag). Bricht defensiv
 --- ab, falls der Pool kleiner als `count` ist (aktuell 4 Vorlagen > 3, siehe
 --- QuestConfig.QUESTS_PER_DAY).
-local function pickRandomTemplates(count: number): { QuestConfig.QuestTemplate }
-	local pool = table.clone(QuestConfig.QUEST_TEMPLATES)
+local function pickRandomTemplates(count: number, excludedIds: { [string]: boolean }?): { QuestConfig.QuestTemplate }
+	local pool = {}
+	for _, template in ipairs(QuestConfig.QUEST_TEMPLATES) do
+		if not (excludedIds and excludedIds[template.Id]) then
+			table.insert(pool, template)
+		end
+	end
 	local picked = {}
 	local n = math.min(count, #pool)
 	for _ = 1, n do
@@ -72,7 +78,15 @@ end
 --- ein Spieler theoretisch über einen UTC-Tageswechsel hinweg online bleiben
 --- kann.
 local function assignDailyQuests(player: Player, today: string)
-	local templates = pickRandomTemplates(QuestConfig.QUESTS_PER_DAY)
+	-- Raids starten erst ab dem ersten Verteidigungsturm (RaidService.
+	-- raidsAllowedFor) - "Ueberstehe einen Raid" waere davor eine Quest, die
+	-- nie abschliessbar ist.
+	local tower = BuildingConfig.Get("AnglerfishTower")
+	local excluded: { [string]: boolean } = {}
+	if tower and PlayerDataService.GetLevel(player) < tower.UnlockLevel then
+		excluded.WinRaid = true
+	end
+	local templates = pickRandomTemplates(QuestConfig.QUESTS_PER_DAY, excluded)
 	local quests: { QuestProgress } = {}
 	for _, template in ipairs(templates) do
 		local target = rng:NextInteger(template.TargetMin, template.TargetMax)

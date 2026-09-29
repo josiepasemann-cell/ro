@@ -441,6 +441,16 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 	RaidRemotes.RaidResult:FireClient(player, resultPayload)
 end
 
+-- // Raid-Schutz fuer Neulinge ---------------------------------------------------
+-- Raids beginnen erst, wenn der erste Verteidigungsturm (AnglerfishTower)
+-- freigeschaltet ist - vorher haette ein neuer Spieler keine Chance zu
+-- verteidigen und wuerde nach 25 Minuten eine Kreatur verlieren.
+local function raidsAllowedFor(player: Player): boolean
+	local tower = BuildingConfig.Get("AnglerfishTower")
+	local minLevel = if tower then tower.UnlockLevel else 1
+	return PlayerDataService.GetLevel(player) >= minLevel
+end
+
 -- // Live-Raid-Start -------------------------------------------------------------
 
 --- Startet einen Raid auf dem Plot von `player`, sofern dieser gerade nicht
@@ -451,6 +461,12 @@ local function startRaid(player: Player)
 		return
 	end
 	if not PlayerDataService.IsDataLoaded(player) then
+		return
+	end
+	if not raidsAllowedFor(player) then
+		-- Noch kein Verteidigungsturm freigeschaltet: ein Raid waere eine
+		-- garantierte Niederlage (Entfuehrung). Timer einfach verlaengern.
+		PlayerDataService.SetNextRaidAt(player, os.time() + RaidConfig.RAID_INTERVAL_SECONDS)
 		return
 	end
 
@@ -852,6 +868,12 @@ local function evaluateOfflineRaids(player: Player)
 
 	if now < nextRaidAt then
 		-- Kein Raid verpasst - nichts zu tun.
+		return
+	end
+
+	if not raidsAllowedFor(player) then
+		-- Neuling ohne Verteidigungsturm: verpasste Raids verfallen ersatzlos.
+		PlayerDataService.SetNextRaidAt(player, now + RaidConfig.RAID_INTERVAL_SECONDS)
 		return
 	end
 

@@ -414,6 +414,28 @@ local function validatePurchaseTarget(player: Player, definition: DevProductDefi
 	return true
 end
 
+--- Wählt für zielgebundene Produkte ein Standard-Ziel aus den EIGENEN Daten des
+--- Spielers (siehe RequestPromptDevProductPurchase). nil, wenn es keins gibt.
+local function pickDefaultPurchaseTarget(player: Player, definition: DevProductDefinition): string?
+	if definition.Key == "RescueToken" then
+		local abductedList = PlayerDataService.GetAbductedCreatures(player)
+		if #abductedList > 0 then
+			return abductedList[1].InstanceId
+		end
+	elseif definition.Key == "InstantBreeding" then
+		local best: string? = nil
+		local bestReadyAt = -math.huge
+		for _, incubation in ipairs(PlayerDataService.GetIncubations(player)) do
+			if incubation.ReadyAt > bestReadyAt then
+				bestReadyAt = incubation.ReadyAt
+				best = incubation.PlacementId
+			end
+		end
+		return best
+	end
+	return nil
+end
+
 --- Validiert + stößt einen Entwicklerprodukt-Kaufdialog an. `targetId` ist
 --- bei RequiresTarget-Produkten Pflicht (InstanceId/PlacementId, siehe
 --- ShopRemotes-Kopfkommentar) und wird HIER serverseitig validiert +
@@ -444,7 +466,13 @@ function MonetizationService.RequestPromptDevProductPurchase(player: Player, key
 
 	if definition.RequiresTarget then
 		if type(targetId) ~= "string" or targetId == "" then
-			return false, "MissingTarget"
+			-- Der Shop kennt kein Ziel-Auswahl-UI: der SERVER waehlt dann selbst ein
+			-- Ziel aus den eigenen Daten des Spielers (aelteste entfuehrte Kreatur /
+			-- Brutbecken mit der laengsten Restzeit). Nie ein Client-Wert.
+			targetId = pickDefaultPurchaseTarget(player, definition)
+			if not targetId then
+				return false, "MissingTarget"
+			end
 		end
 		if not validatePurchaseTarget(player, definition, targetId) then
 			return false, "InvalidTarget"

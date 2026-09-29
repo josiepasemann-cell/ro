@@ -73,13 +73,14 @@ local openOverviewEvent = getOrCreateBridgeEvent("OpenBreedingOverview")
 
 -- // Auf eigenen Plot warten (gleiches Muster wie PlacementPreviewController) --
 local playerPlotsFolder = Workspace:WaitForChild("PlayerPlots")
-local plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
-while not plot do
+local plotOrNil = playerPlotsFolder:WaitForChild(tostring(player.UserId), 30) :: Model?
+while not plotOrNil do
 	-- Datenladen (DataStore-Retries) kann laenger als 30 s dauern - weiter
 	-- warten statt die Bruetbecken-UI dauerhaft abzuschalten.
 	warn("[BreedingUIController] Own plot not replicated yet - still waiting.")
-	plot = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
+	plotOrNil = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
 end
+local plot = (plotOrNil :: any) :: Model
 
 local buildingsFolder = plot:WaitForChild("Buildings") :: Folder
 
@@ -615,15 +616,38 @@ local function applyStatuses(statuses: { BroodPoolStatus })
 	rebuildOverview()
 end
 
-task.spawn(function()
-	local ok, statuses = pcall(function()
-		return BreedingRemotes.GetBreedingStatuses:InvokeServer()
-	end)
-	if ok and type(statuses) == "table" then
-		applyStatuses(statuses)
-	else
-		warn("[BreedingUIController] Initial status sync failed.")
+local statusSyncPending = false
+
+local function syncStatuses()
+	if statusSyncPending then
+		return
 	end
+	statusSyncPending = true
+	task.spawn(function()
+		local ok, statuses = pcall(function()
+			return BreedingRemotes.GetBreedingStatuses:InvokeServer()
+		end)
+		statusSyncPending = false
+		if ok and type(statuses) == "table" then
+			applyStatuses(statuses)
+		else
+			warn("[BreedingUIController] Status sync failed.")
+		end
+	end)
+end
+
+syncStatuses()
+
+-- Beim Join werden gespeicherte Brutbecken erst NACH dem ersten Sync
+-- wiederhergestellt (Daten laden dauert). Der erste Sync kann daher leer sein -
+-- sobald ein Brutbecken im Plot auftaucht, Status neu laden (sonst blieben
+-- laufende Zuchten bis zur naechsten Aktion unsichtbar).
+buildingsFolder.ChildAdded:Connect(function(child)
+	task.defer(function()
+		if child.Parent and child:GetAttribute("BuildingId") == "BroodPool" then
+			syncStatuses()
+		end
+	end)
 end)
 
 -- Lokaler, rein kosmetischer Countdown (1x/Sekunde) - keine Autorität, siehe
@@ -652,6 +676,15 @@ end)
 
 -- // Server-Ergebnisse (Feedback + Cache-Update) ------------------------------
 
+local BREEDING_FAILURE_TEXT: { [string]: string } = {
+	InsufficientFunds = "Not enough Tide Coins to feed the Brood Pool yet!",
+	AlreadyIncubating = "An egg is already growing in this Brood Pool.",
+	NoActiveIncubation = "There is no egg to collect here.",
+	NotABroodPool = "That isn't a Brood Pool.",
+	InvalidPlacement = "That isn't a Brood Pool.",
+	DataNotLoaded = "Still loading your reef ... try again in a moment.",
+}
+
 BreedingRemotes.StartBreedingResult.OnClientEvent:Connect(function(result)
 	if not result then
 		return
@@ -671,10 +704,11 @@ BreedingRemotes.StartBreedingResult.OnClientEvent:Connect(function(result)
 		if result.Success then
 			refreshPanel()
 		else
-			infoLabel.Text = ("Breeding start failed: %s"):format(tostring(result.Reason or "Unknown"))
+			local failureText = BREEDING_FAILURE_TEXT[tostring(result.Reason)] or "Couldn't start breeding. Please try again."
+			infoLabel.Text = failureText
 			actionButton.Instance.Visible = true
 			actionButton:SetDisabled(false)
-			Toast.Show({ Text = "Breeding start failed.", Type = "Error" })
+			Toast.Show({ Text = failureText, Type = "Error" })
 		end
 	end
 end)
@@ -723,7 +757,7 @@ BreedingRemotes.ClaimBreedingResult.OnClientEvent:Connect(function(result)
 			if result.Reason == "NotReadyYet" then
 				infoLabel.Text = ("Not ready yet: %s"):format(formatDuration(result.RemainingSeconds or 0))
 			else
-				infoLabel.Text = ("Claim failed: %s"):format(tostring(result.Reason or "Unknown"))
+				infoLabel.Text = BREEDING_FAILURE_TEXT[tostring(result.Reason)] or "Couldn't collect the egg. Please try again."
 			end
 			refreshPanel()
 		end
@@ -734,7 +768,7 @@ BreedingRemotes.InstantCompleteBreedingResult.OnClientEvent:Connect(function(res
 	if activePlacementId and result then
 		infoLabel.Text = if result.Success
 			then "Breeding completed instantly!"
-			else "Instant completion is not available yet (coming later)."
+			else "Instant Hatch is available in the Shop!"
 	end
 end)
 

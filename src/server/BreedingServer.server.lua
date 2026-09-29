@@ -40,11 +40,16 @@ BreedingRemotes.RequestClaimBreeding.OnServerEvent:Connect(function(player: Play
 	BreedingRemotes.ClaimBreedingResult:FireClient(player, result)
 end)
 
-BreedingRemotes.RequestInstantCompleteBreeding.OnServerEvent:Connect(function(player: Player, placementId)
-	local success, reason = BreedingService.RequestInstantComplete(player, placementId)
+-- SICHERHEIT: "Sofort abschliessen" ist ein Robux-Produkt (ShopConfig
+-- DEV_PRODUCTS.InstantBreeding) und laeuft AUSSCHLIESSLICH ueber
+-- MonetizationService.ProcessReceipt -> BreedingService.RequestInstantComplete.
+-- Dieser Remote darf die Zucht NIE selbst abschliessen, sonst koennte jeder
+-- Client das bezahlte Produkt gratis ausloesen. Er antwortet nur noch mit einem
+-- Hinweis.
+BreedingRemotes.RequestInstantCompleteBreeding.OnServerEvent:Connect(function(player: Player, _placementId)
 	BreedingRemotes.InstantCompleteBreedingResult:FireClient(player, {
-		Success = success,
-		Reason = reason,
+		Success = false,
+		Reason = "PurchaseRequired",
 	})
 end)
 

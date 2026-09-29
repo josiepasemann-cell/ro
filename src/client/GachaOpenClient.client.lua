@@ -98,9 +98,34 @@ end
 --- Fügt einem Ei-Modell (falls noch nicht vorhanden) einen ClickDetector
 --- an seinem PrimaryPart ("Shell", siehe Namenskonvention in
 --- assets/models/README.md) hinzu.
+local function requestEggOpen(eggModel: Model)
+	if isOpeningEgg then
+		return
+	end
+	isOpeningEgg = true
+	local cost = eggModel:GetAttribute("EggCostTideCoins")
+	UIKit.ConfirmDialog.Show({
+		Title = "Open Mystery Egg?",
+		Message = if type(cost) == "number"
+			then ("Costs %d Tide Coins. Check the odds in the menu under Mystery Egg."):format(cost)
+			else "Check the odds in the menu under Mystery Egg.",
+		ConfirmText = "Open",
+		CancelText = "Cancel",
+		OnConfirm = function()
+			pendingEggModel = eggModel
+			GachaRemotes.RequestOpenEgg:FireServer()
+		end,
+		OnCancel = function()
+			isOpeningEgg = false
+		end,
+	})
+end
+
 local function ensureClickDetector(eggModel: Model)
-	local shell = eggModel.PrimaryPart
-	if not shell then
+	-- Mit StreamingEnabled kann das Ei-Modell ankommen, bevor sein PrimaryPart
+	-- ("Shell") da ist - kurz darauf warten statt die Interaktion zu verlieren.
+	local shell = eggModel.PrimaryPart or eggModel:WaitForChild("Shell", 20)
+	if not shell or not shell:IsA("BasePart") then
 		return
 	end
 	if shell:FindFirstChildOfClass("ClickDetector") then
@@ -115,26 +140,24 @@ local function ensureClickDetector(eggModel: Model)
 		if clickingPlayer ~= localPlayer then
 			return
 		end
-		if isOpeningEgg then
+		requestEggOpen(eggModel)
+	end)
+
+	-- ClickDetector reagiert nicht auf Gamepad (Konsole). Zusaetzlich ein
+	-- lokal erzeugtes ProximityPrompt (funktioniert mit Touch/Maus/Gamepad).
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "OpenEggPrompt"
+	prompt.ActionText = "Open Egg"
+	prompt.ObjectText = "Mystery Egg"
+	prompt.HoldDuration = 0.3
+	prompt.MaxActivationDistance = 12
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = shell
+	prompt.Triggered:Connect(function(triggeringPlayer)
+		if triggeringPlayer ~= localPlayer then
 			return
 		end
-		isOpeningEgg = true
-		local cost = eggModel:GetAttribute("EggCostTideCoins")
-		UIKit.ConfirmDialog.Show({
-			Title = "Open Mystery Egg?",
-			Message = if type(cost) == "number"
-				then ("Costs %d Tide Coins. Check the odds in the menu under Mystery Egg."):format(cost)
-				else "Check the odds in the menu under Mystery Egg.",
-			ConfirmText = "Open",
-			CancelText = "Cancel",
-			OnConfirm = function()
-				pendingEggModel = eggModel
-				GachaRemotes.RequestOpenEgg:FireServer()
-			end,
-			OnCancel = function()
-				isOpeningEgg = false
-			end,
-		})
+		requestEggOpen(eggModel)
 	end)
 end
 
@@ -145,14 +168,17 @@ end
 local function setupEggInteractions(gachaFolder: Folder)
 	for _, child in ipairs(gachaFolder:GetChildren()) do
 		if child:IsA("Model") and child:GetAttribute("EggTier") ~= nil then
-			ensureClickDetector(child)
+			task.spawn(ensureClickDetector, child)
 		end
 	end
 
 	gachaFolder.ChildAdded:Connect(function(child)
-		if child:IsA("Model") and child:GetAttribute("EggTier") ~= nil then
-			ensureClickDetector(child)
-		end
+		-- Attribute koennen bei gestreamten Modellen einen Moment spaeter da sein.
+		task.defer(function()
+			if child:IsA("Model") and child:GetAttribute("EggTier") ~= nil then
+				ensureClickDetector(child)
+			end
+		end)
 	end)
 end
 

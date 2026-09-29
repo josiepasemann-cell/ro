@@ -136,7 +136,7 @@ local REASON_MESSAGES: { [string]: string } = {
 	AlreadyOwned = "You already own that.",
 	PaidRandomItemsRestricted = "Robux purchases of random items are restricted in your region (Roblox policy). You can still get Mystery Eggs for free through the game.",
 	AlreadyUsedToday = "Already used today – available again tomorrow.",
-	MissingTarget = "No matching target found (e.g. no abducted creature/no running Brood Pool).",
+	MissingTarget = "Nothing to use this on right now (no abducted creature / no growing egg).",
 	InvalidTarget = "This target does not belong to you or no longer exists.",
 	StudioOnly = "Only available in Roblox Studio.",
 	InvalidArguments = "Invalid request.",
@@ -623,7 +623,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 	if row.DisabledReason and row.DisabledReason ~= "" then
 		noteText = friendlyReason(row.DisabledReason)
 	elseif row.RequiresTarget then
-		noteText = "Affects your last selected target (e.g. abducted creature/Brood Pool)."
+		noteText = "Works on your oldest abducted creature or the Brood Pool with the longest wait."
 	end
 	local disabledNoteHeight = 0
 	if noteText then
