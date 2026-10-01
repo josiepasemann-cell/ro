@@ -554,6 +554,8 @@ local drawerEntries: { MenuEntry } = {
 	{ Id = "Achievements", Icon = "🏅", Text = "Achievements", IsPanel = true, Key = Enum.KeyCode.K, BadgeKey = "Achievement", OnClick = function() openAchievementsEvent:Fire() end },
 	{ Id = "Event", Icon = "🌊", Text = "Event", IsPanel = true, Key = Enum.KeyCode.J, OnClick = function() openEventEvent:Fire() end },
 	{ Id = "Settings", Icon = "⚙️", Text = "Settings", IsPanel = true, Key = Enum.KeyCode.Y, OnClick = function()
+	{ Id = "Trade", Icon = "🤝", Text = "Trade", IsPanel = true, OnClick = function() openTradeEvent:Fire() end },
+	{ Id = "Cluster", Icon = "🪸", Text = "Cluster", IsPanel = true, OnClick = function() openClusterEvent:Fire() end },
 	{ Id = "Prestige", Icon = "🌅", Text = "Resurface", IsPanel = true, OnClick = function() openPrestigeEvent:Fire() end }, -- no hotkey on purpose (destructive)
 		buildSettingsPanel()
 		settingsPanel:Open()

@@ -60,6 +60,7 @@ local ProgressionService = require(script.Parent:WaitForChild("ProgressionServic
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
 local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
+local RaidConfig = require(ReplicatedStorage:WaitForChild("RaidConfig"))
 local ModelAnimationTags = require(ReplicatedStorage:WaitForChild("ModelAnimation"):WaitForChild("ModelAnimationTags"))
 
 type BuildField = PlotRegistry.BuildField
@@ -77,6 +78,7 @@ export type PlaceFailureReason =
 	| "PersistenceFailed"
 	| "BroodPoolLimitReached"
 	| "InvalidPlot"
+	| "DefenseOnMainPlot"
 
 export type RemoveFailureReason = "DataNotLoaded" | "InvalidPlacement" | "NotFound" | "PersistenceRemoveFailed"
 
@@ -343,6 +345,12 @@ function PlacementService.RequestPlace(
 	local plotIndex = PlotRegistry.NormalizePlotIndex(plotIndexArg)
 	if not plotIndex then
 		return { Success = false, Reason = "InvalidPlot" }
+	end
+
+	-- Plot 2 is a raid-free "safe" plot: raids only attack plot 1 (RaidService),
+	-- so defense buildings (towers, barriers, traps) would do nothing there.
+	if plotIndex ~= 1 and RaidConfig.GetTowerStats(buildingId) then
+		return { Success = false, Reason = "DefenseOnMainPlot" }
 	end
 
 	if type(fieldIndex) ~= "number" or fieldIndex ~= math.floor(fieldIndex) then

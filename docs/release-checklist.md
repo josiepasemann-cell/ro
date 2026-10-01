@@ -113,4 +113,4 @@ Not built, even though it's in the concept (`docs/game-design-doc.md`):
 - **Guardians and co-op raids** are built (`docs/guardians-and-coop.md`): loadout slots by level, guardians in raids, Reef Cluster members join a member's raid, shared rewards, boss scaling, real "Deepest Zone" leaderboard. Untested in Studio. Prestige ("Resurface") is built too, see `docs/prestige.md`.
 - Trading and Reef Clusters have not been tested in Studio yet (see the 2-player test steps in `docs/trading.md` and `docs/coop.md`).
 - No season pass — this is a deliberate design decision, not a gap: event rotation (six 12-hour live events, see `docs/live-events.md`) is the sole live-content mechanic for this game.
-- Raids and the creature display on plot 2: raids only defend plot 1, and towers on plot 2 do not count (see `docs/extra-plot.md`).
+- Plot 2 is a raid-free safe plot (towers are rejected there, see `docs/extra-plot.md`); the creature display and spores run on plot 1 only.

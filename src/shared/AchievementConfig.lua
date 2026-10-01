@@ -61,6 +61,7 @@ export type Category =
 	| "Spores"
 	| "Levels"
 	| "Events"
+	| "Social"
 	| "Secret"
 
 export type MetricType = "Counter" | "Snapshot"
@@ -102,6 +103,7 @@ AchievementConfig.CATEGORY_ORDER = {
 	"Spores",
 	"Levels",
 	"Events",
+	"Social",
 	"Secret",
 } :: { Category }
 
@@ -114,6 +116,7 @@ AchievementConfig.CATEGORY_LABELS = {
 	Spores = "Glow Spores",
 	Levels = "Levels",
 	Events = "Live Events",
+	Social = "Social",
 	Secret = "Secret",
 } :: { [Category]: string }
 
@@ -424,6 +427,32 @@ AchievementConfig.LIST = {
 		Metric = { Type = "Snapshot", Key = "EventItemsOwned" },
 		Target = 5,
 		Reward = { TideCoins = 600, AbyssalShards = 3, Title = "Storm Chaser" },
+		BadgeId = 0,
+	},
+
+	-- // Social (creature trading, see docs/trading.md) -----------------------
+	{
+		Id = "Social_FirstTrade",
+		Category = "Social",
+		Icon = "🤝",
+		Name = "Fair Swap",
+		Description = "Complete your first creature trade.",
+		Secret = false,
+		Metric = { Type = "Snapshot", Key = "TradesCompleted" },
+		Target = 1,
+		Reward = { TideCoins = 200, AbyssalShards = 0, Title = nil },
+		BadgeId = 0,
+	},
+	{
+		Id = "Social_TradeRegular",
+		Category = "Social",
+		Icon = "⚓",
+		Name = "Dock Regular",
+		Description = "Complete 10 creature trades.",
+		Secret = false,
+		Metric = { Type = "Snapshot", Key = "TradesCompleted" },
+		Target = 10,
+		Reward = { TideCoins = 750, AbyssalShards = 2, Title = "Dock Regular" },
 		BadgeId = 0,
 	},
 

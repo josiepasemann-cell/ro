@@ -210,6 +210,10 @@ local SNAPSHOT_PROVIDERS: { [string]: (Player) -> number } = {
 	DistinctBuildingTypes = countDistinctBuildingTypes,
 	CodexZonesCompleted = countCompletedCodexZones,
 	EventItemsOwned = countEventItemsOwned,
+	TradesCompleted = function(player)
+		local tradeState = PlayerDataService.GetTradeState(player)
+		return if tradeState then tradeState.TradesCompleted else 0
+	end,
 	TrueAbyssalFlag = function(player)
 		return (PlayerDataService.GetLevel(player) >= 25 and hasMythicCreature(player)) and 1 or 0
 	end,
@@ -425,6 +429,15 @@ GameEvents.Connect(GameEvents.Events.CoinsEarned, function(player: Player, _payl
 		return
 	end
 	onAnyTrackedEvent(player)
+	evaluateAll(player)
+end)
+
+-- Creature trades (TradeService fires this after a completed, saved swap).
+-- The "Social" achievements are Snapshots of TradeState.TradesCompleted.
+GameEvents.Connect("TradeCompleted", function(player: Player, _payload: { [string]: any })
+	if not PlayerDataService.IsDataLoaded(player) then
+		return
+	end
 	evaluateAll(player)
 end)
 

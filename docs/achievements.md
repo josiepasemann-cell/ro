@@ -128,6 +128,12 @@ Secret achievements show as "???" with a vague hint until unlocked.
 | Tide Rider | Acquire 1 Live Event shop item | 150 🪙 |
 | Storm Chaser | Acquire 5 different Live Event shop items total | 600 🪙 + 3 💎 + title "Storm Chaser" |
 
+### Social
+| Achievement | Requirement | Reward |
+|---|---|---|
+| Fair Swap | Complete 1 creature trade (`docs/trading.md`) | 200 🪙 |
+| Dock Regular | Complete 10 creature trades | 750 🪙 + 2 💎 + title "Dock Regular" |
+
 ### Secret
 | Achievement | Requirement | Reward |
 |---|---|---|

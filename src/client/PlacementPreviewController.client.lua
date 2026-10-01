@@ -1124,6 +1124,7 @@ local FAILURE_TEXT: { [string]: string } = {
 	TemplateMissing = "That building isn't ready yet. Try again in a moment.",
 	NoPlot = "That plot isn't ready yet. Try again in a moment.",
 	InvalidPlot = "That plot isn't available.",
+	DefenseOnMainPlot = "Plot 2 is a safe plot with no raids. Build towers on Plot 1!",
 	DataNotLoaded = "Still loading your reef ... try again in a moment.",
 	MaxStageReached = "This building is already at its maximum stage!",
 	IncubationActive = "Collect the egg from this Brood Pool first, then upgrade.",

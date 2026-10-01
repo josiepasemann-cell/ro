@@ -21,8 +21,11 @@ Habitat Plot right next to their first one. Not tested in Studio yet.
 
 - Income, breeding, upgrades, selling: yes (they read the whole habitat layout).
 - Brood Pool limit (level based) counts both plots together.
-- Raids: only plot 1 is attacked and only plot 1 towers defend. Towers on plot 2 do
-  nothing yet (kids are not warned in the UI, add a hint if this confuses testers).
+- Raids: only plot 1 is attacked and only plot 1 towers defend. Plot 2 is a raid-free
+  "safe" plot: `PlacementService.RequestPlace` rejects defense buildings (anything with
+  `RaidConfig.TOWER_STATS`: AnglerfishTower, CoralBarrier, ElectricEelTrap) on plot 2 with
+  Reason `DefenseOnMainPlot`, and the build bar shows "Plot 2 is a safe plot with no
+  raids. Build towers on Plot 1!". Guardians and co-op raids also only use plot 1.
 - Creature display and spore spawning: plot 1 only.
 
 ## Test plan (Studio)
