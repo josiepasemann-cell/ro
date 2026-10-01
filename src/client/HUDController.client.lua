@@ -52,6 +52,7 @@ local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
 local Device = UIKit.Device
+local Layout = UIKit.Layout
 local ProgressBar = UIKit.ProgressBar
 local CountUp = UIKit.CountUp
 local ScreenFX = UIKit.ScreenFX
@@ -93,9 +94,7 @@ screenGui.DisplayOrder = 15
 Device.ApplySafeArea(screenGui)
 screenGui.Parent = playerGui
 
-local uiScale = Instance.new("UIScale")
-uiScale.Parent = screenGui
-local unbindScale = Device.BindUIScale(uiScale)
+local scaledRoot, unbindScale = Device.CreateScaledRoot(screenGui)
 
 -- // Haupt-Leiste ---------------------------------------------------------------
 
@@ -103,21 +102,16 @@ local bar = Instance.new("Frame")
 bar.Name = "HUDBar"
 bar.BackgroundColor3 = Theme.Background.Panel
 bar.BackgroundTransparency = 0.1
-bar.Parent = screenGui
+bar.Parent = scaledRoot
 Theme.ApplyCorner(bar, UDim.new(0, 14))
 local barStroke = Theme.ApplyStroke(bar, Theme.Neon.Cyan, 1.5)
 barStroke.Transparency = 0.25
 
 local function applyBarLayout()
-	if Device.ShouldUseFullscreenPanels() then
-		bar.AnchorPoint = Vector2.new(0.5, 0)
-		bar.Position = UDim2.new(0.5, 0, 0, 8)
-		bar.Size = UDim2.new(1, -16, 0, 96)
-	else
-		bar.AnchorPoint = Vector2.new(0, 0)
-		bar.Position = UDim2.new(0, 16, 0, 16)
-		bar.Size = UDim2.fromOffset(380, 96)
-	end
+	local dock = Layout.GetHudLayout().Hud
+	bar.AnchorPoint = dock.AnchorPoint
+	bar.Position = dock.Position
+	bar.Size = dock.Size
 end
 applyBarLayout()
 local barDeviceConnection = Device.Changed:Connect(applyBarLayout)
@@ -137,7 +131,7 @@ tideCoinsLabel.Text = "🌊 0"
 tideCoinsLabel.Parent = bar
 Theme.ApplyStroke(tideCoinsLabel, Theme.Text.Stroke, 1)
 local tideConstraint = Instance.new("UITextSizeConstraint")
-tideConstraint.MinTextSize = 13
+tideConstraint.MinTextSize = 14
 tideConstraint.MaxTextSize = 18
 tideConstraint.Parent = tideCoinsLabel
 
@@ -154,7 +148,7 @@ abyssalShardsLabel.Text = "💎 0"
 abyssalShardsLabel.Parent = bar
 Theme.ApplyStroke(abyssalShardsLabel, Theme.Text.Stroke, 1)
 local shardConstraint = Instance.new("UITextSizeConstraint")
-shardConstraint.MinTextSize = 13
+shardConstraint.MinTextSize = 14
 shardConstraint.MaxTextSize = 18
 shardConstraint.Parent = abyssalShardsLabel
 
@@ -172,7 +166,7 @@ incomeLabel.TextColor3 = Theme.Text.Secondary
 incomeLabel.Text = "+0 Tide Coins / Min"
 incomeLabel.Parent = bar
 local incomeConstraint = Instance.new("UITextSizeConstraint")
-incomeConstraint.MinTextSize = 10
+incomeConstraint.MinTextSize = 12
 incomeConstraint.MaxTextSize = 14
 incomeConstraint.Parent = incomeLabel
 
@@ -190,7 +184,7 @@ levelLabel.TextColor3 = Theme.Text.Primary
 levelLabel.Text = "Level 1"
 levelLabel.Parent = bar
 local levelConstraint = Instance.new("UITextSizeConstraint")
-levelConstraint.MinTextSize = 10
+levelConstraint.MinTextSize = 12
 levelConstraint.MaxTextSize = 14
 levelConstraint.Parent = levelLabel
 
@@ -264,22 +258,30 @@ bannerGui.Name = "LevelUpBanner"
 bannerGui.ResetOnSpawn = false
 bannerGui.IgnoreGuiInset = false
 bannerGui.DisplayOrder = 60
+Device.ApplySafeArea(bannerGui)
 bannerGui.Parent = playerGui
 
-local bannerUiScale = Instance.new("UIScale")
-bannerUiScale.Parent = bannerGui
-local unbindBannerScale = Device.BindUIScale(bannerUiScale)
+local bannerRoot, unbindBannerScale = Device.CreateScaledRoot(bannerGui)
+
+local BANNER_MAX_WIDTH = 420
 
 local banner = Instance.new("Frame")
 banner.Name = "Banner"
 banner.AnchorPoint = Vector2.new(0.5, 0)
-banner.Position = UDim2.new(0.5, 0, 0.16, 0)
-banner.Size = UDim2.fromOffset(420, 0) -- Höhe wird dynamisch je nach Anzahl Unlocks gesetzt
+-- Unterhalb von HUD/Raid-Leiste/Menü (alle in den oberen ~230 px), auf jedem Gerät sichtbar.
+banner.Position = UDim2.new(0.5, 0, 0.3, 0)
+banner.Size = UDim2.fromOffset(BANNER_MAX_WIDTH, 0) -- Breite passt sich dem Viewport an, Höhe wächst mit den Unlocks
 banner.AutomaticSize = Enum.AutomaticSize.Y
 banner.BackgroundColor3 = Theme.Background.Panel
 banner.BackgroundTransparency = 0.05
 banner.Visible = false
-banner.Parent = bannerGui
+banner.Parent = bannerRoot
+
+local function applyBannerWidth()
+	banner.Size = UDim2.fromOffset(math.min(BANNER_MAX_WIDTH, Device.GetVirtualViewport().X - 24), 0)
+end
+applyBannerWidth()
+local bannerDeviceConnection = Device.Changed:Connect(applyBannerWidth)
 Theme.ApplyCorner(banner, UDim.new(0, 16))
 local bannerStroke = Theme.ApplyStroke(banner, Theme.Neon.Yellow, 2)
 Theme.ApplyGradient(banner, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
@@ -406,6 +408,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 		return
 	end
 	barDeviceConnection:Disconnect()
+	bannerDeviceConnection:Disconnect()
 	unbindScale()
 	unbindBannerScale()
 	if bannerHideThread then

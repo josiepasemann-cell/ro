@@ -9,7 +9,8 @@
 			   Server-Logik angefasst werden muss), zeigt den Namen des
 			   aktuell gehaltenen Items.
 			2) "Ablegen"-Aktion über ContextActionService: Taste G auf PC,
-			   automatischer Touch-Button auf Mobile, Gamepad-Button X -
+			   automatischer Touch-Button auf Mobile, Gamepad-Button B
+			   (X gehört den ProximityPrompts: Aufheben/Abgeben) -
 			   alle drei automatisch durch EINE BindAction-Registrierung
 			   (createTouchButton = true), kein plattformspezifischer
 			   Sondercode nötig.
@@ -24,9 +25,11 @@
 		tatsächlichen Spielzustand.
 
 		GEÄNDERT (UIKit-Umstellung): Nutzt jetzt UIKit.Theme für Farben/
-		Schrift (konsistent mit dem restlichen UIKit) und dockt
-		geräteabhängig knapp ÜBER der MainMenuController-Menüleiste an,
-		damit sich beide auf keinem Gerät überlappen. Der "Ablegen"-Button
+		Schrift (konsistent mit dem restlichen UIKit). Position je Gerät:
+		Desktop = knapp ÜBER der unten mittigen Menüleiste; Touch = unten
+		mittig, aber AUSSERHALB der Zone von Daumenstick/Sprungknopf
+		(Device.GetBottomDockInsets). Der Hinweistext folgt der zuletzt
+		benutzten Eingabe (G / B / Touch-Knopf "Drop"). Der "Ablegen"-Button
 		selbst bleibt bewusst ein nativer, von ContextActionService via
 		createTouchButton=true erzeugter Touch-Button (kein
 		TextButton/ImageButton, das wir selbst instanziieren - die
@@ -49,6 +52,7 @@ local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
 local Device = UIKit.Device
+local InputMode = UIKit.InputMode
 
 local LocalPlayer = Players.LocalPlayer
 local playerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -67,9 +71,7 @@ screenGui.Enabled = false
 Device.ApplySafeArea(screenGui)
 screenGui.Parent = playerGui
 
-local uiScale = Instance.new("UIScale")
-uiScale.Parent = screenGui
-local unbindScale = Device.BindUIScale(uiScale)
+local scaledRoot, unbindScale = Device.CreateScaledRoot(screenGui)
 
 local frame = Instance.new("Frame")
 frame.Name = "HeldItemFrame"
@@ -78,18 +80,22 @@ frame.Size = UDim2.new(0, 300, 0, 48)
 frame.BackgroundColor3 = Theme.Background.Panel
 frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
-frame.Parent = screenGui
+frame.Parent = scaledRoot
 Theme.ApplyCorner(frame, UDim.new(0, 10))
 local stroke = Theme.ApplyStroke(frame, Theme.Neon.Cyan, 1.5)
 stroke.Transparency = 0.4
 
--- Knapp über der MainMenuController-Menüleiste andocken (siehe dort für die
--- genauen Höhen: ~84px Phone-Leiste, ~68px Desktop/Konsolen-Leiste).
+-- Desktop: knapp über der unten mittigen Menüleiste (76 px + 18 px Rand).
+-- Touch: unten mittig, aber ausserhalb von Daumenstick/Sprungknopf.
 local function applyFramePosition()
-	if Device.ShouldUseFullscreenPanels() then
-		frame.Position = UDim2.new(0.5, 0, 1, -118)
+	if Device.IsTouchPrimary() then
+		local sideInset, bottomInset = Device.GetBottomDockInsets()
+		local width = math.max(200, math.min(300, Device.GetVirtualViewport().X - sideInset * 2 - 16))
+		frame.Size = UDim2.new(0, width, 0, 48)
+		frame.Position = UDim2.new(0.5, 0, 1, -(bottomInset + 12))
 	else
-		frame.Position = UDim2.new(0.5, 0, 1, -108)
+		frame.Size = UDim2.new(0, 300, 0, 48)
+		frame.Position = UDim2.new(0.5, 0, 1, -112)
 	end
 end
 applyFramePosition()
@@ -112,10 +118,21 @@ labelConstraint.MinTextSize = 12
 labelConstraint.MaxTextSize = 18
 labelConstraint.Parent = label
 
+local heldDisplayName = "Item"
+
+local function refreshHeldLabel()
+	local dropHint = InputMode.Pick("G to drop", "B to drop", "tap Drop")
+	label.Text = ("Holding: %s   (%s)"):format(heldDisplayName, dropHint)
+end
+local unbindInputMode = InputMode.Bind(function()
+	refreshHeldLabel()
+end)
+
 local function setHudVisible(visible: boolean, displayName: string?)
 	screenGui.Enabled = visible
 	if visible then
-		label.Text = ("Holding: %s   (G to drop)"):format(displayName or "Item")
+		heldDisplayName = displayName or "Item"
+		refreshHeldLabel()
 	end
 end
 
@@ -133,7 +150,7 @@ local function bindDropAction()
 	-- `createTouchButton = true` lässt Roblox automatisch einen Touch-Button
 	-- auf Mobile-Geräten einblenden - kein separater Mobile-Sondercode nötig
 	-- (siehe Auftrag: "funktioniert auf Handy, PC, Konsole gleich gut").
-	ContextActionService:BindAction(DROP_ACTION_NAME, onDropAction, true, Enum.KeyCode.G, Enum.KeyCode.ButtonX)
+	ContextActionService:BindAction(DROP_ACTION_NAME, onDropAction, true, Enum.KeyCode.G, Enum.KeyCode.ButtonB)
 	ContextActionService:SetTitle(DROP_ACTION_NAME, "Drop")
 end
 
@@ -220,6 +237,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 		return
 	end
 	frameDeviceConnection:Disconnect()
+	unbindInputMode()
 	unbindScale()
 	unbindDropAction()
 	screenGui:Destroy()

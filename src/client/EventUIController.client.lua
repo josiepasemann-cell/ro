@@ -5,7 +5,7 @@
 	Zuständigkeit:
 		UI für das rotierende Live-Event-System (docs/content-update-1.md,
 		Abschnitt 1 + 7b):
-			1. Ein permanent sichtbares Banner (oben mittig) mit Event-Name,
+			1. Ein permanent sichtbares Banner (Position aus UIKit.Layout.GetHudLayout().Event) mit Event-Name,
 			   Event-Farbe und einem live nachziehenden Countdown bis zum
 			   nächsten 12h-Slot-Wechsel.
 			2. Ein Event-Panel (über den "Event"-Menüeintrag in
@@ -38,6 +38,7 @@ local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
 local Device = UIKit.Device
+local Layout = UIKit.Layout
 local Panel = UIKit.Panel
 local Tabs = UIKit.Tabs
 local Button = UIKit.Button
@@ -202,23 +203,29 @@ bannerGui.Name = "EventBannerGui"
 bannerGui.ResetOnSpawn = false
 bannerGui.IgnoreGuiInset = false
 bannerGui.DisplayOrder = 5
-bannerGui.Parent = playerGui
 Device.ApplySafeArea(bannerGui)
+bannerGui.Parent = playerGui
 
+local bannerRoot = Device.CreateScaledRoot(bannerGui)
+
+-- Position kommt zentral aus UIKit.Layout.GetHudLayout().Event (unter der
+-- Raid-Leiste, nie über dem HUD oder den Touch-Steuerungen).
 local bannerFrame = Instance.new("Frame")
 bannerFrame.Name = "EventBanner"
-bannerFrame.AnchorPoint = Vector2.new(0.5, 0)
-bannerFrame.Position = UDim2.new(0.5, 0, 0, 8)
-bannerFrame.Size = UDim2.fromOffset(280, 46)
 bannerFrame.BackgroundColor3 = Theme.Background.Panel
 bannerFrame.BackgroundTransparency = 0.08
-bannerFrame.Parent = bannerGui
+bannerFrame.Parent = bannerRoot
 Theme.ApplyCorner(bannerFrame, UDim.new(0, 12))
 local bannerStroke = Theme.ApplyStroke(bannerFrame, Theme.Neon.Cyan, 2)
 
-local bannerUIScale = Instance.new("UIScale")
-bannerUIScale.Parent = bannerFrame
-Device.BindUIScale(bannerUIScale)
+local function applyBannerLayout()
+	local dock = Layout.GetHudLayout().Event
+	bannerFrame.AnchorPoint = dock.AnchorPoint
+	bannerFrame.Position = dock.Position
+	bannerFrame.Size = dock.Size
+end
+applyBannerLayout()
+Device.Changed:Connect(applyBannerLayout)
 
 local bannerGlyphLabel = makeLabel({
 	Parent = bannerFrame,
@@ -237,7 +244,7 @@ local bannerNameLabel = makeLabel({
 	Size = UDim2.new(1, -46, 0, 22),
 	Position = UDim2.fromOffset(44, 4),
 	Font = Theme.Font.BodyBold,
-	MinSize = 11,
+	MinSize = 12,
 	MaxSize = 16,
 })
 
@@ -248,7 +255,7 @@ local bannerCountdownLabel = makeLabel({
 	Position = UDim2.fromOffset(44, 24),
 	Color = Theme.Text.Secondary,
 	Font = Theme.Font.Mono,
-	MinSize = 9,
+	MinSize = 12,
 	MaxSize = 13,
 })
 
@@ -302,7 +309,7 @@ local function buildShopCard(parent: Instance, order: number, item: ShopItemRow)
 		Size = UDim2.new(1, -140, 0, 22),
 		Position = UDim2.fromOffset(46, 8),
 		Font = Theme.Font.BodyBold,
-		MinSize = 11,
+		MinSize = 12,
 		MaxSize = 16,
 		Wrapped = true,
 	})
@@ -313,7 +320,7 @@ local function buildShopCard(parent: Instance, order: number, item: ShopItemRow)
 		Size = UDim2.new(1, -140, 0, 18),
 		Position = UDim2.fromOffset(46, 32),
 		Color = Theme.Neon.Yellow,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 	})
 
@@ -321,7 +328,7 @@ local function buildShopCard(parent: Instance, order: number, item: ShopItemRow)
 		Parent = card,
 		Text = "Buy",
 		Variant = "Primary",
-		Size = UDim2.fromOffset(96, 34),
+		Size = UDim2.fromOffset(96, 44),
 		LayoutOrder = 1,
 	})
 	buyButton.Instance.AnchorPoint = Vector2.new(1, 0.5)
@@ -386,7 +393,7 @@ local function buildQuestStepRow(parent: Instance, order: number, step: QuestSte
 		Text = step.Description,
 		Size = UDim2.new(1, 0, 0, 20),
 		Font = Theme.Font.BodyBold,
-		MinSize = 11,
+		MinSize = 12,
 		MaxSize = 15,
 		Wrapped = true,
 	})
@@ -409,7 +416,7 @@ local function buildQuestStepRow(parent: Instance, order: number, step: QuestSte
 		Size = UDim2.fromOffset(56, 16),
 		Position = UDim2.new(1, -56, 0, 24),
 		Color = Theme.Text.Secondary,
-		MinSize = 9,
+		MinSize = 12,
 		MaxSize = 12,
 		XAlign = Enum.TextXAlignment.Right,
 	})
@@ -453,7 +460,7 @@ local function rebuildQuestTab()
 		Text = ("Reward: 🪙%d + \"%s\" title"):format(questLine.RewardTideCoins, questLine.RewardTitle),
 		Size = UDim2.new(1, 0, 0, 20),
 		Color = Theme.Neon.Yellow,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 		LayoutOrder = 10,
 	})
@@ -467,7 +474,7 @@ local function rebuildQuestTab()
 		Text = "Claim Reward",
 		Variant = "Success",
 		Important = true,
-		Size = UDim2.new(1, 0, 0, 42),
+		Size = UDim2.new(1, 0, 0, 44),
 		LayoutOrder = 11,
 	})
 	questClaimButton.Clicked:Connect(function()
@@ -529,7 +536,7 @@ local function rebuildInfoTab()
 		Size = UDim2.new(1, 0, 0, 60),
 		Color = Theme.Text.Secondary,
 		Wrapped = true,
-		MinSize = 11,
+		MinSize = 12,
 		MaxSize = 15,
 		LayoutOrder = 1,
 	})
@@ -539,7 +546,7 @@ local function rebuildInfoTab()
 		Text = "Event currency: " .. currentState.CurrencyDisplayName .. " (resets when the slot ends)",
 		Size = UDim2.new(1, 0, 0, 22),
 		Color = Theme.Neon.Yellow,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 		LayoutOrder = 2,
 	})
@@ -578,7 +585,7 @@ local function buildMainPanel()
 		Parent = tabsHost,
 		Tabs = {
 			{ Id = "Shop", Label = "Shop" },
-			{ Id = "Quest", Label = "Quest-Linie" },
+			{ Id = "Quest", Label = "Quest Line" },
 			{ Id = "Info", Label = "Info" },
 		},
 		DefaultTabId = "Shop",

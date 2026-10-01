@@ -20,16 +20,17 @@
 		AbilityService.RequestDepthCharge).
 
 		LAYOUT (no overlap with the existing HUD/raid HUD/menu bar/toasts):
-			- Phone (portrait/landscape): docks directly BELOW
-			  RaidUIController's status bar (which itself docks below
-			  HUDController's bar, see HUDController Kopfkommentar) - full
-			  width, AutomaticSize height so it collapses to just the
-			  quick-buy row when nothing else is active. Sits well above the
-			  MainMenuController bottom bar and the bottom-centered Toast
-			  stack.
-			- Tablet/PC/Console: docks top-RIGHT (HUDController is top-left,
-			  RaidUIController is top-center - this is the one remaining
-			  free top corner). AutomaticSize height, fixed width.
+			The position comes from UIKit.Layout.GetHudLayout().Ability:
+			Portrait = full width below the raid bar, Landscape = top-right
+			below the menu bar, Desktop = top-right corner. AutomaticSize
+			height so it collapses to just the quick-buy row when nothing
+			else is active. Nothing is docked at the bottom, so Roblox's
+			thumbstick/jump button stay free on touch.
+
+		INPUT: Depth Charge is reachable on every device - HUD button
+		(mouse/touch/gamepad selection), key F and gamepad right trigger (RT)
+		while a raid is running on the own plot; the matching key hint chip
+		on the button follows the last input device (UIKit.InputMode).
 
 	Rojo mount point:
 		src/client/AbilityHUDController.client.lua ->
@@ -37,6 +38,7 @@
 ]]
 
 local Players = game:GetService("Players")
+local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local AbilityRemotes = require(ReplicatedStorage:WaitForChild("AbilityRemotes"))
@@ -46,6 +48,8 @@ local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
 local Device = UIKit.Device
+local Layout = UIKit.Layout
+local InputMode = UIKit.InputMode
 local Button = UIKit.Button
 local Toast = UIKit.Toast
 local ScreenFX = UIKit.ScreenFX
@@ -79,16 +83,14 @@ screenGui.DisplayOrder = 16 -- just above MainHUD (15), consistent with the rest
 Device.ApplySafeArea(screenGui)
 screenGui.Parent = playerGui
 
-local uiScale = Instance.new("UIScale")
-uiScale.Parent = screenGui
-local unbindScale = Device.BindUIScale(uiScale)
+local scaledRoot, unbindScale = Device.CreateScaledRoot(screenGui)
 
 local panel = Instance.new("Frame")
 panel.Name = "AbilityPanel"
 panel.BackgroundColor3 = Theme.Background.Panel
 panel.BackgroundTransparency = 0.15
 panel.AutomaticSize = Enum.AutomaticSize.Y
-panel.Parent = screenGui
+panel.Parent = scaledRoot
 Theme.ApplyCorner(panel, UDim.new(0, 12))
 local panelStroke = Theme.ApplyStroke(panel, Theme.Neon.Magenta, 1.5)
 panelStroke.Transparency = 0.3
@@ -108,19 +110,10 @@ listPadding.PaddingRight = UDim.new(0, 8)
 listPadding.Parent = panel
 
 local function applyPanelLayout()
-	if Device.ShouldUseFullscreenPanels() then
-		-- Phone: below RaidUIController's status bar (y=104, height 52 ->
-		-- bottom edge 156, see RaidUIController.applyStatusBarLayout).
-		panel.AnchorPoint = Vector2.new(0.5, 0)
-		panel.Position = UDim2.new(0.5, 0, 0, 164)
-		panel.Size = UDim2.new(1, -16, 0, 0)
-	else
-		-- Tablet/PC/Console: top-right (HUDController = top-left,
-		-- RaidUIController = top-center, see their own Kopfkommentare).
-		panel.AnchorPoint = Vector2.new(1, 0)
-		panel.Position = UDim2.new(1, -16, 0, 16)
-		panel.Size = UDim2.new(0, 230, 0, 0)
-	end
+	local dock = Layout.GetHudLayout().Ability
+	panel.AnchorPoint = dock.AnchorPoint
+	panel.Position = dock.Position
+	panel.Size = dock.Size
 end
 applyPanelLayout()
 local deviceConnection = Device.Changed:Connect(applyPanelLayout)
@@ -144,7 +137,7 @@ end
 
 -- // Row 1: Tidal Surge countdown (only visible while active) -----------------
 
-local tidalSurgeLabel = makeLabel(1, 11, 16)
+local tidalSurgeLabel = makeLabel(1, 12, 16)
 tidalSurgeLabel.TextColor3 = Theme.Neon.Cyan
 
 local function formatCountdown(totalSeconds: number): string
@@ -173,7 +166,7 @@ end
 local depthChargeRow = Instance.new("Frame")
 depthChargeRow.Name = "DepthChargeRow"
 depthChargeRow.BackgroundTransparency = 1
-depthChargeRow.Size = UDim2.new(1, 0, 0, 40)
+depthChargeRow.Size = UDim2.new(1, 0, 0, 44)
 depthChargeRow.LayoutOrder = 2
 depthChargeRow.Visible = false
 depthChargeRow.Parent = panel
@@ -187,8 +180,38 @@ local depthChargeButton = Button.new({
 
 local depthChargeCooldownUntil = 0 -- os.clock(), purely local visual cooldown
 
+-- Key F / gamepad right trigger (RT) fire the Depth Charge while a raid runs
+-- on the own plot. Bound only then, so F/RT stay free the rest of the time.
+local DEPTH_CHARGE_ACTION = "Abyssara_DepthCharge"
+local depthChargeActionBound = false
+
+local depthChargeHint = InputMode.CreateHint({
+	Parent = depthChargeButton.Instance,
+	Keyboard = "F",
+	Gamepad = Enum.KeyCode.ButtonR2,
+	AnchorPoint = Vector2.new(0, 0.5),
+	Position = UDim2.new(0, 6, 0.5, 0),
+})
+
+local tryFireDepthCharge: () -> ()
+
+local function onDepthChargeAction(_actionName: string, inputState: Enum.UserInputState): Enum.ContextActionResult
+	if inputState ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	tryFireDepthCharge()
+	return Enum.ContextActionResult.Sink
+end
+
 local function refreshDepthChargeButton()
 	depthChargeRow.Visible = state.InRaidOnOwnPlot
+	if state.InRaidOnOwnPlot and not depthChargeActionBound then
+		depthChargeActionBound = true
+		ContextActionService:BindAction(DEPTH_CHARGE_ACTION, onDepthChargeAction, false, Enum.KeyCode.F, Enum.KeyCode.ButtonR2)
+	elseif not state.InRaidOnOwnPlot and depthChargeActionBound then
+		depthChargeActionBound = false
+		ContextActionService:UnbindAction(DEPTH_CHARGE_ACTION)
+	end
 	if not state.InRaidOnOwnPlot then
 		return
 	end
@@ -197,7 +220,7 @@ local function refreshDepthChargeButton()
 	depthChargeButton:SetDisabled(state.DepthChargeCount <= 0 or onCooldown)
 end
 
-depthChargeButton.Clicked:Connect(function()
+tryFireDepthCharge = function()
 	if state.DepthChargeCount <= 0 or os.clock() < depthChargeCooldownUntil then
 		return
 	end
@@ -208,6 +231,10 @@ depthChargeButton.Clicked:Connect(function()
 	depthChargeCooldownUntil = os.clock() + DEPTH_CHARGE_COOLDOWN_SECONDS
 	refreshDepthChargeButton()
 	AbilityRemotes.RequestDepthCharge:FireServer()
+end
+
+depthChargeButton.Clicked:Connect(function()
+	tryFireDepthCharge()
 end)
 
 -- // Row 3: "+Spore Shower" quick-buy (optional convenience, Auftrag: "nice") --
@@ -215,7 +242,7 @@ end)
 local quickBuyRow = Instance.new("Frame")
 quickBuyRow.Name = "QuickBuyRow"
 quickBuyRow.BackgroundTransparency = 1
-quickBuyRow.Size = UDim2.new(1, 0, 0, 32)
+quickBuyRow.Size = UDim2.new(1, 0, 0, 44)
 quickBuyRow.LayoutOrder = 3
 quickBuyRow.Parent = panel
 
@@ -337,6 +364,11 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	end
 	deviceConnection:Disconnect()
 	unbindScale()
+	if depthChargeActionBound then
+		depthChargeActionBound = false
+		ContextActionService:UnbindAction(DEPTH_CHARGE_ACTION)
+	end
+	depthChargeHint:Destroy()
 	if countdownThread then
 		task.cancel(countdownThread)
 		countdownThread = nil

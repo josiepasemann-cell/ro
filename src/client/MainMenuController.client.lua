@@ -3,54 +3,45 @@
 	Abyssara – Deep Tide Tycoon
 	Skript: MainMenuController (LocalScript)
 	Zuständigkeit:
-		Zentrale, dauerhaft sichtbare Menüleiste - ersetzt die vorher über
-		den Bildschirm verstreuten Einzel-Buttons (Rettungs-Button aus
-		RaidUIController, Baumodus nur über Tastatur usw.) durch EINE
-		konsistente Leiste mit den Einstiegspunkten:
-			- Bauen (schaltet den Baumodus in PlacementPreviewController um)
-			- Brutbecken-Übersicht (BreedingUIController)
-			- Mystery Egg / Drop-Chancen (GachaOddsUIController)
-			- Entführte Kreaturen (RaidUIController)
-			- Quests (QuestUIController: Tages-Quests + Tages-Login-Serie,
-			  zeigt ein Badge mit Zähler, sobald etwas abholbar ist)
-			- Rangliste (LeaderboardUIController)
-			- Reisen (TravelUIController: Hub/Plot/Zonenportale)
-			- Einstellungen (Reduzierte Effekte, Sound-/Musik-Lautstärke -
-			  rein lokale Client-Einstellungen, siehe UIKit.Settings)
-			- Shop (öffnet ShopUIController.client.lua über die
-			  Bridge-BindableEvent "OpenShop", identisches Muster wie
-			  "OpenMysteryEgg"/"OpenBreedingOverview" unten)
+		Zentrale, dauerhaft sichtbare Menüleiste. Früher 12 Buttons in einer
+		Reihe (auf Phones unbenutzbar), jetzt KOMPAKT: 4 Haupt-Aktionen
+		immer sichtbar + ein "More"-Button, der eine Raster-Schublade (Drawer)
+		mit den übrigen 8 Einträgen öffnet.
 
-		ÜBERLAUF-SCHUTZ (Auftrag: "darf auf Handy nicht überlaufen"): Mit
-		9 Einträgen passt die Leiste auf schmalen Phones nicht mehr in eine
-		feste Breite. `rowHost` ist deshalb eine horizontal scrollbare
-		`ScrollingFrame` (Wisch-/Mausrad-Scroll, auf Konsole scrollt die
-		Engine bei Gamepad-Fokuswechsel automatisch mit) statt einer starren
-		Frame - siehe buildBar()/applyBarLayout() unten.
+			Immer sichtbar:   Build · Shop · Quests (Badge) · Travel · More
+			Schublade "More": Brood Pool · Mystery Egg · Abducted · Leaderboard
+			                  · Codex · Achievements (Badge) · Event · Settings
 
 		Kommunikation mit den anderen Controllern läuft bewusst NICHT über
-		direkte Requires (das wären Kreis-Abhängigkeiten zwischen
-		gleichrangigen LocalScripts), sondern über eine winzige, zur
-		Laufzeit angelegte Bridge aus BindableEvents unter
-		ReplicatedStorage.AbyssaraUIBridge (siehe getOrCreateBridgeEvent
-		unten - dasselbe Muster wird in PlacementPreviewController,
-		BreedingUIController, GachaOddsUIController und RaidUIController
-		verwendet). Das verändert KEINE Datei unter src/shared, es werden
-		nur zur Laufzeit Instanzen angelegt (kein Rojo-Mapping nötig).
+		direkte Requires (Kreis-Abhängigkeiten zwischen gleichrangigen
+		LocalScripts), sondern über BindableEvents unter
+		ReplicatedStorage.AbyssaraUIBridge (getOrCreateBridgeEvent unten).
+		Das verändert KEINE Datei unter src/shared, es werden nur zur Laufzeit
+		Instanzen angelegt (kein Rojo-Mapping nötig).
 
-		Geräte-Layout (UIKit.Device):
-			- Phone: volle Breite, unten angedockt, große Icon-Buttons,
-			  eine Spalte->Reihe via Layout.ResponsiveRow (auf Phone
-			  eigentlich Spalte, hier bewusst erzwungene Reihe mit
-			  Wrap, siehe buildBar()).
-			- Tablet/PC: unten mittig angedockte, kompakte Reihe.
-			- PC zusätzlich: Tastaturkürzel (B/U/M/N/Q/L/R/O), nur als Hinweis
-			  sichtbar, wenn Device.ShouldShowKeyboardHints() true ist.
-			- Konsole: gleiche Leiste, Buttons sind über die native
-			  Gamepad-Selektion (UIKit.Button macht das automatisch)
-			  erreichbar; GuiService.SelectedObject wird beim Start auf
-			  den ersten Button gesetzt, damit Gamepad-Navigation sofort
-			  einen Fokus hat.
+		Geräte-Layout (Position aus UIKit.Layout.GetHudLayout().Menu):
+			- Phone/Tablet hochkant: Leiste unter dem HUD, volle Breite.
+			- Phone/Tablet quer: Leiste oben RECHTS. In beiden Touch-Fällen
+			  bleibt der untere Bildschirmrand frei für Roblox' Daumenstick
+			  und Sprungknopf; die Schublade klappt nach unten auf.
+			- PC/Konsole: Leiste unten mittig, Schublade klappt nach oben auf.
+			- Mindestgröße der Buttons 44 px (Touch) / 52 px (Konsole), Text
+			  mindestens 11 px.
+
+		Eingabe:
+			- Tastatur/Maus: Kürzel B Build · Z Shop · Q Quests · T Travel ·
+			  H More · U Brood Pool · M Mystery Egg · N Abducted · L Leaderboard
+			  · C Codex · K Achievements · J Event · Y Settings. Das Kürzel
+			  erscheint als Tasten-Chip am Button, solange zuletzt Tastatur/Maus
+			  benutzt wurde. Dasselbe Kürzel nochmal schließt das Panel wieder.
+			  (E/O/I/G/F/V/R/X sind absichtlich frei: Interaktion, Kamera-Zoom,
+			  Ablegen, Depth Charge, Buddy-Namen, Drehen/Verkaufen.)
+			- Gamepad: Y (oder View/Select) holt den Fokus in die Leiste, D-Pad/
+			  Stick wählen, A bestätigt, B gibt den Fokus an die Spielfigur
+			  zurück bzw. schließt die Schublade. Auto-Selektion von Roblox
+			  ist aus (GuiService.AutoSelectGuiEnabled), damit D-Pad/Stick die
+			  Figur nicht ungewollt in der UI festhalten.
+			- Touch: Tippen; Tippen neben die Schublade schließt sie.
 
 	Rojo-Einhängepunkt:
 		src/client/MainMenuController.client.lua ->
@@ -64,11 +55,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local SoundService = game:GetService("SoundService")
 local GuiService = game:GetService("GuiService")
+local ContextActionService = game:GetService("ContextActionService")
 local Workspace = game:GetService("Workspace")
 
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Device = UIKit.Device
+local InputMode = UIKit.InputMode
 local Theme = UIKit.Theme
 local Layout = UIKit.Layout
 local Button = UIKit.Button
@@ -78,6 +71,12 @@ local Settings = UIKit.Settings
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+
+-- Roblox' automatische GUI-Auswahl (D-Pad/Stick wählt irgendein Element) ist
+-- aus: Die Fokus-Steuerung übernimmt dieses Skript (Y) und UIKit.Panel.
+pcall(function()
+	GuiService.AutoSelectGuiEnabled = false
+end)
 
 -- // Bridge zu den anderen Controllern (siehe Kopfkommentar) -------------------
 
@@ -122,173 +121,141 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 Device.ApplySafeArea(screenGui)
 screenGui.Parent = playerGui
 
-local uiScale = Instance.new("UIScale")
-uiScale.Parent = screenGui
-local unbindScale = Device.BindUIScale(uiScale)
+local scaledRoot, unbindScale = Device.CreateScaledRoot(screenGui)
+
+-- Z-Ebenen (Sibling): Backdrop 3 < Leiste 6 < Schublade 8, damit die Leiste
+-- (inkl. "More") auch bei offener Schublade bedienbar bleibt.
+local Z_BACKDROP = 3
+local Z_BAR = 6
+local Z_DRAWER = 8
 
 local bar = Instance.new("Frame")
 bar.Name = "Bar"
 bar.BackgroundColor3 = Theme.Background.Panel
 bar.BackgroundTransparency = 0.08
 bar.BorderSizePixel = 0
-bar.Parent = screenGui
+bar.ZIndex = Z_BAR
+bar.Parent = scaledRoot
 Theme.ApplyCorner(bar, UDim.new(0, 18))
 local barStroke = Theme.ApplyStroke(bar, Theme.Neon.Cyan, 2)
 barStroke.Transparency = 0.3
 Theme.ApplyGradient(bar, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
 
--- Horizontal scrollbare Leiste statt starrer Frame (siehe Kopfkommentar
--- "ÜBERLAUF-SCHUTZ") - mit 9 Einträgen reicht auf schmalen Phones/kleinen
--- Fenstern eine feste Breite nicht mehr aus. AutomaticCanvasSize berechnet
--- die Scroll-Breite automatisch aus dem UIListLayout-Inhalt, Wraps bleibt
--- AUS (eine einzige Reihe, die seitlich scrollt, statt in eine 2. Zeile
--- umzubrechen, die in der festen Bar-Höhe abgeschnitten würde).
-local rowHost = Instance.new("ScrollingFrame")
+local rowHost = Instance.new("Frame")
 rowHost.Name = "RowHost"
 rowHost.BackgroundTransparency = 1
-rowHost.BorderSizePixel = 0
-rowHost.AnchorPoint = Vector2.new(0.5, 0.5)
-rowHost.Position = UDim2.fromScale(0.5, 0.5)
-rowHost.Size = UDim2.new(1, -16, 1, -16)
-rowHost.CanvasSize = UDim2.new(0, 0, 0, 0)
-rowHost.AutomaticCanvasSize = Enum.AutomaticSize.X
-rowHost.ScrollingDirection = Enum.ScrollingDirection.X
-rowHost.ScrollBarThickness = 4
-rowHost.ScrollBarImageColor3 = Theme.Neon.Cyan
-rowHost.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
+rowHost.Size = UDim2.fromScale(1, 1)
+rowHost.ZIndex = Z_BAR
 rowHost.Parent = bar
 
 local listLayout = Instance.new("UIListLayout")
 listLayout.FillDirection = Enum.FillDirection.Horizontal
 listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-listLayout.Padding = UDim.new(0, 8)
-listLayout.Wraps = false
+listLayout.Padding = UDim.new(0, 6)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = rowHost
 
-local hintLabel = Instance.new("TextLabel")
-hintLabel.Name = "KeyboardHints"
-hintLabel.BackgroundTransparency = 1
-hintLabel.AnchorPoint = Vector2.new(0.5, 1)
-hintLabel.Position = UDim2.new(0.5, 0, 0, -6)
-hintLabel.Size = UDim2.new(1, 0, 0, 18)
-hintLabel.Font = Theme.Font.Body
-hintLabel.TextColor3 = Theme.Text.Muted
-hintLabel.TextScaled = true
-hintLabel.Text = "B Build · U Brood Pool · M Mystery Egg · N Abducted · Q Quests · L Leaderboard · R Travel · O Settings · C Codex · K Achievements"
-hintLabel.Visible = false
-hintLabel.Parent = bar
-local hintConstraint = Instance.new("UITextSizeConstraint")
-hintConstraint.MinTextSize = 9
-hintConstraint.MaxTextSize = 13
-hintConstraint.Parent = hintLabel
+-- Gamepad-Hinweis "Y Menu" an der Leiste (nur im Gamepad-Modus sichtbar).
+local gamepadFocusHint = InputMode.CreateHint({
+	Parent = bar,
+	Gamepad = Enum.KeyCode.ButtonY,
+	Label = "Menu",
+	ZIndex = 20,
+})
 
--- // Geräteabhängiges Andocken ---------------------------------------------------
-
-local MENU_ENTRY_COUNT = 12 -- Build, Brood Pool, Mystery Egg, Abducted, Quests, Leaderboard, Travel, Settings, Shop, Codex, Event, Achievements
-
-local function applyBarLayout()
-	local state = Device.GetState()
-	if state.Class == "Phone" then
-		bar.AnchorPoint = Vector2.new(0.5, 1)
-		bar.Position = UDim2.new(0.5, 0, 1, -8)
-		bar.AutomaticSize = Enum.AutomaticSize.None
-		bar.Size = UDim2.new(1, -16, 0, 84)
-		hintLabel.Visible = false
-	else
-		bar.AnchorPoint = Vector2.new(0.5, 1)
-		bar.Position = UDim2.new(0.5, 0, 1, -18)
-		bar.AutomaticSize = Enum.AutomaticSize.None
-		-- Breite: passt alle Einträge in eine Reihe, außer der verfügbare
-		-- Viewport ist zu schmal dafür - dann übernimmt die ScrollingFrame
-		-- (rowHost) das horizontale Scrollen statt die Bar zu sprengen.
-		local desiredWidth = MENU_ENTRY_COUNT * 56 + (MENU_ENTRY_COUNT - 1) * 8 + 32
-		local maxWidth = math.max(state.ViewportSize.X - 48, 240)
-		bar.Size = UDim2.fromOffset(math.min(desiredWidth, maxWidth), 68)
-		hintLabel.Visible = Device.ShouldShowKeyboardHints()
-	end
-end
-
-applyBarLayout()
-local deviceConnection = Device.Changed:Connect(applyBarLayout)
-
--- // Menü-Buttons -----------------------------------------------------------------
+-- // Menü-Einträge -------------------------------------------------------------------
 
 type MenuEntry = {
+	Id: string,
 	Icon: string,
 	Text: string,
 	OnClick: () -> (),
+	Key: Enum.KeyCode?,
+	IsPanel: boolean, -- false: schaltet einen Modus (Build) statt ein Panel zu öffnen
 	BadgeKey: string?, -- "Quest" | "Achievement" - siehe badgeFrames/badgeLabels unten
 }
 
-local buttonHandles: { any } = {}
-local badgeFrames: { [string]: Frame } = {}
-local badgeLabels: { [string]: TextLabel } = {}
+type BuiltButton = {
+	Handle: any,
+	Entry: MenuEntry,
+	Hint: any,
+}
 
-local function buildButton(entry: MenuEntry, order: number)
-	local buttonSize = if Device.IsPhone() then UDim2.fromOffset(64, 64) else UDim2.fromOffset(56, 56)
-	local handle = Button.new({
-		Parent = rowHost,
-		Text = entry.Icon .. "\n" .. entry.Text,
-		Variant = "Secondary",
-		Size = buttonSize,
-		LayoutOrder = order,
-	})
-	local label = handle.Instance:FindFirstChild("Label") :: TextLabel?
-	if label then
-		label.TextWrapped = true
-	end
-	handle.Clicked:Connect(entry.OnClick)
-	table.insert(buttonHandles, handle)
+local primaryButtons: { BuiltButton } = {}
+local drawerButtons: { BuiltButton } = {}
+local moreHandle: any = nil
+local moreHint: any = nil
 
-	if entry.BadgeKey then
-		-- Kleines, grelles Zähler-Abzeichen oben rechts am Button (Quests/
-		-- Achievements: offene Belohnung zum Abholen). Die jeweiligen
-		-- UI-Controller melden den aktuellen Zähler über ihre eigene Bridge
-		-- ("QuestBadgeCountChanged"/"AchievementBadgeCountChanged").
-		local badge = Instance.new("Frame")
-		badge.Name = "Badge"
-		badge.AnchorPoint = Vector2.new(1, 0)
-		badge.Position = UDim2.new(1, 6, 0, -6)
-		badge.Size = UDim2.fromOffset(20, 20)
-		badge.BackgroundColor3 = Theme.Semantic.Danger
-		badge.ZIndex = 10
-		badge.Visible = false
-		Theme.ApplyCorner(badge, UDim.new(1, 0))
-		Theme.ApplyStroke(badge, Theme.Text.Stroke, 1.5)
-		badge.Parent = handle.Instance
+local badgeFrames: { [string]: { Frame } } = {}
+local badgeLabels: { [string]: { TextLabel } } = {}
+local badgeCounts: { [string]: number } = {}
+local DRAWER_BADGE_KEYS = { "Achievement" } -- Zähler dieser Einträge erscheinen auch am "More"-Button
+local moreBadgeFrame: Frame? = nil
+local moreBadgeLabel: TextLabel? = nil
 
-		local badgeLabel = Instance.new("TextLabel")
-		badgeLabel.BackgroundTransparency = 1
-		badgeLabel.Size = UDim2.fromScale(1, 1)
-		badgeLabel.Font = Theme.Font.BodyBold
-		badgeLabel.TextColor3 = Theme.Text.OnNeon
-		badgeLabel.TextScaled = true
-		badgeLabel.Text = "0"
-		badgeLabel.ZIndex = 11
-		badgeLabel.Parent = badge
-		local badgeConstraint = Instance.new("UITextSizeConstraint")
-		badgeConstraint.MinTextSize = 10
-		badgeConstraint.MaxTextSize = 14
-		badgeConstraint.Parent = badgeLabel
+local function makeBadge(parent: GuiObject): (Frame, TextLabel)
+	-- Kleines, grelles Zähler-Abzeichen oben rechts am Button (offene
+	-- Belohnung zum Abholen). Die UI-Controller melden den Zähler über ihre
+	-- eigene Bridge ("QuestBadgeCountChanged"/"AchievementBadgeCountChanged").
+	local badge = Instance.new("Frame")
+	badge.Name = "Badge"
+	badge.AnchorPoint = Vector2.new(1, 0)
+	badge.Position = UDim2.new(1, 6, 0, -6)
+	badge.Size = UDim2.fromOffset(22, 22)
+	badge.BackgroundColor3 = Theme.Semantic.Danger
+	badge.ZIndex = 10
+	badge.Visible = false
+	Theme.ApplyCorner(badge, UDim.new(1, 0))
+	Theme.ApplyStroke(badge, Theme.Text.Stroke, 1.5)
+	badge.Parent = parent
 
-		badgeFrames[entry.BadgeKey] = badge
-		badgeLabels[entry.BadgeKey] = badgeLabel
-	end
+	local badgeLabel = Instance.new("TextLabel")
+	badgeLabel.BackgroundTransparency = 1
+	badgeLabel.Size = UDim2.fromScale(1, 1)
+	badgeLabel.Font = Theme.Font.BodyBold
+	badgeLabel.TextColor3 = Theme.Text.OnNeon
+	badgeLabel.TextScaled = true
+	badgeLabel.Text = "0"
+	badgeLabel.ZIndex = 11
+	badgeLabel.Parent = badge
+	local badgeConstraint = Instance.new("UITextSizeConstraint")
+	badgeConstraint.MinTextSize = 12
+	badgeConstraint.MaxTextSize = 14
+	badgeConstraint.Parent = badgeLabel
+	return badge, badgeLabel
+end
 
-	return handle
+local function setBadgeVisual(frame: Frame, label: TextLabel, count: number)
+	local clamped = math.clamp(count, 0, 99)
+	frame.Visible = clamped > 0
+	label.Text = if clamped > 9 then "9+" else tostring(clamped)
 end
 
 local function updateBadge(key: string, count: number)
-	local frame = badgeFrames[key]
-	local label = badgeLabels[key]
-	if not frame or not label then
-		return
+	badgeCounts[key] = count
+	local frames = badgeFrames[key]
+	local labels = badgeLabels[key]
+	if frames and labels then
+		for index, frame in frames do
+			setBadgeVisual(frame, labels[index], count)
+		end
 	end
-	local clamped = math.clamp(count, 0, 99)
-	frame.Visible = clamped > 0
-	label.Text = clamped > 9 and "9+" or tostring(clamped)
+	if moreBadgeFrame and moreBadgeLabel then
+		local total = 0
+		for _, drawerKey in DRAWER_BADGE_KEYS do
+			total += badgeCounts[drawerKey] or 0
+		end
+		setBadgeVisual(moreBadgeFrame, moreBadgeLabel, total)
+	end
+end
+
+local function registerBadge(key: string, frame: Frame, label: TextLabel)
+	badgeFrames[key] = badgeFrames[key] or {}
+	badgeLabels[key] = badgeLabels[key] or {}
+	table.insert(badgeFrames[key], frame)
+	table.insert(badgeLabels[key], label)
+	updateBadge(key, badgeCounts[key] or 0)
 end
 
 local questBadgeConnection = questBadgeCountEvent.Event:Connect(function(count: number)
@@ -302,68 +269,84 @@ local achievementBadgeConnection = achievementBadgeCountEvent.Event:Connect(func
 	end
 end)
 
--- // Baumodus ----------------------------------------------------------------------
-
-local function onBuildClicked()
-	toggleBuildModeEvent:Fire()
+-- Beschriftung enger setzen als im Standard-Button: kleine Menü-Kacheln
+-- (Icon + Name in zwei Zeilen) brauchen Mindesttext 11 statt 14.
+local function styleMenuLabel(handle: any)
+	local label = handle.Instance:FindFirstChild("Label") :: TextLabel?
+	if not label then
+		return
+	end
+	label.TextWrapped = true
+	label.Position = UDim2.fromOffset(2, 2)
+	label.Size = UDim2.new(1, -4, 1, -4)
+	local constraint = label:FindFirstChildOfClass("UITextSizeConstraint")
+	if constraint then
+		constraint.MinTextSize = 12
+		constraint.MaxTextSize = 15
+	end
 end
 
--- // Brutbecken-Übersicht -----------------------------------------------------------
+local function buildButton(entry: MenuEntry, parent: Instance, order: number, size: UDim2): BuiltButton
+	local handle = Button.new({
+		Parent = parent,
+		Text = entry.Icon .. "\n" .. entry.Text,
+		Variant = "Secondary",
+		Size = size,
+		LayoutOrder = order,
+	})
+	handle.Instance.ZIndex = Z_BAR
+	styleMenuLabel(handle)
 
-local function onBreedingClicked()
-	openBreedingOverviewEvent:Fire()
+	-- Tastatur-Kürzel als Tasten-Chip (nur sichtbar bei Tastatur/Maus).
+	local hint: any = nil
+	if entry.Key then
+		hint = InputMode.CreateHint({
+			Parent = handle.Instance,
+			Keyboard = InputMode.GetGlyph(entry.Key),
+			AnchorPoint = Vector2.new(0, 0),
+			Position = UDim2.fromOffset(-4, -9),
+			ZIndex = 20,
+		})
+	end
+
+	if entry.BadgeKey then
+		local badge, badgeLabel = makeBadge(handle.Instance)
+		registerBadge(entry.BadgeKey, badge, badgeLabel)
+	end
+
+	return { Handle = handle, Entry = entry, Hint = hint }
 end
 
--- // Mystery Egg -------------------------------------------------------------------
+-- // Aktionen -------------------------------------------------------------------------
 
-local function onMysteryEggClicked()
-	openMysteryEggEvent:Fire()
+local drawerOpen = false
+local closeDrawer: (refocusMore: boolean?) -> ()
+local lastShortcutId: string? = nil
+
+local function runEntry(entry: MenuEntry, fromShortcut: boolean)
+	if drawerOpen then
+		closeDrawer(false)
+	end
+	if not entry.IsPanel then
+		lastShortcutId = nil
+		entry.OnClick()
+		return
+	end
+	-- Tastenkürzel schalten um: dasselbe Kürzel nochmal schließt das Panel,
+	-- ein anderes ersetzt es.
+	if fromShortcut then
+		if Panel.IsAnyOpen() and lastShortcutId == entry.Id then
+			Panel.CloseAll()
+			lastShortcutId = nil
+			return
+		end
+		Panel.CloseAll()
+		lastShortcutId = entry.Id
+	else
+		lastShortcutId = nil
+	end
+	entry.OnClick()
 end
-
--- // Entführte Kreaturen -------------------------------------------------------------
-
-local function onAbductedClicked()
-	openAbductedCreaturesEvent:Fire()
-end
-
--- // Quests (QuestUIController.client.lua) -------------------------------------------
-
-local function onQuestsClicked()
-	openQuestsEvent:Fire()
-end
-
--- // Rangliste (LeaderboardUIController.client.lua) ----------------------------------
-
-local function onLeaderboardClicked()
-	openLeaderboardEvent:Fire()
-end
-
--- // Reisen (TravelUIController.client.lua) ------------------------------------------
-
-local function onTravelClicked()
-	openTravelEvent:Fire()
-end
-
--- // Shop --------------------------------------------------------------------------
--- Öffnet das vollständige Shop-Panel aus ShopUIController.client.lua über die
--- Bridge (siehe Kopfkommentar) - dieser Controller baut keine eigene Shop-UI
--- mehr, um Dateibesitz/Verantwortung sauber getrennt zu halten.
-
-local function onShopClicked()
-	openShopEvent:Fire()
-end
-
--- // Kodex (CodexUIController.client.lua) -----------------------------------------
--- Öffnet das Kreaturen-Kodex-Panel (docs/content-update-1.md Abschnitt 5.2:
--- Sammel-Raster, Zonen-Vollständigkeit, Favoriten-Auswahl für die Plot-
--- Anzeige aus CreatureDisplayService) über die Bridge - identisches Muster
--- zu Shop/Quests/Rangliste oben.
-
-local function onCodexClicked()
-	openCodexEvent:Fire()
-end
-
--- // Einstellungen -------------------------------------------------------------------
 
 local settingsPanel: any = nil
 
@@ -374,6 +357,24 @@ if type(musicVolume) ~= "number" then
 	Workspace:SetAttribute("MusicVolume", musicVolume)
 end
 
+local function makeSettingsLabel(parent: Instance, text: string, y: number): TextLabel
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.new(1, 0, 0, 24)
+	label.Position = UDim2.fromOffset(0, y)
+	label.Font = Theme.Font.BodyBold
+	label.TextColor3 = Theme.Text.Primary
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextScaled = true
+	label.Text = text
+	label.Parent = parent
+	local constraint = Instance.new("UITextSizeConstraint")
+	constraint.MinTextSize = 12
+	constraint.MaxTextSize = 18
+	constraint.Parent = label
+	return label
+end
+
 local function buildSettingsPanel()
 	if settingsPanel then
 		return settingsPanel
@@ -382,26 +383,13 @@ local function buildSettingsPanel()
 	settingsPanel = Panel.new({
 		Title = "Settings",
 		Closable = true,
-		CenteredSize = UDim2.fromOffset(460, 380),
+		CenteredSize = UDim2.fromOffset(460, 430),
 	})
 
 	local content = settingsPanel.Content
 
 	-- // Reduzierte Effekte -----------------------------------------------------
-	local reducedLabel = Instance.new("TextLabel")
-	reducedLabel.BackgroundTransparency = 1
-	reducedLabel.Size = UDim2.new(1, 0, 0, 24)
-	reducedLabel.Font = Theme.Font.BodyBold
-	reducedLabel.TextColor3 = Theme.Text.Primary
-	reducedLabel.TextXAlignment = Enum.TextXAlignment.Left
-	reducedLabel.TextScaled = true
-	reducedLabel.Text = "Reduced Effects (particles/screen shake off)"
-	reducedLabel.Position = UDim2.fromOffset(0, 0)
-	reducedLabel.Parent = content
-	local reducedLabelConstraint = Instance.new("UITextSizeConstraint")
-	reducedLabelConstraint.MinTextSize = 12
-	reducedLabelConstraint.MaxTextSize = 18
-	reducedLabelConstraint.Parent = reducedLabel
+	makeSettingsLabel(content, "Reduced Effects (particles/screen shake off)", 0)
 
 	local reducedToggle = Button.new({
 		Parent = content,
@@ -417,25 +405,12 @@ local function buildSettingsPanel()
 		reducedToggle:SetText(if newValue then "ON" else "OFF")
 	end)
 
-	-- // Sound-Lautstärke --------------------------------------------------------
-	local sfxLabel = Instance.new("TextLabel")
-	sfxLabel.BackgroundTransparency = 1
-	sfxLabel.Size = UDim2.new(1, 0, 0, 24)
-	sfxLabel.Position = UDim2.fromOffset(0, 92)
-	sfxLabel.Font = Theme.Font.BodyBold
-	sfxLabel.TextColor3 = Theme.Text.Primary
-	sfxLabel.TextXAlignment = Enum.TextXAlignment.Left
-	sfxLabel.TextScaled = true
-	sfxLabel.Text = "Sound Volume"
-	sfxLabel.Parent = content
-	local sfxLabelConstraint = Instance.new("UITextSizeConstraint")
-	sfxLabelConstraint.MinTextSize = 12
-	sfxLabelConstraint.MaxTextSize = 18
-	sfxLabelConstraint.Parent = sfxLabel
+	-- // Sound-Lautstärke (44 px große +/- Knöpfe: Touch- und Gamepad-tauglich) -----
+	makeSettingsLabel(content, "Sound Volume", 92)
 
 	local sfxBarHost = Instance.new("Frame")
 	sfxBarHost.BackgroundTransparency = 1
-	sfxBarHost.Position = UDim2.fromOffset(0, 122)
+	sfxBarHost.Position = UDim2.fromOffset(0, 130)
 	sfxBarHost.Size = UDim2.new(1, -104, 0, 22)
 	sfxBarHost.Parent = content
 	local sfxBar = ProgressBar.new({
@@ -449,18 +424,18 @@ local function buildSettingsPanel()
 		Parent = content,
 		Text = "-",
 		Variant = "Ghost",
-		Size = UDim2.fromOffset(44, 32),
+		Size = UDim2.fromOffset(44, 44),
 		LayoutOrder = 2,
 	})
-	sfxMinus.Instance.Position = UDim2.new(1, -96, 0, 116)
+	sfxMinus.Instance.Position = UDim2.new(1, -96, 0, 119)
 	local sfxPlus = Button.new({
 		Parent = content,
 		Text = "+",
 		Variant = "Ghost",
-		Size = UDim2.fromOffset(44, 32),
+		Size = UDim2.fromOffset(44, 44),
 		LayoutOrder = 3,
 	})
-	sfxPlus.Instance.Position = UDim2.new(1, -48, 0, 116)
+	sfxPlus.Instance.Position = UDim2.new(1, -48, 0, 119)
 
 	local function applySfxVolume()
 		sfxVolume = math.clamp(sfxVolume, 0, 1)
@@ -477,28 +452,13 @@ local function buildSettingsPanel()
 	end)
 
 	-- // Musik-Lautstärke ---------------------------------------------------------
-	-- Steuert AudioController.client.lua (Hintergrundmusik + Unterwasser-
-	-- Ambiente) über das Workspace-Attribut "MusicVolume" - AudioController
-	-- liest dieses Attribut live (GetAttributeChangedSignal), kein weiterer
-	-- Draht zwischen diesem Menü und AudioController nötig.
-	local musicLabel = Instance.new("TextLabel")
-	musicLabel.BackgroundTransparency = 1
-	musicLabel.Size = UDim2.new(1, 0, 0, 24)
-	musicLabel.Position = UDim2.fromOffset(0, 168)
-	musicLabel.Font = Theme.Font.BodyBold
-	musicLabel.TextColor3 = Theme.Text.Primary
-	musicLabel.TextXAlignment = Enum.TextXAlignment.Left
-	musicLabel.TextScaled = true
-	musicLabel.Text = "Music Volume"
-	musicLabel.Parent = content
-	local musicLabelConstraint = Instance.new("UITextSizeConstraint")
-	musicLabelConstraint.MinTextSize = 12
-	musicLabelConstraint.MaxTextSize = 18
-	musicLabelConstraint.Parent = musicLabel
+	-- Steuert AudioController.client.lua über das Workspace-Attribut
+	-- "MusicVolume" (wird dort live per GetAttributeChangedSignal gelesen).
+	makeSettingsLabel(content, "Music Volume", 176)
 
 	local musicBarHost = Instance.new("Frame")
 	musicBarHost.BackgroundTransparency = 1
-	musicBarHost.Position = UDim2.fromOffset(0, 198)
+	musicBarHost.Position = UDim2.fromOffset(0, 214)
 	musicBarHost.Size = UDim2.new(1, -104, 0, 22)
 	musicBarHost.Parent = content
 	local musicBar = ProgressBar.new({
@@ -512,18 +472,18 @@ local function buildSettingsPanel()
 		Parent = content,
 		Text = "-",
 		Variant = "Ghost",
-		Size = UDim2.fromOffset(44, 32),
+		Size = UDim2.fromOffset(44, 44),
 		LayoutOrder = 4,
 	})
-	musicMinus.Instance.Position = UDim2.new(1, -96, 0, 192)
+	musicMinus.Instance.Position = UDim2.new(1, -96, 0, 203)
 	local musicPlus = Button.new({
 		Parent = content,
 		Text = "+",
 		Variant = "Ghost",
-		Size = UDim2.fromOffset(44, 32),
+		Size = UDim2.fromOffset(44, 44),
 		LayoutOrder = 5,
 	})
-	musicPlus.Instance.Position = UDim2.new(1, -48, 0, 192)
+	musicPlus.Instance.Position = UDim2.new(1, -48, 0, 203)
 
 	local function applyMusicVolume()
 		musicVolume = math.clamp(musicVolume, 0, 1)
@@ -539,90 +499,397 @@ local function buildSettingsPanel()
 		applyMusicVolume()
 	end)
 
+	-- // Steuerungs-Hilfe (folgt der zuletzt benutzten Eingabe) --------------------
+	local controlsLabel = Instance.new("TextLabel")
+	controlsLabel.Name = "ControlsHelp"
+	controlsLabel.BackgroundTransparency = 1
+	controlsLabel.Position = UDim2.fromOffset(0, 256)
+	controlsLabel.Size = UDim2.new(1, 0, 0, 80)
+	controlsLabel.Font = Theme.Font.Body
+	controlsLabel.TextColor3 = Theme.Text.Secondary
+	controlsLabel.TextXAlignment = Enum.TextXAlignment.Left
+	controlsLabel.TextYAlignment = Enum.TextYAlignment.Top
+	controlsLabel.TextWrapped = true
+	controlsLabel.TextScaled = true
+	controlsLabel.Parent = content
+	local controlsConstraint = Instance.new("UITextSizeConstraint")
+	controlsConstraint.MinTextSize = 12
+	controlsConstraint.MaxTextSize = 14
+	controlsConstraint.Parent = controlsLabel
+	InputMode.Bind(function(mode)
+		if mode == "Gamepad" then
+			controlsLabel.Text =
+				"Controller: Y opens the menu · D-Pad/Stick choose · A confirms · B goes back · X picks up/deposits · B drops an item you hold."
+		elseif mode == "KeyboardMouse" then
+			controlsLabel.Text =
+				"Keyboard: B Build · Z Shop · Q Quests · T Travel · H More · U Brood Pool · M Mystery Egg · L Leaderboard · C Codex · K Achievements · Y Settings · E interact."
+		else
+			controlsLabel.Text = "Tap the buttons at the top to open menus. Use the jump and sprint buttons on the right to move."
+		end
+	end)
+
 	return settingsPanel
 end
 
-local function onSettingsClicked()
-	local panel = buildSettingsPanel()
-	panel:Open()
-end
+-- // Eintrags-Tabelle -----------------------------------------------------------------
 
--- // Live-Event (EventUIController.client.lua) ---------------------------------
-
-local function onEventClicked()
-	openEventEvent:Fire()
-end
-
--- // Achievements (AchievementUIController.client.lua) -----------------------
--- Öffnet das Achievements-/Titel-Panel über die Bridge - identisches Muster
--- zu Shop/Quests/Kodex/Event oben.
-
-local function onAchievementsClicked()
-	openAchievementsEvent:Fire()
-end
-
--- // Leiste aufbauen -----------------------------------------------------------------
-
-local entries: { MenuEntry } = {
-	{ Icon = "🛠️", Text = "Build", OnClick = onBuildClicked },
-	{ Icon = "🥚", Text = "Brood Pool", OnClick = onBreedingClicked },
-	{ Icon = "🎁", Text = "Mystery Egg", OnClick = onMysteryEggClicked },
-	{ Icon = "🆘", Text = "Abducted", OnClick = onAbductedClicked },
-	{ Icon = "📜", Text = "Quests", OnClick = onQuestsClicked, BadgeKey = "Quest" },
-	{ Icon = "🏆", Text = "Leaderboard", OnClick = onLeaderboardClicked },
-	{ Icon = "🧭", Text = "Travel", OnClick = onTravelClicked },
-	{ Icon = "⚙️", Text = "Settings", OnClick = onSettingsClicked },
-	{ Icon = "🛒", Text = "Shop", OnClick = onShopClicked },
-	{ Icon = "📖", Text = "Codex", OnClick = onCodexClicked },
-	{ Icon = "🌊", Text = "Event", OnClick = onEventClicked },
-	{ Icon = "🏅", Text = "Achievements", OnClick = onAchievementsClicked, BadgeKey = "Achievement" },
+local primaryEntries: { MenuEntry } = {
+	{ Id = "Build", Icon = "🛠️", Text = "Build", IsPanel = false, Key = Enum.KeyCode.B, OnClick = function() toggleBuildModeEvent:Fire() end },
+	{ Id = "Shop", Icon = "🛒", Text = "Shop", IsPanel = true, Key = Enum.KeyCode.Z, OnClick = function() openShopEvent:Fire() end },
+	{ Id = "Quests", Icon = "📜", Text = "Quests", IsPanel = true, Key = Enum.KeyCode.Q, BadgeKey = "Quest", OnClick = function() openQuestsEvent:Fire() end },
+	{ Id = "Travel", Icon = "🧭", Text = "Travel", IsPanel = true, Key = Enum.KeyCode.T, OnClick = function() openTravelEvent:Fire() end },
 }
 
-for index, entry in ipairs(entries) do
-	buildButton(entry, index)
+local drawerEntries: { MenuEntry } = {
+	{ Id = "BroodPool", Icon = "🥚", Text = "Brood Pool", IsPanel = true, Key = Enum.KeyCode.U, OnClick = function() openBreedingOverviewEvent:Fire() end },
+	{ Id = "MysteryEgg", Icon = "🎁", Text = "Mystery Egg", IsPanel = true, Key = Enum.KeyCode.M, OnClick = function() openMysteryEggEvent:Fire() end },
+	{ Id = "Abducted", Icon = "🆘", Text = "Abducted", IsPanel = true, Key = Enum.KeyCode.N, OnClick = function() openAbductedCreaturesEvent:Fire() end },
+	{ Id = "Leaderboard", Icon = "🏆", Text = "Leaderboard", IsPanel = true, Key = Enum.KeyCode.L, OnClick = function() openLeaderboardEvent:Fire() end },
+	{ Id = "Codex", Icon = "📖", Text = "Codex", IsPanel = true, Key = Enum.KeyCode.C, OnClick = function() openCodexEvent:Fire() end },
+	{ Id = "Achievements", Icon = "🏅", Text = "Achievements", IsPanel = true, Key = Enum.KeyCode.K, BadgeKey = "Achievement", OnClick = function() openAchievementsEvent:Fire() end },
+	{ Id = "Event", Icon = "🌊", Text = "Event", IsPanel = true, Key = Enum.KeyCode.J, OnClick = function() openEventEvent:Fire() end },
+	{ Id = "Settings", Icon = "⚙️", Text = "Settings", IsPanel = true, Key = Enum.KeyCode.Y, OnClick = function()
+		buildSettingsPanel()
+		settingsPanel:Open()
+	end },
+}
+
+-- // Schublade ("More") ---------------------------------------------------------------
+
+local DRAWER_CELL = Vector2.new(100, 76)
+local DRAWER_GAP = 8
+local DRAWER_PADDING = 12
+local DRAWER_TITLE_HEIGHT = 28
+
+local backdrop = Instance.new("Frame")
+backdrop.Name = "DrawerBackdrop"
+backdrop.BackgroundTransparency = 1
+backdrop.Size = UDim2.fromScale(1, 1)
+backdrop.ZIndex = Z_BACKDROP
+backdrop.Active = true -- fängt Tippen neben der Schublade ab
+backdrop.Selectable = false
+backdrop.Visible = false
+backdrop.Parent = scaledRoot
+
+local drawer = Instance.new("Frame")
+drawer.Name = "Drawer"
+drawer.BackgroundColor3 = Theme.Background.Panel
+drawer.BackgroundTransparency = 0.04
+drawer.BorderSizePixel = 0
+drawer.ZIndex = Z_DRAWER
+drawer.Active = true
+drawer.Visible = false
+drawer.Parent = scaledRoot
+Theme.ApplyCorner(drawer, UDim.new(0, 18))
+local drawerStroke = Theme.ApplyStroke(drawer, Theme.Neon.Violet, 2)
+drawerStroke.Transparency = 0.2
+Theme.ApplyGradient(drawer, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
+
+local drawerTitle = Instance.new("TextLabel")
+drawerTitle.Name = "Title"
+drawerTitle.BackgroundTransparency = 1
+drawerTitle.Position = UDim2.fromOffset(DRAWER_PADDING + 4, 6)
+drawerTitle.Size = UDim2.new(1, -(DRAWER_PADDING * 2 + 100), 0, DRAWER_TITLE_HEIGHT)
+drawerTitle.Font = Theme.Font.Header
+drawerTitle.TextColor3 = Theme.Text.Primary
+drawerTitle.TextXAlignment = Enum.TextXAlignment.Left
+drawerTitle.TextScaled = true
+drawerTitle.Text = "More"
+drawerTitle.ZIndex = Z_DRAWER
+drawerTitle.Parent = drawer
+local drawerTitleConstraint = Instance.new("UITextSizeConstraint")
+drawerTitleConstraint.MinTextSize = 16
+drawerTitleConstraint.MaxTextSize = 22
+drawerTitleConstraint.Parent = drawerTitle
+
+local drawerCloseHint = InputMode.CreateHint({
+	Parent = drawer,
+	Gamepad = Enum.KeyCode.ButtonB,
+	Label = "Close",
+	AnchorPoint = Vector2.new(1, 0),
+	Position = UDim2.new(1, -DRAWER_PADDING, 0, 10),
+	ZIndex = Z_DRAWER + 2,
+})
+
+local drawerScroll = Instance.new("ScrollingFrame")
+drawerScroll.Name = "Grid"
+drawerScroll.BackgroundTransparency = 1
+drawerScroll.BorderSizePixel = 0
+drawerScroll.Position = UDim2.fromOffset(DRAWER_PADDING, DRAWER_TITLE_HEIGHT + 12)
+drawerScroll.Size = UDim2.new(1, -DRAWER_PADDING * 2, 1, -(DRAWER_TITLE_HEIGHT + 12 + DRAWER_PADDING))
+drawerScroll.CanvasSize = UDim2.new()
+drawerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+drawerScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+drawerScroll.ScrollBarThickness = 4
+drawerScroll.ScrollBarImageColor3 = Theme.Neon.Cyan
+drawerScroll.ZIndex = Z_DRAWER
+drawerScroll.Parent = drawer
+
+local drawerGrid = Instance.new("UIGridLayout")
+drawerGrid.CellSize = UDim2.fromOffset(DRAWER_CELL.X, DRAWER_CELL.Y)
+drawerGrid.CellPadding = UDim2.fromOffset(DRAWER_GAP, DRAWER_GAP)
+drawerGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+drawerGrid.SortOrder = Enum.SortOrder.LayoutOrder
+drawerGrid.Parent = drawerScroll
+
+local drawerGridPadding = Instance.new("UIPadding")
+drawerGridPadding.PaddingTop = UDim.new(0, 10) -- Platz für Tasten-Chips/Badges, die über den Rand ragen
+drawerGridPadding.PaddingRight = UDim.new(0, 8)
+drawerGridPadding.Parent = drawerScroll
+
+local function applyDrawerLayout()
+	local layout = Layout.GetHudLayout()
+	local viewport = Device.GetVirtualViewport()
+	local availableWidth = math.min(viewport.X - 16, 480)
+	local columns = math.clamp(math.floor((availableWidth - DRAWER_PADDING * 2 + DRAWER_GAP) / (DRAWER_CELL.X + DRAWER_GAP)), 2, 4)
+	local rows = math.ceil(#drawerEntries / columns)
+	local width = columns * DRAWER_CELL.X + (columns - 1) * DRAWER_GAP + DRAWER_PADDING * 2 + 8
+	local desiredHeight = DRAWER_TITLE_HEIGHT + 12 + 10 + rows * DRAWER_CELL.Y + (rows - 1) * DRAWER_GAP + DRAWER_PADDING
+
+	local menu = layout.Menu
+	local menuTop = menu.Position.Y.Offset
+	local menuHeight = menu.Size.Y.Offset
+	-- ~48 px Reserve für Topbar/Safe-Area, die der virtuelle Viewport nicht abzieht.
+	local reserved = 48 + 8
+	if layout.MenuAtBottom then
+		-- Schublade klappt nach OBEN auf (Leiste unten mittig).
+		local bottomOffset = -menu.Position.Y.Offset -- Position.Y.Offset ist negativ (z. B. -18)
+		local gap = bottomOffset + menuHeight + 8
+		local maxHeight = viewport.Y - reserved - gap
+		drawer.AnchorPoint = Vector2.new(0.5, 1)
+		drawer.Position = UDim2.new(0.5, 0, 1, -gap)
+		drawer.Size = UDim2.fromOffset(width, math.min(desiredHeight, maxHeight))
+	else
+		-- Schublade klappt nach UNTEN auf (Leiste oben).
+		local top = menuTop + menuHeight + 6
+		local maxHeight = viewport.Y - reserved - top
+		drawer.AnchorPoint = Vector2.new(menu.AnchorPoint.X, 0)
+		drawer.Position = UDim2.new(menu.Position.X.Scale, menu.Position.X.Offset, 0, top)
+		drawer.Size = UDim2.fromOffset(width, math.min(desiredHeight, maxHeight))
+	end
 end
 
--- // Tastaturkürzel (nur Hinweis-sichtbar auf echter PC-Tastatur, funktionieren
--- aber technisch auf jedem Gerät mit angeschlossener Tastatur) -------------------
+local function focusFirstDrawerButton()
+	local first = drawerButtons[1]
+	if first and InputMode.IsGamepad() then
+		GuiService.SelectedObject = first.Handle.Instance
+	end
+end
 
-local inputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then
+local function openDrawer()
+	if drawerOpen then
 		return
 	end
-	if input.KeyCode == Enum.KeyCode.B then
-		onBuildClicked()
-	elseif input.KeyCode == Enum.KeyCode.U then
-		onBreedingClicked()
-	elseif input.KeyCode == Enum.KeyCode.M then
-		onMysteryEggClicked()
-	elseif input.KeyCode == Enum.KeyCode.N then
-		onAbductedClicked()
-	elseif input.KeyCode == Enum.KeyCode.Q then
-		onQuestsClicked()
-	elseif input.KeyCode == Enum.KeyCode.L then
-		onLeaderboardClicked()
-	elseif input.KeyCode == Enum.KeyCode.R then
-		onTravelClicked()
-	elseif input.KeyCode == Enum.KeyCode.O then
-		onSettingsClicked()
-	elseif input.KeyCode == Enum.KeyCode.C then
-		onCodexClicked()
-	elseif input.KeyCode == Enum.KeyCode.E then
-		onEventClicked()
-	elseif input.KeyCode == Enum.KeyCode.K then
-		onAchievementsClicked()
+	drawerOpen = true
+	applyDrawerLayout()
+	backdrop.Visible = true
+	drawer.Visible = true
+	focusFirstDrawerButton()
+end
+
+closeDrawer = function(refocusMore: boolean?)
+	if not drawerOpen then
+		return
+	end
+	drawerOpen = false
+	backdrop.Visible = false
+	drawer.Visible = false
+	local selected = GuiService.SelectedObject
+	if selected and selected:IsDescendantOf(drawer) then
+		GuiService.SelectedObject = if refocusMore and moreHandle then moreHandle.Instance else nil
+	end
+end
+
+local backdropConnection = backdrop.InputBegan:Connect(function(input: InputObject)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		closeDrawer(false)
 	end
 end)
 
--- // Gamepad: initialen Fokus setzen, damit Konsole sofort navigieren kann ---------
-
-if Device.IsConsole() and buttonHandles[1] then
-	GuiService.SelectedObject = buttonHandles[1].Instance
+local function toggleDrawer()
+	if drawerOpen then
+		closeDrawer(true)
+	else
+		openDrawer()
+	end
 end
 
-local deviceForGamepadConnection = Device.Changed:Connect(function(state)
-	if state.Class == "Console" and buttonHandles[1] and not GuiService.SelectedObject then
-		GuiService.SelectedObject = buttonHandles[1].Instance
+-- // Leiste aufbauen --------------------------------------------------------------------
+
+local initialLayout = Layout.GetHudLayout()
+local initialSize = UDim2.fromOffset(initialLayout.MenuButtonSize.X, initialLayout.MenuButtonSize.Y)
+
+for index, entry in ipairs(primaryEntries) do
+	local built = buildButton(entry, rowHost, index, initialSize)
+	built.Handle.Clicked:Connect(function()
+		runEntry(entry, false)
+	end)
+	table.insert(primaryButtons, built)
+end
+
+local moreEntry: MenuEntry = {
+	Id = "More",
+	Icon = "☰",
+	Text = "More",
+	IsPanel = false,
+	Key = Enum.KeyCode.H,
+	OnClick = function() end,
+}
+do
+	local built = buildButton(moreEntry, rowHost, #primaryEntries + 1, initialSize)
+	moreHandle = built.Handle
+	moreHint = built.Hint
+	built.Handle.Clicked:Connect(toggleDrawer)
+	local badge, badgeLabel = makeBadge(built.Handle.Instance)
+	moreBadgeFrame = badge
+	moreBadgeLabel = badgeLabel
+end
+
+for index, entry in ipairs(drawerEntries) do
+	-- Zellgröße setzt UIGridLayout; die Button-Größe hier ist nur ein Platzhalter.
+	local built = buildButton(entry, drawerScroll, index, UDim2.fromOffset(DRAWER_CELL.X, DRAWER_CELL.Y))
+	built.Handle.Instance.ZIndex = Z_DRAWER
+	built.Handle.Clicked:Connect(function()
+		runEntry(entry, false)
+	end)
+	table.insert(drawerButtons, built)
+end
+
+-- Badges am "More"-Button einmal initial setzen (falls Zähler schon gemeldet).
+updateBadge("Achievement", badgeCounts["Achievement"] or 0)
+
+local function applyBarLayout()
+	local layout = Layout.GetHudLayout()
+	local dock = layout.Menu
+	bar.AnchorPoint = dock.AnchorPoint
+	bar.Position = dock.Position
+	bar.Size = dock.Size
+
+	local count = #primaryEntries + 1
+	local buttonWidth = layout.MenuButtonSize.X
+	if layout.Mode == "Portrait" then
+		-- Fünf gleich breite Kacheln über die volle Breite (Leiste = Viewport - 16).
+		local viewportWidth = Device.GetVirtualViewport().X
+		buttonWidth = math.clamp(math.floor((viewportWidth - 16 - 20 - (count - 1) * 6) / count), 54, 84)
+	end
+	local size = UDim2.fromOffset(buttonWidth, layout.MenuButtonSize.Y)
+	listLayout.Padding = UDim.new(0, if layout.Mode == "Desktop" then 8 else 6)
+	for _, built in primaryButtons do
+		built.Handle.Instance.Size = size
+	end
+	if moreHandle then
+		moreHandle.Instance.Size = size
+	end
+
+	-- "Y Menu"-Chip: bei unten liegender Leiste darüber, sonst darunter.
+	if layout.MenuAtBottom then
+		gamepadFocusHint.Instance.AnchorPoint = Vector2.new(0, 1)
+		gamepadFocusHint.Instance.Position = UDim2.new(0, 6, 0, -4)
+	else
+		gamepadFocusHint.Instance.AnchorPoint = Vector2.new(0, 0)
+		gamepadFocusHint.Instance.Position = UDim2.new(0, 6, 1, 4)
+	end
+
+	if drawerOpen then
+		applyDrawerLayout()
+	end
+end
+
+applyBarLayout()
+local deviceConnection = Device.Changed:Connect(applyBarLayout)
+
+-- // Tastaturkürzel (Hinweis-Chips nur bei Tastatur/Maus; funktionieren auf jedem
+-- Gerät mit angeschlossener Tastatur) ----------------------------------------------
+
+local shortcutEntries: { [Enum.KeyCode]: MenuEntry } = {}
+for _, entry in primaryEntries do
+	if entry.Key then
+		shortcutEntries[entry.Key] = entry
+	end
+end
+for _, entry in drawerEntries do
+	if entry.Key then
+		shortcutEntries[entry.Key] = entry
+	end
+end
+
+local inputConnection = UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessed: boolean)
+	if gameProcessed or input.UserInputType ~= Enum.UserInputType.Keyboard then
+		return
+	end
+	if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl) then
+		return
+	end
+	if input.KeyCode == Enum.KeyCode.H then
+		toggleDrawer()
+		return
+	end
+	local entry = shortcutEntries[input.KeyCode]
+	if entry then
+		runEntry(entry, true)
+	end
+end)
+
+-- // Gamepad: Fokus in die Leiste holen / zurückgeben ------------------------------------
+-- Y (oder View/Select) wechselt zwischen "Figur steuern" und "Menü steuern".
+-- Solange der Fokus in Leiste/Schublade liegt, gibt B ihn zurück (bzw. schließt
+-- die Schublade). Panels (UIKit.Panel) haben mit ihrem eigenen B Vorrang.
+
+local MENU_FOCUS_ACTION = "AbyssaraMenuFocus"
+local MENU_BACK_ACTION = "AbyssaraMenuBack"
+local menuBackBound = false
+
+local function isInMenu(target: Instance?): boolean
+	return target ~= nil and (target:IsDescendantOf(bar) or target:IsDescendantOf(drawer))
+end
+
+local function onMenuFocusAction(_name: string, inputState: Enum.UserInputState): Enum.ContextActionResult
+	if inputState ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	if Panel.IsAnyOpen() then
+		return Enum.ContextActionResult.Pass
+	end
+	if isInMenu(GuiService.SelectedObject) then
+		closeDrawer(false)
+		GuiService.SelectedObject = nil
+	else
+		local first = primaryButtons[1]
+		if first then
+			GuiService.SelectedObject = first.Handle.Instance
+		end
+	end
+	return Enum.ContextActionResult.Sink
+end
+
+local function onMenuBackAction(_name: string, inputState: Enum.UserInputState): Enum.ContextActionResult
+	if inputState ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	if drawerOpen then
+		closeDrawer(true)
+	else
+		GuiService.SelectedObject = nil
+	end
+	return Enum.ContextActionResult.Sink
+end
+
+ContextActionService:BindAction(MENU_FOCUS_ACTION, onMenuFocusAction, false, Enum.KeyCode.ButtonY, Enum.KeyCode.ButtonSelect)
+
+local selectionConnection = GuiService:GetPropertyChangedSignal("SelectedObject"):Connect(function()
+	local inMenu = isInMenu(GuiService.SelectedObject)
+	if inMenu and not menuBackBound then
+		menuBackBound = true
+		ContextActionService:BindActionAtPriority(
+			MENU_BACK_ACTION,
+			onMenuBackAction,
+			false,
+			Enum.ContextActionPriority.High.Value - 1,
+			Enum.KeyCode.ButtonB
+		)
+	elseif not inMenu and menuBackBound then
+		menuBackBound = false
+		ContextActionService:UnbindAction(MENU_BACK_ACTION)
 	end
 end)
 
@@ -633,13 +900,36 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 		return
 	end
 	deviceConnection:Disconnect()
-	deviceForGamepadConnection:Disconnect()
 	inputConnection:Disconnect()
+	selectionConnection:Disconnect()
+	backdropConnection:Disconnect()
 	questBadgeConnection:Disconnect()
 	achievementBadgeConnection:Disconnect()
+	ContextActionService:UnbindAction(MENU_FOCUS_ACTION)
+	if menuBackBound then
+		menuBackBound = false
+		ContextActionService:UnbindAction(MENU_BACK_ACTION)
+	end
 	unbindScale()
-	for _, handle in buttonHandles do
-		handle:Destroy()
+	gamepadFocusHint:Destroy()
+	drawerCloseHint:Destroy()
+	for _, built in primaryButtons do
+		if built.Hint then
+			built.Hint:Destroy()
+		end
+		built.Handle:Destroy()
+	end
+	for _, built in drawerButtons do
+		if built.Hint then
+			built.Hint:Destroy()
+		end
+		built.Handle:Destroy()
+	end
+	if moreHint then
+		moreHint:Destroy()
+	end
+	if moreHandle then
+		moreHandle:Destroy()
 	end
 	if settingsPanel then
 		settingsPanel:Destroy()

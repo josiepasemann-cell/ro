@@ -20,10 +20,10 @@
 		(kein Client-Trust: der Server bleibt einzige Autorität über Tide
 		Coins, siehe PlayerDataService/IdleIncomeService).
 
-		Layout: Popups erscheinen über dem Anker unten-mittig, knapp über
-		der MainMenuController-Menüleiste (siehe dort für das
-		Gesamt-Layout); das Offline-Panel ist ein zentriertes/fullscreen
-		UIKit.Panel wie jedes andere Menü.
+		Layout: Popups erscheinen über dem Anker unten-mittig. Desktop: knapp
+		über der Menüleiste; Touch: über der Zone von Daumenstick/
+		Sprungknopf (Device.GetBottomDockInsets). Das Offline-Panel ist ein
+		zentriertes/fullscreen UIKit.Panel wie jedes andere Menü.
 
 	Rojo-Einhängepunkt:
 		src/client/IdleIncomeClient.client.lua ->
@@ -57,24 +57,23 @@ popupGui.DisplayOrder = 18
 Device.ApplySafeArea(popupGui)
 popupGui.Parent = playerGui
 
-local popupUiScale = Instance.new("UIScale")
-popupUiScale.Parent = popupGui
-local unbindPopupScale = Device.BindUIScale(popupUiScale)
+local popupRoot, unbindPopupScale = Device.CreateScaledRoot(popupGui)
 
 local popupAnchor = Instance.new("Frame")
 popupAnchor.Name = "PopupAnchor"
 popupAnchor.AnchorPoint = Vector2.new(0.5, 1)
 popupAnchor.Size = UDim2.new(0, 10, 0, 10)
 popupAnchor.BackgroundTransparency = 1
-popupAnchor.Parent = popupGui
+popupAnchor.Parent = popupRoot
 
--- Knapp über der unten angedockten MainMenuController-Leiste positionieren,
--- damit sich Popups und Menüleiste auf keinem Gerät überlappen.
+-- Über der Menüleiste (Desktop) bzw. über der Daumenstick-/Sprungknopf-Zone
+-- (Touch), damit Popups nichts Bedienbares verdecken.
 local function applyPopupAnchorPosition()
-	if Device.ShouldUseFullscreenPanels() then
-		popupAnchor.Position = UDim2.new(0.5, 0, 1, -108) -- über der ~84px hohen Phone-Menüleiste
+	if Device.IsTouchPrimary() then
+		local _sideInset, bottomInset = Device.GetBottomDockInsets()
+		popupAnchor.Position = UDim2.new(0.5, 0, 1, -(bottomInset + 80))
 	else
-		popupAnchor.Position = UDim2.new(0.5, 0, 1, -100) -- über der ~68px hohen Desktop/Konsolen-Menüleiste
+		popupAnchor.Position = UDim2.new(0.5, 0, 1, -102)
 	end
 end
 applyPopupAnchorPosition()

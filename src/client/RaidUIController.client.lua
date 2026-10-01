@@ -27,9 +27,11 @@
 		Rettungs-Aktion lediglich eine Absichtserklärung (instanceId), die der
 		Server komplett neu validiert.
 
-		Layout: Die Status-Leiste dockt oben MITTIG an (auf Phone als volle
-		Breite direkt unter der HUD-Leiste, siehe HUDController.client.lua
-		Kopfkommentar für das Gesamt-Layout).
+		Layout: Die Status-Leiste liegt IMMER direkt unter der HUD-Leiste
+		(Position aus UIKit.Layout.GetHudLayout().Raid - Portrait: volle
+		Breite unter dem Menü, Landscape: links unter dem HUD, Desktop:
+		mittig unter dem HUD). Alle Panels gehen über UIKit.Panel und damit
+		über Safe-Area, Gamepad-Fokus und B-Taste.
 
 	Rojo-Einhängepunkt:
 		src/client/RaidUIController.client.lua ->
@@ -46,6 +48,7 @@ local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
 local Device = UIKit.Device
+local Layout = UIKit.Layout
 local Panel = UIKit.Panel
 local Button = UIKit.Button
 local Toast = UIKit.Toast
@@ -102,18 +105,15 @@ screenGui.DisplayOrder = 15
 Device.ApplySafeArea(screenGui)
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local hudUiScale = Instance.new("UIScale")
-hudUiScale.Parent = screenGui
-local unbindHudScale = Device.BindUIScale(hudUiScale)
+local hudRoot, unbindHudScale = Device.CreateScaledRoot(screenGui)
 
 -- // Kompakte Status-Leiste (oben mittig: Countdown ODER Wellen-Anzeige) --------
 
 local statusBar = Instance.new("Frame")
 statusBar.Name = "StatusBar"
-statusBar.AnchorPoint = Vector2.new(0.5, 0)
 statusBar.BackgroundColor3 = Theme.Background.Panel
 statusBar.BackgroundTransparency = 0.15
-statusBar.Parent = screenGui
+statusBar.Parent = hudRoot
 Theme.ApplyCorner(statusBar, UDim.new(0, 12))
 local statusBarStroke = Theme.ApplyStroke(statusBar, Theme.Neon.Cyan, 1.5)
 
@@ -144,17 +144,13 @@ statusLabelConstraint.MinTextSize = 12
 statusLabelConstraint.MaxTextSize = 17
 statusLabelConstraint.Parent = statusLabel
 
--- Geräteabhängiges Andocken: auf Phone volle Breite direkt unter der
--- HUD-Leiste (siehe HUDController.client.lua, dort reserviert die HUD-Leiste
--- auf Phone den obersten Streifen), sonst oben mittig als kompakte Box.
+-- Geräteabhängiges Andocken: immer direkt unter der HUD-Leiste, Position
+-- kommt zentral aus UIKit.Layout.GetHudLayout().
 local function applyStatusBarLayout()
-	if Device.ShouldUseFullscreenPanels() then
-		statusBar.Position = UDim2.new(0.5, 0, 0, 104)
-		statusBar.Size = UDim2.new(1, -16, 0, 52)
-	else
-		statusBar.Position = UDim2.new(0.5, 0, 0, 16)
-		statusBar.Size = UDim2.fromOffset(360, 56)
-	end
+	local dock = Layout.GetHudLayout().Raid
+	statusBar.AnchorPoint = dock.AnchorPoint
+	statusBar.Position = dock.Position
+	statusBar.Size = dock.Size
 end
 applyStatusBarLayout()
 local statusLayoutConnection = Device.Changed:Connect(applyStatusBarLayout)
@@ -198,7 +194,7 @@ resultBody.TextScaled = true
 resultBody.Text = ""
 resultBody.Parent = resultPanel.Content
 local resultBodyConstraint = Instance.new("UITextSizeConstraint")
-resultBodyConstraint.MinTextSize = 13
+resultBodyConstraint.MinTextSize = 14
 resultBodyConstraint.MaxTextSize = 18
 resultBodyConstraint.Parent = resultBody
 
@@ -401,7 +397,7 @@ local function rebuildRescuePanel()
 
 		local row = Instance.new("Frame")
 		row.Name = instanceId
-		row.Size = UDim2.new(1, 0, 0, 96)
+		row.Size = UDim2.new(1, 0, 0, 114)
 		row.BackgroundColor3 = Theme.Background.PanelLight
 		row.LayoutOrder = order
 		row.Parent = rescueScroll
@@ -433,7 +429,7 @@ local function rebuildRescuePanel()
 			Parent = row,
 			Text = ("Rescue (%d Tide Coins)"):format(abducted.RansomCost),
 			Variant = "Success",
-			Size = UDim2.new(1, -16, 0, 34),
+			Size = UDim2.new(1, -16, 0, 44),
 		})
 		rescueButton.Instance.Position = UDim2.new(0, 8, 0, 50)
 		rescueButton.Clicked:Connect(function()
@@ -443,8 +439,8 @@ local function rebuildRescuePanel()
 		-- Platzhalter-Hinweis auf das Robux-"Rettungs-Token" (GDD Abschnitt 5)
 		-- - aktuell ohne Wirkung, da kein MarketplaceService-Kauf-Flow existiert.
 		local tokenLabel = Instance.new("TextLabel")
-		tokenLabel.Size = UDim2.new(1, -16, 0, 14)
-		tokenLabel.Position = UDim2.new(0, 8, 1, -16)
+		tokenLabel.Size = UDim2.new(1, -16, 0, 16)
+		tokenLabel.Position = UDim2.new(0, 8, 1, -20)
 		tokenLabel.BackgroundTransparency = 1
 		tokenLabel.Font = Theme.Font.Body
 		tokenLabel.TextScaled = true
