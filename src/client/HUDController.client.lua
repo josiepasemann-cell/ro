@@ -71,6 +71,8 @@ type HUDState = {
 	XPToNextLevel: number,
 	IncomePerMinute: number,
 	MaxLevel: number,
+	AscendCount: number, -- prestige ("Resurface") count
+	IncomeMultiplier: number, -- permanent prestige income multiplier
 }
 
 local state: HUDState = {
@@ -82,6 +84,8 @@ local state: HUDState = {
 	XPToNextLevel = ProgressionConfig.GetXPToNextLevel(1) or 1,
 	IncomePerMinute = 0,
 	MaxLevel = ProgressionConfig.MAX_LEVEL,
+	AscendCount = 0,
+	IncomeMultiplier = 1,
 }
 
 -- // Root-ScreenGui ------------------------------------------------------------
@@ -224,13 +228,19 @@ local function refreshDisplay()
 	end
 	incomeLabel.Text = ("+%s Tide Coins / Min"):format(formatNumber(state.IncomePerMinute))
 
+	-- Prestige badge: "Level 5 · Resurfaced x3 (+30% income)"
+	local ascendSuffix = ""
+	if state.AscendCount > 0 then
+		ascendSuffix = (" · Resurfaced x%d (x%.2f income)"):format(state.AscendCount, state.IncomeMultiplier)
+	end
+
 	if state.Level >= state.MaxLevel then
-		levelLabel.Text = ("Level %d (Max)"):format(state.Level)
+		levelLabel.Text = ("Level %d (Max)%s"):format(state.Level, ascendSuffix)
 		xpBar:SetProgress(1)
 		return
 	end
 
-	levelLabel.Text = ("Level %d"):format(state.Level)
+	levelLabel.Text = ("Level %d%s"):format(state.Level, ascendSuffix)
 
 	local ratio = 0
 	if state.XPToNextLevel > 0 then

@@ -23,7 +23,8 @@
 			Aufbau: { TideCoins: number, AbyssalShards: number, Level: number,
 			XP: number, XPIntoLevel: number, XPToNextLevel: number,
 			IncomePerMinute: number, MaxLevel: number,
-			OnboardingCompleted: boolean }. Danach hält
+			OnboardingCompleted: boolean, AscendCount: number,
+			IncomeMultiplier: number }. Danach hält
 			HUDStateChanged den Client aktuell - kein Polling nötig.
 		HUDStateChanged (RemoteEvent, Server -> Client)
 			Server-Push bei JEDER Änderung eines HUD-relevanten Werts

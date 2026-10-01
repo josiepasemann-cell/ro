@@ -61,6 +61,8 @@ local function buildFullState(player: Player)
 		IncomePerMinute = IdleIncomeService.GetIncomePerMinute(player),
 		MaxLevel = ProgressionConfig.MAX_LEVEL,
 		OnboardingCompleted = PlayerDataService.GetOnboardingCompleted(player),
+		AscendCount = PlayerDataService.GetAscendCount(player),
+		IncomeMultiplier = PlayerDataService.GetIncomeMultiplier(player),
 	}
 end
 
@@ -86,6 +88,14 @@ end
 --- Minute (kann sich durch die auslösende Aktion selbst geändert haben, z.
 --- B. ein neu gebautes Produktionsgebäude - siehe Kopfkommentar).
 PlayerDataService.DataChanged:Connect(function(player: Player, changeKind: string, payload: { [string]: any })
+	if changeKind == "Ascend" then
+		-- Prestige ("Resurface"): level, XP, coins, income, ascend count and
+		-- multiplier all changed at once - push the complete state.
+		if Players:GetPlayerByUserId(player.UserId) then
+			HUDRemotes.HUDStateChanged:FireClient(player, buildFullState(player))
+		end
+		return
+	end
 	if changeKind ~= "Currency" then
 		return
 	end

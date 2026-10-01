@@ -837,6 +837,26 @@ task.spawn(function()
 	showAutoPopup()
 end)
 
+-- Prestige ("Resurface"): the server may have swapped an open raid quest (see
+-- QuestService.RefreshAfterPrestige) - fetch the quest set again.
+local prestigeCompletedConnection = getOrCreateBridgeEvent("PrestigeCompleted").Event:Connect(function()
+	local ok, result = pcall(function()
+		return QuestRemotes.GetQuestState:InvokeServer()
+	end)
+	if ok and type(result) == "table" and type(result.Quests) == "table" then
+		table.clear(questRows)
+		table.clear(questOrder)
+		for _, row in ipairs(result.Quests) do
+			questRows[row.TemplateId] = row
+			table.insert(questOrder, row.TemplateId)
+		end
+		if mainPanel then
+			rebuildQuestCards()
+		end
+		refreshBadge()
+	end
+end)
+
 -- // Aufräumen ------------------------------------------------------------------
 
 Players.PlayerRemoving:Connect(function(leavingPlayer)
@@ -845,6 +865,7 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	end
 	stopCountdown()
 	bridgeConnection:Disconnect()
+	prestigeCompletedConnection:Disconnect()
 	for _, handle in questCardHandles do
 		handle:Destroy()
 	end

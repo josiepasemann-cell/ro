@@ -267,6 +267,52 @@ function QuestService.RequestClaim(player: Player, templateId: any): { [string]:
 	}
 end
 
+--- Prestige ("Resurface") hook, called by PrestigeService after the level was
+--- reset to 1: raid quests (WinRaid) cannot be finished before the first
+--- defense tower unlocks, so an open WinRaid quest is swapped for another
+--- template (progress 0, nothing is claimed/rerolled for free - only that
+--- single open quest changes). Returns true if the quest set changed; the
+--- client then re-fetches it (PrestigeUIController -> "PrestigeCompleted").
+function QuestService.RefreshAfterPrestige(player: Player): boolean
+	if not PlayerDataService.IsDataLoaded(player) then
+		return false
+	end
+	local tower = BuildingConfig.Get("AnglerfishTower")
+	if not tower or PlayerDataService.GetLevel(player) >= tower.UnlockLevel then
+		return false
+	end
+
+	ensureTodayQuests(player)
+	local state = PlayerDataService.GetQuestState(player)
+
+	local excluded: { [string]: boolean } = { WinRaid = true }
+	for _, quest in ipairs(state.Quests) do
+		excluded[quest.TemplateId] = true
+	end
+
+	local changed = false
+	for index, quest in ipairs(state.Quests) do
+		if quest.TemplateId == "WinRaid" and not quest.Claimed and quest.Progress < quest.Target then
+			local replacement = pickRandomTemplates(1, excluded)[1]
+			if replacement then
+				excluded[replacement.Id] = true
+				state.Quests[index] = {
+					TemplateId = replacement.Id,
+					Target = rng:NextInteger(replacement.TargetMin, replacement.TargetMax),
+					Progress = 0,
+					Claimed = false,
+				}
+				changed = true
+			end
+		end
+	end
+
+	if changed then
+		PlayerDataService.SetQuestState(player, state)
+	end
+	return changed
+end
+
 -- // Login-Hook (stellt sicher, dass ein Spieler bei Bedarf sofort ein
 -- frisches Set hat, statt erst beim ersten GetQuestState-Aufruf) ------------
 

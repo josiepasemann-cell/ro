@@ -108,6 +108,9 @@ local openCodexEvent = getOrCreateBridgeEvent("OpenCodex")
 local openEventEvent = getOrCreateBridgeEvent("OpenEvent")
 local openAchievementsEvent = getOrCreateBridgeEvent("OpenAchievements")
 local questBadgeCountEvent = getOrCreateBridgeEvent("QuestBadgeCountChanged")
+local openTradeEvent = getOrCreateBridgeEvent("OpenTrade")
+local openClusterEvent = getOrCreateBridgeEvent("OpenCluster")
+local openPrestigeEvent = getOrCreateBridgeEvent("OpenPrestige")
 local achievementBadgeCountEvent = getOrCreateBridgeEvent("AchievementBadgeCountChanged")
 
 -- // Root-ScreenGui --------------------------------------------------------------
@@ -549,6 +552,7 @@ local drawerEntries: { MenuEntry } = {
 	{ Id = "Achievements", Icon = "🏅", Text = "Achievements", IsPanel = true, Key = Enum.KeyCode.K, BadgeKey = "Achievement", OnClick = function() openAchievementsEvent:Fire() end },
 	{ Id = "Event", Icon = "🌊", Text = "Event", IsPanel = true, Key = Enum.KeyCode.J, OnClick = function() openEventEvent:Fire() end },
 	{ Id = "Settings", Icon = "⚙️", Text = "Settings", IsPanel = true, Key = Enum.KeyCode.Y, OnClick = function()
+	{ Id = "Prestige", Icon = "🌅", Text = "Resurface", IsPanel = true, OnClick = function() openPrestigeEvent:Fire() end }, -- no hotkey on purpose (destructive)
 		buildSettingsPanel()
 		settingsPanel:Open()
 	end },

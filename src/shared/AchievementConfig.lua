@@ -379,6 +379,31 @@ AchievementConfig.LIST = {
 	-- // Live Events -----------------------------------------------------------
 	{
 		Id = "Events_TideRider",
+	{
+		Id = "Levels_Resurface",
+		Category = "Levels",
+		Icon = "🌅",
+		Name = "Back to the Surface",
+		Description = "Resurface for the first time.",
+		Secret = false,
+		Metric = { Type = "Counter", Key = "Resurfaced" },
+		Target = 1,
+		Reward = { TideCoins = 500, AbyssalShards = 3, Title = nil },
+		BadgeId = 0,
+	},
+	{
+		Id = "Levels_Resurface5",
+		Category = "Levels",
+		Icon = "🌅",
+		Name = "Tide Master",
+		Description = "Resurface 5 times.",
+		Secret = false,
+		Metric = { Type = "Counter", Key = "Resurfaced" },
+		Target = 5,
+		Reward = { TideCoins = 2000, AbyssalShards = 10, Title = nil },
+		BadgeId = 0,
+	},
+
 		Category = "Events",
 		Icon = "🌊",
 		Name = "Tide Rider",

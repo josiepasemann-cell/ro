@@ -625,3 +625,17 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	rescuePanel:Destroy()
 	screenGui:Destroy()
 end)
+-- Prestige ("Resurface") resets the raid timer server-side (NextRaidAt) -
+-- re-sync the countdown (PrestigeUIController fires this bridge event).
+local prestigeCompletedConnection = getOrCreateBridgeEvent("PrestigeCompleted").Event:Connect(function()
+	local ok, status = pcall(function()
+		return RaidRemotes.GetRaidStatus:InvokeServer()
+	end)
+	if ok and type(status) == "table" then
+		nextRaidAt = status.NextRaidAt
+		inRaid = status.InRaid == true
+		refreshStatusBar()
+	end
+end)
+
+	prestigeCompletedConnection:Disconnect()

@@ -39,6 +39,7 @@
 		SporeDelivered   (player, { Amount: number })
 		CoinsEarned      (player, { Amount: number, NewLifetimeTotal: number })
 		DepthChargeUsed  (player, { EnemiesHit: number }) -- purchasable ability, see AbilityService.RequestDepthCharge
+		Resurfaced       (player, { AscendCount: number, IncomeMultiplier: number }) -- prestige, see PrestigeService
 
 	Rojo-Einhängepunkt:
 		src/server/GameEvents.lua -> ServerScriptService.GameEvents
@@ -54,6 +55,7 @@ export type EventName =
 	| "SporeDelivered"
 	| "CoinsEarned"
 	| "DepthChargeUsed"
+	| "Resurfaced"
 
 local GameEvents = {}
 
@@ -68,6 +70,7 @@ GameEvents.Events = {
 	SporeDelivered = "SporeDelivered" :: EventName,
 	CoinsEarned = "CoinsEarned" :: EventName,
 	DepthChargeUsed = "DepthChargeUsed" :: EventName,
+	Resurfaced = "Resurfaced" :: EventName,
 }
 
 local registry: { [string]: BindableEvent } = {}
