@@ -61,15 +61,18 @@ writeFileSync(driverPath, driver);
 const stdout = execFileSync(luau, [driverPath], { maxBuffer: 1 << 28, encoding: "utf8" });
 
 const models = [], errors = [], ok = [], warns = [];
+let terrain = null;
 for (const line of stdout.split("\n")) {
   if (line.startsWith("@@MODEL@@")) models.push(JSON.parse(line.slice(9)));
+  else if (line.startsWith("@@TERRAIN@@")) terrain = JSON.parse(line.slice(11));
   else if (line.startsWith("@@ERROR@@")) errors.push(line.slice(9));
   else if (line.startsWith("@@OK@@")) ok.push(line.slice(6));
   else if (line.startsWith("@@WARN@@")) warns.push(line.slice(8));
   else if (line.trim() && !line.startsWith("@@PRINT@@")) console.log("luau:", line);
 }
-writeFileSync(out, JSON.stringify({ generated: new Date().toISOString(), models }, null, 0));
+writeFileSync(out, JSON.stringify({ generated: new Date().toISOString(), models, terrain }, null, 0));
 console.log(`scripts ok: ${ok.length}/${scripts.length}, models exported: ${models.length}, parts: ${models.reduce((a, m) => a + m.parts.length, 0)}`);
+if (terrain) for (const [s, c] of Object.entries(terrain.counts)) console.log(`terrain fills ${s}: ${c.total} (${Object.entries(c).filter(([k]) => k !== "total").map(([k, v]) => k + " " + v).join(", ")})`);
 for (const w of warns) console.log("WARN", w);
 for (const e of errors) console.log("ERROR", e);
 if (errors.length) process.exitCode = 1;

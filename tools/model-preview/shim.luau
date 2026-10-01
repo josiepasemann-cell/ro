@@ -1206,7 +1206,294 @@ local function modelJson(model, category)
 	}, ",") .. "}"
 end
 
+-------------------------------------------------------------------------------
+-- Workspace.Terrain: records Fill* calls, keeps a 2-stud heightfield (per-column solid
+-- intervals, so Air fills carve correctly), answers downward raycasts and exports the
+-- topmost surface + material per column for the three.js renderer.
+-------------------------------------------------------------------------------
+local TERRAIN_CELL = 2
+local terrainInst = newInstance("Terrain")
+terrainInst._name = "Terrain"
+terrainInst._props.CFrame = nil
+setParent(terrainInst, workspace)
+local TCOLS = {} -- key -> { ix, iz, owner, iv = { {lo, hi, mat}, ... } }
+local TOWNERS = {} -- script -> { fills = {FillBlock = n, ...}, total = n }
+local TMATCOLORS = {}
+local TOPS = {}
+
+local function tmatName(m)
+	if type(m) == "table" and m.Name then return m.Name end
+	return tostring(m or "Grass")
+end
+local function tkey(ix, iz) return (ix + 20000) * 40000 + (iz + 20000) end
+
+-- line (x, t, z) vs convex shapes in the op's local frame -> t interval or nil
+local function clipSlab(o, d, h, lo, hi)
+	if math.abs(d) < 1e-9 then
+		if o < -h or o > h then return nil end
+		return lo, hi
+	end
+	local t0, t1 = (-h - o) / d, (h - o) / d
+	if t0 > t1 then t0, t1 = t1, t0 end
+	if t0 > lo then lo = t0 end
+	if t1 < hi then hi = t1 end
+	if lo > hi then return nil end
+	return lo, hi
+end
+
+local function opInterval(op, x, z)
+	if op.kind == "ball" then
+		local dx, dz = x - op.cx, z - op.cz
+		local d2 = dx * dx + dz * dz
+		if d2 >= op.r * op.r then return nil end
+		local h = math.sqrt(op.r * op.r - d2)
+		return op.cy - h, op.cy + h
+	end
+	local o = cfMulV(op.inv, v3(x, 0, z))
+	local d = op.dir
+	local lo, hi = -1e9, 1e9
+	if op.kind == "cylinder" then
+		local a = d.x * d.x + d.z * d.z
+		local b = 2 * (o.x * d.x + o.z * d.z)
+		local c = o.x * o.x + o.z * o.z - op.r * op.r
+		if a < 1e-9 then
+			if c > 0 then return nil end
+		else
+			local disc = b * b - 4 * a * c
+			if disc <= 0 then return nil end
+			local sq = math.sqrt(disc)
+			lo, hi = (-b - sq) / (2 * a), (-b + sq) / (2 * a)
+		end
+		lo, hi = clipSlab(o.y, d.y, op.h / 2, lo, hi)
+		if not lo then return nil end
+		-- clipSlab works on the parameter t of the local line; with a unit-length y direction t == world y
+		return lo, hi
+	end
+	lo, hi = clipSlab(o.x, d.x, op.sx / 2, lo, hi)
+	if not lo then return nil end
+	lo, hi = clipSlab(o.y, d.y, op.sy / 2, lo, hi)
+	if not lo then return nil end
+	lo, hi = clipSlab(o.z, d.z, op.sz / 2, lo, hi)
+	if not lo then return nil end
+	if op.kind == "wedge" then
+		-- keep y/hy <= z/hz (slope rises from front-bottom -Z to back-top +Z)
+		local hy, hz = op.sy / 2, op.sz / 2
+		local a = d.y / hy - d.z / hz
+		local b = o.y / hy - o.z / hz
+		if math.abs(a) < 1e-9 then
+			if b > 0 then return nil end
+		elseif a > 0 then
+			hi = math.min(hi, -b / a)
+		else
+			lo = math.max(lo, -b / a)
+		end
+		if lo > hi then return nil end
+	end
+	return lo, hi
+end
+
+local function applyTerrainOp(op, kindName)
+	local own = TOWNERS[CURRENT_SCRIPT]
+	if not own then own = { fills = {}, total = 0 }; TOWNERS[CURRENT_SCRIPT] = own end
+	own.fills[kindName] = (own.fills[kindName] or 0) + 1
+	own.total += 1
+	-- world bounds in xz
+	local x0, x1, z0, z1
+	if op.kind == "ball" then
+		x0, x1, z0, z1 = op.cx - op.r, op.cx + op.r, op.cz - op.r, op.cz + op.r
+	else
+		local ex, ey, ez
+		if op.kind == "cylinder" then ex, ey, ez = op.r, op.h / 2, op.r else ex, ey, ez = op.sx / 2, op.sy / 2, op.sz / 2 end
+		x0, x1, z0, z1 = 1e9, -1e9, 1e9, -1e9
+		for _, sx in ipairs({ -1, 1 }) do for _, sy in ipairs({ -1, 1 }) do for _, sz in ipairs({ -1, 1 }) do
+			local w = cfMulV(op.cf, v3(ex * sx, ey * sy, ez * sz))
+			x0, x1, z0, z1 = math.min(x0, w.x), math.max(x1, w.x), math.min(z0, w.z), math.max(z1, w.z)
+		end end end
+	end
+	local air = op.mat == "Air"
+	for ix = math.ceil(x0 / TERRAIN_CELL), math.floor(x1 / TERRAIN_CELL) do
+		for iz = math.ceil(z0 / TERRAIN_CELL), math.floor(z1 / TERRAIN_CELL) do
+			local lo, hi = opInterval(op, ix * TERRAIN_CELL, iz * TERRAIN_CELL)
+			if lo and hi > lo then
+				local k = tkey(ix, iz)
+				local col = TCOLS[k]
+				if not col then
+					if not air then
+						col = { ix = ix, iz = iz, owner = CURRENT_SCRIPT, iv = {} }
+						TCOLS[k] = col
+					end
+				end
+				if col then
+					local out = {}
+					for _, iv in ipairs(col.iv) do
+						if iv[2] <= lo or iv[1] >= hi then
+							out[#out + 1] = iv
+						else
+							if iv[1] < lo then out[#out + 1] = { iv[1], lo, iv[3] } end
+							if iv[2] > hi then out[#out + 1] = { hi, iv[2], iv[3] } end
+						end
+					end
+					if not air then out[#out + 1] = { lo, hi, op.mat } end
+					col.iv = out
+					col.top = nil
+				end
+			end
+		end
+	end
+end
+
+local function colTop(col)
+	if col.top == nil then
+		local best, mat = -1e9, "Air"
+		for _, iv in ipairs(col.iv) do
+			if iv[2] > best then best, mat = iv[2], iv[3] end
+		end
+		col.top = { best, mat }
+	end
+	return col.top[1], col.top[2]
+end
+
+local function terrainHeight(x, z)
+	-- bilinear surface height (nil when no terrain around)
+	local fx, fz = x / TERRAIN_CELL, z / TERRAIN_CELL
+	local ix, iz = math.floor(fx), math.floor(fz)
+	local tx, tz = fx - ix, fz - iz
+	local hs, ws = {}, 0
+	local sum = 0
+	local function h(a, b)
+		local c = TCOLS[tkey(a, b)]
+		if not c then return nil end
+		local y = colTop(c)
+		if y < -1e8 then return nil end
+		return y
+	end
+	local h00, h10, h01, h11 = h(ix, iz), h(ix + 1, iz), h(ix, iz + 1), h(ix + 1, iz + 1)
+	local any = h00 or h10 or h01 or h11
+	if not any then return nil end
+	h00, h10, h01, h11 = h00 or any, h10 or any, h01 or any, h11 or any
+	local top = h00 * (1 - tx) + h10 * tx
+	local bot = h01 * (1 - tx) + h11 * tx
+	local c = TCOLS[tkey(math.floor(fx + 0.5), math.floor(fz + 0.5))]
+	local mat = c and select(2, colTop(c)) or "Rock"
+	return top * (1 - tz) + bot * tz, mat
+end
+
+local function terrainRay(origin, dir, params)
+	if params then
+		local list = params.FilterDescendantsInstances
+		local has = false
+		if list then for _, i in ipairs(list) do if i == terrainInst then has = true end end end
+		local ft = params.FilterType and tostring(params.FilterType) or ""
+		if string.find(ft, "Include") then if not has then return nil end
+		elseif has then return nil end
+	end
+	local len = dir.Magnitude
+	if len < 1e-6 then return nil end
+	local step = 0.5
+	local n = math.ceil(len / step)
+	local u = dir * (1 / len)
+	local prevAbove
+	for i = 0, n do
+		local p = origin + u * math.min(i * step, len)
+		local gy, mat = terrainHeight(p.x, p.z)
+		if gy then
+			local above = p.y > gy
+			if prevAbove and not above then
+				local e = 0.5
+				local nx = (terrainHeight(p.x + e, p.z) or gy) - (terrainHeight(p.x - e, p.z) or gy)
+				local nz = (terrainHeight(p.x, p.z + e) or gy) - (terrainHeight(p.x, p.z - e) or gy)
+				local normal = v3(-nx / (2 * e), 1, -nz / (2 * e))
+				normal = normal * (1 / normal.Magnitude)
+				return { Position = v3(p.x, gy, p.z), Normal = normal, Instance = terrainInst, Material = Enum.Material[mat] or Enum.Material.Sand, Distance = (v3(p.x, gy, p.z) - origin).Magnitude }
+			end
+			prevAbove = above
+		end
+	end
+	return nil
+end
+
+local function tfill(kind, kindName, args)
+	applyTerrainOp(args, kindName)
+end
+local tp = terrainInst._props
+tp.FillBlock = function(_, c, size, mat)
+	tfill("block", "FillBlock", { kind = "block", cf = c, inv = cfInverse(c), dir = cfRotV(cfInverse(c), v3(0, 1, 0)), sx = size.x, sy = size.y, sz = size.z, mat = tmatName(mat) })
+end
+tp.FillWedge = function(_, c, size, mat)
+	tfill("wedge", "FillWedge", { kind = "wedge", cf = c, inv = cfInverse(c), dir = cfRotV(cfInverse(c), v3(0, 1, 0)), sx = size.x, sy = size.y, sz = size.z, mat = tmatName(mat) })
+end
+tp.FillCylinder = function(_, c, height, radius, mat)
+	tfill("cylinder", "FillCylinder", { kind = "cylinder", cf = c, inv = cfInverse(c), dir = cfRotV(cfInverse(c), v3(0, 1, 0)), h = height, r = radius, mat = tmatName(mat) })
+end
+tp.FillBall = function(_, center, radius, mat)
+	tfill("ball", "FillBall", { kind = "ball", cx = center.x, cy = center.y, cz = center.z, r = radius, mat = tmatName(mat) })
+end
+tp.FillRegion = function() end
+tp.ReplaceMaterial = function() end
+tp.SetMaterialColor = function(_, mat, col) TMATCOLORS[tmatName(mat)] = col end
+tp.GetMaterialColor = function(_, mat) return TMATCOLORS[tmatName(mat)] or Color3.fromRGB(128, 128, 128) end
+tp.Clear = function()
+	TCOLS = {}
+end
+tp.WaterWaveSize = 0
+tp.WaterColor = Color3.fromRGB(12, 84, 91)
+
+InstanceMethods.Raycast = function(inst, origin, dir, params)
+	if inst == workspace then return terrainRay(origin, dir, params) end
+	return nil
+end
+
+local function terrainExportJson()
+	local byOwner = {}
+	for _, c in pairs(TCOLS) do
+		local top, mat = colTop(c)
+		if top > -1e8 then
+			local o = byOwner[c.owner]
+			if not o then o = { ix0 = 1e9, ix1 = -1e9, iz0 = 1e9, iz1 = -1e9, cols = {} }; byOwner[c.owner] = o end
+			o.ix0, o.ix1 = math.min(o.ix0, c.ix), math.max(o.ix1, c.ix)
+			o.iz0, o.iz1 = math.min(o.iz0, c.iz), math.max(o.iz1, c.iz)
+			o.cols[#o.cols + 1] = { c, top, mat }
+		end
+	end
+	local matIndex, matList = {}, {}
+	local function mi(m)
+		if not matIndex[m] then matList[#matList + 1] = m; matIndex[m] = #matList - 1 end
+		return matIndex[m]
+	end
+	local regions = {}
+	for owner, o in pairs(byOwner) do
+		local nx, nz = o.ix1 - o.ix0 + 1, o.iz1 - o.iz0 + 1
+		local h, m = {}, {}
+		for i = 1, nx * nz do h[i] = "null"; m[i] = "0" end
+		for _, e in ipairs(o.cols) do
+			local c = e[1]
+			local idx = (c.iz - o.iz0) * nx + (c.ix - o.ix0) + 1
+			h[idx] = string.format("%.2f", e[2])
+			m[idx] = tostring(mi(e[3]))
+		end
+		local fills = {}
+		for k, v in pairs(TOWNERS[owner].fills) do fills[#fills + 1] = jstr(k) .. ":" .. v end
+		table.sort(fills)
+		regions[#regions + 1] = string.format('{"script":%s,"cell":%d,"ix0":%d,"iz0":%d,"nx":%d,"nz":%d,"fills":{%s},"fillTotal":%d,"h":[%s],"m":[%s]}',
+			jstr(owner), TERRAIN_CELL, o.ix0, o.iz0, nx, nz, table.concat(fills, ","), TOWNERS[owner].total, table.concat(h, ","), table.concat(m, ","))
+	end
+	local mats = {}
+	for _, name in ipairs(matList) do mats[#mats + 1] = jstr(name) end
+	local cols = {}
+	for name, c in pairs(TMATCOLORS) do cols[#cols + 1] = jstr(name) .. ":" .. jcol(c) end
+	-- scripts that only cleared / filled nothing visible still report their fill counts
+	local counts = {}
+	for owner, o in pairs(TOWNERS) do
+		local fills = {}
+		for k, v in pairs(o.fills) do fills[#fills + 1] = jstr(k) .. ":" .. v end
+		table.sort(fills)
+		counts[#counts + 1] = jstr(owner) .. ":{" .. table.concat(fills, ",") .. ',"total":' .. o.total .. "}"
+	end
+	return '{"materials":[' .. table.concat(mats, ",") .. '],"colors":{' .. table.concat(cols, ",") .. '},"counts":{' .. table.concat(counts, ",") .. '},"regions":[' .. table.concat(regions, ",") .. "]}"
+end
+
 local function exportAll()
+	print("@@TERRAIN@@" .. terrainExportJson())
 	local assets = InstanceMethods.FindFirstChild(workspace, "Assets")
 	if not assets then return end
 	for _, folder in ipairs(assets._children) do
