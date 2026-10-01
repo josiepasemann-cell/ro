@@ -896,7 +896,7 @@ end
 local assets = Workspace:FindFirstChild("Assets")
 if not assets then
 	warn("[ApplyMeshes] Workspace.Assets is missing – run the buildscripts first.")
-	return
+	return nil -- exactly one value, so this also works via require() as a ModuleScript
 end
 
 local swapped, skipped = 0, 0
@@ -913,3 +913,4 @@ for _, model in ipairs(assets:GetDescendants()) do
 	end
 end
 print(("[ApplyMeshes] swapped %d model(s), %d kept their parts. Save or publish the place now."):format(swapped, skipped))
+return swapped
