@@ -4,10 +4,14 @@
 	Modul: UIKit.Toast
 	Zuständigkeit:
 		Gestapeltes Toast-/Benachrichtigungssystem. Position ist geräte-
-		abhängig (oben-rechts auf PC/Konsole für wenig Ablenkung von
-		Gamepad-Fokus, unten-zentriert auf Phone/Tablet für Daumenreich-
-		weite) und reagiert live auf Device.Changed. Mehrere Toasts stapeln
-		sich automatisch über UIListLayout.
+		abhängig und reagiert live auf Device.Changed:
+			- Phone/Tablet: unten mittig, aber AUSSERHALB der Zone von
+			  Daumenstick/Sprungknopf (Hochformat: darüber, Querformat:
+			  schmaler und zwischen den Knöpfen), siehe Device.GetBottomDockInsets.
+			- PC/Konsole: unten RECHTS (oben rechts liegt die Fähigkeiten-
+			  Leiste, unten mittig die Menüleiste).
+		Toasts fangen keine Eingaben ab. Mehrere Toasts stapeln sich
+		automatisch über UIListLayout.
 
 	Rojo-Einhängepunkt:
 		src/shared/UIKit/Toast.lua -> ReplicatedStorage.UIKit.Toast
@@ -52,13 +56,16 @@ local function getPlayerGui(): PlayerGui
 end
 
 local function applyPosition(frame: Frame)
-	if Device.ShouldUseFullscreenPanels() then
+	if Device.IsTouchPrimary() then
+		local sideInset, bottomInset = Device.GetBottomDockInsets()
+		local viewportWidth = Device.GetVirtualViewport().X
+		local width = math.max(240, math.min(380, viewportWidth - sideInset * 2 - 16))
 		frame.AnchorPoint = Vector2.new(0.5, 1)
-		frame.Position = UDim2.new(0.5, 0, 1, -20)
-		frame.Size = UDim2.new(1, -24, 0, 0)
+		frame.Position = UDim2.new(0.5, 0, 1, -(bottomInset + 16))
+		frame.Size = UDim2.new(0, width, 0, 0)
 	else
-		frame.AnchorPoint = Vector2.new(1, 0)
-		frame.Position = UDim2.new(1, -20, 0, 60)
+		frame.AnchorPoint = Vector2.new(1, 1)
+		frame.Position = UDim2.new(1, -20, 1, -24)
 		frame.Size = UDim2.new(0, 340, 0, 0)
 	end
 end
@@ -75,22 +82,20 @@ local function ensureInit()
 	Device.ApplySafeArea(gui)
 	gui.Parent = getPlayerGui()
 
-	local scale = Instance.new("UIScale")
-	scale.Parent = gui
-	Device.BindUIScale(scale)
+	local scaledRoot = Device.CreateScaledRoot(gui)
 
 	local stack = Instance.new("Frame")
 	stack.Name = "Stack"
 	stack.BackgroundTransparency = 1
 	stack.AutomaticSize = Enum.AutomaticSize.Y
 	applyPosition(stack)
-	stack.Parent = gui
+	stack.Parent = scaledRoot
 
+	-- Neueste Toasts unten, der Stapel wächst nach oben (Anker unten).
 	local list = Instance.new("UIListLayout")
 	list.SortOrder = Enum.SortOrder.LayoutOrder
 	list.Padding = UDim.new(0, 8)
-	list.VerticalAlignment = Device.ShouldUseFullscreenPanels() and Enum.VerticalAlignment.Bottom
-		or Enum.VerticalAlignment.Top
+	list.VerticalAlignment = Enum.VerticalAlignment.Bottom
 	list.Parent = stack
 
 	Device.Changed:Connect(function()
@@ -129,6 +134,7 @@ function Toast.Show(props: ToastProps)
 	label.TextColor3 = Theme.Text.Primary
 	label.TextWrapped = true
 	label.TextSize = 18
+	label.Active = false
 	label.Text = props.Text
 	label.Parent = entry
 	local textConstraint = Instance.new("UITextSizeConstraint")
@@ -144,7 +150,7 @@ function Toast.Show(props: ToastProps)
 	entry.BackgroundTransparency = 1
 	stroke.Transparency = 1
 	label.TextTransparency = 1
-	local offsetIn = Device.ShouldUseFullscreenPanels() and UDim2.new(0, 0, 0, 20) or UDim2.new(0.15, 0, 0, 0)
+	local offsetIn = if Device.IsTouchPrimary() then UDim2.new(0, 0, 0, 20) else UDim2.new(0.15, 0, 0, 0)
 	entry.Position = offsetIn
 
 	if SoundConfig.Toast.Id ~= "" then

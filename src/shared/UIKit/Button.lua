@@ -38,6 +38,7 @@ local Debris = game:GetService("Debris")
 
 local Theme = require(script.Parent:WaitForChild("Theme"))
 local Device = require(script.Parent:WaitForChild("Device"))
+local InputMode = require(script.Parent:WaitForChild("InputMode"))
 local Settings = require(script.Parent:WaitForChild("Settings"))
 local SoundConfig = require(script.Parent:WaitForChild("SoundConfig"))
 local ParticlePool = require(script.Parent:WaitForChild("ParticlePool"))
@@ -208,12 +209,11 @@ function Button.new(props: ButtonProps): ButtonHandle
 	sizeConstraint.MaxSize = Vector2.new(math.huge, math.huge)
 	sizeConstraint.Parent = root
 
+	-- 44 px auf Touch, 52 px auf Konsole (Fokus aus der Distanz), sonst keine
+	-- Untergrenze.
 	local function applyTouchConstraint()
-		if Device.IsTouch() then
-			sizeConstraint.MinSize = Vector2.new(Device.MinTouchSize, Device.MinTouchSize)
-		else
-			sizeConstraint.MinSize = Vector2.new(0, 0)
-		end
+		local minimum = Device.GetMinTargetSize()
+		sizeConstraint.MinSize = Vector2.new(minimum, minimum)
 	end
 	applyTouchConstraint()
 
@@ -368,7 +368,7 @@ function Button.new(props: ButtonProps): ButtonHandle
 	table.insert(
 		connections,
 		root.MouseEnter:Connect(function()
-			if disabled or Device.IsTouch() then
+			if disabled or InputMode.IsTouch() then
 				return
 			end
 			stopPulse()
@@ -415,7 +415,7 @@ function Button.new(props: ButtonProps): ButtonHandle
 				input.UserInputType == Enum.UserInputType.MouseButton1
 				or input.UserInputType == Enum.UserInputType.Touch
 			then
-				local hoverActive = not Device.IsTouch() and input.UserInputType == Enum.UserInputType.MouseButton1
+				local hoverActive = not InputMode.IsTouch() and input.UserInputType == Enum.UserInputType.MouseButton1
 				tweenScale(hoverActive and hoverScale or baseScale, 0.12)
 				tweenStroke(hoverActive)
 				refreshPulseState()

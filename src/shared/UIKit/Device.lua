@@ -34,6 +34,7 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
+local InputMode = require(script.Parent:WaitForChild("InputMode"))
 
 export type DeviceClass = "Phone" | "Tablet" | "Console" | "PC"
 
@@ -43,21 +44,37 @@ export type DeviceState = {
 	HasKeyboard: boolean,
 	HasGamepad: boolean,
 	IsTenFoot: boolean,
+	IsPortrait: boolean,
 	Scale: number,
 	ViewportSize: Vector2,
 }
 
-local MIN_SCALE = 0.62
-local MAX_SCALE = 1.35
--- Referenz-Kurzseite, auf die das gesamte UIKit optisch abgestimmt ist
--- (klassisches 16:9-Laptop-Fenster, 720 px Kurzseite).
+-- Referenz-Kurzseite für PC/Tablet/Konsole (klassisches 16:9-Laptop-Fenster,
+-- 720 px Kurzseite).
 local REFERENCE_SHORT_SIDE = 720
--- Zusätzlicher Skalierungs-Boost auf reinen Touch-Geräten, damit die
--- Mindest-Touch-Zielgröße (~44px, Apple/Google HIG) auch bei kleinen
--- Phones sicher erreicht wird.
+-- Phones: echte Kurzseiten liegen bei ~360-430 px. Teiler 400 ergibt ~0.9-1.1,
+-- d. h. Text mit MinTextSize 12-14 bleibt auch auf einem 360x640-Handy lesbar
+-- (vorher 0.62 -> 14er Text wurde auf ~9 px geschrumpft).
+local PHONE_REFERENCE_SHORT_SIDE = 400
+local PHONE_MIN_SCALE = 0.9
+local PHONE_MAX_SCALE = 1.15
+local TABLET_MIN_SCALE = 0.95
+local TABLET_MAX_SCALE = 1.3
+local PC_MIN_SCALE = 0.8
+local PC_MAX_SCALE = 1.5
+-- Konsole/TV (10-Foot): deutlich größer, damit Text aus 3 m lesbar bleibt.
+local CONSOLE_FACTOR = 1.15
+local CONSOLE_MIN_SCALE = 1.15
+local CONSOLE_MAX_SCALE = 1.7
+-- Zusätzlicher Skalierungs-Boost auf Tablets (Mindest-Touch-Zielgröße).
 local TOUCH_SCALE_BOOST = 1.12
 
+-- Platz (reale px), den Roblox' Standard-Touch-Steuerung (Daumenstick links,
+-- Sprungknopf rechts) unten belegt.
+local TOUCH_CONTROLS_CLEARANCE = 190
+
 local MIN_TOUCH_SIZE = 44
+local MIN_CONSOLE_TARGET_SIZE = 52
 
 local Device = {}
 Device.MinTouchSize = MIN_TOUCH_SIZE
@@ -100,11 +117,18 @@ end
 
 local function computeScale(viewport: Vector2, class: DeviceClass): number
 	local shortSide = math.min(viewport.X, viewport.Y)
-	local scale = shortSide / REFERENCE_SHORT_SIDE
-	if class == "Phone" or class == "Tablet" then
-		scale *= TOUCH_SCALE_BOOST
+	if class == "Phone" then
+		return math.clamp(shortSide / PHONE_REFERENCE_SHORT_SIDE, PHONE_MIN_SCALE, PHONE_MAX_SCALE)
+	elseif class == "Tablet" then
+		return math.clamp(
+			shortSide / REFERENCE_SHORT_SIDE * TOUCH_SCALE_BOOST,
+			TABLET_MIN_SCALE,
+			TABLET_MAX_SCALE
+		)
+	elseif class == "Console" then
+		return math.clamp(shortSide / REFERENCE_SHORT_SIDE * CONSOLE_FACTOR, CONSOLE_MIN_SCALE, CONSOLE_MAX_SCALE)
 	end
-	return math.clamp(scale, MIN_SCALE, MAX_SCALE)
+	return math.clamp(shortSide / REFERENCE_SHORT_SIDE, PC_MIN_SCALE, PC_MAX_SCALE)
 end
 
 local function buildState(): DeviceState
@@ -116,6 +140,7 @@ local function buildState(): DeviceState
 		HasKeyboard = UserInputService.KeyboardEnabled,
 		HasGamepad = UserInputService.GamepadEnabled,
 		IsTenFoot = GuiService:IsTenFootInterface(),
+		IsPortrait = viewport.Y > viewport.X,
 		Scale = computeScale(viewport, class),
 		ViewportSize = viewport,
 	}
@@ -137,6 +162,49 @@ end
 
 function Device.IsTouch(): boolean
 	return currentState.HasTouch
+end
+
+function Device.IsPortrait(): boolean
+	return currentState.IsPortrait
+end
+
+-- true auf Phone/Tablet (Touch ist die Haupteingabe): dort belegt Roblox
+-- unten links/rechts den Daumenstick und den Sprungknopf.
+function Device.IsTouchPrimary(): boolean
+	return currentState.HasTouch and (currentState.Class == "Phone" or currentState.Class == "Tablet")
+end
+
+-- Sichtbarer Bereich in "virtuellen" Pixeln (also nach Abzug des UIScale);
+-- das ist die Größe, die ein CreateScaledRoot-Frame tatsächlich bietet.
+function Device.GetVirtualViewport(): Vector2
+	return currentState.ViewportSize / currentState.Scale
+end
+
+-- Liefert (seitlicher Abstand, Abstand unten) in virtuellen Pixeln, die
+-- unten angedockte UI auf Touch-Geräten freihalten muss, damit sie weder
+-- Daumenstick noch Sprungknopf verdeckt: Hochformat = Abstand unten,
+-- Querformat = Abstand links/rechts. Auf PC/Konsole (0, 0).
+function Device.GetBottomDockInsets(): (number, number)
+	if not Device.IsTouchPrimary() then
+		return 0, 0
+	end
+	local clearance = TOUCH_CONTROLS_CLEARANCE / currentState.Scale
+	if currentState.IsPortrait then
+		return 0, clearance
+	end
+	return clearance, 0
+end
+
+-- Kleinste sinnvolle Zielgröße (reale px) für bedienbare Elemente: 44 px auf
+-- Touch, 52 px auf Konsole (Gamepad-Fokus aus der Distanz).
+function Device.GetMinTargetSize(): number
+	if currentState.Class == "Console" then
+		return MIN_CONSOLE_TARGET_SIZE
+	end
+	if currentState.HasTouch then
+		return MIN_TOUCH_SIZE
+	end
+	return 0
 end
 
 function Device.IsPhone(): boolean
@@ -161,6 +229,41 @@ function Device.ClampTouchSize(pixelSize: number): number
 	return pixelSize
 end
 
+-- Erzeugt unter `screenGui` einen vollflächigen Root-Frame, der den
+-- zentralen Skalierungsfaktor korrekt anwendet: Size = 1/Scale, das UIScale
+-- sitzt als Kind des Frames. Dadurch füllt der Frame das ScreenGui exakt
+-- aus, Kinder arbeiten in "virtuellen" Pixeln (ViewportSize / Scale) und
+-- zentrierte (0.5) bzw. unten/rechts angedockte (1) Elemente liegen
+-- tatsächlich dort. Alle Kinder des ScreenGui sollen unter diesen Frame.
+-- Gibt (root, unbind) zurück.
+function Device.CreateScaledRoot(screenGui: ScreenGui, multiplier: number?): (Frame, () -> ())
+	local mult = multiplier or 1
+	local root = Instance.new("Frame")
+	root.Name = "ScaledRoot"
+	root.BackgroundTransparency = 1
+	root.BorderSizePixel = 0
+	root.Active = false
+	root.Selectable = false
+
+	local uiScale = Instance.new("UIScale")
+	uiScale.Parent = root
+
+	local function apply(scale: number)
+		local effective = scale * mult
+		uiScale.Scale = effective
+		root.Size = UDim2.fromScale(1 / effective, 1 / effective)
+	end
+	apply(currentState.Scale)
+	local connection = Device.Changed:Connect(function(state: DeviceState)
+		apply(state.Scale)
+	end)
+	root.Parent = screenGui
+
+	return root, function()
+		connection:Disconnect()
+	end
+end
+
 -- Bindet ein UIScale-Objekt dauerhaft an den zentralen Skalierungswert und
 -- hält es bei ViewportSize-Änderungen aktuell. Gibt eine Disconnect-
 -- Funktion zurück, die beim Aufräumen des jeweiligen UI-Widgets aufgerufen
@@ -176,27 +279,26 @@ function Device.BindUIScale(uiScale: UIScale, multiplier: number?): () -> ()
 	end
 end
 
--- Setzt Safe-Area/Notch-Aussparung auf einem ScreenGui (mobile Geräte mit
--- Notch/Punch-Hole) und liefert zusätzlich den aktuellen TopBar-Inset
--- (GuiService:GetGuiInset()) für Layouts, die bewusst darunter beginnen
--- wollen.
-function Device.ApplySafeArea(screenGui: ScreenGui): (Vector2, Vector2)
-	screenGui.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
-	local inset, _ = GuiService:GetGuiInset()
-	return inset, GuiService:GetGuiInset()
+-- Setzt Safe-Area/Notch-Aussparung auf einem ScreenGui. Standard ist
+-- CoreUISafeInsets: hält Abstand zu Notch/Punch-Hole/Home-Indikator UND zur
+-- Roblox-Topbar/den Core-Buttons (Menü, Chat), sodass HUD-Elemente dort nicht
+-- überlappen. Für bewusst randlose Overlays (Abdunkeln, Flash) None übergeben.
+-- Liefert zusätzlich GuiService:GetGuiInset() (links-oben, rechts-unten).
+function Device.ApplySafeArea(screenGui: ScreenGui, insets: Enum.ScreenInsets?): (Vector2, Vector2)
+	screenGui.ScreenInsets = insets or Enum.ScreenInsets.CoreUISafeInsets
+	return GuiService:GetGuiInset()
 end
 
--- Liefert true, wenn Tastatur-Shortcuts angezeigt werden sollen (nur wenn
--- tatsächlich eine physische Tastatur erkannt wurde, also NICHT auf
--- reinen Touch-/Konsole-Geräten).
+-- Liefert true, wenn Tastatur-Shortcuts angezeigt werden sollen: nur wenn
+-- eine Tastatur vorhanden ist UND zuletzt Tastatur/Maus benutzt wurde.
 function Device.ShouldShowKeyboardHints(): boolean
-	return currentState.HasKeyboard and currentState.Class == "PC"
+	return currentState.HasKeyboard and InputMode.Get() == "KeyboardMouse"
 end
 
--- Liefert true, wenn Gamepad-Navigation (Selectable/SelectionImageObject)
--- aktiv beworben werden soll.
+-- Liefert true, wenn Gamepad-Tastenhinweise (A/B/Y ...) gezeigt werden
+-- sollen: Konsole oder zuletzt ein Gamepad benutzt.
 function Device.ShouldShowGamepadHints(): boolean
-	return currentState.HasGamepad and (currentState.Class == "Console" or not currentState.HasKeyboard)
+	return currentState.Class == "Console" or InputMode.Get() == "Gamepad"
 end
 
 -- Layout-Helfer: liefert, ob Panels auf diesem Gerät als Vollbild

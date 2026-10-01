@@ -38,7 +38,7 @@ instances with `UIKit.Button.new(...)`, don't just style them.
 {
   Class = "Phone" | "Tablet" | "Console" | "PC",
   HasTouch: boolean, HasKeyboard: boolean, HasGamepad: boolean,
-  IsTenFoot: boolean, Scale: number, ViewportSize: Vector2,
+  IsTenFoot: boolean, IsPortrait: boolean, Scale: number, ViewportSize: Vector2,
 }
 ```
 
@@ -49,22 +49,65 @@ rotation/window size changes.
 
 Important helpers:
 
-- `Device.GetScale()` – central scale factor (0.62–1.35), computed from
-  the viewport's short side, with a touch boost.
-- `Device.BindUIScale(uiScale, multiplier?)` – binds a `UIScale` object
-  permanently to the scale factor, returns an unbind function.
-  `UIKit.Panel` already does this automatically for its whole window –
-  **your own menus should bind ONE UIScale per screen/panel, not per
-  widget.**
-- `Device.ApplySafeArea(screenGui)` – sets `ScreenInsets = DeviceSafeInsets`
-  (notch/punch-hole) and returns the `GuiService:GetGuiInset()` value.
-- `Device.ShouldShowKeyboardHints()` – only true if a real keyboard is
-  present (for "[E] Interact" hints, etc.).
-- `Device.ShouldShowGamepadHints()` – true on console/pure gamepad input.
-- `Device.ShouldUseFullscreenPanels()` – true on Phone (panels should be
-  fullscreen there instead of a centered window).
+- `Device.GetScale()` – central scale factor per class: Phone
+  `short side / 400` (0.9–1.15), Tablet 0.95–1.3, PC 0.8–1.5, Console /
+  10-foot `short side / 720 * 1.15` (1.15–1.7).
+- `Device.CreateScaledRoot(screenGui)` – **the only correct way to scale a
+  ScreenGui.** Returns `(root, unbind)`: a full-screen frame whose size is
+  `1 / Scale` with the `UIScale` as its child. Put ALL your widgets under
+  `root`. A bare `UIScale` directly under a `ScreenGui` scales around the
+  top-left corner, so centered/bottom/right-anchored elements land in the
+  wrong place and "full width" frames end up too small or too large.
+  `UIKit.Panel`, `UIKit.Toast` and every HUD controller use it.
+  `Device.BindUIScale(uiScale)` still exists but is only for UIScales that
+  are NOT directly under a ScreenGui.
+- `Device.GetVirtualViewport()` – visible area in scaled ("virtual") pixels,
+  i.e. the size a scaled root actually offers.
+- `Device.IsPortrait()`, `Device.IsTouchPrimary()` (Phone/Tablet),
+  `Device.GetMinTargetSize()` (44 touch, 52 console).
+- `Device.GetBottomDockInsets()` – `(side, bottom)` in virtual px that
+  bottom-docked UI must keep free on touch devices for Roblox's thumbstick
+  and jump button (portrait: bottom, landscape: left/right).
+- `Device.ApplySafeArea(screenGui, insets?)` – sets
+  `ScreenInsets = CoreUISafeInsets` by default (clear of notch, home
+  indicator, Roblox top bar and core buttons). Pass `Enum.ScreenInsets.None`
+  for edge-to-edge overlays.
+- `Device.ShouldShowKeyboardHints()` / `ShouldShowGamepadHints()` – follow
+  the LAST used input (see `UIKit.InputMode`) instead of "has a keyboard".
+- `Device.ShouldUseFullscreenPanels()` – true on Phone (panels fill the
+  screen there instead of a centered window).
 - `Device.ClampTouchSize(px)` – clamps a desired pixel size to at least
   `Device.MinTouchSize` (44) when touch is active.
+
+## Last used input (`UIKit.InputMode`)
+
+`InputMode.Get()` returns `"Touch" | "Gamepad" | "KeyboardMouse"` and
+follows `UserInputService.LastInputTypeChanged` live (start value: console /
+10-foot -> Gamepad, touch-only -> Touch, else keyboard/mouse).
+
+- `InputMode.Changed:Connect(function(mode) end)`,
+  `InputMode.Bind(fn)` (calls `fn` now and on every change).
+- `InputMode.Pick(keyboard, gamepad, touch?)` – picks a value for the
+  current mode (e.g. `"G to drop"` / `"B to drop"` / `"tap Drop"`).
+- `InputMode.GetGlyph(Enum.KeyCode.ButtonB)` -> `"B"` (PlayStation:
+  `"○"`), `Enum.KeyCode.Return` -> `"Enter"`.
+- `InputMode.CreateHint({ Parent, Keyboard = "B", Gamepad = Enum.KeyCode.ButtonY, Label? })`
+  – small key chip that is visible only in the matching mode (never on
+  touch). Use it for "press X" hints instead of static text.
+
+## Layout (`UIKit.Layout`)
+
+- `Layout.FullscreenOrCentered(frame, sizing)` – used by `Panel`; clamps the
+  centered window to the visible area and to `MaxWidth` (default 1100, so
+  nothing stretches on ultrawide). `FullscreenOnPhone = false` keeps small
+  dialogs centered on phones.
+- `Layout.GetHudLayout()` – the **central position table** for the permanent
+  on-screen elements (`Hud`, `Raid`, `Event`, `Menu`, `Ability`). Portrait
+  stacks them from the top, landscape touch puts HUD/raid/event on the left
+  and menu/ability on the right, desktop/console centers the HUD at the top
+  and docks the menu at the bottom. Nothing permanent sits in the bottom
+  corners on touch (thumbstick/jump). Read your position from here instead
+  of hard-coding offsets.
 
 ## Responsiveness – binding rules for all widgets
 
@@ -166,10 +209,16 @@ panel:Destroy() -- removes it permanently (connections, UIScale binding, layout 
 panel.Content -- Frame, build your own widgets in here
 ```
 
-Panel automatically binds **one** `UIScale` for the whole window
-(`Device.BindUIScale`) and positions itself via
+Panel automatically creates **one** scaled root for the whole window
+(`Device.CreateScaledRoot`) and positions itself via
 `Layout.FullscreenOrCentered` (fullscreen on Phone, centered otherwise) as
-well as `Device.ApplySafeArea` (notch/safe area).
+well as `Device.ApplySafeArea` (notch/top bar). Gamepad behaviour is built
+in: the first usable button gets focus when the panel opens (or when the
+player switches to a gamepad), focus is kept inside the topmost panel, the
+previous selection is restored on close, and **B closes the topmost
+panel** (a `B` hint chip appears next to the X). `panel:SetInitialFocus(obj)`
+overrides the first-focus target. `UIKit.Panel.CloseAll()` /
+`UIKit.Panel.IsAnyOpen()` let keyboard shortcuts toggle panels.
 
 ## Tabs (`UIKit.Tabs`)
 
@@ -180,6 +229,8 @@ local tabs = UIKit.Tabs.new({
     DefaultTabId = "Overview",
 })
 local overviewContent = tabs:GetContentFrame("Overview") -- ScrollingFrame with its own UIListLayout, build your own children in here (do NOT add another UIListLayout)
+-- The tab header is always ONE horizontally scrollable row (swipe / mouse wheel);
+-- gamepad: LB / RB switch tabs while the panel is on top.
 tabs.Selected:Connect(function(id) ... end)
 tabs:SelectTab("Feed")
 tabs:Destroy()
@@ -192,8 +243,9 @@ UIKit.Toast.Show({ Text = "Received 500 Tide Coins!", Type = "Success", Duration
 -- Type: "Info" | "Success" | "Warning" | "Error"
 ```
 
-No manual init needed (lazy). Position is device-dependent (top-right on
-PC/Console, bottom-centered on Phone/Tablet) and stacks automatically.
+No manual init needed (lazy). Position is device-dependent (bottom-right
+on PC/Console; bottom-centered on Phone/Tablet but outside the
+thumbstick/jump zone) and stacks automatically. Toasts never take input.
 
 ## CountUp (`UIKit.CountUp`)
 
@@ -229,7 +281,9 @@ UIKit.ConfirmDialog.Show({
 ```
 
 Self-contained (opens, builds buttons, cleans itself up after the decision
-– no manual `:Destroy()` needed).
+– no manual `:Destroy()` needed). Stays a small centered dialog on phones;
+on a gamepad focus starts on Confirm (on Cancel when `Danger = true`) and B
+cancels.
 
 ## ScreenFX (`UIKit.ScreenFX`)
 

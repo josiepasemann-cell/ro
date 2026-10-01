@@ -25,6 +25,7 @@ local UIKit = {}
 UIKit.Signal = require(script:WaitForChild("Signal"))
 UIKit.Device = require(script:WaitForChild("Device"))
 UIKit.Theme = require(script:WaitForChild("Theme"))
+UIKit.InputMode = require(script:WaitForChild("InputMode"))
 UIKit.Settings = require(script:WaitForChild("Settings"))
 UIKit.SoundConfig = require(script:WaitForChild("SoundConfig"))
 UIKit.ParticlePool = require(script:WaitForChild("ParticlePool"))

@@ -4,9 +4,10 @@
 	Modul: UIKit.ConfirmDialog
 	Zuständigkeit:
 		Bestätigungsdialog (z. B. "Wirklich für 500 Tide Coins kaufen?"),
-		gebaut auf UIKit.Panel + UIKit.Button. Nutzt Layout.ResponsiveRow
-		für die Bestätigen/Abbrechen-Buttons, damit sie auf Phone
-		übereinander (volle Breite) statt nebeneinander erscheinen.
+		gebaut auf UIKit.Panel + UIKit.Button. Auf Phone ein kleiner,
+		zentrierter Dialog (kein Vollbild), Bestätigen/Abbrechen immer
+		nebeneinander (je 48 %, 52 px hoch). Gamepad: Fokus startet auf
+		"Bestätigen" (bei Danger auf "Abbrechen"), B bricht ab.
 
 	Rojo-Einhängepunkt:
 		src/shared/UIKit/ConfirmDialog.lua -> ReplicatedStorage.UIKit.ConfirmDialog
@@ -15,7 +16,6 @@
 local Theme = require(script.Parent:WaitForChild("Theme"))
 local Panel = require(script.Parent:WaitForChild("Panel"))
 local Button = require(script.Parent:WaitForChild("Button"))
-local Layout = require(script.Parent:WaitForChild("Layout"))
 
 export type ConfirmDialogProps = {
 	Title: string,
@@ -38,6 +38,7 @@ function ConfirmDialog.Show(props: ConfirmDialogProps)
 		Title = props.Title,
 		Closable = true,
 		CenteredSize = UDim2.fromOffset(460, 260),
+		FullscreenOnPhone = false,
 		OnClose = function()
 			if not suppressCancel and props.OnCancel then
 				props.OnCancel()
@@ -64,30 +65,36 @@ function ConfirmDialog.Show(props: ConfirmDialogProps)
 	local buttonHost = Instance.new("Frame")
 	buttonHost.Name = "Buttons"
 	buttonHost.BackgroundTransparency = 1
-	buttonHost.Size = UDim2.new(1, 0, 0, 100)
-	buttonHost.Position = UDim2.new(0, 0, 1, -100)
+	buttonHost.Size = UDim2.new(1, 0, 0, 56)
+	buttonHost.Position = UDim2.new(0, 0, 1, -56)
 	buttonHost.Parent = panel.Content
 
-	local row = Layout.ResponsiveRow({
-		Parent = buttonHost,
-		Padding = 12,
-	})
-	row.Frame.Size = UDim2.fromScale(1, 1)
+	local row = Instance.new("UIListLayout")
+	row.FillDirection = Enum.FillDirection.Horizontal
+	row.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	row.VerticalAlignment = Enum.VerticalAlignment.Center
+	row.SortOrder = Enum.SortOrder.LayoutOrder
+	row.Padding = UDim.new(0, 12)
+	row.Parent = buttonHost
 
 	local cancelButton = Button.new({
-		Parent = row.Frame,
+		Parent = buttonHost,
+		LayoutOrder = 1,
 		Text = props.CancelText or "Cancel",
 		Variant = "Ghost",
-		Size = UDim2.new(0.48, 0, 0, 48),
+		Size = UDim2.new(0.48, -6, 0, 52),
 	})
 
 	local confirmButton = Button.new({
-		Parent = row.Frame,
+		Parent = buttonHost,
+		LayoutOrder = 2,
 		Text = props.ConfirmText or "Confirm",
 		Variant = if props.Danger then "Danger" else "Success",
 		Important = true,
-		Size = UDim2.new(0.48, 0, 0, 48),
+		Size = UDim2.new(0.48, -6, 0, 52),
 	})
+
+	panel:SetInitialFocus(if props.Danger then cancelButton.Instance else confirmButton.Instance)
 
 	local function teardown()
 		row:Destroy()
