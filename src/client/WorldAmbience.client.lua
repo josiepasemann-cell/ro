@@ -845,7 +845,7 @@ local function updatePulse(now, t)
 		local e = pulseList[i]
 		if dueAt(e, now) then
 			local p = 0.5 + 0.5 * math.sin(t * e.Speed * 2 + e.Phase)
-			local dim = e.Depth * (1 - p)
+			local dim = e.Depth * Config.PulseDepthScale * (1 - p)
 			local neon, neonBase = e.Neon, e.NeonBase
 			for j = 1, #neon do
 				local b = neonBase[j]
@@ -867,9 +867,9 @@ local function updateFlicker(now, t)
 		local e = flickerList[i]
 		if dueAt(e, now) then
 			local n = math.noise(t * e.Speed, e.Phase, 0)
-			local v = math.clamp(0.85 + n * 0.8, 0.3, 1.1)
+			local v = math.clamp(0.9 + n * 0.5, Config.FlickerMin, 1.05)
 			if math.noise(t * e.Speed * 0.4, e.Phase, 7) < -0.38 then
-				v *= 0.55 -- occasional dip
+				v *= Config.FlickerDipFactor -- occasional (small) dip
 			end
 			local neon, neonBase = e.Neon, e.NeonBase
 			for j = 1, #neon do

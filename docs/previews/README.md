@@ -14,12 +14,15 @@ them in headless Chromium.
 | `decorations.png` | Event decorations |
 | `npcs.png` | Hub NPCs, posed where their scripts place them |
 | `hub-overview.png` | TidalMarketHub plus its NPCs: the full footprint and a plaza close-up |
-| `terrain.png` | The four zone terrain chunks and HabitatPlotBase |
+| `terrain.png` | The four zone terrain chunks (sculpted Workspace.Terrain + landmark parts, each in its zone lighting) and HabitatPlotBase |
+| `map-<zone>-after.png` | Sun, Twilight, Midnight, Hadal and Hub: overview and landmark close-up (terrain + chunk + dressing). `-before.png` are the old flat slabs |
+| `map-zones-compare.png` | Hub and the four zones side by side, to check each one has its own identity |
 
 Every cell is framed separately, so sizes can't be compared between cells.
 
 ## How faithful the renders are
 
+- **Workspace.Terrain**: `Terrain:FillBlock/FillBall/FillCylinder/FillWedge` (Air carves) and `SetMaterialColor` are recorded by the shim; the renderer shows a smoothed 2-stud heightfield coloured by terrain material (CrackedLava glows). Overhangs are not shown and edges are softer than Roblox's 4-stud voxels. `workspace:Raycast` against terrain works in the shim, so dressing scripts can stand props on the ground. Zone sheets use a lighting mood that approximates `ZoneAtmosphere.client.lua`.
 - **Geometry, colours, materials and transparency** come straight from the scripts (materials are drawn as approximations, see below). Cylinders run
   along X, and wedges slope the way Roblox wedges do. Balls are drawn as spheres whose diameter is
   the smallest axis of `Size`, because Roblox does not stretch balls into ellipsoids. Many

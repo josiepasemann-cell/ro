@@ -14,7 +14,7 @@
 		  (PrimaryPart, attribute Zone = "TwilightZone"), the canyon gate and the spire arch.
 
 	LAYOUT (local studs, x east / z south): landing plaza at 0,0; trail NW into the canyon corridor
-	(walls z -14 / -40) towards the gate at x -38; trail E to the chasm bridge (chasm x 14..46,
+	(walls z -14 / -40) towards the gate at x -30; trail E to the chasm bridge (chasm x 14..46,
 	z 14..34, floor -20, a 32 degree ramp along its north side walks back out); spire field NE.
 
 	GAMEPLAY AREAS (flat, empty): landing (r 12 + margin), all trails, the bridge, the ramp.
@@ -49,7 +49,7 @@ local PALETTE = {
 	[M.Sandstone] = C3(236, 150, 112), [M.LeafyGrass] = C3(84, 168, 120), [M.Ground] = C3(206, 172, 120),
 	[M.Slate] = C3(108, 94, 170), [M.Rock] = C3(100, 128, 190), [M.Mud] = C3(48, 40, 90), [M.Grass] = C3(36, 108, 116),
 	[M.Basalt] = C3(36, 32, 40), [M.Asphalt] = C3(62, 52, 58), [M.CrackedLava] = C3(255, 120, 40),
-	[M.Glacier] = C3(152, 206, 238), [M.Ice] = C3(196, 234, 250), [M.Snow] = C3(228, 242, 252),
+	[M.Glacier] = C3(104, 168, 224), [M.Ice] = C3(166, 216, 244), [M.Snow] = C3(222, 238, 252),
 	[M.Cobblestone] = C3(176, 150, 112), [M.Pavement] = C3(196, 176, 140),
 }
 for material, color in pairs(PALETTE) do
@@ -135,6 +135,30 @@ end
 local function cliffWall(x1, z1, x2, z2, w, h, mat)
 	local len = sqrt((x2 - x1) ^ 2 + (z2 - z1) ^ 2)
 	fillBlock((x1 + x2) / 2, h / 2 - 2, (z1 + z2) / 2, len, h + 4, w, mat, segYaw(x1, z1, x2, z2))
+end
+
+-- Lava river: a channel carved 3 studs below the surface and filled with CrackedLava (the only glowing ground).
+local function river(pts, w, depth)
+	depth = depth or 3
+	for i = 1, #pts - 1 do
+		local a, b = pts[i], pts[i + 1]
+		local len = sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
+		local ext = w * 0.5
+		local dx, dz = (b[1] - a[1]) / len, (b[2] - a[2]) / len
+		local x1, z1, x2, z2 = a[1] - dx * ext * (i > 1 and 1 or 0), a[2] - dz * ext * (i > 1 and 1 or 0), b[1] + dx * ext, b[2] + dz * ext
+		carveTrench(x1, z1, x2, z2, w, depth)
+		fillBlock((x1 + x2) / 2, -depth - 2, (z1 + z2) / 2, sqrt((x2 - x1) ^ 2 + (z2 - z1) ^ 2), 4, w, M.CrackedLava, segYaw(x1, z1, x2, z2))
+	end
+end
+-- Flat-topped bridge slab across a channel (top at y = 0).
+local function bridge(x, z, len, w, yawDeg, mat)
+	fillBlock(x, -2, z, len, 4, w, mat, yawDeg)
+end
+-- Volcanic cone: smooth dome with a lava-filled crater.
+local function volcano(x, z, R, h, craterR, mat)
+	hill(x, z, R, h, mat)
+	fillBall(x, h + craterR * 0.35, z, craterR, M.Air)
+	fillBall(x, h - craterR * 0.55, z, craterR * 0.75, M.CrackedLava)
 end
 local function clearRegion(halfX, halfZ)
 	-- idempotent re-runs: wipe this zone's terrain (and only this zone's) before sculpting again
@@ -540,10 +564,10 @@ local function crystalCluster(parent, cf, h, colors, count, material, transparen
 end
 local function column(parent, cf, h, color, broken)
 	box(parent, "ColumnFoot", V3(3.6, 0.9, 3.6), cf * CF(0, 0.45, 0), color, M.Limestone)
-	post(parent, "ColumnShaft", 2.2, h, cf * CF(0, 0.9 + h / 2, 0), color, M.Limestone)
-	post(parent, "ColumnBand", 2.5, 0.35, cf * CF(0, 0.9 + h * 0.6, 0), color, M.Limestone)
+	local hh = broken and h * 0.55 or h
+	post(parent, "ColumnShaft", 2.2, hh, cf * CF(0, 0.9 + hh / 2, 0), color, M.Limestone)
 	if broken then
-		post(parent, "ColumnFallen", 2.1, h * 0.5, cf * CF(3.6, 1.05, 1.2) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
+		post(parent, "ColumnFallen", 2.1, h * 0.4, cf * CF(3.4, 1.05, 1.4) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
 	else
 		box(parent, "ColumnCap", V3(3.4, 0.8, 3.4), cf * CF(0, 0.9 + h + 0.4, 0), color, M.Limestone)
 	end
@@ -591,6 +615,14 @@ local function rockArch(parent, cf, span, pillarH, depth, color, material)
 		box(parent, "ArchStone", V3(3.2, r * 0.62, depth), c, color:Lerp(C3(255, 255, 255), (i % 2) * 0.07), material)
 	end
 end
+
+-- Cylinder beam between two ZONE-LOCAL points (bones, ribs, pipes, rigging).
+local function beam(parent, name, a, b, d, color, material)
+	local wa, wb = ORIGIN:PointToWorldSpace(a), ORIGIN:PointToWorldSpace(b)
+	local len = (wb - wa).Magnitude
+	local cf = CFrame.lookAt((wa + wb) / 2, wb) * ANG(0, pi / 2, 0)
+	return mk(parent, name, V3(len + 0.15, d, d), cf, color, material, Enum.PartType.Cylinder)
+end
 -- // end shared part helpers ----------------------------------------------------
 
 -- // 1) Wipe + strata: deep indigo mud, violet slate surface -----------------------------
@@ -624,13 +656,13 @@ end
 -- // 3) Kelp canyon: two long walls with a corridor between them ----------------------------
 cliffWall(-46, -14, -8, -13, 6, 19, M.Mud)
 cliffWall(-46, -40, 0, -42, 6, 24, M.Mud)
-for _, x in ipairs({ -40, -28, -16, -6 }) do -- cap rocks on the south wall, ledges on the north wall
+for _, x in ipairs({ -40, -28, -18 }) do -- cap rocks on the south wall, ledges on the north wall
 	hill(x, -13.5, 5, 22, M.Slate)
 end
 for _, x in ipairs({ -42, -30, -18, -6 }) do
 	hill(x, -41, 5.5, 28, M.Slate)
 end
-hill(-8, -12, 7, 14, M.Mud) -- soft end of the south wall
+hill(-16, -15, 6, 13, M.Mud) -- soft end of the south wall (clear of the landing and the trail)
 hill(2, -40, 7, 17, M.Mud)
 
 -- // 4) Spire field + natural arch (north-east) ------------------------------------------------
@@ -665,7 +697,7 @@ hill(14, 40, 6, 3.5, M.Slate)
 
 patch(0, 0, 12, M.Rock) -- landing plaza
 patch(0, 0, 5, M.Slate)
-trail({ { 0, 0 }, { 1, -12 }, { -4, -24 }, { -16, -28 }, { -30, -28 }, { -42, -28 } }, 7, M.Rock) -- into the canyon, to the gate
+trail({ { 0, 0 }, { 1, -12 }, { -4, -24 }, { -16, -28 }, { -26, -28 }, { -30, -28 } }, 7, M.Rock) -- into the canyon, to the gate
 trail({ { 0, 0 }, { 10, 6 }, { 22, 10 }, { 30, 12 } }, 7, M.Rock) -- to the chasm bridge
 trail({ { 30, 36 }, { 30, 42 }, { 38, 42 } }, 7, M.Rock) -- far side: lookout
 patch(38, 42, 8, M.Rock)
@@ -679,14 +711,17 @@ local model = Instance.new("Model")
 model.Name = "TwilightZoneTerrainChunk"
 model.Parent = terrainFolder
 
+-- ChunkBase is TravelService's PrimaryPart: it casts from ChunkBase.Position + 60 studs straight down, so the
+-- slab must sit between 58 studs below and 0 studs above the walking surface (y = -44 keeps the ray start 16 studs
+-- above the flat landing plaza and the slab itself buried / below it).
 setSolid(true)
-local base = box(model, "ChunkBase", V3(HALF * 2, 2, HALF * 2), ORIGIN * CF(0, -70, 0), C3(48, 40, 90), M.Slate)
+local base = box(model, "ChunkBase", V3(HALF * 2, 2, HALF * 2), ORIGIN * CF(0, -44, 0), C3(48, 40, 90), M.Slate)
 base.Transparency = 1
 base.CanQuery = true
 
 local stone = C3(84, 88, 150)
 -- Twilight Gate: stone arch across the canyon corridor (faces along local X)
-rockArch(model, at(-38, -27, pi / 2, 0.5), 15, 14, 5, stone, M.Slate)
+rockArch(model, at(-30, -27, pi / 2, 0.5), 15, 14, 5, stone, M.Slate)
 -- Spire arch: rock bridge between two spires (spires at 20,-30 / 34,-30, height 22 / 20)
 do
 	local cf = ORIGIN * CF(27, 17, -30) * ANG(0, pi / 2 * 0, 0) -- spans along X

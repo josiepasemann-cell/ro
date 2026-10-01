@@ -78,7 +78,7 @@ WorldAmbienceConfig.Quality = {
 		FarDistance = 230,
 		MidInterval = 1 / 24,
 		FarInterval = 1 / 8,
-		MaxPartMovesPerFrame = 700,
+		MaxPartMovesPerFrame = 500,
 		Sway = true,
 		Pulse = true,
 		Flicker = true,
@@ -87,10 +87,10 @@ WorldAmbienceConfig.Quality = {
 		BubbleRateScale = 1,
 		SchoolSpawnDistance = 150,
 		SchoolCountScale = 1,
-		MaxCreatures = 70,
+		MaxCreatures = 40,
 		PassBy = true,
-		PassByInterval = { 30, 70 },
-		PlanktonRate = 10,
+		PassByInterval = { 45, 100 },
+		PlanktonRate = 6,
 	},
 	Medium = {
 		Enabled = true,
@@ -99,7 +99,7 @@ WorldAmbienceConfig.Quality = {
 		FarDistance = 160,
 		MidInterval = 1 / 15,
 		FarInterval = 1 / 5,
-		MaxPartMovesPerFrame = 380,
+		MaxPartMovesPerFrame = 260,
 		Sway = true,
 		Pulse = true,
 		Flicker = true,
@@ -108,10 +108,10 @@ WorldAmbienceConfig.Quality = {
 		BubbleRateScale = 0.6,
 		SchoolSpawnDistance = 110,
 		SchoolCountScale = 0.6,
-		MaxCreatures = 36,
+		MaxCreatures = 22,
 		PassBy = true,
-		PassByInterval = { 45, 100 },
-		PlanktonRate = 5,
+		PassByInterval = { 70, 140 },
+		PlanktonRate = 3,
 	},
 	Low = {
 		Enabled = true,
@@ -120,7 +120,7 @@ WorldAmbienceConfig.Quality = {
 		FarDistance = 90,
 		MidInterval = 1 / 8,
 		FarInterval = 1 / 3,
-		MaxPartMovesPerFrame = 140,
+		MaxPartMovesPerFrame = 100,
 		Sway = true,
 		Pulse = false,
 		Flicker = false,
@@ -129,7 +129,7 @@ WorldAmbienceConfig.Quality = {
 		BubbleRateScale = 0.35,
 		SchoolSpawnDistance = 70,
 		SchoolCountScale = 0.35,
-		MaxCreatures = 14,
+		MaxCreatures = 8,
 		PassBy = false,
 		PassByInterval = { 90, 180 },
 		PlanktonRate = 0,
@@ -156,6 +156,13 @@ WorldAmbienceConfig.Quality = {
 		PlanktonRate = 0,
 	},
 } :: { [string]: QualityTier }
+
+-- // Glow animation strength (less eye strain) -----------------------------------------------------
+-- Only a handful of props are Neon now (lanterns, crystals, portals), so the remaining pulse / flicker is
+-- deliberately gentle: pulse depth is scaled down and lantern flicker only dips a little.
+WorldAmbienceConfig.PulseDepthScale = 0.55 -- multiplies every WA_Depth (1 = old strength)
+WorldAmbienceConfig.FlickerMin = 0.72 -- lowest brightness factor of a flickering lantern (was 0.3)
+WorldAmbienceConfig.FlickerDipFactor = 0.85 -- the occasional dip multiplies by this (was 0.55)
 
 -- // Timing / motion ---------------------------------------------------------------
 WorldAmbienceConfig.LodRecomputeInterval = 0.35 -- seconds between distance classifications
@@ -239,6 +246,85 @@ WorldAmbienceConfig.Zones = {
 		},
 	},
 } :: { ZoneInfo }
+
+-- // Zone atmosphere (read by src/client/ZoneAtmosphere.client.lua) ----------------------------------
+-- One lighting / fog / grading profile per zone name in `Zones` above ("Plots" falls back to "Hub").
+-- Glow is kept readable but never blown out: Bloom.Threshold is high, so only intentional Neon (lanterns,
+-- crystals, portals) and CrackedLava bleed; ordinary lit surfaces do not. Brightness/Contrast are not
+-- touched on ColorCorrection.Brightness (WorldSetup flickers that one on the server).
+export type AtmosphereProfile = {
+	ClockTime: number,
+	Brightness: number,
+	Ambient: Color3,
+	OutdoorAmbient: Color3,
+	FogColor: Color3,
+	FogStart: number,
+	FogEnd: number,
+	AtmosphereColor: Color3,
+	AtmosphereDecay: Color3,
+	Density: number,
+	Offset: number,
+	Haze: number,
+	Glare: number,
+	Tint: Color3,
+	Saturation: number,
+	Contrast: number,
+	BloomIntensity: number,
+	BloomSize: number,
+	BloomThreshold: number,
+}
+local function prof(p: AtmosphereProfile): AtmosphereProfile
+	return p
+end
+WorldAmbienceConfig.AtmosphereBlendSeconds = 2.5
+WorldAmbienceConfig.AtmosphereCheckInterval = 0.5
+WorldAmbienceConfig.Atmosphere = {
+	Hub = prof({
+		ClockTime = 12.5, Brightness = 2.2,
+		Ambient = Color3.fromRGB(120, 150, 150), OutdoorAmbient = Color3.fromRGB(150, 172, 160),
+		FogColor = Color3.fromRGB(60, 150, 170), FogStart = 60, FogEnd = 420,
+		AtmosphereColor = Color3.fromRGB(110, 200, 215), AtmosphereDecay = Color3.fromRGB(60, 130, 150),
+		Density = 0.3, Offset = 0.15, Haze = 1.6, Glare = 0,
+		Tint = Color3.fromRGB(255, 248, 235), Saturation = 0.12, Contrast = 0.08,
+		BloomIntensity = 0.25, BloomSize = 18, BloomThreshold = 1.1,
+	}),
+	SunZone = prof({
+		ClockTime = 13, Brightness = 3,
+		Ambient = Color3.fromRGB(150, 190, 175), OutdoorAmbient = Color3.fromRGB(190, 215, 190),
+		FogColor = Color3.fromRGB(70, 185, 200), FogStart = 80, FogEnd = 520,
+		AtmosphereColor = Color3.fromRGB(120, 215, 225), AtmosphereDecay = Color3.fromRGB(80, 170, 180),
+		Density = 0.22, Offset = 0.1, Haze = 1, Glare = 0,
+		Tint = Color3.fromRGB(255, 246, 226), Saturation = 0.2, Contrast = 0.05,
+		BloomIntensity = 0.2, BloomSize = 16, BloomThreshold = 1.15,
+	}),
+	TwilightZone = prof({
+		ClockTime = 18.7, Brightness = 1.6,
+		Ambient = Color3.fromRGB(70, 64, 130), OutdoorAmbient = Color3.fromRGB(90, 84, 160),
+		FogColor = Color3.fromRGB(38, 34, 96), FogStart = 30, FogEnd = 260,
+		AtmosphereColor = Color3.fromRGB(90, 80, 170), AtmosphereDecay = Color3.fromRGB(30, 20, 80),
+		Density = 0.4, Offset = 0.2, Haze = 2.2, Glare = 0,
+		Tint = Color3.fromRGB(228, 226, 255), Saturation = 0.1, Contrast = 0.12,
+		BloomIntensity = 0.35, BloomSize = 20, BloomThreshold = 1,
+	}),
+	MidnightZone = prof({
+		ClockTime = 0, Brightness = 1,
+		Ambient = Color3.fromRGB(56, 34, 38), OutdoorAmbient = Color3.fromRGB(70, 40, 40),
+		FogColor = Color3.fromRGB(22, 8, 10), FogStart = 20, FogEnd = 210,
+		AtmosphereColor = Color3.fromRGB(80, 30, 30), AtmosphereDecay = Color3.fromRGB(30, 6, 6),
+		Density = 0.45, Offset = 0.25, Haze = 2.6, Glare = 0,
+		Tint = Color3.fromRGB(255, 232, 220), Saturation = 0.05, Contrast = 0.22,
+		BloomIntensity = 0.5, BloomSize = 22, BloomThreshold = 0.9,
+	}),
+	HadalDepths = prof({
+		ClockTime = 0, Brightness = 1.8,
+		Ambient = Color3.fromRGB(120, 160, 200), OutdoorAmbient = Color3.fromRGB(140, 180, 220),
+		FogColor = Color3.fromRGB(110, 150, 190), FogStart = 10, FogEnd = 160,
+		AtmosphereColor = Color3.fromRGB(150, 190, 225), AtmosphereDecay = Color3.fromRGB(60, 100, 150),
+		Density = 0.55, Offset = 0.3, Haze = 3.4, Glare = 0,
+		Tint = Color3.fromRGB(225, 240, 255), Saturation = -0.05, Contrast = 0.05,
+		BloomIntensity = 0.3, BloomSize = 20, BloomThreshold = 1,
+	}),
+} :: { [string]: AtmosphereProfile }
 
 WorldAmbienceConfig.DefaultPlankton = Color3.fromRGB(170, 235, 255)
 

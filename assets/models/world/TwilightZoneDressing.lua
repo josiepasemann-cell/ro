@@ -431,10 +431,10 @@ local function crystalCluster(parent, cf, h, colors, count, material, transparen
 end
 local function column(parent, cf, h, color, broken)
 	box(parent, "ColumnFoot", V3(3.6, 0.9, 3.6), cf * CF(0, 0.45, 0), color, M.Limestone)
-	post(parent, "ColumnShaft", 2.2, h, cf * CF(0, 0.9 + h / 2, 0), color, M.Limestone)
-	post(parent, "ColumnBand", 2.5, 0.35, cf * CF(0, 0.9 + h * 0.6, 0), color, M.Limestone)
+	local hh = broken and h * 0.55 or h
+	post(parent, "ColumnShaft", 2.2, hh, cf * CF(0, 0.9 + hh / 2, 0), color, M.Limestone)
 	if broken then
-		post(parent, "ColumnFallen", 2.1, h * 0.5, cf * CF(3.6, 1.05, 1.2) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
+		post(parent, "ColumnFallen", 2.1, h * 0.4, cf * CF(3.4, 1.05, 1.4) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
 	else
 		box(parent, "ColumnCap", V3(3.4, 0.8, 3.4), cf * CF(0, 0.9 + h + 0.4, 0), color, M.Limestone)
 	end
@@ -482,6 +482,14 @@ local function rockArch(parent, cf, span, pillarH, depth, color, material)
 		box(parent, "ArchStone", V3(3.2, r * 0.62, depth), c, color:Lerp(C3(255, 255, 255), (i % 2) * 0.07), material)
 	end
 end
+
+-- Cylinder beam between two ZONE-LOCAL points (bones, ribs, pipes, rigging).
+local function beam(parent, name, a, b, d, color, material)
+	local wa, wb = ORIGIN:PointToWorldSpace(a), ORIGIN:PointToWorldSpace(b)
+	local len = (wb - wa).Magnitude
+	local cf = CFrame.lookAt((wa + wb) / 2, wb) * ANG(0, pi / 2, 0)
+	return mk(parent, name, V3(len + 0.15, d, d), cf, color, material, Enum.PartType.Cylinder)
+end
 -- // end shared part helpers ----------------------------------------------------
 
 local assetsFolder = getOrCreateFolder(Workspace, "Assets")
@@ -505,12 +513,12 @@ local function blockTrail(pts, width)
 	end
 end
 blockCircle(0, 0, 16)
-blockTrail({ { 0, 0 }, { 1, -12 }, { -4, -24 }, { -16, -28 }, { -30, -28 }, { -42, -28 } }, 7)
+blockTrail({ { 0, 0 }, { 1, -12 }, { -4, -24 }, { -16, -28 }, { -26, -28 }, { -30, -28 } }, 7)
 blockTrail({ { 0, 0 }, { 10, 6 }, { 22, 10 }, { 30, 12 } }, 7)
 blockTrail({ { 30, 36 }, { 30, 42 }, { 38, 42 } }, 7)
 blockRect(26, 10, 34, 38) -- bridge
 blockRect(12, 12, 48, 36) -- chasm (floor props are placed by hand below)
-blockCircle(-38, -27, 10) -- gate
+blockCircle(-30, -27, 10) -- gate
 blockCircle(27, -30, 9) -- spire arch
 
 local KELP = { C3(34, 118, 128), C3(48, 136, 124), C3(60, 108, 158), C3(40, 96, 140) }
@@ -543,7 +551,7 @@ end
 -- // 2) Boulders: gate rubble, trail edges, chasm lip ---------------------------------------------
 do
 	local g = group("Boulders")
-	for _, p in ipairs({ { -34, -20 }, { -42, -34 }, { -30, -35 }, { -44, -22 } }) do
+	for _, p in ipairs({ { -28, -20 }, { -42, -34 }, { -26, -35 }, { -44, -22 } }) do
 		capRock(g, atSlope(p[1], p[2], yaw(), 0.4), rnd(3, 5), C3(70, 82, 140), MOSS, M.Slate)
 	end
 	for _ = 1, 9 do
@@ -551,14 +559,14 @@ do
 		if x then capRock(g, atSlope(x, z, yaw(), 0.4), rnd(2.6, 4.6), C3(72, 84, 142), pick({ MOSS, nil }), M.Slate) end
 	end
 	-- fallen column pieces by the gate
-	box(g, "FallenStone", V3(3.4, 3, 6), at(-34, -33, 0.5, 0.4) * ANG(0, 0, 0.2), C3(78, 84, 148), M.Slate)
-	box(g, "FallenStone", V3(3, 2.6, 4.4), at(-43, -21, -0.4, 0.4), C3(70, 78, 140), M.Slate)
+	box(g, "FallenStone", V3(3.4, 3, 6), at(-28, -33, 0.5, 0.4) * ANG(0, 0, 0.2), C3(78, 84, 148), M.Slate)
+	box(g, "FallenStone", V3(3, 2.6, 4.4), at(-40, -21, -0.4, 0.4), C3(70, 78, 140), M.Slate)
 end
 
 -- // 3) Bioluminescent accents (the only glow in the zone) ------------------------------------------
 do
 	local g = group("GlowAccents")
-	local trail = { { -2, -18 }, { -10, -26 }, { -22, -26 }, { -34, -31 }, { 16, 8 } }
+	local trail = { { -2, -18 }, { -10, -26 }, { -22, -26 }, { -30, -31 }, { 16, 8 } }
 	for i, p in ipairs(trail) do
 		local x, z = p[1] + rnd(-0.5, 0.5), p[2] + (i == 5 and 4 or 3.4)
 		local cf = at(x, z, 0, 0)

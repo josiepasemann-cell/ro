@@ -436,10 +436,10 @@ local function crystalCluster(parent, cf, h, colors, count, material, transparen
 end
 local function column(parent, cf, h, color, broken)
 	box(parent, "ColumnFoot", V3(3.6, 0.9, 3.6), cf * CF(0, 0.45, 0), color, M.Limestone)
-	post(parent, "ColumnShaft", 2.2, h, cf * CF(0, 0.9 + h / 2, 0), color, M.Limestone)
-	post(parent, "ColumnBand", 2.5, 0.35, cf * CF(0, 0.9 + h * 0.6, 0), color, M.Limestone)
+	local hh = broken and h * 0.55 or h
+	post(parent, "ColumnShaft", 2.2, hh, cf * CF(0, 0.9 + hh / 2, 0), color, M.Limestone)
 	if broken then
-		post(parent, "ColumnFallen", 2.1, h * 0.5, cf * CF(3.6, 1.05, 1.2) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
+		post(parent, "ColumnFallen", 2.1, h * 0.4, cf * CF(3.4, 1.05, 1.4) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
 	else
 		box(parent, "ColumnCap", V3(3.4, 0.8, 3.4), cf * CF(0, 0.9 + h + 0.4, 0), color, M.Limestone)
 	end
@@ -460,6 +460,40 @@ end
 local function starfish(parent, cf, d, color)
 	blob(parent, "Starfish", V3(d, 0.35, d), cf * CF(0, 0.1, 0), color, M.Pebble)
 	blob(parent, "StarfishArm", V3(d * 0.4, 0.3, d * 1.1), cf * CF(0, 0.12, 0) * ANG(0, rad(60), 0), color, M.Pebble)
+end
+
+-- Tall kelp ribbon (3 parts): stem plus two leaf blades; sways as one unit.
+local function tallKelp(parent, cf, h, color)
+	local m = newModel(parent, "TallKelp", "WA_Sway", { WA_Amp = rnd(4, 7), WA_Speed = rnd(0.4, 0.8), WA_Phase = rnd(0, 6) })
+	post(m, "KelpStem", 0.45, h, cf * CF(0, h / 2, 0), color, M.SmoothPlastic)
+	for i = 1, 2 do
+		local a = i * 2.9 + rnd(0, 1)
+		local bl = h * 0.4
+		box(m, "KelpLeaf", V3(2.2, bl, 0.18), cf * CF(cos(a) * 0.8, h * (0.3 + 0.26 * i), sin(a) * 0.8) * ANG(0, a, 0) * ANG(0, 0, rad(-16)) * CF(0, bl / 2, 0), color, M.SmoothPlastic)
+	end
+	return m
+end
+-- Stone arch in the cf's XY plane facing local Z: two pillars plus a segmented arc. span = inner width.
+local function rockArch(parent, cf, span, pillarH, depth, color, material)
+	local r = span / 2 + 1.4
+	for _, s in ipairs({ -1, 1 }) do
+		blob(parent, "ArchPillar", V3(3.8, pillarH * 0.55, depth * 1.1), cf * CF(s * r, pillarH * 0.27, 0), color, material)
+		blob(parent, "ArchPillar", V3(3.2, pillarH * 0.6, depth * 0.95), cf * CF(s * r, pillarH * 0.68, 0), color:Lerp(C3(255, 255, 255), 0.08), material)
+	end
+	local n = 7
+	for i = 0, n - 1 do
+		local a0 = pi * (i + 0.5) / n
+		local c = cf * CF(cos(a0) * r, pillarH * 0.9 + sin(a0) * r * 0.75, 0) * ANG(0, 0, a0)
+		box(parent, "ArchStone", V3(3.2, r * 0.62, depth), c, color:Lerp(C3(255, 255, 255), (i % 2) * 0.07), material)
+	end
+end
+
+-- Cylinder beam between two ZONE-LOCAL points (bones, ribs, pipes, rigging).
+local function beam(parent, name, a, b, d, color, material)
+	local wa, wb = ORIGIN:PointToWorldSpace(a), ORIGIN:PointToWorldSpace(b)
+	local len = (wb - wa).Magnitude
+	local cf = CFrame.lookAt((wa + wb) / 2, wb) * ANG(0, pi / 2, 0)
+	return mk(parent, name, V3(len + 0.15, d, d), cf, color, material, Enum.PartType.Cylinder)
 end
 -- // end shared part helpers ----------------------------------------------------
 

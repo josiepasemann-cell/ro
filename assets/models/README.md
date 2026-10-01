@@ -16,21 +16,31 @@ code agent.
 
 ## Asset overview
 
-### `terrain/` – Environment
-All 4 zone chunks follow a recurring composition pattern since the terrain
-expansion (see `/home/user/ro/docs/terrain-design-notes.md`): a kept-clear
-sightline/lane from the hub-facing edge to a distinctive landmark at the
-opposite end of the zone, with height variation and CSG (`UnionAsync`/
-`SubtractAsync`) instead of purely flat surfaces. Chunk size was increased
-from 50 to 90-120 studs for this.
+### `terrain/` – Environment (v3: smooth Terrain)
+The 4 zone chunks are sculpted with **Roblox smooth Terrain** (`Workspace.Terrain:FillBall/FillBlock/
+FillCylinder/FillWedge`, Air to carve) instead of flat part slabs, plus a few landmark parts. Each zone has its own
+palette, silhouette, ground materials, landmarks and (client side) lighting mood, see `docs/world-ambience.md`
+and the side-by-side render `docs/previews/map-zones-compare.png`. Layout rules for every zone: the landing
+spot (TravelService raycasts straight down at `ChunkBase.Position.X/Z`, the chunk centre) is a flat plaza of
+at least 12 studs radius, trails lead from it to the landmarks, a closed wall of ridges / cliffs frames the zone
+(background layer), dunes / ridges form the midground, props cluster in vignettes (never uniform scatter).
+
+Terrain scripts are **idempotent**: they first wipe their own region (chunk centre +-(half size + 4)) with an
+`Air` FillBlock, so a re-run rebuilds the zone cleanly and never touches a neighbour zone. A built-in guard warns
+if a fill would leave the region. Terrain colours are global per place (`Terrain:SetMaterialColor`); every terrain
+script sets the same palette block, and each zone owns its own materials. Run the terrain script **before** its
+`world/*Dressing.lua`, because the dressing raycasts `Workspace.Terrain` to place props on the real ground.
 
 | File | Asset | Description |
 |---|---|---|
-| `HabitatPlotBase.lua` | Modular Habitat Plot base | Hexagonal platform (~60 studs flat-to-flat), CSG hexagon, 6 visibly marked build fields (neon sector lines + slot markers) |
-| `SunZoneTerrainChunk.lua` | Seabed terrain, Sun Zone | Bright, sandy low-poly floor (100 studs) with CSG basin, 2 dune hills, rock arch landmark "Sun Gate" (CSG union) and a beached shipwreck as second landmark |
-| `TwilightZoneTerrainChunk.lua` | Seabed terrain, Twilight Zone | Dark, rocky low-poly floor (100 studs) with CSG rock crevice, 2 CSG rock spires and a procedurally curved kelp arch landmark |
-| `MidnightZoneTerrainChunk.lua` | Cave/lava-rift terrain, Midnight Zone (new, Phase 2) | Dark basalt cave system (110 studs): narrow entry passage -> open cavern with stalagmites/stalactites and glowing lava rifts/pools (Neon + PointLight) -> arena entrance landmark "The Trench Warden" (CSG cave gate + lava rock spires) |
-| `HadalDepthsTerrainChunk.lua` | Abyss/crystal terrain, Hadal Depths (new, Phase 3) | Walkable plateau (120 stud footprint, 78 studs deep) ending at a sheer, bottomless abyss edge; crystal fields (WedgePart splinters, neon quartet) with a scale crescendo to a monumental CSG crystal-spire landmark and a floating overlook platform |
+| `HabitatPlotBase.lua` | Modular Habitat Plot base | Hexagonal platform (~60 studs flat-to-flat), CSG hexagon, 6 visibly marked build fields (neon sector lines + slot markers); unchanged |
+| `SunZoneTerrainChunk.lua` | Sun Zone (100 studs) | Sunny reef shallows: sand over limestone strata, coral-pink sandstone reef wall, dunes, raised coral terrace, carved tide pool, seagrass patches (LeafyGrass), limestone trails; parts: Sun Gate arch and the **sunken pirate ship** landmark (boardable gangway). 152 terrain fills, 44 parts |
+| `TwilightZoneTerrainChunk.lua` | Twilight Zone (100 studs) | Violet dusk: slate ground, indigo cliffs, a kelp-forest canyon corridor with a stone gate, a spire field with a natural arch, a chasm (floor -20, 32 degree ramp out, stone bridge) dropping into darkness. 193 fills, 23 parts |
+| `MidnightZoneTerrainChunk.lua` | Midnight Zone (110 studs) | Basalt-column cliffs, charcoal crust, two lava rivers (CrackedLava, the only glowing ground) with a basalt bridge, volcano cones with lava craters, lava-crack ring around the flat raid arena; parts: **whale skeleton** whose rib tunnel leads to the arena. 268 fills, 86 parts |
+| `HadalDepthsTerrainChunk.lua` | Hadal Depths (120 studs) | Glacier / ice / snow: glacier wall with ice spires, a trench across the zone (floor -40, ramp out) crossed by a stone causeway, raised plateau with stairs; parts: ivory **temple** with one glowing altar crystal. 192 fills, 37 parts |
+
+Every chunk Model keeps `PrimaryPart = ChunkBase` (a hidden slab buried at y = -44: TravelService casts 60 studs above it, so the ray starts above the terrain) and
+the attribute `Zone`; new attribute `Identity`. Nothing code-relevant was renamed.
 
 ### `buildings/` – Buildings (base stage each)
 | File | Asset | Description |
@@ -174,7 +184,8 @@ setting rather than an exploration terrain.
 
 | File | Asset | Description |
 |---|---|---|
-| `TidalMarketHub.lua` | Hub world "Tidal Market" | Dark basalt round plaza (Ø 220 studs) with a central landmark ("Lighthouse Coral": CSG coral tower + giant jellyfish with multi-neon tentacles), 5 interactable stands in a ring (Shop/Gacha/Trade/Leaderboard/Quests), 4 zone portals (CSG archways, color-coded per zone), and 6 SpawnLocations |
+| `HubTerrain.lua` | Hub terrain (new) | Sand seabed + beach ring around the plaza, sandstone/limestone dune wall (gap along the plot road), plot-road causeway. Run before `TidalMarketHub.lua`; idempotent (wipes hub region +-174). Never covers hub parts: terrain under the plaza stays at y = 0 |
+| `TidalMarketHub.lua` | Hub world "Tidal Market" (v3: cozy, painted, much less neon) | Warm sand round plaza (Ø 220 studs) with a central landmark ("Lighthouse Coral": CSG coral tower + giant jellyfish with multi-neon tentacles), 5 interactable stands in a ring (Shop/Gacha/Trade/Leaderboard/Quests), 4 zone portals (CSG archways, color-coded per zone), and 6 SpawnLocations |
 
 **World placement (important):** The hub deliberately sits at
 `CFrame.new(-500, 0, -500)` — far away from both the player plot grid

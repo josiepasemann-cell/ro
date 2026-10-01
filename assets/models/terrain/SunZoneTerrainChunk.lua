@@ -49,9 +49,9 @@ local C3 = Color3.fromRGB
 local PALETTE = {
 	[M.Sand] = C3(236, 196, 120), [M.Limestone] = C3(232, 204, 172), [M.Salt] = C3(250, 242, 222),
 	[M.Sandstone] = C3(236, 150, 112), [M.LeafyGrass] = C3(84, 168, 120), [M.Ground] = C3(206, 172, 120),
-	[M.Slate] = C3(92, 84, 150), [M.Rock] = C3(70, 88, 132), [M.Mud] = C3(54, 46, 96), [M.Grass] = C3(42, 98, 112),
+	[M.Slate] = C3(108, 94, 170), [M.Rock] = C3(100, 128, 190), [M.Mud] = C3(48, 40, 90), [M.Grass] = C3(36, 108, 116),
 	[M.Basalt] = C3(36, 32, 40), [M.Asphalt] = C3(62, 52, 58), [M.CrackedLava] = C3(255, 120, 40),
-	[M.Glacier] = C3(152, 206, 238), [M.Ice] = C3(196, 234, 250), [M.Snow] = C3(228, 242, 252),
+	[M.Glacier] = C3(104, 168, 224), [M.Ice] = C3(166, 216, 244), [M.Snow] = C3(222, 238, 252),
 	[M.Cobblestone] = C3(176, 150, 112), [M.Pavement] = C3(196, 176, 140),
 }
 for material, color in pairs(PALETTE) do
@@ -137,6 +137,30 @@ end
 local function cliffWall(x1, z1, x2, z2, w, h, mat)
 	local len = sqrt((x2 - x1) ^ 2 + (z2 - z1) ^ 2)
 	fillBlock((x1 + x2) / 2, h / 2 - 2, (z1 + z2) / 2, len, h + 4, w, mat, segYaw(x1, z1, x2, z2))
+end
+
+-- Lava river: a channel carved 3 studs below the surface and filled with CrackedLava (the only glowing ground).
+local function river(pts, w, depth)
+	depth = depth or 3
+	for i = 1, #pts - 1 do
+		local a, b = pts[i], pts[i + 1]
+		local len = sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
+		local ext = w * 0.5
+		local dx, dz = (b[1] - a[1]) / len, (b[2] - a[2]) / len
+		local x1, z1, x2, z2 = a[1] - dx * ext * (i > 1 and 1 or 0), a[2] - dz * ext * (i > 1 and 1 or 0), b[1] + dx * ext, b[2] + dz * ext
+		carveTrench(x1, z1, x2, z2, w, depth)
+		fillBlock((x1 + x2) / 2, -depth - 2, (z1 + z2) / 2, sqrt((x2 - x1) ^ 2 + (z2 - z1) ^ 2), 4, w, M.CrackedLava, segYaw(x1, z1, x2, z2))
+	end
+end
+-- Flat-topped bridge slab across a channel (top at y = 0).
+local function bridge(x, z, len, w, yawDeg, mat)
+	fillBlock(x, -2, z, len, 4, w, mat, yawDeg)
+end
+-- Volcanic cone: smooth dome with a lava-filled crater.
+local function volcano(x, z, R, h, craterR, mat)
+	hill(x, z, R, h, mat)
+	fillBall(x, h + craterR * 0.35, z, craterR, M.Air)
+	fillBall(x, h - craterR * 0.55, z, craterR * 0.75, M.CrackedLava)
 end
 local function clearRegion(halfX, halfZ)
 	-- idempotent re-runs: wipe this zone's terrain (and only this zone's) before sculpting again
@@ -542,10 +566,10 @@ local function crystalCluster(parent, cf, h, colors, count, material, transparen
 end
 local function column(parent, cf, h, color, broken)
 	box(parent, "ColumnFoot", V3(3.6, 0.9, 3.6), cf * CF(0, 0.45, 0), color, M.Limestone)
-	post(parent, "ColumnShaft", 2.2, h, cf * CF(0, 0.9 + h / 2, 0), color, M.Limestone)
-	post(parent, "ColumnBand", 2.5, 0.35, cf * CF(0, 0.9 + h * 0.6, 0), color, M.Limestone)
+	local hh = broken and h * 0.55 or h
+	post(parent, "ColumnShaft", 2.2, hh, cf * CF(0, 0.9 + hh / 2, 0), color, M.Limestone)
 	if broken then
-		post(parent, "ColumnFallen", 2.1, h * 0.5, cf * CF(3.6, 1.05, 1.2) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
+		post(parent, "ColumnFallen", 2.1, h * 0.4, cf * CF(3.4, 1.05, 1.4) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
 	else
 		box(parent, "ColumnCap", V3(3.4, 0.8, 3.4), cf * CF(0, 0.9 + h + 0.4, 0), color, M.Limestone)
 	end
@@ -566,6 +590,40 @@ end
 local function starfish(parent, cf, d, color)
 	blob(parent, "Starfish", V3(d, 0.35, d), cf * CF(0, 0.1, 0), color, M.Pebble)
 	blob(parent, "StarfishArm", V3(d * 0.4, 0.3, d * 1.1), cf * CF(0, 0.12, 0) * ANG(0, rad(60), 0), color, M.Pebble)
+end
+
+-- Tall kelp ribbon (3 parts): stem plus two leaf blades; sways as one unit.
+local function tallKelp(parent, cf, h, color)
+	local m = newModel(parent, "TallKelp", "WA_Sway", { WA_Amp = rnd(4, 7), WA_Speed = rnd(0.4, 0.8), WA_Phase = rnd(0, 6) })
+	post(m, "KelpStem", 0.45, h, cf * CF(0, h / 2, 0), color, M.SmoothPlastic)
+	for i = 1, 2 do
+		local a = i * 2.9 + rnd(0, 1)
+		local bl = h * 0.4
+		box(m, "KelpLeaf", V3(2.2, bl, 0.18), cf * CF(cos(a) * 0.8, h * (0.3 + 0.26 * i), sin(a) * 0.8) * ANG(0, a, 0) * ANG(0, 0, rad(-16)) * CF(0, bl / 2, 0), color, M.SmoothPlastic)
+	end
+	return m
+end
+-- Stone arch in the cf's XY plane facing local Z: two pillars plus a segmented arc. span = inner width.
+local function rockArch(parent, cf, span, pillarH, depth, color, material)
+	local r = span / 2 + 1.4
+	for _, s in ipairs({ -1, 1 }) do
+		blob(parent, "ArchPillar", V3(3.8, pillarH * 0.55, depth * 1.1), cf * CF(s * r, pillarH * 0.27, 0), color, material)
+		blob(parent, "ArchPillar", V3(3.2, pillarH * 0.6, depth * 0.95), cf * CF(s * r, pillarH * 0.68, 0), color:Lerp(C3(255, 255, 255), 0.08), material)
+	end
+	local n = 7
+	for i = 0, n - 1 do
+		local a0 = pi * (i + 0.5) / n
+		local c = cf * CF(cos(a0) * r, pillarH * 0.9 + sin(a0) * r * 0.75, 0) * ANG(0, 0, a0)
+		box(parent, "ArchStone", V3(3.2, r * 0.62, depth), c, color:Lerp(C3(255, 255, 255), (i % 2) * 0.07), material)
+	end
+end
+
+-- Cylinder beam between two ZONE-LOCAL points (bones, ribs, pipes, rigging).
+local function beam(parent, name, a, b, d, color, material)
+	local wa, wb = ORIGIN:PointToWorldSpace(a), ORIGIN:PointToWorldSpace(b)
+	local len = (wb - wa).Magnitude
+	local cf = CFrame.lookAt((wa + wb) / 2, wb) * ANG(0, pi / 2, 0)
+	return mk(parent, name, V3(len + 0.15, d, d), cf, color, material, Enum.PartType.Cylinder)
 end
 -- // end shared part helpers ----------------------------------------------------
 
@@ -640,8 +698,11 @@ model.Name = "SunZoneTerrainChunk"
 model.Parent = terrainFolder
 
 -- Hidden floor far below the sand: nobody can fall out of the world, TravelService still has a part to read.
+-- ChunkBase is TravelService's PrimaryPart: it casts from ChunkBase.Position + 60 studs straight down, so the
+-- slab must sit between 58 studs below and 0 studs above the walking surface (y = -44 keeps the ray start 16 studs
+-- above the flat landing plaza and the slab itself buried / below it).
 setSolid(true)
-local base = box(model, "ChunkBase", V3(HALF * 2, 2, HALF * 2), ORIGIN * CF(0, -34, 0), C3(226, 200, 176), M.Limestone)
+local base = box(model, "ChunkBase", V3(HALF * 2, 2, HALF * 2), ORIGIN * CF(0, -44, 0), C3(226, 200, 176), M.Limestone)
 base.Transparency = 1
 base.CanQuery = true
 

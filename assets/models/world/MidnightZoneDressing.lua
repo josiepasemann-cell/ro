@@ -431,10 +431,10 @@ local function crystalCluster(parent, cf, h, colors, count, material, transparen
 end
 local function column(parent, cf, h, color, broken)
 	box(parent, "ColumnFoot", V3(3.6, 0.9, 3.6), cf * CF(0, 0.45, 0), color, M.Limestone)
-	post(parent, "ColumnShaft", 2.2, h, cf * CF(0, 0.9 + h / 2, 0), color, M.Limestone)
-	post(parent, "ColumnBand", 2.5, 0.35, cf * CF(0, 0.9 + h * 0.6, 0), color, M.Limestone)
+	local hh = broken and h * 0.55 or h
+	post(parent, "ColumnShaft", 2.2, hh, cf * CF(0, 0.9 + hh / 2, 0), color, M.Limestone)
 	if broken then
-		post(parent, "ColumnFallen", 2.1, h * 0.5, cf * CF(3.6, 1.05, 1.2) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
+		post(parent, "ColumnFallen", 2.1, h * 0.4, cf * CF(3.4, 1.05, 1.4) * ANG(0, rad(30), 0) * ANG(0, 0, pi / 2), color, M.Limestone)
 	else
 		box(parent, "ColumnCap", V3(3.4, 0.8, 3.4), cf * CF(0, 0.9 + h + 0.4, 0), color, M.Limestone)
 	end

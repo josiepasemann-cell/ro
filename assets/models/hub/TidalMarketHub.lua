@@ -61,6 +61,12 @@
 		   Torbögen und Podeste statt vieler Einzelteile; PartCount bewusst
 		   im niedrigen dreistelligen Bereich (~220) für Mobile-Performance.
 
+	v3 (COZY MARKET, less glow): palette is now warm sand / wood / limestone with painted accents (the NEON
+	table keeps its key names but holds painted colours; newNeon() makes SmoothPlastic). Only the portal
+	gates, six dock lanterns and the soft stand lights glow. Run hub/HubTerrain.lua FIRST (sand seabed,
+	dunes, plot-road causeway), then this script, then world/HubDressing.lua (stalls, piers, lanterns).
+	All named parts, attributes, positions and PrimaryParts below are unchanged.
+
 	NAMENSKONVENTION FÜR SPÄTEREN CODE-/UI-AGENTEN:
 		- Model.PrimaryPart = "HubBase" (die Marktplatz-Grundfläche)
 		- Model-Attribute (auf "TidalMarketHub" selbst): "HubName" = "TidalMarket"
@@ -119,17 +125,20 @@ local rng = Random.new(RANDOM_SEED)
 local PLAZA_TOP_Y = PLAZA_THICKNESS / 2
 
 -- Grelle Biolumineszenz-Neon-Palette (dunkler Tiefseegrund als Kontrastbühne)
+-- v3 (cozy market): the old Neon palette is now a PAINTED palette (teal / coral red / sea green / mustard /
+-- plum). The table keeps its old key names so every call site still works; glow is opt-in (see newGlow).
 local NEON = {
-	Cyan = Color3.fromRGB(70, 245, 255),
-	Magenta = Color3.fromRGB(255, 60, 220),
-	ToxicGreen = Color3.fromRGB(140, 255, 60),
-	NeonOrange = Color3.fromRGB(255, 140, 30),
-	Violet = Color3.fromRGB(170, 80, 255),
+	Cyan = Color3.fromRGB(46, 158, 176),
+	Magenta = Color3.fromRGB(222, 92, 98),
+	ToxicGreen = Color3.fromRGB(74, 156, 108),
+	NeonOrange = Color3.fromRGB(238, 160, 64),
+	Violet = Color3.fromRGB(126, 104, 176),
 }
 
-local DARK_BASALT = Color3.fromRGB(24, 26, 34)
-local DARK_BASALT_ALT = Color3.fromRGB(30, 32, 42)
-local STONE_TRIM = Color3.fromRGB(58, 60, 72)
+-- warm sand / wood / limestone instead of the old dark basalt
+local DARK_BASALT = Color3.fromRGB(228, 198, 142) -- plaza sand
+local DARK_BASALT_ALT = Color3.fromRGB(152, 112, 78) -- wood (stand bases, podiums, spawns)
+local STONE_TRIM = Color3.fromRGB(190, 166, 132) -- limestone trim
 
 -- // Hilfsfunktionen ------------------------------------------------------
 local function getOrCreateFolder(parent, name)
@@ -160,9 +169,14 @@ local function newPart(name, size, cframe, color, material, parent, canCollide)
 	return part
 end
 
+-- Painted accent (was Neon in v2). Kept under the old name so all call sites stay valid.
 local function newNeon(name, size, cframe, color, parent, canCollide)
-	local part = newPart(name, size, cframe, color, Enum.Material.Neon, parent, canCollide)
+	local part = newPart(name, size, cframe, color, Enum.Material.SmoothPlastic, parent, canCollide)
 	return part
+end
+-- Real glow: only lanterns, the portal gates and the zone-portal lights use Neon.
+local function newGlow(name, size, cframe, color, parent, canCollide)
+	return newPart(name, size, cframe, color, Enum.Material.Neon, parent, canCollide)
 end
 
 local function newWedge(name, size, cframe, color, material, parent)
@@ -280,13 +294,13 @@ base.Shape = Enum.PartType.Cylinder
 base.Size = Vector3.new(PLAZA_THICKNESS, PLAZA_RADIUS * 2, PLAZA_RADIUS * 2)
 base.CFrame = ORIGIN * CFrame.Angles(0, 0, math.rad(90))
 base.Color = DARK_BASALT
-base.Material = Enum.Material.Cobblestone
+base.Material = Enum.Material.Sand
 base.Anchored = true
 base.CanCollide = true
 base.TopSurface = Enum.SurfaceType.Smooth
 base.BottomSurface = Enum.SurfaceType.Smooth
 base.Parent = model
-addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 12, 12, Color3.fromRGB(150, 150, 158), 0.05)
+addKeyedTexture(base, "StoneTiles", Enum.NormalId.Top, 12, 12, Color3.fromRGB(236, 214, 170), 0.35)
 
 -- Dicker, rundlicher Randring (CSG-Ring, analog BroodPool-Becken-Technik) als
 -- klar lesbare Übergangs-"Trimband"-Kante zwischen Platz-Mitte und Neon-Rand
@@ -306,28 +320,13 @@ trimInner.Parent = Workspace
 local plazaTrimRing = trimOuter:SubtractAsync({ trimInner })
 plazaTrimRing.Name = "PlazaTrimRing"
 plazaTrimRing.Color = STONE_TRIM
-plazaTrimRing.Material = Enum.Material.Slate
+plazaTrimRing.Material = Enum.Material.Limestone
 plazaTrimRing.Anchored = true
 plazaTrimRing.CanCollide = false
 plazaTrimRing.Parent = model
-addKeyedTexture(plazaTrimRing, "StoneTiles", Enum.NormalId.Top, 6, 6, Color3.fromRGB(120, 122, 130), 0.05)
+addKeyedTexture(plazaTrimRing, "StoneTiles", Enum.NormalId.Top, 6, 6, Color3.fromRGB(214, 192, 158), 0.4)
 
--- Dashed Neon-Lichtring am Platzrand (billige, performante "Leuchtturm"-Kontur)
-local RIM_DASH_COUNT = 28
-for i = 1, RIM_DASH_COUNT do
-	local angle = (i / RIM_DASH_COUNT) * math.pi * 2
-	local x = math.cos(angle) * (PLAZA_RADIUS - 3)
-	local z = math.sin(angle) * (PLAZA_RADIUS - 3)
-	local color = ({ NEON.Cyan, NEON.Magenta, NEON.Violet })[(i % 3) + 1]
-	local dash = newNeon(
-		"RimDash" .. i,
-		Vector3.new(3.2, 0.6, 1.4),
-		ORIGIN * CFrame.new(x, PLAZA_TOP_Y + 0.3, z) * CFrame.Angles(0, -angle, 0),
-		color,
-		model,
-		false
-	)
-end
+-- (v3: the dashed neon rim ring is gone; HubDressing adds wooden bollards and piers along the rim instead)
 
 -- 2) Zentrale Landmark: "Leuchtturm-Koralle" (Riesenqualle + Korallenturm) -
 local landmarkCFrame = ORIGIN * CFrame.new(0, PLAZA_TOP_Y, 0)
@@ -371,12 +370,13 @@ bell.Name = "JellyBell"
 bell.Shape = Enum.PartType.Ball
 bell.Size = Vector3.new(20, 13, 20)
 bell.CFrame = bellCFrame
-bell.Color = NEON.Cyan
-bell.Material = Enum.Material.Neon
+bell.Color = Color3.fromRGB(160, 222, 238)
+bell.Material = Enum.Material.Glass
+bell.Transparency = 0.35
 bell.Anchored = true
 bell.CanCollide = false
 bell.Parent = model
-newPointLight(bell, NEON.Cyan, 4, 60)
+newPointLight(bell, Color3.fromRGB(200, 236, 255), 1.4, 40)
 
 local TENTACLE_COLORS = { NEON.Magenta, NEON.Violet, NEON.ToxicGreen, NEON.NeonOrange }
 local TENTACLE_COUNT = 10
@@ -408,7 +408,7 @@ for i = 1, 6 do
 	sat.Size = Vector3.new(1.6, 1.6, 1.6)
 	sat.CFrame = bellCFrame * CFrame.new(math.cos(angle) * radius, rng:NextNumber(-2, 5), math.sin(angle) * radius)
 	sat.Color = satColor
-	sat.Material = Enum.Material.Neon
+	sat.Material = Enum.Material.SmoothPlastic
 	sat.Anchored = true
 	sat.CanCollide = false
 	sat.Parent = model
@@ -426,7 +426,7 @@ local function newStandBase(name, position, color)
 		Vector3.new(10, 1.2, 8),
 		standCFrame * CFrame.new(0, PLAZA_TOP_Y - PLAZA_TOP_Y + 0.6, 0),
 		DARK_BASALT_ALT,
-		Enum.Material.Basalt,
+		Enum.Material.WoodPlanks,
 		standModel
 	)
 
@@ -446,8 +446,8 @@ local function addRoofCanopy(standModel, standCFrame, color, postColor)
 			"Post" .. i,
 			Vector3.new(0.6, postH, 0.6),
 			standCFrame * CFrame.new(offset.X, 1.8 + postH / 2, offset.Z),
-			postColor,
-			Enum.Material.Metal,
+			Color3.fromRGB(120, 86, 58),
+			Enum.Material.Wood,
 			standModel
 		)
 	end
@@ -457,7 +457,7 @@ local function addRoofCanopy(standModel, standCFrame, color, postColor)
 		Vector3.new(5.2, 2.4, 9),
 		standCFrame * CFrame.new(-2.6, roofY, 0) * CFrame.Angles(0, math.rad(90), 0),
 		color,
-		Enum.Material.SmoothPlastic,
+		Enum.Material.Fabric,
 		standModel
 	)
 	newWedge(
@@ -465,7 +465,7 @@ local function addRoofCanopy(standModel, standCFrame, color, postColor)
 		Vector3.new(5.2, 2.4, 9),
 		standCFrame * CFrame.new(2.6, roofY, 0) * CFrame.Angles(0, math.rad(-90), 0),
 		color,
-		Enum.Material.SmoothPlastic,
+		Enum.Material.Fabric,
 		standModel
 	)
 	newNeon("RoofGlowSeam", Vector3.new(0.4, 0.4, 9), standCFrame * CFrame.new(0, roofY + 1.3, 0), color, standModel, false)
@@ -482,7 +482,7 @@ do
 	local displayPanel = newPart("DisplayPanel", Vector3.new(6, 3.4, 0.2), standCFrame * CFrame.new(0, 6.6, -2.9), Color3.fromRGB(10, 10, 14), Enum.Material.SmoothPlastic, standModel, false)
 
 	newAttachment("InteractionPoint", standModel.Base, Vector3.new(0, 2, 5))
-	newPointLight(counter, NEON.NeonOrange, 2.5, 18)
+	newPointLight(counter, Color3.fromRGB(255, 214, 150), 1.2, 14)
 
 	standModel:SetAttribute("Interactable", "Shop")
 end
@@ -520,7 +520,7 @@ do
 
 	local displayPanel = newPart("DisplayPanel", Vector3.new(5, 3, 0.2), standCFrame * CFrame.new(0, 9.5, 0), Color3.fromRGB(10, 10, 14), Enum.Material.SmoothPlastic, standModel, false)
 	newAttachment("InteractionPoint", standModel.Base, Vector3.new(0, 2, 5))
-	newPointLight(pedestal, NEON.Violet, 3, 20)
+	newPointLight(pedestal, Color3.fromRGB(210, 190, 255), 1.4, 16)
 
 	standModel:SetAttribute("Interactable", "Gacha")
 end
@@ -544,7 +544,7 @@ do
 		podium.Size = Vector3.new(2, 3.2, 3.2)
 		podium.CFrame = dockCFrame * CFrame.new(0, 0.7 + 1.6, zOff) * CFrame.Angles(0, 0, math.rad(90))
 		podium.Color = DARK_BASALT_ALT
-		podium.Material = Enum.Material.Basalt
+		podium.Material = Enum.Material.Wood
 		podium.Anchored = true
 		podium.Parent = dockModel
 		newNeon("PodiumRing" .. i, Vector3.new(2.2, 3.4, 3.4), podium.CFrame, NEON.ToxicGreen, dockModel, false)
@@ -560,12 +560,12 @@ do
 			lantern.Shape = Enum.PartType.Ball
 			lantern.Size = Vector3.new(1, 1, 1)
 			lantern.CFrame = postCFrame * CFrame.new(0, 2.6, 0)
-			lantern.Color = NEON.ToxicGreen
+			lantern.Color = Color3.fromRGB(255, 208, 128)
 			lantern.Material = Enum.Material.Neon
 			lantern.Anchored = true
 			lantern.CanCollide = false
 			lantern.Parent = dockModel
-			newPointLight(lantern, NEON.ToxicGreen, 2, 14)
+			newPointLight(lantern, Color3.fromRGB(255, 208, 128), 1.1, 12)
 		end
 	end
 
@@ -601,7 +601,7 @@ do
 	)
 
 	newAttachment("InteractionPoint", standModel.Base, Vector3.new(0, 2, 5))
-	newPointLight(monolith, NEON.Cyan, 2.5, 20)
+	newPointLight(monolith, Color3.fromRGB(190, 235, 245), 1.2, 14)
 
 	standModel:SetAttribute("Interactable", "Leaderboard")
 end
@@ -624,7 +624,7 @@ do
 	newNeon("BoardFrame", Vector3.new(7.3, 4.9, 0.15), standCFrame * CFrame.new(0, 1.8 + 5.4, -0.2), NEON.ToxicGreen, standModel, false)
 
 	newAttachment("InteractionPoint", standModel.Base, Vector3.new(0, 2, 4))
-	newPointLight(boardPanel, NEON.ToxicGreen, 2, 16)
+	newPointLight(boardPanel, Color3.fromRGB(220, 245, 200), 1.2, 12)
 
 	standModel:SetAttribute("Interactable", "Quests")
 end
@@ -691,7 +691,7 @@ for _, def in ipairs(PORTAL_DEFS) do
 	lintel.Anchored = true
 	lintel.Parent = portalModel
 
-	local arch = unionParts("PortalArch", { pillarL, pillarR, lintel }, STONE_TRIM, Enum.Material.Basalt, portalModel)
+	local arch = unionParts("PortalArch", { pillarL, pillarR, lintel }, STONE_TRIM, Enum.Material.Limestone, portalModel)
 
 	-- Glühendes Portal-"Gate" (flache, leicht transparente Neon-Scheibe)
 	local gate = Instance.new("Part")
@@ -700,12 +700,12 @@ for _, def in ipairs(PORTAL_DEFS) do
 	gate.Size = Vector3.new(0.6, 9.5, 9.5)
 	gate.CFrame = portalCFrame * CFrame.new(0, pillarH / 2 + 0.5, 0) * CFrame.Angles(0, 0, math.rad(90))
 	gate.Color = def.Color
-	gate.Material = Enum.Material.Neon
-	gate.Transparency = 0.25
+	gate.Material = Enum.Material.Neon -- portals are intentional glow points
+	gate.Transparency = 0.35
 	gate.Anchored = true
 	gate.CanCollide = false
 	gate.Parent = portalModel
-	newPointLight(gate, def.Color, 3.5, 26)
+	newPointLight(gate, def.Color, 1.6, 20)
 
 	-- Zonentafel über dem Torbogen mit Anzeigename + Level-Hinweis
 	local billboard = Instance.new("BillboardGui")
@@ -814,7 +814,7 @@ do
 	gLintel.Anchored = true
 	gLintel.Parent = gateModel
 
-	local gateArch = unionParts("Base", { gPillarL, gPillarR, gLintel }, STONE_TRIM, Enum.Material.Basalt, gateModel)
+	local gateArch = unionParts("Base", { gPillarL, gPillarR, gLintel }, STONE_TRIM, Enum.Material.Limestone, gateModel)
 	newNeon("GateGlow", Vector3.new(8.8, 0.3, 1.8), gateCFrame * CFrame.new(0, 7.3, 0), NEON.ToxicGreen, gateModel, false)
 	newAttachment("InteractionPoint", gateArch, Vector3.new(0, 0, 1.5))
 
@@ -835,7 +835,7 @@ for i, deg in ipairs(SPAWN_ANGLES) do
 	spawn.Size = Vector3.new(6, 1, 6)
 	spawn.CFrame = landmarkCFrame * CFrame.new(sx, 0.5, sz)
 	spawn.Color = DARK_BASALT_ALT
-	spawn.Material = Enum.Material.Basalt
+	spawn.Material = Enum.Material.WoodPlanks
 	spawn.Anchored = true
 	spawn.CanCollide = true
 	spawn.Neutral = true
@@ -851,7 +851,7 @@ end
 -- die den flachen Platzboden organisch aufbrechen. Ein paar Neon-Glühstäbe
 -- bleiben als klare Farbakzente erhalten (reduziert, größer, bewusst grell).
 local DECO_COLORS = { NEON.Cyan, NEON.Magenta, NEON.ToxicGreen, NEON.NeonOrange, NEON.Violet }
-local ROCK_COLORS = { Color3.fromRGB(70, 74, 84), Color3.fromRGB(56, 58, 68) }
+local ROCK_COLORS = { Color3.fromRGB(190, 168, 140), Color3.fromRGB(170, 148, 124) }
 local CORAL_COLORS = { Color3.fromRGB(255, 140, 120), Color3.fromRGB(255, 170, 210), Color3.fromRGB(140, 255, 210) }
 local KELP_COLOR = Color3.fromRGB(40, 120, 100)
 
@@ -860,7 +860,7 @@ for i = 1, 8 do
 	local angle = rng:NextNumber(0, math.pi * 2)
 	local radius = rng:NextNumber(66, PLAZA_RADIUS - 8)
 	local pos = landmarkCFrame * CFrame.new(math.cos(angle) * radius, PLAZA_TOP_Y, math.sin(angle) * radius)
-	local rockParts = newRoundedCluster("PlazaRock" .. i .. "_", pos, rng:NextNumber(2.2, 4.2), ROCK_COLORS[(i % 2) + 1], Enum.Material.Basalt, model, 3)
+	local rockParts = newRoundedCluster("PlazaRock" .. i .. "_", pos, rng:NextNumber(2.2, 4.2), ROCK_COLORS[(i % 2) + 1], Enum.Material.Limestone, model, 3)
 	for _, p in ipairs(rockParts) do
 		p.CanCollide = true
 	end
@@ -879,7 +879,7 @@ for i = 1, 6 do
 	glowNub.Size = Vector3.new(0.9, 0.9, 0.9)
 	glowNub.CFrame = pos * CFrame.new(0, 2.4, 0)
 	glowNub.Color = DECO_COLORS[rng:NextInteger(1, #DECO_COLORS)]
-	glowNub.Material = Enum.Material.Neon
+	glowNub.Material = Enum.Material.SmoothPlastic
 	glowNub.Anchored = true
 	glowNub.CanCollide = false
 	glowNub.Parent = model
@@ -911,7 +911,7 @@ for i = 1, 8 do
 	coral.Size = Vector3.new(height, 1.0, 1.0)
 	coral.CFrame = landmarkCFrame * CFrame.new(px, PLAZA_TOP_Y + height / 2, pz) * CFrame.Angles(0, 0, math.rad(90))
 	coral.Color = DECO_COLORS[rng:NextInteger(1, #DECO_COLORS)]
-	coral.Material = Enum.Material.Neon
+	coral.Material = Enum.Material.SmoothPlastic
 	coral.Anchored = true
 	coral.CanCollide = false
 	coral.Parent = model

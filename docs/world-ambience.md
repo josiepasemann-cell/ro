@@ -5,31 +5,63 @@ and brought to life by **one** client script, `src/client/WorldAmbience.client.l
 `src/shared/WorldAmbienceConfig.lua`. Nothing here runs on the server; nothing replicates except the
 static dressing itself.
 
+## Zone identities (v3: terrain, palettes, glow budget)
+
+Every zone is now sculpted with Roblox smooth **Workspace.Terrain** (FillBall / FillBlock / FillCylinder /
+FillWedge, Air to carve) plus a few landmark parts, then dressed by a separate script. Terrain colours are
+global per place (`Terrain:SetMaterialColor`), so each zone owns its own materials. Every terrain script sets
+the same palette block, so the order does not matter.
+
+| Zone | Mood / palette | Ground materials | Landmarks and layout | Lighting (ZoneAtmosphere) |
+|---|---|---|---|---|
+| Hub (Tidal Market) | cozy harbour, warm sand, wood, striped awnings | Sand, Limestone, Sandstone, LeafyGrass | round sand plaza, 8 market stalls, 8 wooden piers with rowboats, dune wall, plot-road causeway | bright teal water, light fog |
+| Sun Zone | sunny coral-pink reef shallows | Sand, Limestone, Salt, Sandstone, LeafyGrass | sunken pirate ship (boardable gangway), coral garden terrace, tide pool, Sun Gate arch, dunes | warm sun, turquoise fog, ClockTime 13 |
+| Twilight Zone | blue-violet dusk | Slate (violet), Mud (indigo cliffs), Rock (paths), Grass (kelp beds) | tall kelp-forest canyon with a stone gate, spire field with a natural arch, chasm with a stone bridge | violet fog, ClockTime 18.7 |
+| Midnight Zone | near-black basalt and fire | Basalt, Asphalt, CrackedLava | whale-skeleton rib tunnel into the flat raid arena, volcano with lava river, black smokers, lava-crack ring | dark red haze, strong bloom only here |
+| Hadal Depths | pale ice-blue trench | Glacier, Ice, Snow | stone causeway over the trench to an ivory temple with one glowing crystal, crystal groves, column circle, stone fish statue | cold deep fog (160 studs) |
+
+Glow policy: Neon only for lantern lamps, crystal cores, the temple altar crystal, portal gates, a few
+mushroom caps / bulb cores, and CrackedLava (terrain material) in Midnight. Light shafts are 94 to 97 percent
+transparent **SmoothPlastic** planes, not Neon. Neon share of all buildscript parts went from 35.3 percent to
+4.6 percent (per zone: Sun 18.6 -> 1.9, Twilight 27.9 -> 8.0, Midnight 40.2 -> 2.9, Hadal 45.2 -> 6.2,
+Hub 41.1 -> 3.3).
+
+Underwater look: the game is not inside Terrain Water (players would swim instead of walk). The water feel is
+fog + Atmosphere + colour grading, set per zone by `ZoneAtmosphere.client.lua`.
+
 ## Build order
 
 See `docs/release-checklist.md` section 3: `PlotSurroundings.lua` right after `HabitatPlotBase.lua`
-(step 1), the other five `world/*.lua` after the terrain chunks and the hub (step 11). Each script is
-idempotent and creates `Workspace.Assets.World.<Name>` (the plot add-on creates a `PlotDecor` model
-inside the plot template instead, so every cloned player plot carries it). The scripts embed one
-shared helper block (copy-pasted on purpose, Command Bar scripts cannot require each other); the ORIGIN
-constants at the top must match the terrain/hub scripts.
+(step 1), the zone terrain chunks (step 7), `hub/HubTerrain.lua` + `TidalMarketHub.lua` (step 9) and the world
+dressing (step 11). Each script is idempotent. **Terrain scripts first wipe their own region** with an Air
+`FillBlock` (zone: chunk centre +-(half size + 4); hub: +-174), then rebuild; dressing scripts replace
+`Workspace.Assets.World.<Name>` (the plot add-on creates a `PlotDecor` model inside the plot template instead).
+The scripts embed shared helper blocks (copy-pasted on purpose, Command Bar scripts cannot require each other);
+the `ORIGIN` constants at the top must match between a zone's terrain script and its dressing script. The
+dressing scripts stand every prop on the ground by raycasting `Workspace.Terrain`, so run the terrain first.
 
-Part counts of the dressing (target in the script header, actual from the preview export):
+Part counts (from the preview export) and terrain fills (the dressing is the part count minus the chunk):
 
-| Script | Target | Actual |
-|---|---|---|
-| SunZoneDressing | ~400 | 438 |
-| TwilightZoneDressing | ~420 | 487 |
-| MidnightZoneDressing | ~400 | 355 |
-| HadalDepthsDressing | ~380 | 397 |
-| HubDressing | ~550 | 721 (plaza, seabed apron, reef ring, 4 lanes of lanterns) |
-| PlotSurroundings | ~100 per plot | 126 per plot |
+| Zone | Terrain fills | Chunk parts (landmarks) | Dressing parts | Neon parts / share |
+|---|---|---|---|---|
+| Sun | 152 (85 ball, 63 cylinder, 3 block, 1 wedge) | 44 | 318 | 7 / 1.9 percent |
+| Twilight | 193 | 23 | 202 | 18 / 8.0 percent |
+| Midnight | 268 (220 basalt columns) | 86 | 121 | 6 / 2.9 percent |
+| Hadal | 192 | 37 | 204 | 15 / 6.2 percent |
+| Hub | 101 | hub 201 (same geometry, repainted) | 471 | 22 / 3.3 percent |
+| PlotSurroundings | none | HabitatPlotBase 145 incl. decor | 126 per plot | 18 (build-field markers + 6 lanterns), 12 percent |
 
-All decor parts are anchored, `CanCollide = false`, `CanQuery = false`, `CanTouch = false`,
-`CastShadow = false`. Only these are solid: the hub seabed apron, the plot seabed disc and the plot reef
-wall (so players who step off an edge land on a floor instead of dropping into the void). Animated
-models are `ModelStreamingMode = Atomic`. Gameplay areas (hub lanes, spawns, stands, plot road, zone
-lanes, landing spots, arenas, build fields) are reserved with `blockCircle/blockRect` in each script.
+(Before: 499 / 577 / 455 / 473 / 950 parts for Sun / Twilight / Midnight / Hadal / Hub, all of it flat slabs
+plus scattered decor.) All decor parts are anchored, `CanCollide = false`, `CanQuery = false`,
+`CanTouch = false`, `CastShadow = false`. Collidable parts are only the landmarks (ship hull and deck,
+gate arches, whale bones, temple, hub piers) and the hidden `ChunkBase` safety floors. Animated models are
+`ModelStreamingMode = Atomic`. Gameplay areas (landing spot at each chunk centre, trails, lanes, bridges, arena,
+hub lanes, spawns, stands, plot road) are reserved with `blockCircle/blockRect` and are flat terrain.
+
+`TravelService` is unchanged: it raycasts straight down at `ChunkBase.Position.X/Z` (the chunk centre) and
+reads the `Zone` attribute. `ChunkBase` is a hidden slab buried at y = -44 (the ray starts 60 studs above it, i.e. 16 studs above the flat landing plaza, so it hits the terrain first),
+the landing spot is a flat plaza of at least 12 studs radius in every zone, and no landmark stands within
+16 studs of it. The Midnight raid arena (flat disc, r 13) and its lane stay free of lava and props.
 
 ## Tags and attributes
 
@@ -62,6 +94,18 @@ Besides the tagged props the client creates (local only) a camera-attached plank
 and, every 30 to 100 seconds, one ambient creature (ray, big fish group, jellyfish) that crosses the area
 at about 140 studs from the camera, chosen by the zone the camera is in (`WorldAmbienceConfig.Zones`).
 
+## Zone atmosphere (`src/client/ZoneAtmosphere.client.lua`)
+
+A small client script blends Lighting (ClockTime, Brightness, Ambient, OutdoorAmbient, Fog), the
+`DeepTideAtmosphere`, `DeepTideColorCorrection` (tint, saturation, contrast; never its Brightness, which the
+server flickers) and `DeepTideBloom` per zone. The zone comes from the character position (camera as
+fallback) and `WorldAmbienceConfig.Zones`, so it follows `TravelService` teleports without a remote. Profiles
+are in `WorldAmbienceConfig.Atmosphere` (keys `Hub`, `SunZone`, `TwilightZone`, `MidnightZone`,
+`HadalDepths`; the plot area uses `Hub`); blend time is `AtmosphereBlendSeconds` (2.5 s). It also sets the
+LocalPlayer attribute `CurrentZone`. While a live event runs, `LiveEventService` values win; when the server
+values return to the `Baseline*` attributes the zone mood is restored. Bloom is deliberately restrained
+(`BloomThreshold` 0.9 to 1.15, intensity 0.2 to 0.5), and halved in size on touch-only devices.
+
 ## Performance knobs (`WorldAmbienceConfig.Quality`)
 
 One `RunService.PreRender` connection, one `Workspace:BulkMoveTo` call per frame, distances recomputed
@@ -77,6 +121,11 @@ every `LodRecomputeInterval` (0.35 s).
 | `PassBy`, `PassByInterval` | Occasional creature crossing |
 | `PlanktonRate` | Camera plankton particles per second (0 = off) |
 
+Glow animation is gentle on purpose: `PulseDepthScale` (0.55) scales every `WA_Depth`, and a flickering lantern
+only dips to `FlickerMin` (0.72, was 0.3) with a small `FlickerDipFactor` (0.85). Creature caps and sway budgets
+were lowered as well (High: 40 creatures, 500 part moves per frame; Medium: 22 / 260; Low: 8 / 100), because there
+are fewer glowing props and fewer animated parts.
+
 Tiers: `High` (desktop default), `Medium` (touch-only devices), `Low` (forced by UIKit "Reduced Effects":
 sway only near, no pulse/flicker/rotation, few bubbles, 35 percent of the school size, no pass-bys),
 `Off` (nothing animated, no particles, no creatures). The script only reads `UIKit.Settings`
@@ -91,8 +140,10 @@ The tier is re-evaluated once per second.
 
 ## Previews
 
-`docs/previews/map-<area>-before.png` and `map-<area>-after.png` (hub, sun, twilight, midnight, hadal,
-terrain with the plot). Regenerate with `tools/model-preview` (`export.mjs` then `render.mjs --only
-map-sun,map-twilight,map-midnight,map-hadal,map-hub`). The renderer shows geometry only: particles,
-animation and the creatures are not part of the images, and Neon light shafts look brighter than in
-Studio.
+`docs/previews/map-<area>-after.png` (hub, sun, twilight, midnight, hadal; `-before.png` are the old flat
+slabs), `map-zones-compare.png` (hub + 4 zones side by side) and `terrain.png`. Regenerate with `tools/model-preview`
+(`export.mjs` then `render.mjs --only map-sun,map-twilight,map-midnight,map-hadal,map-hub,map-zones-compare`).
+`Workspace.Terrain` Fill* calls are rendered as a smoothed 2-stud heightfield coloured by terrain material
+(overhangs are not shown, Air carves are); each zone is lit with an approximation of its ZoneAtmosphere
+profile. Particles, animation and creatures are not part of the images. `render.mjs --terrain <script>` renders
+the terrain of one script alone.

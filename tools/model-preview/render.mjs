@@ -152,9 +152,12 @@ const sheets = {
     cells: ["map-hub", "map-sun", "map-twilight", "map-midnight", "map-hadal"].map((k) => { const z = ZONE_VIEWS[k]; return { models: have(z.models), terrain: z.terrain, env: z.env, label: z.short, sub: z.tagline, view: z.compare, maxLights: 8 }; }),
   },
   terrain: {
-    title: "Zone terrain chunks", subtitle: "SunZone · TwilightZone · MidnightZone · HadalDepths, plus the habitat plot base",
+    title: "Zone terrain chunks (Workspace.Terrain + landmark parts)", subtitle: "SunZone - TwilightZone - MidnightZone - HadalDepths, each with its own lighting mood, plus the habitat plot base",
     width: 1600, cols: 2, cellAspect: 0.66,
-    cells: [...ZONES.map((n) => terrain.find((t) => t.name === n)).filter(Boolean), ...terrain.filter((t) => !ZONES.includes(t.name))].map((m) => cell(m, { view: { az: -30, el: 34, margin: 0.92 }, maxLights: 10 })),
+    cells: [...ZONES.map((n) => terrain.find((t) => t.name === n)).filter(Boolean).map((m) => {
+      const key = m.name.replace("ZoneTerrainChunk", "").replace("DepthsTerrainChunk", "").toLowerCase();
+      return { models: [m.name], terrain: [m.name], env: ZONE_ENV[key === "sun" ? "sun" : key === "twilight" ? "twilight" : key === "midnight" ? "midnight" : "hadal"], label: m.name, sub: `${m.parts.length} parts`, view: { az: -30, el: 50, margin: 0.95 }, maxLights: 6 };
+    }), ...terrain.filter((t) => !ZONES.includes(t.name)).map((m) => cell(m, { view: { az: -30, el: 34, margin: 0.92 }, maxLights: 10 }))],
   },
 };
 

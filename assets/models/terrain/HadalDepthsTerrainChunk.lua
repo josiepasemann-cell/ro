@@ -15,7 +15,7 @@
 		  attribute Zone = "HadalDepths") and the temple.
 
 	LAYOUT (local studs, x east / z south): landing 0,0; trail north to the causeway (trench z -35..-21,
-	floor -40, causeway 10 wide at x 0); stairs up to the temple plateau (top y 4, z -60..-36); ramp along
+	floor -40, causeway 10 wide at x 0); stairs up to the temple plateau (wedge on the causeway end) (top y 4, z -60..-36); ramp along
 	the trench's south side walks back out. Trails east (crystal grove) and west (column circle).
 	GAMEPLAY AREAS (flat, empty): landing, trails, causeway, stairs, temple floor, the trench ramp.
 	RUN: Studio Command Bar, edit mode; then world/HadalDepthsDressing.lua.
@@ -657,16 +657,16 @@ carveTrench(-52, -28, 52, -28, 14, 40) -- z -35 .. -21, floor y = -40
 fillWedge(-24, -20, -24, 6, 40, 52, M.Ice, -90) -- ramp along the south side, high end at x = -50
 fillBlock(0, -2, -28, 10, 4, 16, M.Ice) -- causeway, top y = 0
 fillBlock(0, 0, -49, 46, 8, 26, M.Glacier) -- temple plateau, top y = 4 (z -62 .. -36)
-fillWedge(0, 2, -39, 12, 4, 6, M.Ice, 180) -- stairs up to the plateau
-patch(0, -46, 16, M.Ice, 4) -- pale temple forecourt
-patch(0, -46, 8, M.Snow, 4)
+fillWedge(0, 2, -33, 10, 4, 6, M.Ice, 180) -- ramp/stairs from the causeway end (z -30) up to the plateau edge (z -36)
+patch(0, -51, 10, M.Ice, 4) -- pale temple forecourt
+patch(0, -51, 5, M.Snow, 4)
 -- fallen ice blocks on the trench floor (hidden dressing for the dark below)
 hill(20, -29, 4, -34, M.Ice)
 hill(-14, -29, 3.5, -35, M.Ice)
 
 -- // 4) Snow drifts, ice ridges and frozen ponds ----------------------------------------------------------
-ridge(-44, 8, -30, 36, 8, 5, 9, 7, M.Snow)
-ridge(46, 4, 38, 38, 8, 4, 9, 6, M.Snow)
+ridge(-52, 6, -46, 40, 8, 5, 8, 7, M.Snow)
+ridge(54, 4, 48, 40, 7, 4, 8, 6, M.Snow)
 hill(-8, 30, 8, 4, M.Snow)
 hill(14, 40, 9, 5, M.Snow)
 hill(-20, 48, 7, 4, M.Ice)
@@ -693,8 +693,11 @@ local model = Instance.new("Model")
 model.Name = "HadalDepthsTerrainChunk"
 model.Parent = terrainFolder
 
+-- ChunkBase is TravelService's PrimaryPart: it casts from ChunkBase.Position + 60 studs straight down, so the
+-- slab must sit between 58 studs below and 0 studs above the walking surface (y = -44 keeps the ray start 16 studs
+-- above the flat landing plaza and the slab itself buried / below it).
 setSolid(true)
-local base = box(model, "ChunkBase", V3(HALF * 2, 2, HALF * 2), ORIGIN * CF(0, -86, 0), C3(138, 196, 236), M.Glacier)
+local base = box(model, "ChunkBase", V3(HALF * 2, 2, HALF * 2), ORIGIN * CF(0, -44, 0), C3(138, 196, 236), M.Glacier)
 base.Transparency = 1
 base.CanQuery = true
 

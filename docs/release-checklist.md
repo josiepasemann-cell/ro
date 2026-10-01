@@ -41,7 +41,7 @@ For ongoing development keep using Rojo live sync (§1) with
 
 The models are buildscripts, not finished files. Copy each file into the
 Command Bar in Studio **in Edit mode** (View → Command Bar) and run it. The
-scripts are repeatable — running one twice just replaces the old model.
+scripts are repeatable — running one twice just replaces the old model. The zone and hub terrain scripts also write **Workspace.Terrain** (smooth terrain); each of them first wipes its own region with `Terrain:FillBlock(..., Enum.Material.Air)` (zone region = chunk centre ±(half size + 4) studs, hub region = ±174 studs around the hub), so re-running one rebuilds just that zone without leaving old hills behind. Never run a terrain script with anything built in its region that you want to keep.
 
 1. `assets/models/terrain/HabitatPlotBase.lua` (plot template), then `assets/models/world/PlotSurroundings.lua` right after it (adds the seabed floor, reef wall and decor to the plot template; must run before the server start that clones plots)
 2. `assets/models/buildings/` all 18 files (6 base-stage buildings + their Stage 2/3 upgrade files: BroodPool, GlowBuoyStation, FilterPlant, AnglerfishTower, CoralBarrier, ElectricEelTrap)
@@ -49,11 +49,11 @@ scripts are repeatable — running one twice just replaces the old model.
 4. `assets/models/pickups/` all 3 files (GlowSporePickup, SunkenChest, FrozenSpore)
 5. `assets/models/creatures/` all 22 files (6 MVP + 8 event-exclusive + 8 Zone 3/4 creatures)
 6. `assets/models/gacha/` all 7 files (eggs + opening effect)
-7. `assets/models/terrain/` the 4 `*TerrainChunk.lua` files (zones, stay in the world)
+7. `assets/models/terrain/` the 4 `*TerrainChunk.lua` files (zones: sculpted terrain + landmark parts + the hidden `ChunkBase` floor that `TravelService` reads; stay in the world). Run these **before** the world dressing, because the dressing raycasts the terrain to stand props on the ground.
 8. `assets/models/decorations/` all 6 files (event cosmetic decorations: VenomDrip, JackOCoral, CoralGardenSet, IceSpire, MagmaVent, TreasurePile)
-9. `assets/models/hub/TidalMarketHub.lua` (hub with spawn, shop stand, portals)
+9. `assets/models/hub/HubTerrain.lua` first (sand seabed, beach, dunes, plot-road causeway), then `assets/models/hub/TidalMarketHub.lua` (hub with spawn, shop stand, portals)
 10. `assets/models/npcs/` all 5 files (Shopkeeper, EggKeeper, QuestGiver, Trader, Guide — run after the hub, since each NPC looks up its stand in `Workspace.Assets.Hub.TidalMarketHub`)
-11. `assets/models/world/` the 5 set-dressing files (`SunZoneDressing`, `TwilightZoneDressing`, `MidnightZoneDressing`, `HadalDepthsDressing`, `HubDressing`). Run them after the 4 terrain chunks (step 7) and the hub (step 9); they only add scenery and never touch gameplay parts. `PlotSurroundings.lua` belongs to step 1 (see above). The animation is client-side (`src/client/WorldAmbience.client.lua`, see `docs/world-ambience.md`).
+11. `assets/models/world/` the 5 set-dressing files (`SunZoneDressing`, `TwilightZoneDressing`, `MidnightZoneDressing`, `HadalDepthsDressing`, `HubDressing`). Run them after the 4 terrain chunks (step 7) and the hub terrain + hub (step 9); they only add scenery (hub dressing = market stalls, piers, lanterns; zone dressing = corals, kelp, treasure, crystals, lanterns, signs) and never touch gameplay parts. `PlotSurroundings.lua` belongs to step 1 (see above). The animation is client-side (`src/client/WorldAmbience.client.lua`), and the per-zone lighting/fog mood comes from `src/client/ZoneAtmosphere.client.lua` (both documented in `docs/world-ambience.md`; no build step).
 
 ### 3b. Swap in the real meshes (recommended)
 

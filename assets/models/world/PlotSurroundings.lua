@@ -135,11 +135,11 @@ local function wedge(parent, name, size, cf, color, material)
 end
 
 local function neonBall(parent, name, d, cf, color)
-	return ball(parent, name, d, cf, color, M.Neon)
+	return ball(parent, name, d, cf, color, M.SmoothPlastic) -- v3: glow tips are painted, not Neon
 end
 
 local function neonBox(parent, name, size, cf, color)
-	return box(parent, name, size, cf, color, M.Neon)
+	return box(parent, name, size, cf, color, M.SmoothPlastic)
 end
 
 local function light(part, color, brightness, range)
@@ -254,7 +254,7 @@ end
 local function tableCoral(parent, cf, r, color, rimColor)
 	post(parent, "TableStem", r * 0.32, r * 0.9, cf * CF(0, r * 0.45, 0), color, M.Pebble)
 	post(parent, "TablePlate", r * 2, r * 0.22, cf * CF(0, r * 0.95, 0), color, M.Pebble)
-	post(parent, "TableRim", r * 2.06, r * 0.07, cf * CF(0, r * 1.06, 0), rimColor, M.Neon)
+	post(parent, "TableRim", r * 2.06, r * 0.07, cf * CF(0, r * 1.06, 0), rimColor, M.SmoothPlastic)
 end
 
 -- Brain coral: bulbous dome with two smaller lobes.
@@ -339,7 +339,7 @@ local function mushrooms(parent, cf, h, capColor, stemColor, count)
 		local off = i == 1 and 0 or hh * 0.45
 		local base = cf * CF(math.cos(a) * off, 0, math.sin(a) * off)
 		post(m, "Stem", hh * 0.16, hh, base * CF(0, hh / 2, 0), stemColor, M.SmoothPlastic)
-		blob(m, "Cap", V3(hh * 0.85, hh * 0.42, hh * 0.85), base * CF(0, hh, 0), capColor, M.Neon)
+		blob(m, "Cap", V3(hh * 0.85, hh * 0.42, hh * 0.85), base * CF(0, hh, 0), capColor, M.SmoothPlastic)
 	end
 	return m
 end
@@ -718,13 +718,14 @@ end
 local KELP = { C3(30, 140, 115), C3(45, 165, 125), C3(30, 120, 140) }
 local TIP = { C3(90, 235, 205), C3(255, 140, 230), C3(150, 255, 230) }
 local CORAL = { C3(255, 140, 120), C3(255, 170, 210), C3(140, 255, 210), C3(190, 140, 255) }
-local NEON = { C3(70, 230, 255), C3(255, 80, 220), C3(130, 255, 120), C3(255, 150, 50) }
-local ROCK = { C3(60, 66, 80), C3(50, 56, 70) }
+-- v3: painted accent colours (teal, coral red, sea green, mustard) instead of neon
+local NEON = { C3(46, 158, 176), C3(222, 92, 98), C3(74, 156, 108), C3(238, 160, 64) }
+local ROCK = { C3(150, 134, 116), C3(132, 118, 104) }
 local MOSS = C3(45, 130, 108)
 local CAPS = { C3(80, 220, 255), C3(230, 90, 220), C3(160, 255, 120) }
 
 -- Seabed disc (flush below the platform top) + low reef wall ring.
-local disc = mk(model, "PlotSeabed", V3(3, SEABED_RADIUS * 2, SEABED_RADIUS * 2), ORIGIN * CF(0, PLATE_TOP - 0.2 - 1.5, 0) * ANG(0, 0, pi / 2), C3(24, 44, 62), M.Slate, Enum.PartType.Cylinder)
+local disc = mk(model, "PlotSeabed", V3(3, SEABED_RADIUS * 2, SEABED_RADIUS * 2), ORIGIN * CF(0, PLATE_TOP - 0.2 - 1.5, 0) * ANG(0, 0, pi / 2), C3(206, 180, 130), M.Sand, Enum.PartType.Cylinder)
 disc.CanCollide = true
 disc.CanQuery = true
 disc.CanTouch = true
@@ -739,14 +740,14 @@ for i = 1, SEGMENTS do
 	wall.CanCollide = true
 	wall.CanQuery = true
 	wall.CanTouch = true
-	mk(model, "ReefWallTrim", V3(segLen - 1, 0.4, 0.6), cf * CF(0, WALL_HEIGHT / 2 + 0.2, 0), NEON[i % 4 + 1], M.Neon)
+	mk(model, "ReefWallTrim", V3(segLen - 1, 0.4, 0.6), cf * CF(0, WALL_HEIGHT / 2 + 0.2, 0), NEON[i % 4 + 1], M.SmoothPlastic)
 end
 
 -- Reef clusters outside the hex corners (corner radius ~34.6).
 for i = 0, 5 do
 	local deg = 30 + 60 * i
 	if i % 2 == 0 then
-		coralTree(model, at(46, deg, -0.2), rnd(6, 9), pick(CORAL), pick(NEON), true)
+		coralTree(model, at(46, deg, -0.2), rnd(6, 9), pick(CORAL), pick(NEON), false)
 		mossRock(model, at(41, deg + 14, -0.2), rnd(3, 4.5), pick(ROCK), MOSS)
 	else
 		kelp(model, at(46, deg, -0.2), rnd(8, 12), pick(KELP), pick(TIP), 2, 3)
