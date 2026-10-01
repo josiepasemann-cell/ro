@@ -91,6 +91,7 @@ export type HabitatPlacement = {
 	RotationY: number, -- Grad um die Y-Achse (Snap-Rotation eines künftigen Placement-Systems)
 	Level: number, -- Ausbaustufe des Gebäudes (Upgrade-Logik folgt mit dem Bausystem)
 	PlacedAt: number,
+	PlotIndex: number?, -- SCHEMA_VERSION 9: 1 = main plot, 2 = Extra Habitat Plot; nil means 1
 }
 
 --- Eine entführte Kreaturen-Instanz (GDD Abschnitt 3: "Fehlgeschlagene
@@ -260,6 +261,36 @@ export type AbilityState = {
 	DepthChargeCount: number,
 }
 
+--- SCHEMA_VERSION 9 additions (trading, raid guardians, deepest zone, co-op,
+--- prestige). Pure data storage like the states above; all rules live in
+--- TradeService, RaidService, TravelService, ClusterService and
+--- PrestigeService.
+export type TradeState = {
+	TradesCompleted: number,
+	LastTradeAt: number,
+}
+
+--- `Loadout`: creature InstanceIds (from CreatureInventory) picked as raid
+--- guardians. RaidService validates ownership and slot count.
+export type GuardianState = {
+	Loadout: { string },
+}
+
+--- `DeepestZone`: highest zone index (1 = Sun Zone ... 4 = Hadal Depths)
+--- reached in the current ascension; `DeepestZoneEver` is the all-time best,
+--- survives prestige and feeds the "Deepest Zone" leaderboard.
+export type ZoneState = {
+	DeepestZone: number,
+	DeepestZoneEver: number,
+}
+
+--- Reef Cluster (co-op) stats. Cluster membership itself lives per server
+--- session in ClusterService; only these stats persist.
+export type CoopState = {
+	ClusterRaidsWon: number,
+	BestClusterWave: number,
+}
+
 --- Achievements/rewards/titles state (assignment: "Achievements with
 --- rewards, titles and Roblox badges"). Pure data storage, identical
 --- pattern to QuestState/CodexState above - counting/unlocking/claiming/
@@ -335,6 +366,7 @@ export type PlayerData = {
 	Prestige: {
 		AscendCount: number,
 		IncomeMultiplier: number, -- vgl. GDD Abschnitt 6: +10%/Ascend mit Diminishing Returns ab Ascend 10
+		LastAscendAt: number?, -- SCHEMA_VERSION 9
 	},
 
 	GachaState: {
@@ -387,6 +419,10 @@ export type PlayerData = {
 	BuddyState: BuddyState,
 	AchievementState: AchievementState,
 	AbilityState: AbilityState,
+	TradeState: TradeState,
+	GuardianState: GuardianState,
+	ZoneState: ZoneState,
+	CoopState: CoopState,
 
 	OnboardingCompleted: boolean,
 
@@ -436,7 +472,14 @@ export type PlayerData = {
 -- comment above) + BuddyState.CreatureId2 added (Extra Buddy Slot
 -- gamepass). Both are pure top-level/nested field ADDITIONS, no dedicated
 -- MIGRATIONS[7] function needed (identical reasoning as versions 2-7 above).
-local SCHEMA_VERSION = 8
+--
+-- SCHEMA_VERSION 9: TradeState, GuardianState, ZoneState, CoopState,
+-- Prestige.LastAscendAt and HabitatPlacement.PlotIndex (trading, raid
+-- guardians, deepest-zone leaderboard, Reef Cluster co-op, prestige, Extra
+-- Habitat Plot). Pure additions; fillMissing() covers old saves, a missing
+-- PlotIndex means plot 1, and migrateData() seeds ZoneState from the level of
+-- pre-9 saves so veterans don't start the leaderboard at zone 1.
+local SCHEMA_VERSION = 9
 local DATASTORE_NAME = "Abyssara_PlayerData_v1"
 
 local SESSION_LOCK_STALE_SECONDS = 90 -- ab wann ein fremder Lock als "verwaist" (Server-Crash) gilt
@@ -632,6 +675,25 @@ local function createDefaultData(userId: number): PlayerData
 			DepthChargeCount = 0,
 		},
 
+		TradeState = {
+			TradesCompleted = 0,
+			LastTradeAt = 0,
+		},
+
+		GuardianState = {
+			Loadout = {},
+		},
+
+		ZoneState = {
+			DeepestZone = 1,
+			DeepestZoneEver = 1,
+		},
+
+		CoopState = {
+			ClusterRaidsWon = 0,
+			BestClusterWave = 0,
+		},
+
 		OnboardingCompleted = false,
 
 		ActiveSession = nil,
@@ -658,6 +720,7 @@ local function migrateData(raw: any, userId: number): PlayerData
 
 	local data = (raw :: any) :: PlayerData
 	local version = data.SchemaVersion or 0
+	local originalVersion = version
 
 	while version < SCHEMA_VERSION do
 		local migrate = MIGRATIONS[version]
@@ -685,6 +748,14 @@ local function migrateData(raw: any, userId: number): PlayerData
 	end
 
 	fillMissing(data, default)
+
+	if originalVersion < 9 then
+		-- Seed the deepest zone from the level (zone levels as in TravelService).
+		local level = data.Level or 1
+		local zone = (level >= 45 and 4) or (level >= 25 and 3) or (level >= 10 and 2) or 1
+		data.ZoneState.DeepestZone = math.max(data.ZoneState.DeepestZone, zone)
+		data.ZoneState.DeepestZoneEver = math.max(data.ZoneState.DeepestZoneEver, zone)
+	end
 
 	data.SchemaVersion = SCHEMA_VERSION
 	data.UserId = userId
@@ -1177,7 +1248,7 @@ end
 
 function PlayerDataService.AddHabitatPlacement(
 	player: Player,
-	placementData: { BuildingId: string, Position: { X: number, Y: number, Z: number }, RotationY: number? }
+	placementData: { BuildingId: string, Position: { X: number, Y: number, Z: number }, RotationY: number?, PlotIndex: number? }
 ): HabitatPlacement?
 	local data = dataCache[player.UserId]
 	if not data then
@@ -1191,6 +1262,7 @@ function PlayerDataService.AddHabitatPlacement(
 		RotationY = placementData.RotationY or 0,
 		Level = 1,
 		PlacedAt = os.time(),
+		PlotIndex = placementData.PlotIndex,
 	}
 
 	table.insert(data.HabitatLayout, placement)
@@ -1910,6 +1982,199 @@ function PlayerDataService.AddDepthCharges(player: Player, amount: number): (boo
 	local newCount = math.max(0, data.AbilityState.DepthChargeCount + amount)
 	data.AbilityState.DepthChargeCount = newCount
 	return true, newCount
+end
+
+-- // SCHEMA_VERSION 9: trading, guardians, zones, co-op, prestige ------------
+-- Data access only. The rules (who may trade, slot counts, ascend
+-- requirements, cluster rules) live in TradeService, RaidService,
+-- TravelService, ClusterService and PrestigeService.
+
+local function findCreatureIndex(data: PlayerData, instanceId: string): number?
+	for index, creature in ipairs(data.CreatureInventory) do
+		if creature.InstanceId == instanceId then
+			return index
+		end
+	end
+	return nil
+end
+
+local function removeFromGuardianLoadout(data: PlayerData, instanceId: string)
+	local loadout = data.GuardianState.Loadout
+	for index = #loadout, 1, -1 do
+		if loadout[index] == instanceId then
+			table.remove(loadout, index)
+		end
+	end
+end
+
+--- Returns the creature instance with `instanceId` if `player` owns it.
+function PlayerDataService.GetCreatureInstance(player: Player, instanceId: string): CreatureInstance?
+	local data = dataCache[player.UserId]
+	if not data or type(instanceId) ~= "string" then
+		return nil
+	end
+	local index = findCreatureIndex(data, instanceId)
+	return index and data.CreatureInventory[index] or nil
+end
+
+--- Atomically swaps creature instances between two loaded players in this
+--- server: `idsA` move from A to B, `idsB` from B to A. Nothing changes unless
+--- every id is a unique, currently owned instance on the right side. Traded
+--- creatures leave the giver's guardian loadout. The caller (TradeService)
+--- must check everything else (incubations, buddy, confirmations) first and
+--- ForceSave both players afterwards.
+function PlayerDataService.ExecuteCreatureTrade(playerA: Player, idsA: { string }, playerB: Player, idsB: { string }): boolean
+	local dataA = dataCache[playerA.UserId]
+	local dataB = dataCache[playerB.UserId]
+	if not dataA or not dataB or playerA == playerB then
+		return false
+	end
+	local seen: { [string]: boolean } = {}
+	local function allOwned(data: PlayerData, ids: { string }): boolean
+		for _, id in ipairs(ids) do
+			if type(id) ~= "string" or seen[id] or not findCreatureIndex(data, id) then
+				return false
+			end
+			seen[id] = true
+		end
+		return true
+	end
+	if not allOwned(dataA, idsA) or not allOwned(dataB, idsB) then
+		return false
+	end
+
+	local function take(data: PlayerData, ids: { string }): { CreatureInstance }
+		local taken = {}
+		for _, id in ipairs(ids) do
+			local index = findCreatureIndex(data, id) :: number
+			table.insert(taken, table.remove(data.CreatureInventory, index))
+			removeFromGuardianLoadout(data, id)
+		end
+		return taken
+	end
+	local fromA = take(dataA, idsA)
+	local fromB = take(dataB, idsB)
+	local now = os.time()
+	for _, creature in ipairs(fromA) do
+		creature.AcquiredAt = now
+		table.insert(dataB.CreatureInventory, creature)
+	end
+	for _, creature in ipairs(fromB) do
+		creature.AcquiredAt = now
+		table.insert(dataA.CreatureInventory, creature)
+	end
+	for _, data in ipairs({ dataA, dataB }) do
+		data.TradeState.TradesCompleted += 1
+		data.TradeState.LastTradeAt = now
+	end
+	return true
+end
+
+function PlayerDataService.GetTradeState(player: Player): TradeState?
+	local data = dataCache[player.UserId]
+	return data and data.TradeState or nil
+end
+
+--- Guardian loadout (creature InstanceIds). Returns a copy.
+function PlayerDataService.GetGuardianLoadout(player: Player): { string }
+	local data = dataCache[player.UserId]
+	return data and table.clone(data.GuardianState.Loadout) or {}
+end
+
+--- Replaces the loadout with the owned, unique ids from `ids` (unknown ids
+--- are dropped). Slot limits are RaidService's job. Returns the stored list.
+function PlayerDataService.SetGuardianLoadout(player: Player, ids: { string }): { string }?
+	local data = dataCache[player.UserId]
+	if not data or type(ids) ~= "table" then
+		return nil
+	end
+	local loadout, seen = {}, {}
+	for _, id in ipairs(ids) do
+		if type(id) == "string" and not seen[id] and findCreatureIndex(data, id) then
+			seen[id] = true
+			table.insert(loadout, id)
+		end
+	end
+	data.GuardianState.Loadout = loadout
+	return table.clone(loadout)
+end
+
+function PlayerDataService.GetDeepestZone(player: Player): number
+	local data = dataCache[player.UserId]
+	return data and data.ZoneState.DeepestZone or 1
+end
+
+function PlayerDataService.GetDeepestZoneEver(player: Player): number
+	local data = dataCache[player.UserId]
+	return data and data.ZoneState.DeepestZoneEver or 1
+end
+
+--- Records that the player reached zone `zoneIndex` (1-4). Only ever raises
+--- the values. Returns true if the all-time best went up.
+function PlayerDataService.RecordZoneReached(player: Player, zoneIndex: number): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(zoneIndex) ~= "number" then
+		return false
+	end
+	local zone = math.clamp(math.floor(zoneIndex), 1, 4)
+	data.ZoneState.DeepestZone = math.max(data.ZoneState.DeepestZone, zone)
+	if zone > data.ZoneState.DeepestZoneEver then
+		data.ZoneState.DeepestZoneEver = zone
+		dataChangedBindable:Fire(player, "DeepestZone", { DeepestZoneEver = zone })
+		return true
+	end
+	return false
+end
+
+function PlayerDataService.GetCoopState(player: Player): CoopState?
+	local data = dataCache[player.UserId]
+	return data and data.CoopState or nil
+end
+
+--- Records a finished Reef Cluster raid for this player.
+function PlayerDataService.RecordClusterRaid(player: Player, wave: number, won: boolean): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(wave) ~= "number" then
+		return false
+	end
+	data.CoopState.BestClusterWave = math.max(data.CoopState.BestClusterWave, math.floor(wave))
+	if won then
+		data.CoopState.ClusterRaidsWon += 1
+	end
+	return true
+end
+
+function PlayerDataService.GetLastAscendAt(player: Player): number?
+	local data = dataCache[player.UserId]
+	return data and data.Prestige.LastAscendAt or nil
+end
+
+--- Applies a prestige ("Resurface"): back to level 1 in the Sun Zone with
+--- starter coins, an empty habitat and no running incubations, and the new
+--- permanent income multiplier. Creatures, Abyssal Shards, codex, cosmetics,
+--- achievements, titles, abilities, the all-time deepest zone and purchases
+--- are kept. PrestigeService decides eligibility and the multiplier and must
+--- rebuild the plot and ForceSave afterwards.
+function PlayerDataService.ApplyAscend(player: Player, newIncomeMultiplier: number): boolean
+	local data = dataCache[player.UserId]
+	if not data or type(newIncomeMultiplier) ~= "number" or newIncomeMultiplier < 1 then
+		return false
+	end
+	local now = os.time()
+	data.Prestige.AscendCount += 1
+	data.Prestige.IncomeMultiplier = newIncomeMultiplier
+	data.Prestige.LastAscendAt = now
+	data.Level = 1
+	data.XP = 0
+	data.Currencies.TideCoins = STARTING_TIDE_COINS
+	data.HabitatLayout = {}
+	data.BreedingState.Incubations = {}
+	data.ZoneState.DeepestZone = 1
+	data.RaidState.NextRaidAt = now + RaidConfig.RAID_INTERVAL_SECONDS
+	data.Timestamps.LastIncomeAt = now
+	dataChangedBindable:Fire(player, "Currency", { CurrencyType = "TideCoins", NewBalance = STARTING_TIDE_COINS })
+	dataChangedBindable:Fire(player, "Ascend", { AscendCount = data.Prestige.AscendCount, IncomeMultiplier = newIncomeMultiplier })
+	return true
 end
 
 return PlayerDataService
