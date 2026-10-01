@@ -39,6 +39,7 @@ local ORDER: { { string } } = {
 	{ "terrain", "MidnightZoneTerrainChunk" },
 	{ "terrain", "HadalDepthsTerrainChunk" },
 	{ "decorations", "*" },
+	{ "hub", "HubTerrain" }, -- smooth terrain around the plaza (idempotent, wipes only the hub region)
 	{ "hub", "TidalMarketHub" },
 	{ "npcs", "*" },
 	{ "world", "SunZoneDressing" },
