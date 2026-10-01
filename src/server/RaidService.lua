@@ -18,16 +18,19 @@
 		etc.) übernimmt RaidServer.server.lua (identisches Muster wie
 		BreedingService/BreedingServer.server.lua).
 
-	MVP-Scope-Auslassung (siehe Auftrag, explizit hier dokumentiert):
-		Der im GDD (Abschnitt 3 + 9 Punkt 5) erwähnte "Wächter-Einsatz"
-		(Spieler setzt während des Raids aktiv eigene Kreaturen als
-		Verteidiger ein) ist bewusst NICHT Teil dieses MVP - GDD Abschnitt 10
-		nennt für den MVP-Scope explizit nur "Solo, 3 Gegnertypen, 1 Boss"
-		ohne Wächter-Mechanik. Verteidigung läuft im MVP ausschließlich über
-		platzierte AnglerfishTower. Ein künftiger Ausbau würde einen eigenen
-		Remote-Kanal ("RequestDeployGuardian") + eine Kreaturen-Kampfwert-
-		Tabelle brauchen, ohne den bestehenden Turm-/Wellen-Ablauf hier zu
-		verändern.
+	Guardians + co-op (docs/guardians-and-coop.md):
+		Players deploy their saved guardian loadout (PlayerDataService.
+		Get/SetGuardianLoadout, slots from RaidConfig.GetGuardianSlots) with
+		RequestDeployGuardian. Guardians are creature models from
+		Workspace.Assets.Creatures, simulated server-side inside the SAME shared
+		tick loop as enemies/towers: they target the nearest enemy, deal damage
+		on a cooldown scaled by rarity and the owner's level, and are knocked
+		out (never lost) by enemy contact. Movement is published as
+		TargetPosition attributes (tag RAID_GUARDIAN), ModelAnimator chases them.
+		Reef Cluster members (ClusterService, required lazily) get an invite to
+		join a raid on a cluster mate's plot as helpers: they deploy their own
+		guardians and may use Depth Charges there, share the victory rewards and
+		scale boss raids up (RaidConfig.COOP_*).
 
 	Performance (Auftrag: "ein Heartbeat-Loop für alle Gegner statt einer
 	Schleife pro Gegner"):
@@ -123,6 +126,28 @@ type TowerRuntime = {
 	LastFireTime: number,
 }
 
+type GuardianRuntime = {
+	Owner: Player,
+	OwnerUserId: number,
+	InstanceId: string,
+	CreatureId: string,
+	Rarity: string,
+	Model: Model?,
+	Position: Vector3, -- server-side logical position, see EnemyRuntime.Position
+	HomeOffset: Vector3,
+	HP: number,
+	MaxHP: number,
+	Damage: number,
+	CooldownSeconds: number,
+	LastAttackAt: number,
+	KnockedOut: boolean,
+}
+
+type HelperRuntime = {
+	Player: Player,
+	JoinedAt: number, -- os.clock()
+}
+
 type RaidRuntime = {
 	Player: Player,
 	CenterPosition: Vector3,
@@ -132,10 +157,23 @@ type RaidRuntime = {
 	WaveIndex: number,
 	EnemiesReachedCenter: number,
 	Finished: boolean,
+	GuardiansFolder: Folder,
+	Guardians: { GuardianRuntime },
+	DeployedBy: { [number]: boolean }, -- UserIds that already deployed their loadout in this raid
+	Helpers: { [number]: HelperRuntime }, -- co-op helpers (cluster mates), keyed by UserId
+	GuardianDirty: boolean,
+	LastGuardianSyncAt: number,
 	Zone: string, -- Content Update 1, Abschnitt 3.1: ZoneEconomyConfig.GetZoneForLevel(Spieler-Level) zum Raid-Start, siehe RaidConfig.GetScaledEnemy
 }
 
 local activeRaids: { [number]: RaidRuntime } = {} -- keyed by UserId
+local participantRaids: { [number]: RaidRuntime } = {} -- co-op helper UserId -> the raid they joined
+local lastDeployAt: { [number]: number } = {}
+local lastLoadoutAt: { [number]: number } = {}
+local lastJoinAt: { [number]: number } = {}
+
+local MAX_LOADOUT_PAYLOAD = 12 -- hard cap on ids read from a client payload
+local MAX_CANDIDATES_SENT = 60
 
 -- // Hilfsfunktionen ------------------------------------------------------------
 
@@ -156,6 +194,43 @@ local function applyDoubleCoinsGamepass(player: Player, baseAmount: number): num
 		return math.floor(baseAmount * MonetizationService.GetDoubleCoinsMultiplier() + 0.5)
 	end
 	return baseAmount
+end
+
+--- The raid `player` currently takes part in: their own, or a cluster mate's raid they joined.
+local function getLiveRaidFor(player: Player): RaidRuntime?
+	return activeRaids[player.UserId] or participantRaids[player.UserId]
+end
+
+--- Owner plus all helpers that are still in the server.
+local function getRaidViewers(raid: RaidRuntime): { Player }
+	local viewers: { Player } = {}
+	if raid.Player.Parent == Players then
+		table.insert(viewers, raid.Player)
+	end
+	for _, helper in pairs(raid.Helpers) do
+		if helper.Player.Parent == Players then
+			table.insert(viewers, helper.Player)
+		end
+	end
+	return viewers
+end
+
+local function fireRaidClients(raid: RaidRuntime, remote: RemoteEvent, payload: { [string]: any })
+	for _, viewer in ipairs(getRaidViewers(raid)) do
+		remote:FireClient(viewer, payload)
+	end
+end
+
+local function countHelpers(raid: RaidRuntime): number
+	local count = 0
+	for _ in pairs(raid.Helpers) do
+		count += 1
+	end
+	return count
+end
+
+local function planarDistance(a: Vector3, b: Vector3): number
+	return Vector3.new(a.X - b.X, 0, a.Z - b.Z).Magnitude
 end
 
 --- Skaliert das geklonte Gegner-Modell gemäß der (ggf. bereits zonen-
@@ -307,6 +382,7 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 	local enemyBodyColorOverride = LiveEventService.GetModifier("RaidEnemyBodyColor", nil)
 
 	local spawnedCount = 0
+	local helperCount = countHelpers(raid)
 	for _, spawnSpec in ipairs(wave.Enemies) do
 		-- Content Update 1, Abschnitt 3.1: zonen-skalierte Definition statt
 		-- der rohen Basis-Werte - raid.Zone wurde einmalig beim Raid-Start
@@ -315,7 +391,18 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 		if definition then
 			local template = AssetTemplateSetup.GetEnemyTemplate(definition.TemplateName)
 			if template then
-				for _ = 1, spawnSpec.Count do
+				-- Co-op scaling (RaidConfig.COOP_*): more helpers, tougher enemies,
+				-- the boss most of all, and extra escorts in the boss wave.
+				local hpScale = 1
+					+ helperCount
+						* (if definition.IsBoss
+							then RaidConfig.COOP_BOSS_HP_PER_EXTRA
+							else RaidConfig.COOP_ENEMY_HP_PER_EXTRA)
+				local spawnCount = spawnSpec.Count
+				if wave.IsBossWave and not definition.IsBoss then
+					spawnCount += helperCount * RaidConfig.COOP_BOSS_ESCORT_PER_EXTRA
+				end
+				for _ = 1, spawnCount do
 					local model = template:Clone()
 					model.Name = definition.Id .. "_" .. tostring(spawnedCount + 1)
 					applyEnemyVisual(model, definition, enemyTransparencyOverride, enemyBodyColorOverride)
@@ -335,7 +422,7 @@ local function spawnWave(raid: RaidRuntime, waveIndex: number): number
 					model:SetAttribute(ModelAnimationTags.ATTR_CENTER_POSITION, raid.CenterPosition)
 					model:SetAttribute(ModelAnimationTags.ATTR_SPAWNED_AT, Workspace:GetServerTimeNow())
 
-					local scaledMaxHP = definition.MaxHP * enemyMaxHPMultiplier
+					local scaledMaxHP = definition.MaxHP * enemyMaxHPMultiplier * hpScale
 					table.insert(raid.Enemies, {
 						EnemyId = definition.Id,
 						Model = model,
@@ -364,7 +451,139 @@ local function destroyRaidWorkspaceState(raid: RaidRuntime)
 	if raid.EnemiesFolder and raid.EnemiesFolder.Parent then
 		raid.EnemiesFolder:Destroy()
 	end
+	if raid.GuardiansFolder and raid.GuardiansFolder.Parent then
+		raid.GuardiansFolder:Destroy()
+	end
 	raid.Enemies = {}
+	raid.Guardians = {}
+end
+
+-- // Reef Cluster lookup (ClusterService is built by another feature, so it is
+-- required lazily and everything falls back to solo when it is missing) --------
+
+local clusterServiceModule: any? = nil
+
+local function getClusterService(): any?
+	if clusterServiceModule then
+		return clusterServiceModule
+	end
+	local moduleScript = script.Parent:FindFirstChild("ClusterService")
+	if not moduleScript or not moduleScript:IsA("ModuleScript") then
+		return nil
+	end
+	local ok, result = pcall(require, moduleScript)
+	if ok and type(result) == "table" and type((result :: any).GetClusterMembers) == "function" then
+		clusterServiceModule = result
+		return result
+	end
+	return nil
+end
+
+--- Online Reef Cluster mates of `player` (never including `player`), empty when
+--- there is no ClusterService, no cluster, or the call fails.
+local function getClusterMates(player: Player): { Player }
+	local service = getClusterService()
+	if not service then
+		return {}
+	end
+	local ok, members = pcall(service.GetClusterMembers, player)
+	if not ok or type(members) ~= "table" then
+		return {}
+	end
+	local mates: { Player } = {}
+	local seen: { [Player]: boolean } = {}
+	for _, member in ipairs(members) do
+		if
+			typeof(member) == "Instance"
+			and member:IsA("Player")
+			and member ~= player
+			and member.Parent == Players
+			and not seen[member]
+		then
+			seen[member] = true
+			table.insert(mates, member)
+		end
+	end
+	return mates
+end
+
+--- Persists one finished cluster raid for `player`. ClusterService.RecordClusterRaid
+--- wraps PlayerDataService.RecordClusterRaid and also refreshes the Cluster
+--- leaderboard; without ClusterService the PlayerDataService call is used directly.
+local function recordClusterRaid(player: Player, wave: number, won: boolean)
+	local service = getClusterService()
+	if service and type(service.RecordClusterRaid) == "function" then
+		local ok = pcall(service.RecordClusterRaid, player, wave, won)
+		if ok then
+			return
+		end
+	end
+	PlayerDataService.RecordClusterRaid(player, wave, won)
+end
+
+-- // Co-op helpers: teleport + ability HUD refresh -----------------------------------
+
+--- Puts the character of `player` on top of `plot`, offset from the center so
+--- several helpers do not stand on each other.
+local function teleportToPlot(player: Player, plot: Model, offset: Vector3): boolean
+	local character = player.Character
+	if not character or not character.PrimaryPart or not plot.PrimaryPart then
+		return false
+	end
+	local approx = plot.PrimaryPart.Position + offset
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { plot.PrimaryPart :: Instance }
+	local hit = Workspace:Raycast(approx + Vector3.new(0, 60, 0), Vector3.new(0, -120, 0), params)
+	local y = if hit then hit.Position.Y + 4 else plot.PrimaryPart.Position.Y + 6
+	local center = plot.PrimaryPart.Position
+	character:PivotTo(CFrame.new(Vector3.new(approx.X, y, approx.Z), Vector3.new(center.X, y, center.Z)))
+	return true
+end
+
+local function returnHelperHome(player: Player)
+	if player.Parent ~= Players then
+		return
+	end
+	local ownPlot = PlotRegistry.GetPlot(player)
+	if ownPlot then
+		teleportToPlot(player, ownPlot, Vector3.new(0, 0, 8))
+	end
+end
+
+--- Refreshes the ability HUD (Depth Charge button follows raid membership).
+--- Lazy require: AbilityService itself lazily requires RaidService.
+local function pushAbilityStatus(player: Player)
+	task.spawn(function()
+		local ok, AbilityService = pcall(function()
+			return require(script.Parent:WaitForChild("AbilityService"))
+		end)
+		if ok and AbilityService and player.Parent == Players then
+			pcall(AbilityService.PushStatus, player)
+		end
+	end)
+end
+
+local function sendGuardianStatus(raid: RaidRuntime, onlyTo: Player?)
+	local list = {}
+	for _, guardian in ipairs(raid.Guardians) do
+		table.insert(list, {
+			OwnerUserId = guardian.OwnerUserId,
+			InstanceId = guardian.InstanceId,
+			CreatureId = guardian.CreatureId,
+			Rarity = guardian.Rarity,
+			HP = math.max(0, math.ceil(guardian.HP)),
+			MaxHP = guardian.MaxHP,
+			KnockedOut = guardian.KnockedOut,
+		})
+	end
+	if onlyTo then
+		RaidRemotes.GuardianStatus:FireClient(onlyTo, { Guardians = list })
+	else
+		fireRaidClients(raid, RaidRemotes.GuardianStatus, { Guardians = list })
+	end
+	raid.GuardianDirty = false
+	raid.LastGuardianSyncAt = os.clock()
 end
 
 -- // Sieg/Niederlage-Auswertung (LIVE-Raid) ------------------------------------
@@ -376,6 +595,26 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 	raid.Finished = true
 
 	local player = raid.Player
+
+	-- Co-op: freeze the helper list before the raid state is torn down.
+	local helpers: { HelperRuntime } = {}
+	local eligibleHelpers: { HelperRuntime } = {}
+	local finishClock = os.clock()
+	local clusterMates = if next(raid.Helpers) then getClusterMates(player) else {}
+	for userId, helper in pairs(raid.Helpers) do
+		table.insert(helpers, helper)
+		participantRaids[userId] = nil
+		if
+			helper.Player.Parent == Players
+			and PlayerDataService.IsDataLoaded(helper.Player)
+			and table.find(clusterMates, helper.Player) ~= nil -- still a cluster mate (not kicked meanwhile)
+			and finishClock - helper.JoinedAt >= RaidConfig.COOP_MIN_PRESENCE_SECONDS
+		then
+			table.insert(eligibleHelpers, helper)
+		end
+	end
+	raid.Guardians = {}
+	sendGuardianStatus(raid)
 	destroyRaidWorkspaceState(raid)
 	activeRaids[player.UserId] = nil
 
@@ -395,12 +634,13 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 		NextRaidAt = nextRaidAt,
 	}
 
+	local baseCoinReward = 0
 	if won then
 		-- Treasure Tide "Raid-Sieg-Tide-Coin-Belohnung ×1.5" (Abschnitt 1.3).
-		local tideCoinReward = applyDoubleCoinsGamepass(
-			player,
+		baseCoinReward =
 			math.floor(RaidConfig.VICTORY_REWARD_TIDE_COINS * LiveEventService.GetModifier("RaidVictoryCoinMultiplier", 1) + 0.5)
-		)
+		local ownerBonus = 1 + RaidConfig.COOP_OWNER_BONUS_PER_HELPER * #eligibleHelpers
+		local tideCoinReward = applyDoubleCoinsGamepass(player, math.floor(baseCoinReward * ownerBonus + 0.5))
 		local _, newBalance = PlayerDataService.AddCurrency(player, "TideCoins", tideCoinReward)
 		resultPayload.RewardTideCoins = tideCoinReward
 		resultPayload.NewTideCoinBalance = newBalance
@@ -438,7 +678,53 @@ local function finishRaid(raid: RaidRuntime, won: boolean)
 		})
 	end
 
+	resultPayload.HelperCount = if #eligibleHelpers > 0 then #eligibleHelpers else nil
 	RaidRemotes.RaidResult:FireClient(player, resultPayload)
+
+	-- Co-op: shared rewards, stats and the trip home for every helper. Helpers
+	-- never lose a creature, even when the raid is lost.
+	local wavesCleared = resultPayload.WavesCleared
+	for _, helper in ipairs(helpers) do
+		local helperPlayer = helper.Player
+		if helperPlayer.Parent == Players then
+			local helperPayload: { [string]: any } = {
+				Success = won,
+				Coop = true,
+				OwnerName = player.DisplayName,
+				WavesCleared = wavesCleared,
+			}
+			if won and table.find(eligibleHelpers, helper) then
+				local helperCoins = applyDoubleCoinsGamepass(
+					helperPlayer,
+					math.floor(baseCoinReward * RaidConfig.COOP_HELPER_REWARD_FRACTION + 0.5)
+				)
+				PlayerDataService.AddCurrency(helperPlayer, "TideCoins", helperCoins)
+				helperPayload.RewardTideCoins = helperCoins
+				ProgressionService.AwardXP(helperPlayer, "RaidWon")
+				if rng:NextNumber() <= RaidConfig.VICTORY_ABYSSAL_SHARD_CHANCE then
+					PlayerDataService.AddCurrency(helperPlayer, "AbyssalShards", RaidConfig.VICTORY_ABYSSAL_SHARD_AMOUNT)
+					helperPayload.RewardAbyssalShards = RaidConfig.VICTORY_ABYSSAL_SHARD_AMOUNT
+				end
+				GameEvents.Fire(GameEvents.Events.RaidWon, helperPlayer, { WavesCleared = wavesCleared, RewardTideCoins = helperCoins })
+			end
+			RaidRemotes.RaidResult:FireClient(helperPlayer, helperPayload)
+			pushAbilityStatus(helperPlayer)
+			task.delay(RaidConfig.COOP_RETURN_DELAY_SECONDS, function()
+				if not getLiveRaidFor(helperPlayer) then
+					returnHelperHome(helperPlayer)
+				end
+			end)
+		end
+	end
+
+	-- Cluster stats for everyone who really took part.
+	if #eligibleHelpers > 0 then
+		local reachedWave = if won then #RaidConfig.WAVES else raid.WaveIndex
+		recordClusterRaid(player, reachedWave, won)
+		for _, helper in ipairs(eligibleHelpers) do
+			recordClusterRaid(helper.Player, reachedWave, won)
+		end
+	end
 end
 
 -- // Raid-Schutz fuer Neulinge ---------------------------------------------------
@@ -449,6 +735,21 @@ local function raidsAllowedFor(player: Player): boolean
 	local tower = BuildingConfig.Get("AnglerfishTower")
 	local minLevel = if tower then tower.UnlockLevel else 1
 	return PlayerDataService.GetLevel(player) >= minLevel
+end
+
+--- A cluster mate's plot is under attack: ask the online mates to help.
+local function inviteClusterMembers(raid: RaidRuntime)
+	local owner = raid.Player
+	local expiresAt = os.time() + RaidConfig.COOP_INVITE_SECONDS
+	for _, mate in ipairs(getClusterMates(owner)) do
+		if PlayerDataService.IsDataLoaded(mate) and not getLiveRaidFor(mate) then
+			RaidRemotes.CoopRaidInvite:FireClient(mate, {
+				OwnerUserId = owner.UserId,
+				OwnerName = owner.DisplayName,
+				ExpiresAt = expiresAt,
+			})
+		end
+	end
 end
 
 -- // Live-Raid-Start -------------------------------------------------------------
@@ -487,10 +788,20 @@ local function startRaid(player: Player)
 	enemiesFolder.Name = "RaidEnemies"
 	enemiesFolder.Parent = plot
 
+	local guardiansFolder = Instance.new("Folder")
+	guardiansFolder.Name = "RaidGuardians"
+	guardiansFolder.Parent = plot
+
 	local raid: RaidRuntime = {
 		Player = player,
 		CenterPosition = plot.PrimaryPart.Position,
 		EnemiesFolder = enemiesFolder,
+		GuardiansFolder = guardiansFolder,
+		Guardians = {},
+		DeployedBy = {},
+		Helpers = {},
+		GuardianDirty = false,
+		LastGuardianSyncAt = 0,
 		Towers = collectTowerRuntimes(player),
 		Enemies = {},
 		WaveIndex = 1,
@@ -513,6 +824,8 @@ local function startRaid(player: Player)
 		WaveEnemyCount = spawnedCount,
 		IsBossWave = firstWave and firstWave.IsBossWave or false,
 	})
+	pushAbilityStatus(player)
+	inviteClusterMembers(raid)
 end
 
 -- // Gemeinsamer Kampf-Tick-Loop (EIN Loop für ALLE Raids/Gegner/Türme) ---------
@@ -716,7 +1029,7 @@ local function tickTowers(raid: RaidRuntime, now: number)
 					-- (Instanz-Referenzen dürfen über RemoteEvents an Clients
 					-- repliziert werden) für client-seitigen Muzzle-Flash/Recoil auf
 					-- dem TATSÄCHLICH feuernden Turm-Modell, statt nur Positionen.
-					RaidRemotes.EnemyHit:FireClient(raid.Player, {
+					fireRaidClients(raid, RaidRemotes.EnemyHit, {
 						TowerPosition = towerPosition,
 						EnemyPosition = target.Position,
 						Tower = tower.Model,
@@ -744,7 +1057,7 @@ local function tickTowers(raid: RaidRuntime, now: number)
 						for chainIndex = 1, math.min(tower.Stats.ChainCount, #candidates) do
 							local chained = candidates[chainIndex].Enemy
 							chained.CurrentHP -= chainDamage
-							RaidRemotes.EnemyHit:FireClient(raid.Player, {
+							fireRaidClients(raid, RaidRemotes.EnemyHit, {
 								TowerPosition = towerPosition,
 								EnemyPosition = chained.Position,
 								Tower = tower.Model,
@@ -781,13 +1094,432 @@ local function tickWaveProgress(raid: RaidRuntime)
 		local spawnedCount = spawnWave(raid, raid.WaveIndex)
 		local wave = RaidConfig.WAVES[raid.WaveIndex]
 
-		RaidRemotes.WaveAdvanced:FireClient(raid.Player, {
+		fireRaidClients(raid, RaidRemotes.WaveAdvanced, {
 			WaveIndex = raid.WaveIndex,
 			TotalWaves = #RaidConfig.WAVES,
 			WaveEnemyCount = spawnedCount,
 			IsBossWave = wave and wave.IsBossWave or false,
 		})
 	end
+end
+
+-- // Guardians: deploy, combat tick (same shared loop as enemies/towers) -------------
+
+local warnedMissingGuardianTemplate: { [string]: boolean } = {}
+
+--- Same lookup CreatureDisplayService/BuddyService use: the creature models
+--- built by the Studio buildscripts live in Workspace.Assets.Creatures.
+local function findCreatureTemplate(creatureId: string): Model?
+	local assetsFolder = Workspace:FindFirstChild("Assets")
+	local creaturesFolder = assetsFolder and assetsFolder:FindFirstChild("Creatures")
+	local template = creaturesFolder and creaturesFolder:FindFirstChild(creatureId)
+	if template and template:IsA("Model") and template.PrimaryPart then
+		return template
+	end
+	return nil
+end
+
+--- A creature can be a guardian when the player owns it in the inventory.
+--- Abducted creatures live in RaidState.AbductedCreatures (not in the inventory)
+--- and incubating eggs are not creature instances yet, but both are checked
+--- explicitly so a future schema change cannot open a hole here.
+local function checkGuardianEligibility(player: Player, instanceId: string): (PlayerDataService.CreatureInstance?, string?)
+	for _, abducted in ipairs(PlayerDataService.GetAbductedCreatures(player)) do
+		if abducted.InstanceId == instanceId then
+			return nil, "Abducted"
+		end
+	end
+	for _, incubation in ipairs(PlayerDataService.GetIncubations(player)) do
+		if (incubation :: any).InstanceId == instanceId then
+			return nil, "Incubating"
+		end
+	end
+	local instance = PlayerDataService.GetCreatureInstance(player, instanceId)
+	if not instance then
+		return nil, "NotOwned"
+	end
+	return instance, nil
+end
+
+local function knockOutGuardian(raid: RaidRuntime, guardian: GuardianRuntime)
+	guardian.KnockedOut = true
+	guardian.HP = 0
+	raid.GuardianDirty = true
+	raid.LastGuardianSyncAt = 0 -- push the new state right away
+	if guardian.Model and guardian.Model.Parent then
+		scheduleDeathDestroy(guardian.Model) -- client fades it out (ATTR_DYING_AT)
+	end
+end
+
+local function spawnGuardian(raid: RaidRuntime, owner: Player, instance: PlayerDataService.CreatureInstance)
+	local stats = RaidConfig.GetGuardianCombatStats(instance.Rarity, PlayerDataService.GetLevel(owner))
+	local homeAngle = #raid.Guardians * (math.pi / 3) + math.pi / 6
+	local homeOffset = Vector3.new(
+		math.cos(homeAngle) * RaidConfig.GUARDIAN_HOME_RADIUS,
+		RaidConfig.GUARDIAN_HOVER_HEIGHT,
+		math.sin(homeAngle) * RaidConfig.GUARDIAN_HOME_RADIUS
+	)
+	local position = raid.CenterPosition + homeOffset
+
+	local model: Model? = nil
+	local template = findCreatureTemplate(instance.CreatureId)
+	if template then
+		local clone = template:Clone()
+		clone.Name = "Guardian_" .. instance.InstanceId
+		for _, descendant in ipairs(clone:GetDescendants()) do
+			if descendant:IsA("BasePart") then
+				descendant.Anchored = true
+				descendant.CanCollide = false
+				descendant.CanTouch = false
+				descendant.CanQuery = false
+			elseif descendant:IsA("PointLight") or descendant:IsA("SpotLight") then
+				descendant.Shadows = false
+			end
+		end
+		clone:SetAttribute("OwnerUserId", owner.UserId)
+		clone:SetAttribute("CreatureId", instance.CreatureId)
+		clone:SetAttribute("GuardianRarity", instance.Rarity)
+		clone:PivotTo(CFrame.new(position))
+		clone:SetAttribute(ModelAnimationTags.ATTR_TARGET_POSITION, position)
+		clone:SetAttribute(ModelAnimationTags.ATTR_SPAWNED_AT, Workspace:GetServerTimeNow())
+		CollectionService:AddTag(clone, ModelAnimationTags.RAID_GUARDIAN)
+		clone.Parent = raid.GuardiansFolder
+		model = clone
+	elseif not warnedMissingGuardianTemplate[instance.CreatureId] then
+		-- Fail soft: the guardian still fights, it just has no body to show.
+		warnedMissingGuardianTemplate[instance.CreatureId] = true
+		warn(
+			("[RaidService] No Workspace.Assets.Creatures model for '%s' - guardian fights without a model."):format(
+				instance.CreatureId
+			)
+		)
+	end
+
+	table.insert(raid.Guardians, {
+		Owner = owner,
+		OwnerUserId = owner.UserId,
+		InstanceId = instance.InstanceId,
+		CreatureId = instance.CreatureId,
+		Rarity = instance.Rarity,
+		Model = model,
+		Position = position,
+		HomeOffset = homeOffset,
+		HP = stats.MaxHP,
+		MaxHP = stats.MaxHP,
+		Damage = stats.Damage,
+		CooldownSeconds = stats.CooldownSeconds,
+		LastAttackAt = 0,
+		KnockedOut = false,
+	})
+end
+
+local function tickGuardians(raid: RaidRuntime, now: number, deltaSeconds: number)
+	for _, guardian in ipairs(raid.Guardians) do
+		if guardian.KnockedOut then
+			continue
+		end
+
+		-- Enemies touching the guardian knock it out for the rest of the raid.
+		local contactDps = 0
+		for _, enemy in ipairs(raid.Enemies) do
+			if enemy.Model.Parent and planarDistance(enemy.Position, guardian.Position) <= RaidConfig.GUARDIAN_CONTACT_RADIUS then
+				contactDps += RaidConfig.GUARDIAN_CONTACT_DPS_BY_ENEMY[enemy.EnemyId] or RaidConfig.GUARDIAN_CONTACT_DPS_DEFAULT
+			end
+		end
+		if contactDps > 0 then
+			guardian.HP -= contactDps * deltaSeconds
+			raid.GuardianDirty = true
+			if guardian.HP <= 0 then
+				knockOutGuardian(raid, guardian)
+				continue
+			end
+		end
+
+		-- Nearest enemy that is still close enough to the plot.
+		local target: EnemyRuntime? = nil
+		local targetDistance = math.huge
+		for _, enemy in ipairs(raid.Enemies) do
+			if enemy.Model.Parent and planarDistance(enemy.Position, raid.CenterPosition) <= RaidConfig.GUARDIAN_ENGAGE_RADIUS then
+				local dist = planarDistance(enemy.Position, guardian.Position)
+				if dist < targetDistance then
+					targetDistance = dist
+					target = enemy
+				end
+			end
+		end
+
+		local goal = raid.CenterPosition + guardian.HomeOffset
+		if target then
+			if targetDistance <= RaidConfig.GUARDIAN_ATTACK_RANGE then
+				goal = guardian.Position -- in range: hold position and fight
+				if now - guardian.LastAttackAt >= guardian.CooldownSeconds then
+					guardian.LastAttackAt = now
+					target.CurrentHP -= guardian.Damage
+					fireRaidClients(raid, RaidRemotes.GuardianAttack, {
+						From = guardian.Position,
+						To = target.Position + Vector3.new(0, RaidConfig.GUARDIAN_HOVER_HEIGHT * 0.5, 0),
+						Rarity = guardian.Rarity,
+					})
+					if target.CurrentHP <= 0 then
+						removeDeadEnemies(raid)
+					end
+				end
+			else
+				goal = Vector3.new(target.Position.X, guardian.Position.Y, target.Position.Z)
+			end
+		end
+
+		local toGoal = goal - guardian.Position
+		local distance = toGoal.Magnitude
+		if distance > 0.05 then
+			local newPosition = guardian.Position + toGoal.Unit * math.min(distance, RaidConfig.GUARDIAN_MOVE_SPEED * deltaSeconds)
+			guardian.Position = newPosition
+			if guardian.Model and guardian.Model.Parent then
+				guardian.Model:SetAttribute(ModelAnimationTags.ATTR_TARGET_POSITION, newPosition)
+			end
+		end
+	end
+
+	if raid.GuardianDirty and now - raid.LastGuardianSyncAt >= RaidConfig.GUARDIAN_STATUS_SYNC_SECONDS then
+		sendGuardianStatus(raid)
+	end
+end
+
+--- Deploys the caller's SAVED loadout into the raid they are in (own raid or a
+--- cluster mate's). The client sends no ids: everything is read and
+--- re-validated from server state.
+function RaidService.RequestDeployGuardians(player: Player): { [string]: any }
+	if not PlayerDataService.IsDataLoaded(player) then
+		return { Success = false, Reason = "DataNotLoaded" }
+	end
+	local now = os.clock()
+	if now - (lastDeployAt[player.UserId] or -math.huge) < RaidConfig.GUARDIAN_DEPLOY_COOLDOWN_SECONDS then
+		return { Success = false, Reason = "RateLimited" }
+	end
+	lastDeployAt[player.UserId] = now
+
+	local raid = getLiveRaidFor(player)
+	if not raid or raid.Finished then
+		return { Success = false, Reason = "NoActiveRaid" }
+	end
+	if raid.DeployedBy[player.UserId] then
+		return { Success = false, Reason = "AlreadyDeployed" }
+	end
+
+	local slots = RaidConfig.GetGuardianSlots(PlayerDataService.GetLevel(player))
+	local deployed = 0
+	for _, instanceId in ipairs(PlayerDataService.GetGuardianLoadout(player)) do
+		if deployed >= slots then
+			break
+		end
+		local instance = checkGuardianEligibility(player, instanceId)
+		if instance then
+			spawnGuardian(raid, player, instance)
+			deployed += 1
+		end
+	end
+
+	if deployed == 0 then
+		-- Not marked as deployed: the player may fix the loadout and try again.
+		return { Success = false, Reason = "NoGuardiansSelected" }
+	end
+
+	raid.DeployedBy[player.UserId] = true
+	sendGuardianStatus(raid)
+	return { Success = true, Count = deployed }
+end
+
+--- Loadout screen data: slots, saved loadout and every creature with its
+--- guardian stats (or the reason it cannot be used).
+function RaidService.GetGuardianLoadoutInfo(player: Player): { [string]: any }
+	if not PlayerDataService.IsDataLoaded(player) then
+		return { Slots = 1, SlotUnlockLevels = RaidConfig.GUARDIAN_SLOT_UNLOCK_LEVELS, Loadout = {}, Candidates = {}, Deployed = false, InRaid = false }
+	end
+	local level = PlayerDataService.GetLevel(player)
+	local raid = getLiveRaidFor(player)
+
+	local candidates = {}
+	local inventory = table.clone(PlayerDataService.GetCreatureInventory(player))
+	table.sort(inventory, function(a, b)
+		local dpsA = (RaidConfig.GUARDIAN_RARITY_STATS[a.Rarity] or RaidConfig.GUARDIAN_RARITY_STATS.Common).Dps
+		local dpsB = (RaidConfig.GUARDIAN_RARITY_STATS[b.Rarity] or RaidConfig.GUARDIAN_RARITY_STATS.Common).Dps
+		if dpsA ~= dpsB then
+			return dpsA > dpsB
+		end
+		return a.AcquiredAt > b.AcquiredAt
+	end)
+	for index = 1, math.min(#inventory, MAX_CANDIDATES_SENT) do
+		local instance = inventory[index]
+		local stats = RaidConfig.GetGuardianCombatStats(instance.Rarity, level)
+		table.insert(candidates, {
+			InstanceId = instance.InstanceId,
+			CreatureId = instance.CreatureId,
+			Rarity = instance.Rarity,
+			Damage = math.floor(stats.Dps * 10 + 0.5) / 10, -- damage per second
+			MaxHP = stats.MaxHP,
+			Eligible = true,
+		})
+	end
+	for _, abducted in ipairs(PlayerDataService.GetAbductedCreatures(player)) do
+		table.insert(candidates, {
+			InstanceId = abducted.InstanceId,
+			CreatureId = abducted.CreatureId,
+			Rarity = abducted.Rarity,
+			Damage = 0,
+			MaxHP = 0,
+			Eligible = false,
+			Reason = "Abducted - rescue it first",
+		})
+	end
+
+	return {
+		Slots = RaidConfig.GetGuardianSlots(level),
+		SlotUnlockLevels = RaidConfig.GUARDIAN_SLOT_UNLOCK_LEVELS,
+		Loadout = PlayerDataService.GetGuardianLoadout(player),
+		Candidates = candidates,
+		Deployed = raid ~= nil and raid.DeployedBy[player.UserId] == true,
+		InRaid = raid ~= nil,
+	}
+end
+
+--- Saves a new loadout. `ids` comes from the client and is untrusted: capped,
+--- type-checked, deduplicated, ownership/abduction-checked and trimmed to the
+--- unlocked slot count before anything is persisted.
+function RaidService.RequestSetGuardianLoadout(player: Player, ids: any): { [string]: any }
+	if not PlayerDataService.IsDataLoaded(player) then
+		return { Success = false, Reason = "DataNotLoaded", Loadout = {}, Slots = 1 }
+	end
+	local slots = RaidConfig.GetGuardianSlots(PlayerDataService.GetLevel(player))
+	local now = os.clock()
+	if now - (lastLoadoutAt[player.UserId] or -math.huge) < RaidConfig.GUARDIAN_LOADOUT_COOLDOWN_SECONDS then
+		return { Success = false, Reason = "RateLimited", Loadout = PlayerDataService.GetGuardianLoadout(player), Slots = slots }
+	end
+	lastLoadoutAt[player.UserId] = now
+
+	if type(ids) ~= "table" then
+		return { Success = false, Reason = "InvalidRequest", Loadout = PlayerDataService.GetGuardianLoadout(player), Slots = slots }
+	end
+
+	local cleaned: { string } = {}
+	local seen: { [string]: boolean } = {}
+	for index = 1, MAX_LOADOUT_PAYLOAD do
+		local id = (ids :: { [any]: any })[index]
+		if id == nil then
+			break
+		end
+		if type(id) == "string" and #id <= 64 and not seen[id] then
+			seen[id] = true
+			if checkGuardianEligibility(player, id) and #cleaned < slots then
+				table.insert(cleaned, id)
+			end
+		end
+	end
+
+	local stored = PlayerDataService.SetGuardianLoadout(player, cleaned)
+	if not stored then
+		return { Success = false, Reason = "PersistenceFailed", Loadout = PlayerDataService.GetGuardianLoadout(player), Slots = slots }
+	end
+	return { Success = true, Loadout = stored, Slots = slots }
+end
+
+-- // Co-op: join/leave ----------------------------------------------------------------
+
+local function removeHelper(raid: RaidRuntime, helperPlayer: Player)
+	raid.Helpers[helperPlayer.UserId] = nil
+	if participantRaids[helperPlayer.UserId] == raid then
+		participantRaids[helperPlayer.UserId] = nil
+	end
+	-- Their guardians leave with them.
+	for index = #raid.Guardians, 1, -1 do
+		local guardian = raid.Guardians[index]
+		if guardian.OwnerUserId == helperPlayer.UserId then
+			if guardian.Model and guardian.Model.Parent then
+				guardian.Model:Destroy()
+			end
+			table.remove(raid.Guardians, index)
+		end
+	end
+	raid.DeployedBy[helperPlayer.UserId] = nil
+	sendGuardianStatus(raid)
+end
+
+--- A cluster mate asks to defend `ownerUserId`'s plot. Everything is checked
+--- here: the owner has a running raid, the sender is in the owner's Reef
+--- Cluster (ClusterService is the authority), capacity, not already busy.
+function RaidService.RequestJoinCoopRaid(player: Player, ownerUserId: any): { [string]: any }
+	if type(ownerUserId) ~= "number" or ownerUserId ~= ownerUserId or ownerUserId % 1 ~= 0 then
+		return { Success = false, Reason = "InvalidRequest" }
+	end
+	if not PlayerDataService.IsDataLoaded(player) then
+		return { Success = false, Reason = "DataNotLoaded" }
+	end
+	local now = os.clock()
+	if now - (lastJoinAt[player.UserId] or -math.huge) < RaidConfig.COOP_JOIN_COOLDOWN_SECONDS then
+		return { Success = false, Reason = "RateLimited" }
+	end
+	lastJoinAt[player.UserId] = now
+
+	local owner = Players:GetPlayerByUserId(ownerUserId)
+	local raid = owner and activeRaids[owner.UserId]
+	if not owner or not raid or raid.Finished then
+		return { Success = false, Reason = "NoActiveRaid" }
+	end
+	if owner == player then
+		return { Success = false, Reason = "OwnRaid" }
+	end
+	if getLiveRaidFor(player) then
+		return { Success = false, Reason = "AlreadyInRaid" }
+	end
+	if not table.find(getClusterMates(owner), player) then
+		return { Success = false, Reason = "NotInCluster" }
+	end
+	if countHelpers(raid) >= RaidConfig.COOP_MAX_PARTICIPANTS then
+		return { Success = false, Reason = "RaidFull" }
+	end
+
+	local plot = PlotRegistry.GetPlot(owner)
+	local helperIndex = countHelpers(raid)
+	local angle = helperIndex * (math.pi / 2) + math.pi / 4
+	if not plot or not teleportToPlot(player, plot, Vector3.new(math.cos(angle) * 12, 0, math.sin(angle) * 12)) then
+		return { Success = false, Reason = "CannotTeleport" }
+	end
+
+	raid.Helpers[player.UserId] = { Player = player, JoinedAt = os.clock() }
+	participantRaids[player.UserId] = raid
+	pushAbilityStatus(player)
+	sendGuardianStatus(raid, player)
+
+	local wave = RaidConfig.WAVES[raid.WaveIndex]
+	return {
+		Success = true,
+		OwnerName = owner.DisplayName,
+		WaveIndex = raid.WaveIndex,
+		TotalWaves = #RaidConfig.WAVES,
+		WaveEnemyCount = #raid.Enemies,
+		IsBossWave = wave and wave.IsBossWave or false,
+	}
+end
+
+--- Removes `player` from the co-op raid they joined. `teleportHome` is false
+--- when the player is leaving the server anyway.
+local function leaveCoopRaid(player: Player, reason: string, teleportHome: boolean)
+	local raid = participantRaids[player.UserId]
+	if not raid then
+		return
+	end
+	removeHelper(raid, player)
+	if player.Parent == Players then
+		RaidRemotes.CoopRaidLeft:FireClient(player, { Reason = reason })
+		RaidRemotes.GuardianStatus:FireClient(player, { Guardians = {} })
+		pushAbilityStatus(player)
+		if teleportHome then
+			returnHelperHome(player)
+		end
+	end
+end
+
+function RaidService.RequestLeaveCoopRaid(player: Player)
+	leaveCoopRaid(player, "Left", true)
 end
 
 local function runRaidTickLoop()
@@ -799,6 +1531,7 @@ local function runRaidTickLoop()
 		for _, raid in pairs(activeRaids) do
 			if not raid.Finished then
 				tickEnemyMovement(raid, deltaSeconds)
+				tickGuardians(raid, now, deltaSeconds)
 				tickTowers(raid, now)
 				tickWaveProgress(raid)
 			end
@@ -972,10 +1705,14 @@ function RaidService.GetStatus(player: Player): { [string]: any }
 		})
 	end
 
+	-- Co-op helpers count as "in a raid" (wave bar, Depth Charge button).
+	local liveRaid = raid or participantRaids[player.UserId]
+
 	return {
 		NextRaidAt = PlayerDataService.GetNextRaidAt(player),
-		InRaid = raid ~= nil,
-		WaveIndex = raid and raid.WaveIndex or nil,
+		InRaid = liveRaid ~= nil,
+		CoopHelper = raid == nil and liveRaid ~= nil,
+		WaveIndex = liveRaid and liveRaid.WaveIndex or nil,
 		TotalWaves = #RaidConfig.WAVES,
 		AbductedCreatures = abductedList,
 	}
@@ -1109,7 +1846,8 @@ end
 -- player's plot, else (true, nil, raid.CenterPosition, enemiesHit) for the
 -- caller to relay a client-side FX trigger.
 function RaidService.ApplyDepthChargeDamage(player: Player, nonBossDamage: number, bossDamageFraction: number): (boolean, string?, Vector3?, number?)
-	local raid = activeRaids[player.UserId]
+	-- Co-op helpers may throw Depth Charges at the raid they joined.
+	local raid = getLiveRaidFor(player)
 	if not raid or raid.Finished then
 		return false, "NoActiveRaid", nil, nil
 	end
@@ -1122,7 +1860,7 @@ function RaidService.ApplyDepthChargeDamage(player: Player, nonBossDamage: numbe
 			enemy.CurrentHP -= damage
 			enemiesHit += 1
 
-			RaidRemotes.EnemyHit:FireClient(player, {
+			fireRaidClients(raid, RaidRemotes.EnemyHit, {
 				TowerPosition = raid.CenterPosition,
 				EnemyPosition = enemy.Position,
 			})
@@ -1146,12 +1884,30 @@ end
 --- Zeit inzwischen abgelaufen ist) oder der bisherige Countdown normal
 --- weiterläuft.
 function RaidService.CleanupPlayer(player: Player)
+	-- A helper leaving the server just drops out of the raid they joined.
+	leaveCoopRaid(player, "Left", false)
+
 	local raid = activeRaids[player.UserId]
 	if raid then
 		raid.Finished = true
+		-- The owner is gone: send the helpers home, nobody gets rewards or penalties.
+		for userId, helper in pairs(raid.Helpers) do
+			participantRaids[userId] = nil
+			if helper.Player.Parent == Players then
+				RaidRemotes.CoopRaidLeft:FireClient(helper.Player, { Reason = "OwnerLeft" })
+				RaidRemotes.GuardianStatus:FireClient(helper.Player, { Guardians = {} })
+				pushAbilityStatus(helper.Player)
+				returnHelperHome(helper.Player)
+			end
+		end
+		raid.Helpers = {}
 		destroyRaidWorkspaceState(raid)
 		activeRaids[player.UserId] = nil
 	end
+
+	lastDeployAt[player.UserId] = nil
+	lastLoadoutAt[player.UserId] = nil
+	lastJoinAt[player.UserId] = nil
 end
 
 --- Wird beim Login NACH erfolgreichem PlayerDataService.WaitForData

@@ -58,6 +58,44 @@
 			RequestInstantComplete).
 		RescueWithTokenResult (RemoteEvent, Server -> Client)
 			Antwort auf RequestRescueWithToken: { Success: boolean, Reason: string? }.
+		RequestDeployGuardian (RemoteEvent, Client -> Server)
+			No payload. Asks the server to deploy the player's SAVED guardian
+			loadout (PlayerDataService.GetGuardianLoadout) into the raid they
+			are currently in (their own, or a cluster mate's they joined). The
+			client never sends creature ids here - the server re-validates
+			ownership, abducted state and slot count itself. Once per raid.
+		GetGuardianLoadout (RemoteFunction, Client -> Server -> Client)
+			No payload. Returns { Slots, SlotUnlockLevels, Loadout: {instanceId},
+			Candidates: { { InstanceId, CreatureId, Rarity, Damage, MaxHP,
+			Eligible, Reason? } }, Deployed: boolean, InRaid: boolean }.
+		RequestSetGuardianLoadout (RemoteEvent, Client -> Server)
+			Payload: (ids: {string}). Pure intent; RaidService trims to the
+			unlocked slot count, drops unowned/abducted ids and persists via
+			PlayerDataService.SetGuardianLoadout. Answered by GuardianLoadoutChanged.
+		GuardianDeployResult (RemoteEvent, Server -> Client)
+			Answer to RequestDeployGuardian: { Success, Reason: string?, Count: number? }.
+		GuardianLoadoutChanged (RemoteEvent, Server -> Client)
+			{ Success: boolean, Reason: string?, Loadout: {string}, Slots: number }.
+		GuardianStatus (RemoteEvent, Server -> Client)
+			Raid HUD snapshot of all guardians in the viewer's raid (own and
+			cluster mates'): { Guardians = { { OwnerUserId, InstanceId, CreatureId,
+			Rarity, HP, MaxHP, KnockedOut } } }. Empty list when the raid ends.
+		GuardianAttack (RemoteEvent, Server -> Client)
+			Cosmetic: { From: Vector3, To: Vector3, Rarity: string }.
+		CoopRaidInvite (RemoteEvent, Server -> Client)
+			A cluster mate's plot is being raided: { OwnerUserId, OwnerName,
+			ExpiresAt (os.time) }.
+		RequestJoinCoopRaid (RemoteEvent, Client -> Server)
+			Payload: (ownerUserId: number). Server checks that the owner has an
+			active raid, that the sender is in the owner's Reef Cluster, capacity
+			and cooldowns, then teleports the sender to the owner's plot.
+		RequestLeaveCoopRaid (RemoteEvent, Client -> Server)
+			No payload. A helper leaves the raid and returns to their own plot.
+		CoopRaidJoined (RemoteEvent, Server -> Client)
+			Answer to RequestJoinCoopRaid: { Success, Reason?, OwnerName?,
+			WaveIndex?, TotalWaves?, WaveEnemyCount?, IsBossWave? }.
+		CoopRaidLeft (RemoteEvent, Server -> Client)
+			The helper is no longer part of a co-op raid: { Reason: string }.
 ]]
 
 local RunService = game:GetService("RunService")
@@ -102,6 +140,18 @@ if RunService:IsServer() then
 	RaidRemotes.RescueResult = getOrCreateRemoteEvent(script, "RescueResult")
 	RaidRemotes.RequestRescueWithToken = getOrCreateRemoteEvent(script, "RequestRescueWithToken")
 	RaidRemotes.RescueWithTokenResult = getOrCreateRemoteEvent(script, "RescueWithTokenResult")
+	RaidRemotes.RequestDeployGuardian = getOrCreateRemoteEvent(script, "RequestDeployGuardian")
+	RaidRemotes.RequestSetGuardianLoadout = getOrCreateRemoteEvent(script, "RequestSetGuardianLoadout")
+	RaidRemotes.GuardianLoadoutChanged = getOrCreateRemoteEvent(script, "GuardianLoadoutChanged")
+	RaidRemotes.GuardianDeployResult = getOrCreateRemoteEvent(script, "GuardianDeployResult")
+	RaidRemotes.GuardianStatus = getOrCreateRemoteEvent(script, "GuardianStatus")
+	RaidRemotes.GuardianAttack = getOrCreateRemoteEvent(script, "GuardianAttack")
+	RaidRemotes.CoopRaidInvite = getOrCreateRemoteEvent(script, "CoopRaidInvite")
+	RaidRemotes.RequestJoinCoopRaid = getOrCreateRemoteEvent(script, "RequestJoinCoopRaid")
+	RaidRemotes.RequestLeaveCoopRaid = getOrCreateRemoteEvent(script, "RequestLeaveCoopRaid")
+	RaidRemotes.CoopRaidJoined = getOrCreateRemoteEvent(script, "CoopRaidJoined")
+	RaidRemotes.CoopRaidLeft = getOrCreateRemoteEvent(script, "CoopRaidLeft")
+	RaidRemotes.GetGuardianLoadout = getOrCreateRemoteFunction(script, "GetGuardianLoadout")
 else
 	RaidRemotes.GetRaidStatus = script:WaitForChild("GetRaidStatus") :: RemoteFunction
 	RaidRemotes.RaidStarted = script:WaitForChild("RaidStarted") :: RemoteEvent
@@ -112,6 +162,18 @@ else
 	RaidRemotes.RescueResult = script:WaitForChild("RescueResult") :: RemoteEvent
 	RaidRemotes.RequestRescueWithToken = script:WaitForChild("RequestRescueWithToken") :: RemoteEvent
 	RaidRemotes.RescueWithTokenResult = script:WaitForChild("RescueWithTokenResult") :: RemoteEvent
+	RaidRemotes.RequestDeployGuardian = script:WaitForChild("RequestDeployGuardian") :: RemoteEvent
+	RaidRemotes.RequestSetGuardianLoadout = script:WaitForChild("RequestSetGuardianLoadout") :: RemoteEvent
+	RaidRemotes.GuardianLoadoutChanged = script:WaitForChild("GuardianLoadoutChanged") :: RemoteEvent
+	RaidRemotes.GuardianDeployResult = script:WaitForChild("GuardianDeployResult") :: RemoteEvent
+	RaidRemotes.GuardianStatus = script:WaitForChild("GuardianStatus") :: RemoteEvent
+	RaidRemotes.GuardianAttack = script:WaitForChild("GuardianAttack") :: RemoteEvent
+	RaidRemotes.CoopRaidInvite = script:WaitForChild("CoopRaidInvite") :: RemoteEvent
+	RaidRemotes.RequestJoinCoopRaid = script:WaitForChild("RequestJoinCoopRaid") :: RemoteEvent
+	RaidRemotes.RequestLeaveCoopRaid = script:WaitForChild("RequestLeaveCoopRaid") :: RemoteEvent
+	RaidRemotes.CoopRaidJoined = script:WaitForChild("CoopRaidJoined") :: RemoteEvent
+	RaidRemotes.CoopRaidLeft = script:WaitForChild("CoopRaidLeft") :: RemoteEvent
+	RaidRemotes.GetGuardianLoadout = script:WaitForChild("GetGuardianLoadout") :: RemoteFunction
 end
 
 return RaidRemotes

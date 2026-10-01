@@ -66,6 +66,28 @@ RaidRemotes.RequestRescueWithToken.OnServerEvent:Connect(function(player: Player
 	})
 end)
 
+-- Guardians + co-op (docs/guardians-and-coop.md). Payloads are untrusted; the
+-- RaidService functions validate type, ownership, membership and rate limits.
+RaidRemotes.GetGuardianLoadout.OnServerInvoke = function(player: Player)
+	return RaidService.GetGuardianLoadoutInfo(player)
+end
+
+RaidRemotes.RequestSetGuardianLoadout.OnServerEvent:Connect(function(player: Player, ids: any)
+	RaidRemotes.GuardianLoadoutChanged:FireClient(player, RaidService.RequestSetGuardianLoadout(player, ids))
+end)
+
+RaidRemotes.RequestDeployGuardian.OnServerEvent:Connect(function(player: Player)
+	RaidRemotes.GuardianDeployResult:FireClient(player, RaidService.RequestDeployGuardians(player))
+end)
+
+RaidRemotes.RequestJoinCoopRaid.OnServerEvent:Connect(function(player: Player, ownerUserId: any)
+	RaidRemotes.CoopRaidJoined:FireClient(player, RaidService.RequestJoinCoopRaid(player, ownerUserId))
+end)
+
+RaidRemotes.RequestLeaveCoopRaid.OnServerEvent:Connect(function(player: Player)
+	RaidService.RequestLeaveCoopRaid(player)
+end)
+
 local function onPlayerAdded(player: Player)
 	local data = PlayerDataService.WaitForData(player, JOIN_DATA_TIMEOUT_SECONDS)
 	if not data then
@@ -96,4 +118,4 @@ for _, existingPlayer in ipairs(Players:GetPlayers()) do
 	task.spawn(onPlayerAdded, existingPlayer)
 end
 
-print("[Abyssara] RaidServer ready (GetRaidStatus / RequestRescueCreature wired up).")
+print("[Abyssara] RaidServer ready (raid status, rescue, guardians and co-op wired up).")

@@ -243,8 +243,13 @@ local function buildVictoryText(result: { [string]: any }): string
 	local lines = {}
 	if result.Offline then
 		table.insert(lines, ("While you were away: %d raid(s) successfully repelled."):format(result.RaidsEvaluated or 1))
+	elseif result.Coop then
+		table.insert(lines, ("You helped defend %s's reef!"):format(tostring(result.OwnerName or "your mate")))
 	else
 		table.insert(lines, ("Survived all %d waves!"):format(result.WavesCleared or 0))
+		if result.HelperCount then
+			table.insert(lines, ("Reef Cluster helpers: %d (rewards shared)"):format(result.HelperCount))
+		end
 	end
 	if result.RewardTideCoins then
 		table.insert(lines, ("+ %d Tide Coins"):format(result.RewardTideCoins))
@@ -257,6 +262,12 @@ end
 
 local function buildDefeatText(result: { [string]: any }): string
 	local lines = {}
+	if result.Coop then
+		return ("%s's reef was breached after wave %d. You lost nothing - great try!"):format(
+			tostring(result.OwnerName or "Your mate"),
+			result.WavesCleared or 0
+		)
+	end
 	if result.Offline then
 		table.insert(lines, ("While you were away: %d raid(s) lost."):format(result.RaidsEvaluated or 1))
 		local abductedList = result.AbductedCreatures
@@ -507,6 +518,25 @@ RaidRemotes.WaveAdvanced.OnClientEvent:Connect(function(payload)
 	totalWaves = payload.TotalWaves or totalWaves
 	currentWaveEnemyCount = payload.WaveEnemyCount or 0
 	currentWaveIsBoss = payload.IsBossWave == true
+	refreshStatusBar()
+end)
+
+-- Co-op helpers: the raid bar follows the raid they joined / left (the server
+-- sends WaveAdvanced and RaidResult to helpers as well).
+RaidRemotes.CoopRaidJoined.OnClientEvent:Connect(function(payload)
+	if not payload or payload.Success ~= true then
+		return
+	end
+	inRaid = true
+	currentWaveIndex = payload.WaveIndex or 1
+	totalWaves = payload.TotalWaves or totalWaves
+	currentWaveEnemyCount = payload.WaveEnemyCount or 0
+	currentWaveIsBoss = payload.IsBossWave == true
+	refreshStatusBar()
+end)
+
+RaidRemotes.CoopRaidLeft.OnClientEvent:Connect(function()
+	inRaid = false
 	refreshStatusBar()
 end)
 

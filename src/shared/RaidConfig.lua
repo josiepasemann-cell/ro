@@ -362,6 +362,109 @@ RaidConfig.OFFLINE_ASSUMED_RAID_SECONDS = 70
 --- Offline-Formel (>1 = schwerer als live, <1 = leichter). 1.0 = neutral.
 RaidConfig.OFFLINE_DIFFICULTY_MULTIPLIER = 1.0
 
+-- // Guardians (player creatures as raid allies) ---------------------------------
+-- Balance goal: guardians help but towers stay the backbone. One AnglerfishTower
+-- deals 27 DPS; a Mythic guardian at level 50 deals about 21 DPS and 3 slots only
+-- unlock at level 35, so a full loadout is worth roughly 2 towers, not 6.
+-- Creatures have no level of their own, so the OWNER's level scales them.
+
+export type GuardianRarityStats = {
+	Dps: number, -- damage per second before level scaling
+	MaxHP: number, -- hit points before level scaling
+}
+
+local GUARDIAN_RARITY_STATS: { [string]: GuardianRarityStats } = {
+	Common = { Dps = 4, MaxHP = 70 },
+	Uncommon = { Dps = 5, MaxHP = 85 },
+	Rare = { Dps = 7, MaxHP = 105 },
+	Epic = { Dps = 9.5, MaxHP = 130 },
+	Legendary = { Dps = 12, MaxHP = 160 },
+	Mythic = { Dps = 15, MaxHP = 200 },
+	Abyssal = { Dps = 18, MaxHP = 240 },
+}
+RaidConfig.GUARDIAN_RARITY_STATS = GUARDIAN_RARITY_STATS
+RaidConfig.GUARDIAN_FALLBACK_RARITY = "Common"
+
+--- Slot i unlocks at player level GUARDIAN_SLOT_UNLOCK_LEVELS[i] (1 / 20 / 35).
+RaidConfig.GUARDIAN_SLOT_UNLOCK_LEVELS = { 1, 20, 35 } :: { number }
+
+--- +0.8% damage/HP per player level above 1, capped at +40% (level 51+).
+RaidConfig.GUARDIAN_LEVEL_BONUS_PER_LEVEL = 0.008
+RaidConfig.GUARDIAN_LEVEL_BONUS_CAP = 0.4
+
+RaidConfig.GUARDIAN_ATTACK_COOLDOWN_SECONDS = 1.2
+RaidConfig.GUARDIAN_ATTACK_RANGE = 7 -- studs (planar), from guardian to enemy
+RaidConfig.GUARDIAN_MOVE_SPEED = 12 -- studs/second, logical movement (client smooths it)
+RaidConfig.GUARDIAN_ENGAGE_RADIUS = 36 -- enemies further than this from the plot center are ignored
+RaidConfig.GUARDIAN_HOME_RADIUS = 9 -- idle ring around the plot center
+RaidConfig.GUARDIAN_HOVER_HEIGHT = 4 -- studs above the plot center point
+RaidConfig.GUARDIAN_CONTACT_RADIUS = 5 -- enemies this close (planar) hurt a guardian
+RaidConfig.GUARDIAN_STATUS_SYNC_SECONDS = 0.5 -- HP updates to the HUD, only when something changed
+RaidConfig.GUARDIAN_KO_FX_SECONDS = 0.6 -- fade-out time before a knocked-out guardian model is removed
+RaidConfig.GUARDIAN_DEPLOY_COOLDOWN_SECONDS = 2 -- anti-spam for RequestDeployGuardian
+RaidConfig.GUARDIAN_LOADOUT_COOLDOWN_SECONDS = 0.5 -- anti-spam for RequestSetGuardianLoadout
+
+--- Contact damage per second an enemy deals to a guardian it touches. A guardian
+--- is only knocked out for the rest of the raid, never lost for good.
+RaidConfig.GUARDIAN_CONTACT_DPS_BY_ENEMY = {
+	Drifter = 5,
+	Swarmer = 4,
+	Brute = 11,
+	TrenchWarden = 18,
+} :: { [string]: number }
+RaidConfig.GUARDIAN_CONTACT_DPS_DEFAULT = 6
+
+--- Number of loadout slots a player of `level` has (always at least 1).
+function RaidConfig.GetGuardianSlots(level: number): number
+	local slots = 0
+	for _, unlockLevel in ipairs(RaidConfig.GUARDIAN_SLOT_UNLOCK_LEVELS) do
+		if level >= unlockLevel then
+			slots += 1
+		end
+	end
+	return math.max(1, slots)
+end
+
+export type GuardianCombatStats = {
+	Damage: number, -- per attack
+	MaxHP: number,
+	CooldownSeconds: number,
+	Dps: number,
+}
+
+--- Combat stats of a guardian of `rarity` owned by a player of `level`.
+function RaidConfig.GetGuardianCombatStats(rarity: string, level: number): GuardianCombatStats
+	local base = GUARDIAN_RARITY_STATS[rarity] or GUARDIAN_RARITY_STATS[RaidConfig.GUARDIAN_FALLBACK_RARITY]
+	local bonus =
+		math.min(RaidConfig.GUARDIAN_LEVEL_BONUS_CAP, math.max(0, level - 1) * RaidConfig.GUARDIAN_LEVEL_BONUS_PER_LEVEL)
+	local cooldown = RaidConfig.GUARDIAN_ATTACK_COOLDOWN_SECONDS
+	local dps = base.Dps * (1 + bonus)
+	return {
+		Damage = dps * cooldown,
+		MaxHP = math.floor(base.MaxHP * (1 + bonus) + 0.5),
+		CooldownSeconds = cooldown,
+		Dps = dps,
+	}
+end
+
+-- // Co-op raids (Reef Clusters) ---------------------------------------------------
+
+RaidConfig.COOP_MAX_PARTICIPANTS = 3 -- cluster members besides the plot owner
+RaidConfig.COOP_INVITE_SECONDS = 120 -- how long the join prompt stays valid (also ends with the raid)
+RaidConfig.COOP_MIN_PRESENCE_SECONDS = 15 -- a helper must have been in the raid this long to share rewards
+RaidConfig.COOP_JOIN_COOLDOWN_SECONDS = 2
+--- Per extra participant: regular enemies get +30% HP, the boss +75% HP and one
+--- more escort enemy joins the boss wave.
+RaidConfig.COOP_ENEMY_HP_PER_EXTRA = 0.3
+RaidConfig.COOP_BOSS_HP_PER_EXTRA = 0.75
+RaidConfig.COOP_BOSS_ESCORT_PER_EXTRA = 1
+--- Rewards: every helper gets 75% of the base Tide Coin reward (own 2x Coins
+--- gamepass applies), the owner +10% per helper. Helpers also get RaidWon XP and
+--- their own shard roll. Helpers never lose a creature when a raid is lost.
+RaidConfig.COOP_HELPER_REWARD_FRACTION = 0.75
+RaidConfig.COOP_OWNER_BONUS_PER_HELPER = 0.1
+RaidConfig.COOP_RETURN_DELAY_SECONDS = 8 -- helpers are teleported back to their own plot this long after the raid
+
 -- // Belohnungen (Sieg) -----------------------------------------------------------
 
 RaidConfig.VICTORY_REWARD_TIDE_COINS = 220

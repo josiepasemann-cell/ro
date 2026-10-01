@@ -113,6 +113,14 @@ path.
 - Bosses (existing `IsBoss` attribute) get a heavier bob amplitude.
 - Tag: `ModelAnimationTags.RAID_ENEMY` ("RaidEnemyMotion").
 
+### Raid guardians (`RaidService` + `ModelAnimator`)
+
+- Player creatures deployed as raid allies carry the tag
+  `ModelAnimationTags.RAID_GUARDIAN` ("RaidGuardianMotion"). The server keeps a
+  logical `Position` per guardian and only publishes `TargetPosition`; the
+  client chases it at the raid-enemy rate and plays the same spawn fade
+  (`SpawnedAt`) and knock-out dissolve (`DyingAt`). See `docs/guardians-and-coop.md`.
+
 ### Raid towers
 
 - `RaidService.collectTowerRuntimes` tags every player-owned tower with

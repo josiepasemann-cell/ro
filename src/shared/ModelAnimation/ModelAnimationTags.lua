@@ -30,6 +30,10 @@ ModelAnimationTags.RAID_ENEMY = "RaidEnemyMotion"
 -- unabhängig vom Raid-Status getaggt (idle-pulst auch außerhalb eines Raids).
 ModelAnimationTags.RAID_TOWER = "RaidTower"
 
+-- Guardian creatures deployed by players during a raid (RaidService). Same chase
+-- rate and spawn/knock-out fade as RAID_ENEMY, idle sway like display creatures.
+ModelAnimationTags.RAID_GUARDIAN = "RaidGuardianMotion"
+
 -- Weltpickups (Glow Spore/Toxic Spore/Frozen Spore/Sunken Chest, siehe
 -- PickupSpawner) - rein kosmetischer Idle-Bob/Spin/Puls der DEKORATIVEN
 -- Kind-Parts (NICHT des PrimaryPart "Body", der das serverseitig

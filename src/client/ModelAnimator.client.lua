@@ -132,7 +132,7 @@ local HUB_EGG_INTENSITY_SCALE = 0.6 -- gentler wobble than a free-swimming creat
 
 -- // Gemeinsamer Chase-Zustand (DISPLAY_CREATURE + RAID_ENEMY) -----------------
 
-type ChaseKind = "Display" | "RaidEnemy"
+type ChaseKind = "Display" | "RaidEnemy" | "Guardian"
 
 type ChaseEntry = {
 	Model: Model,
@@ -193,7 +193,7 @@ local function registerChaseEntry(model: Model, kind: ChaseKind)
 		Yaw = 0,
 		AccumulatedDt = 0,
 		LOD = "Full",
-		SpawnedAt = if kind == "RaidEnemy" then model:GetAttribute(ModelAnimationTags.ATTR_SPAWNED_AT) :: number? else nil,
+		SpawnedAt = if kind ~= "Display" then model:GetAttribute(ModelAnimationTags.ATTR_SPAWNED_AT) :: number? else nil,
 		Alive = true,
 	}
 	chaseEntries[model] = entry
@@ -216,7 +216,7 @@ local function updateChaseEntry(entry: ChaseEntry, dt: number, now: number)
 		return
 	end
 
-	local baseRate = if entry.Kind == "RaidEnemy" then RAID_CHASE_BASE_RATE else DISPLAY_CHASE_BASE_RATE
+	local baseRate = if entry.Kind ~= "Display" then RAID_CHASE_BASE_RATE else DISPLAY_CHASE_BASE_RATE
 	local toTarget = target - entry.Position
 	local distance = toTarget.Magnitude
 
@@ -350,6 +350,13 @@ CollectionService:GetInstanceAddedSignal(ModelAnimationTags.RAID_ENEMY):Connect(
 CollectionService:GetInstanceRemovedSignal(ModelAnimationTags.RAID_ENEMY):Connect(onTaggedRemoved)
 for _, instance in ipairs(CollectionService:GetTagged(ModelAnimationTags.RAID_ENEMY)) do
 	onTaggedAdded("RaidEnemy")(instance)
+end
+
+-- Guardian creatures (RaidService): same chase + spawn/knock-out fade as raid enemies.
+CollectionService:GetInstanceAddedSignal(ModelAnimationTags.RAID_GUARDIAN):Connect(onTaggedAdded("Guardian"))
+CollectionService:GetInstanceRemovedSignal(ModelAnimationTags.RAID_GUARDIAN):Connect(onTaggedRemoved)
+for _, instance in ipairs(CollectionService:GetTagged(ModelAnimationTags.RAID_GUARDIAN)) do
+	onTaggedAdded("Guardian")(instance)
 end
 
 -- // Raid-Türme: Idle-Glow-Puls + Muzzle-Flash/Recoil --------------------------
@@ -798,7 +805,7 @@ RunService.PreSimulation:Connect(function(dt: number)
 		entry.AccumulatedDt = 0
 
 		updateChaseEntry(entry, effectiveDt, now)
-		if entry.Kind == "RaidEnemy" then
+		if entry.Kind ~= "Display" then
 			updateRaidEnemyVisualFx(entry, now)
 		end
 	end

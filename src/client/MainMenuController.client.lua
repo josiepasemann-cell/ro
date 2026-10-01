@@ -30,7 +30,7 @@
 
 		Eingabe:
 			- Tastatur/Maus: Kürzel B Build · Z Shop · Q Quests · T Travel ·
-			  H More · U Brood Pool · M Mystery Egg · N Abducted · L Leaderboard
+			  H More · U Brood Pool · M Mystery Egg · N Abducted · I Guardians · L Leaderboard
 			  · C Codex · K Achievements · J Event · Y Settings. Das Kürzel
 			  erscheint als Tasten-Chip am Button, solange zuletzt Tastatur/Maus
 			  benutzt wurde. Dasselbe Kürzel nochmal schließt das Panel wieder.
@@ -100,6 +100,7 @@ local toggleBuildModeEvent = getOrCreateBridgeEvent("ToggleBuildMode")
 local openBreedingOverviewEvent = getOrCreateBridgeEvent("OpenBreedingOverview")
 local openMysteryEggEvent = getOrCreateBridgeEvent("OpenMysteryEgg")
 local openAbductedCreaturesEvent = getOrCreateBridgeEvent("OpenAbductedCreatures")
+local openGuardiansEvent = getOrCreateBridgeEvent("OpenGuardians")
 local openShopEvent = getOrCreateBridgeEvent("OpenShop")
 local openQuestsEvent = getOrCreateBridgeEvent("OpenQuests")
 local openLeaderboardEvent = getOrCreateBridgeEvent("OpenLeaderboard")
@@ -547,6 +548,7 @@ local drawerEntries: { MenuEntry } = {
 	{ Id = "BroodPool", Icon = "🥚", Text = "Brood Pool", IsPanel = true, Key = Enum.KeyCode.U, OnClick = function() openBreedingOverviewEvent:Fire() end },
 	{ Id = "MysteryEgg", Icon = "🎁", Text = "Mystery Egg", IsPanel = true, Key = Enum.KeyCode.M, OnClick = function() openMysteryEggEvent:Fire() end },
 	{ Id = "Abducted", Icon = "🆘", Text = "Abducted", IsPanel = true, Key = Enum.KeyCode.N, OnClick = function() openAbductedCreaturesEvent:Fire() end },
+	{ Id = "Guardians", Icon = "🛡️", Text = "Guardians", IsPanel = true, Key = Enum.KeyCode.I, OnClick = function() openGuardiansEvent:Fire() end },
 	{ Id = "Leaderboard", Icon = "🏆", Text = "Leaderboard", IsPanel = true, Key = Enum.KeyCode.L, OnClick = function() openLeaderboardEvent:Fire() end },
 	{ Id = "Codex", Icon = "📖", Text = "Codex", IsPanel = true, Key = Enum.KeyCode.C, OnClick = function() openCodexEvent:Fire() end },
 	{ Id = "Achievements", Icon = "🏅", Text = "Achievements", IsPanel = true, Key = Enum.KeyCode.K, BadgeKey = "Achievement", OnClick = function() openAchievementsEvent:Fire() end },
