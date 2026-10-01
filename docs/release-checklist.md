@@ -5,6 +5,24 @@ luau-lsp against the Roblox API, and has been reviewed three times for
 runtime errors and exploits. **It has, however, never been run in Roblox
 Studio.** Expect errors in the Output window on first launch.
 
+## 0. Fastest way: the ready-made place file
+
+`studio.project.json` builds a complete place: all scripts plus every
+buildscript as a ModuleScript under `ServerStorage.AbyssaraBuild`.
+
+1. Build it: `rojo build studio.project.json -o Abyssara.rbxlx` (or use the
+   `Abyssara.rbxlx` you were sent) and open it in Roblox Studio.
+2. In **Edit mode** (not Play), View → Command Bar, run:
+   `require(game.ServerStorage.AbyssaraBuild.BuildWorld).Run()`
+   This runs all buildscripts in the order of §3 below and prints a report
+   (any failed script is listed in orange in the Output).
+3. Optional meshes (§3b): import the `.glb` files into `Workspace.MeshImports`,
+   then run `require(game.ServerStorage.AbyssaraBuild.ApplyMeshes)`.
+4. Do §2 (API access, publish) and §5 (IDs), then test (§4).
+
+For ongoing development keep using Rojo live sync (§1) with
+`default.project.json`; the world only needs to be built once per place.
+
 ## 1. Get the project into Studio (Rojo)
 
 1. Install Rojo (e.g. via the "Rojo" VS Code extension or `rokit add rojo-rbx/rojo`) and install the Rojo plugin in Studio.
