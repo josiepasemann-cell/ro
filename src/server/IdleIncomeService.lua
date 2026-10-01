@@ -149,6 +149,13 @@ local function computeIncomePerMinute(player: Player): number
 	multiplier *= ZoneEconomyConfig.GetIncomeMultiplier(zone)
 	multiplier *= PlayerDataService.GetCodexIncomeMultiplier(player)
 
+	-- Reef Cluster co-op bonus (GDD section 7): +5 % per OTHER cluster member
+	-- online, capped (see ClusterConfig). 1.0 when solo. Lazy require like the
+	-- hooks below: ClusterService is only needed at the point of use and this
+	-- keeps the require order between the two modules irrelevant.
+	local ClusterService = require(script.Parent:WaitForChild("ClusterService"))
+	multiplier *= ClusterService.GetIncomeMultiplier(player)
+
 	local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 	if MonetizationService.PlayerOwnsGamepass(player, "DoubleCoins") then
 		multiplier *= MonetizationService.GetDoubleCoinsMultiplier()
