@@ -94,8 +94,8 @@ ShopConfig.GAMEPASSES = {
 	ExtraPlot = {
 		Key = "ExtraPlot",
 		Id = 0,
-		Name = "Extra Habitat-Plot",
-		Description = "A second, own plot (more building space).",
+		Name = "Extra Habitat Plot",
+		Description = "A second, own plot right next to your first one (more building space).",
 		PriceRobuxDisplay = 199,
 		IconAssetId = "rbxassetid://0",
 		EffectKey = "ExtraPlot",
@@ -343,21 +343,10 @@ ShopConfig.VIP_CHAT_TAG = "VIP"
 ShopConfig.TRENCH_RUNNER_WALKSPEED = 24 -- Standard-Humanoid-WalkSpeed ist 16 (Roblox-Default)
 ShopConfig.DEFAULT_WALKSPEED = 16
 
---- ABWEICHUNG VOM GDD: "Extra Habitat-Plot" (GDD Abschnitt 5, 199 Robux)
---- setzt ein zweites, unabhängiges Plot je Spieler voraus. PlotRegistry
---- (src/server/PlotRegistry.lua) verwaltet aktuell GENAU EIN Plot je
---- UserId (`plotByUserId: { [number]: Model }`) - ein Mehrfach-Plot-System
---- (zweiter Welt-Slot, zweites Baufelder-Set, zweite Habitat-Basis) ist
---- eine grössere strukturelle Erweiterung von PlotRegistry/PlacementService/
---- RaidService (alle gehen aktuell von "ein Plot pro Spieler" aus) und
---- explizit NICHT Teil des Dateibesitzes dieses Auftrags. Der Gamepass ist
---- hier daher bewusst nur als PLATZHALTER verdrahtet: MonetizationService
---- erkennt den Besitz zuverlässig (PlayerOwnsGamepass("ExtraPlot")) und
---- setzt das Player-Attribut "OwnsExtraPlotGamepassPlaceholder" (siehe
---- MonetizationService.applyExtraPlotPlaceholder), löst aber KEINE zweite
---- Plot-Zuweisung aus. Siehe docs/monetization-setup.md
---- für den vollständigen Hinweis an die Spielbetreiberin.
-ShopConfig.EXTRA_PLOT_PLACEHOLDER = true
+--- "Extra Habitat Plot" (GDD Abschnitt 5, 199 Robux): Besitzer bekommen einen
+--- zweiten Plot direkt neben Plot 1 (PlotRegistry.AssignPlot(player, 2),
+--- ausgeloest ueber MonetizationService.GamepassOwned in PlacementServer).
+--- Siehe docs/monetization-setup.md.
 
 -- // Kosmetik-Shop (Soft-Currency, siehe ABWEICHUNG VOM GDD im Kopfkommentar) ---
 

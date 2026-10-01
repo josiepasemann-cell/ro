@@ -102,6 +102,13 @@ local MonetizationService = {}
 local purchaseGrantedBindable = Instance.new("BindableEvent")
 MonetizationService.PurchaseGranted = purchaseGrantedBindable.Event
 
+--- Feuert (player: Player, gamepassKey: string) wann immer der Besitz eines
+--- Gamepasses (neu) festgestellt wird: Join-Warmup, Kaufabschluss mitten in
+--- der Session, Studio-Simulation. Mehrfaches Feuern pro Pass ist normal -
+--- Konsumenten muessen idempotent sein (z. B. PlacementServer -> Plot 2).
+local gamepassOwnedBindable = Instance.new("BindableEvent")
+MonetizationService.GamepassOwned = gamepassOwnedBindable.Event
+
 -- // Konfiguration ------------------------------------------------------------
 
 local GAMEPASS_OWNERSHIP_RETRY_ATTEMPTS = 3
@@ -313,14 +320,11 @@ local function applyVipEffect(player: Player)
 	PlayerDataService.AddCurrency(player, "TideCoins", ShopConfig.VIP_DAILY_CHEST_TIDE_COINS)
 end
 
---- ABWEICHUNG VOM GDD: siehe ShopConfig.EXTRA_PLOT_PLACEHOLDER-Kommentar -
---- PlotRegistry unterstützt aktuell nur ein Plot je Spieler. Dieses Modul
---- erkennt den Gamepass-Besitz zuverlässig und setzt ein Attribut zur
---- späteren Weiterverwendung, löst aber bewusst KEINE zweite Plot-Zuweisung
---- aus (kein Absturz, keine stille Fehlfunktion - einfach (noch) kein
---- Gameplay-Effekt).
-local function applyExtraPlotPlaceholder(player: Player)
-	player:SetAttribute("OwnsExtraPlotGamepassPlaceholder", MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot"))
+--- Extra Habitat Plot (GDD Abschnitt 5): setzt nur das Player-Attribut
+--- "OwnsExtraPlot" (fuer Client-UI). Die eigentliche zweite Plot-Zuweisung
+--- passiert in PlacementServer.server.lua ueber das GamepassOwned-Signal.
+local function applyExtraPlotAttribute(player: Player)
+	player:SetAttribute("OwnsExtraPlot", MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot"))
 end
 
 --- Wendet ALLE unmittelbar (ohne Respawn) sichtbaren Gamepass-Effekte für
@@ -329,7 +333,16 @@ end
 function MonetizationService.ApplyJoinEffects(player: Player)
 	applyTrenchRunnerEffect(player)
 	applyVipEffect(player)
-	applyExtraPlotPlaceholder(player)
+	applyExtraPlotAttribute(player)
+
+	-- Besitz-Signal fuer andere Systeme (z. B. Plot 2 anlegen). Feuert bei
+	-- JEDEM Aufruf fuer jeden besessenen Pass - Konsumenten muessen
+	-- idempotent sein.
+	for _, key in ipairs(ShopConfig.GAMEPASS_ORDER) do
+		if MonetizationService.PlayerOwnsGamepass(player, key) then
+			gamepassOwnedBindable:Fire(player, key)
+		end
+	end
 end
 
 -- // Öffentliche Balancing-Konstanten (für BreedingService/RaidService/

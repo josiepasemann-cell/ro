@@ -601,13 +601,16 @@ end
 --- per ChildAdded, um jede mögliche Reihenfolge-Race zwischen diesem Modul
 --- und PlacementServer.server.lua beim Join sicher abzudecken.
 local function ensureDepositPrompts(player: Player)
-	local buildingsFolder = PlotRegistry.GetBuildingsFolder(player)
-	if not buildingsFolder then
-		return
-	end
-	for _, child in ipairs(buildingsFolder:GetChildren()) do
-		if child:IsA("Model") and child:GetAttribute("BuildingId") == "GlowBuoyStation" then
-			attachDepositPrompt(child)
+	-- Beide Plots (Extra Habitat Plot gamepass): ein Glow Buoy auf Plot 2 soll
+	-- ebenfalls Spuren annehmen.
+	for plotIndex = 1, PlotRegistry.MAX_PLOTS do
+		local buildingsFolder = PlotRegistry.GetBuildingsFolder(player, plotIndex)
+		if buildingsFolder then
+			for _, child in ipairs(buildingsFolder:GetChildren()) do
+				if child:IsA("Model") and child:GetAttribute("BuildingId") == "GlowBuoyStation" then
+					attachDepositPrompt(child)
+				end
+			end
 		end
 	end
 end

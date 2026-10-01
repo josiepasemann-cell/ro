@@ -34,7 +34,7 @@ For each of the following 7 gamepasses:
 |---|---|---|---|
 | `AutoCollector` | Auto-Collector | 149 | Extended offline income cap (see deviation below) |
 | `DoubleCoins` | 2x Tide Coins | 349 | Permanent double Tide Coins (idle income + raid rewards) |
-| `ExtraPlot` | Extra Habitat Plot | 199 | **Placeholder only, see deviation below** |
+| `ExtraPlot` | Extra Habitat Plot | 199 | A second plot right next to your first one (see section 6.3) |
 | `VIPDiver` | VIP Diver | 449 | Daily bonus chest, 1.5x breeding speed, chat tag |
 | `TrenchRunner` | Trench Runner | 99 | +Movement speed (WalkSpeed) |
 | `SporeMagnet` | Spore Magnet | 199 | Nearby Glow Spores auto-collect (see `docs/abilities.md`) |
@@ -122,18 +122,20 @@ instead extends the offline income window from 4 to 8 hours
 thematically ("your habitat keeps collecting even while you're away
 longer").
 
-### 6.3 Extra Habitat Plot gamepass: placeholder only, no gameplay effect
+### 6.3 Extra Habitat Plot gamepass: second plot
 
-`PlotRegistry` (an existing module, not part of this task) currently
-manages **exactly one** plot per player. A second, independent plot would
-need a larger structural expansion (second world slot, second build-field
-set, changes in `PlacementService`/`RaidService`, which currently assume
-"one plot per player" everywhere). The gamepass is reliably detected
-(`MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot")`, attribute
-`OwnsExtraPlotGamepassPlaceholder` on the Player), but deliberately does
-**not** trigger a second plot assignment — no crash, just no effect yet.
-If a multi-plot system is built in the future, the ownership check is
-already ready to integrate.
+Owners of the `ExtraPlot` gamepass get a second Habitat Plot, placed directly
+next to plot 1 in the plot grid (`PlotRegistry.AssignPlot(player, 2)`).
+It is created on join for owners, and **immediately after a purchase in the
+running session** (`MonetizationService.GamepassOwned` signal, handled in
+`PlacementServer.server.lua`). Build mode and the Travel panel get a
+"Plot 1 / Plot 2" choice; income and breeding work on both plots. Raids only
+defend plot 1 for now. Details: `docs/extra-plot.md`.
+
+You may now create this gamepass in the Creator Dashboard and paste its ID
+into `ShopConfig.GAMEPASSES.ExtraPlot.Id`. The Player attribute
+`OwnsExtraPlot` mirrors the ownership and `PlotCount` (1 or 2) the number of
+assigned plots (both are read by the client UI).
 
 ### 6.4 "Instant Breeding Complete" is an addition to the GDD
 

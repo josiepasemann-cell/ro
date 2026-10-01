@@ -225,6 +225,7 @@ end)
 -- // Panel -----------------------------------------------------------------------
 
 local panelHandle: any = nil
+local plotCountConnection: RBXScriptConnection? = nil
 
 local function buildDestinationCard(parent: Instance, layoutOrder: number, label: string, glyph: string, description: string, color: Color3, onTravel: () -> ()): Frame
 	local narrow = isNarrowLayout()
@@ -403,8 +404,20 @@ local function buildPanel()
 	end)
 
 	buildDestinationCard(scroller, 2, "My Reef Plot", "🪸", "Straight to your own habitat.", Theme.Neon.ToxicGreen, function()
-		TravelRemotes.RequestTravelToPlot:FireServer()
+		TravelRemotes.RequestTravelToPlot:FireServer(1)
 	end)
+
+	-- Extra Habitat Plot gamepass: second card, only visible once the server
+	-- has created plot 2 (Player attribute "PlotCount", set by PlotRegistry).
+	local plot2Card = buildDestinationCard(scroller, 3, "Reef Plot 2", "🏝️", "Your Extra Habitat Plot, right next to your first one.", Theme.Neon.Cyan, function()
+		TravelRemotes.RequestTravelToPlot:FireServer(2)
+	end)
+	local function refreshPlot2Card()
+		local count = localPlayer:GetAttribute("PlotCount")
+		plot2Card.Visible = type(count) == "number" and count >= 2
+	end
+	refreshPlot2Card()
+	plotCountConnection = localPlayer:GetAttributeChangedSignal("PlotCount"):Connect(refreshPlot2Card)
 
 	local sectionLabel = makeLabel({
 		Parent = scroller,
@@ -415,10 +428,10 @@ local function buildPanel()
 		MinSize = 14,
 		MaxSize = 20,
 	})
-	sectionLabel.LayoutOrder = 3
+	sectionLabel.LayoutOrder = 4
 
 	for index, zone in ipairs(ZONES) do
-		buildZoneCard(scroller, 3 + index, zone)
+		buildZoneCard(scroller, 4 + index, zone)
 	end
 end
 
@@ -456,6 +469,9 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 		return
 	end
 	bridgeConnection:Disconnect()
+	if plotCountConnection then
+		plotCountConnection:Disconnect()
+	end
 	table.clear(levelListeners)
 	if panelHandle then
 		panelHandle:Destroy()

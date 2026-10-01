@@ -21,8 +21,10 @@
 
 	Exportierte Kanäle:
 		RequestTravelToPlot (RemoteEvent, Client -> Server)
-			Payload: keine. Teleportiert den anfragenden Spieler zu seinem
-			EIGENEN, bereits zugewiesenen Plot (PlotRegistry.GetPlot).
+			Payload: (plotIndex: number?) - nil = Plot 1, 2 = Extra Habitat
+			Plot (nur Gamepass-Besitzer, sonst Reason "NoPlot"). Teleportiert
+			den anfragenden Spieler zu seinem EIGENEN, bereits zugewiesenen
+			Plot (PlotRegistry.GetPlot).
 		RequestTravelToHub (RemoteEvent, Client -> Server)
 			Payload: keine. Teleportiert zurück zur Hub-Welt "Tidal Market".
 		RequestTravelToZone (RemoteEvent, Client -> Server)

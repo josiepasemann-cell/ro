@@ -55,6 +55,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local TravelRemotes = require(ReplicatedStorage:WaitForChild("TravelRemotes"))
+local ZoneProgressService = require(script.Parent:WaitForChild("ZoneProgressService"))
 
 export type TravelFailureReason =
 	"OnCooldown"
@@ -179,14 +180,16 @@ end
 
 -- // Öffentliche API --------------------------------------------------------
 
---- Teleportiert `player` zu seinem EIGENEN, bereits zugewiesenen Plot.
-function TravelService.RequestTravelToPlot(player: Player)
+--- Teleportiert `player` zu seinem EIGENEN, bereits zugewiesenen Plot
+--- `plotIndexArg` (unvertraut; nil = Plot 1, 2 = Extra Habitat Plot).
+function TravelService.RequestTravelToPlot(player: Player, plotIndexArg: any?)
 	if not checkCooldown(player) then
 		fireResult(player, { Success = false, Reason = "OnCooldown", Destination = "Plot" })
 		return
 	end
 
-	local plot = PlotRegistry.GetPlot(player)
+	local plotIndex = PlotRegistry.NormalizePlotIndex(plotIndexArg)
+	local plot = if plotIndex then PlotRegistry.GetPlot(player, plotIndex) else nil
 	if not plot or not plot.PrimaryPart then
 		fireResult(player, { Success = false, Reason = "NoPlot", Destination = "Plot" })
 		return
@@ -198,7 +201,7 @@ function TravelService.RequestTravelToPlot(player: Player)
 		return
 	end
 
-	fireResult(player, { Success = true, Destination = "Plot" })
+	fireResult(player, { Success = true, Destination = "Plot", PlotIndex = plotIndex })
 end
 
 --- Teleportiert `player` zurück zur Hub-Welt "Tidal Market" (zufällige
@@ -283,6 +286,8 @@ function TravelService.RequestTravelToZone(player: Player, zoneId: any)
 		return
 	end
 
+	-- Deepest Zone leaderboard: the player really got there.
+	ZoneProgressService.RecordVisit(player, zone)
 	fireResult(player, { Success = true, Destination = zone })
 end
 

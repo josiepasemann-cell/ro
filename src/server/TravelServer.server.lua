@@ -19,8 +19,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TravelService = require(script.Parent:WaitForChild("TravelService"))
 local TravelRemotes = require(ReplicatedStorage:WaitForChild("TravelRemotes"))
 
-TravelRemotes.RequestTravelToPlot.OnServerEvent:Connect(function(player: Player)
-	TravelService.RequestTravelToPlot(player)
+TravelRemotes.RequestTravelToPlot.OnServerEvent:Connect(function(player: Player, plotIndex)
+	TravelService.RequestTravelToPlot(player, plotIndex)
 end)
 
 TravelRemotes.RequestTravelToHub.OnServerEvent:Connect(function(player: Player)

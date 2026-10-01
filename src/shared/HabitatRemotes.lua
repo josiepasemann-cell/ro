@@ -16,7 +16,10 @@
 
 	Exportierte Kanäle:
 		RequestPlaceBuilding (RemoteEvent, Client -> Server)
-			Payload: (buildingId: string, fieldIndex: number, rotationY: number).
+			Payload: (buildingId: string, fieldIndex: number, rotationY: number,
+			plotIndex: number?). `plotIndex` (nil = 1, max. 2) waehlt den Plot;
+			Plot 2 gibt es nur fuer Besitzer des ExtraPlot-Gamepasses, sonst
+			antwortet der Server mit Reason "NoPlot"/"InvalidPlot".
 			Reine Absichtserklärung - der Server validiert jeden einzelnen
 			Wert komplett neu (Existenz der BuildingId, Belegung des
 			Feldes, Level-Freischaltung, Kontostand, Rotation-Snap). Kein
@@ -24,7 +27,7 @@
 		PlaceBuildingResult (RemoteEvent, Server -> Client)
 			Antwort auf RequestPlaceBuilding: { Success: boolean,
 			Reason: string?, Placement: HabitatPlacement?, FieldIndex:
-			number?, NewBalance: number? }.
+			number?, PlotIndex: number?, NewBalance: number? }.
 		RequestRemoveBuilding (RemoteEvent, Client -> Server)
 			Payload: (placementId: string). Server prüft Eigentümerschaft
 			implizit (PlacementId wird nur im Server-seitigen Pro-Spieler-

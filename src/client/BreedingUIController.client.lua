@@ -604,32 +604,71 @@ local function ensureBroodPoolInteraction(model: Model)
 	updateBillboard(placementId)
 end
 
-local function scanExistingBroodPools()
-	for _, child in ipairs(buildingsFolder:GetChildren()) do
+-- Extra Habitat Plot gamepass: Brutbecken koennen auf Plot 1 UND Plot 2
+-- stehen - jeder Buildings-Ordner wird genau einmal beobachtet.
+local watchedBuildingsFolders: { [Instance]: boolean } = {}
+local syncStatuses: () -> () -- siehe Initialer Status-Sync unten
+
+local function scanExistingBroodPools(folder: Folder)
+	for _, child in ipairs(folder:GetChildren()) do
 		if child:IsA("Model") then
 			ensureBroodPoolInteraction(child)
 		end
 	end
 end
 
-buildingsFolder.ChildAdded:Connect(function(child)
-	if child:IsA("Model") then
-		ensureBroodPoolInteraction(child)
-		rebuildOverview()
+local function watchBuildingsFolder(folder: Folder)
+	if watchedBuildingsFolders[folder] then
+		return
 	end
-end)
+	watchedBuildingsFolders[folder] = true
 
-buildingsFolder.ChildRemoved:Connect(function(child)
-	local placementId = child:GetAttribute("PlacementId")
-	if type(placementId) == "string" then
-		statusCache[placementId] = nil
-		billboardLabels[placementId] = nil
-		if activePlacementId == placementId then
-			closePanel()
+	folder.ChildAdded:Connect(function(child)
+		if child:IsA("Model") then
+			ensureBroodPoolInteraction(child)
+			rebuildOverview()
 		end
-		rebuildOverview()
+		-- Beim Join werden gespeicherte Brutbecken erst NACH dem ersten Sync
+		-- wiederhergestellt (Daten laden dauert). Der erste Sync kann daher leer
+		-- sein - sobald ein Brutbecken im Plot auftaucht, Status neu laden (sonst
+		-- blieben laufende Zuchten bis zur naechsten Aktion unsichtbar).
+		task.defer(function()
+			if child.Parent and child:GetAttribute("BuildingId") == "BroodPool" then
+				syncStatuses()
+			end
+		end)
+	end)
+
+	folder.ChildRemoved:Connect(function(child)
+		local placementId = child:GetAttribute("PlacementId")
+		if type(placementId) == "string" then
+			statusCache[placementId] = nil
+			billboardLabels[placementId] = nil
+			if activePlacementId == placementId then
+				closePanel()
+			end
+			rebuildOverview()
+		end
+	end)
+end
+
+watchBuildingsFolder(buildingsFolder)
+
+local function watchPlot2WhenReady()
+	local count = player:GetAttribute("PlotCount")
+	if type(count) ~= "number" or count < 2 then
+		return
 	end
-end)
+	task.spawn(function()
+		local plot2 = playerPlotsFolder:WaitForChild(("%d_2"):format(player.UserId), 30)
+		local folder = plot2 and plot2:WaitForChild("Buildings", 30)
+		if folder and folder:IsA("Folder") then
+			watchBuildingsFolder(folder)
+			scanExistingBroodPools(folder)
+			syncStatuses()
+		end
+	end)
+end
 
 -- // Initialer Status-Sync + laufender lokaler Countdown ----------------------
 
@@ -644,7 +683,7 @@ end
 
 local statusSyncPending = false
 
-local function syncStatuses()
+syncStatuses = function()
 	if statusSyncPending then
 		return
 	end
@@ -664,17 +703,10 @@ end
 
 syncStatuses()
 
--- Beim Join werden gespeicherte Brutbecken erst NACH dem ersten Sync
--- wiederhergestellt (Daten laden dauert). Der erste Sync kann daher leer sein -
--- sobald ein Brutbecken im Plot auftaucht, Status neu laden (sonst blieben
--- laufende Zuchten bis zur naechsten Aktion unsichtbar).
-buildingsFolder.ChildAdded:Connect(function(child)
-	task.defer(function()
-		if child.Parent and child:GetAttribute("BuildingId") == "BroodPool" then
-			syncStatuses()
-		end
-	end)
-end)
+-- (Das Nachladen bei neu erscheinenden Brutbecken steckt jetzt in
+-- watchBuildingsFolder oben.)
+player:GetAttributeChangedSignal("PlotCount"):Connect(watchPlot2WhenReady)
+watchPlot2WhenReady()
 
 -- Lokaler, rein kosmetischer Countdown (1x/Sekunde) - keine Autorität, siehe
 -- Kopfkommentar. Server-Ergebnisse überschreiben den Cache jederzeit wieder
@@ -825,7 +857,7 @@ end)
 
 -- // Setup ---------------------------------------------------------------------
 
-scanExistingBroodPools()
+scanExistingBroodPools(buildingsFolder)
 rebuildOverview()
 
 Players.PlayerRemoving:Connect(function(leavingPlayer)

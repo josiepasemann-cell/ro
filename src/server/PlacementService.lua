@@ -39,6 +39,12 @@
 		Plot-Klon hinweg konstant. Keine Erweiterung von PlayerDataService
 		nötig, da {X, Y, Z} bereits exakt dafür passt.
 
+	MEHRERE PLOTS: HabitatPlacement.PlotIndex (nil = 1, 2 = Extra Habitat
+		Plot) ordnet eine Platzierung einem Plot zu; Belegung/Feldpruefung
+		laufen pro Plot (occupiedFieldByUser[userId][plotIndex]). Einkommen,
+		Zucht usw. lesen weiter das gesamte HabitatLayout und funktionieren
+		daher auf beiden Plots.
+
 	Rojo-Einhängepunkt:
 		src/server/PlacementService.lua -> ServerScriptService.PlacementService
 ]]
@@ -70,6 +76,7 @@ export type PlaceFailureReason =
 	| "ChargeFailed"
 	| "PersistenceFailed"
 	| "BroodPoolLimitReached"
+	| "InvalidPlot"
 
 export type RemoveFailureReason = "DataNotLoaded" | "InvalidPlacement" | "NotFound" | "PersistenceRemoveFailed"
 
@@ -91,6 +98,7 @@ export type PlaceResult = {
 	Reason: PlaceFailureReason?,
 	Placement: PlayerDataService.HabitatPlacement?,
 	FieldIndex: number?,
+	PlotIndex: number?,
 	NewBalance: number?,
 }
 
@@ -119,11 +127,13 @@ local PlacementService = {}
 type PlacementMeta = {
 	BuildingId: string,
 	FieldIndex: number, -- -1, falls beim Restore keinem Feld zugeordnet werden konnte (siehe findNearestField)
+	PlotIndex: number, -- 1 = Hauptplot, 2 = Extra Habitat Plot
 	Model: Model,
 }
 
 local placementsByUser: { [number]: { [string]: PlacementMeta } } = {}
-local occupiedFieldByUser: { [number]: { [number]: string } } = {}
+-- [userId][plotIndex][fieldIndex] = PlacementId (Belegung ist PRO Plot)
+local occupiedFieldByUser: { [number]: { [number]: { [number]: string } } } = {}
 
 -- // Hilfsfunktionen ------------------------------------------------------
 
@@ -305,7 +315,16 @@ end
 --- Validiert und führt eine Platzierungsanfrage vollständig serverseitig
 --- aus. `buildingId`, `fieldIndex`, `rotationY` sind unvertraute,
 --- angebliche Client-Werte - keiner davon wird ungeprüft übernommen.
-function PlacementService.RequestPlace(player: Player, buildingId: any, fieldIndex: any, rotationY: any): PlaceResult
+--- `plotIndexArg` (unvertraut, nil = Plot 1) waehlt den Plot; Plot 2 existiert
+--- serverseitig nur fuer Gamepass-Besitzer (PlacementServer weist ihn zu) -
+--- ein Client kann hier also keinen nicht vorhandenen Plot "erfinden".
+function PlacementService.RequestPlace(
+	player: Player,
+	buildingId: any,
+	fieldIndex: any,
+	rotationY: any,
+	plotIndexArg: any?
+): PlaceResult
 	if not PlayerDataService.IsDataLoaded(player) or not placementsByUser[player.UserId] then
 		-- Layout noch nicht wiederhergestellt (RestorePlayerLayout setzt die
 		-- Belegungstabellen zurueck) - sonst koennte ein sehr frueher Request
@@ -319,6 +338,11 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 	local definition = BuildingConfig.Get(buildingId)
 	if not definition then
 		return { Success = false, Reason = "UnknownBuilding" }
+	end
+
+	local plotIndex = PlotRegistry.NormalizePlotIndex(plotIndexArg)
+	if not plotIndex then
+		return { Success = false, Reason = "InvalidPlot" }
 	end
 
 	if type(fieldIndex) ~= "number" or fieldIndex ~= math.floor(fieldIndex) then
@@ -349,18 +373,21 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 		end
 	end
 
-	local field = PlotRegistry.GetBuildField(player, fieldIndex)
-	if not field then
-		return { Success = false, Reason = "InvalidField" }
-	end
-
-	local buildingsFolder = PlotRegistry.GetBuildingsFolder(player)
+	-- Zuerst pruefen, ob der Plot ueberhaupt existiert (Plot 2 ohne Gamepass
+	-- -> "NoPlot"), danach das Feld PRO Plot.
+	local buildingsFolder = PlotRegistry.GetBuildingsFolder(player, plotIndex)
 	if not buildingsFolder then
 		return { Success = false, Reason = "NoPlot" }
 	end
 
+	local field = PlotRegistry.GetBuildField(player, fieldIndex, plotIndex)
+	if not field then
+		return { Success = false, Reason = "InvalidField" }
+	end
+
 	local userId = player.UserId
-	local occupied = occupiedFieldByUser[userId]
+	local occupiedByPlot = occupiedFieldByUser[userId]
+	local occupied = occupiedByPlot and occupiedByPlot[plotIndex]
 	if occupied and occupied[fieldIndex] then
 		return { Success = false, Reason = "FieldOccupied" }
 	end
@@ -392,6 +419,7 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 		BuildingId = buildingId,
 		Position = { X = localPosition.X, Y = localPosition.Y, Z = localPosition.Z },
 		RotationY = snappedRotation,
+		PlotIndex = if plotIndex == 1 then nil else plotIndex, -- nil = Plot 1 (kompatibel zu Altdaten)
 	})
 
 	if not placement then
@@ -409,12 +437,14 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 	model:PivotTo(field.Attachment.WorldCFrame * CFrame.Angles(0, math.rad(snappedRotation), 0))
 
 	occupiedFieldByUser[userId] = occupiedFieldByUser[userId] or {}
-	occupiedFieldByUser[userId][fieldIndex] = placement.PlacementId
+	occupiedFieldByUser[userId][plotIndex] = occupiedFieldByUser[userId][plotIndex] or {}
+	occupiedFieldByUser[userId][plotIndex][fieldIndex] = placement.PlacementId
 
 	placementsByUser[userId] = placementsByUser[userId] or {}
 	placementsByUser[userId][placement.PlacementId] = {
 		BuildingId = buildingId,
 		FieldIndex = fieldIndex,
+		PlotIndex = plotIndex,
 		Model = model,
 	}
 
@@ -428,12 +458,14 @@ function PlacementService.RequestPlace(player: Player, buildingId: any, fieldInd
 	GameEvents.Fire(GameEvents.Events.BuildingPlaced, player, {
 		BuildingId = buildingId,
 		PlacementId = placement.PlacementId,
+		PlotIndex = plotIndex,
 	})
 
 	return {
 		Success = true,
 		Placement = placement,
 		FieldIndex = fieldIndex,
+		PlotIndex = plotIndex,
 		NewBalance = newBalance,
 	}
 end
@@ -491,7 +523,8 @@ function PlacementService.RequestRemove(player: Player, placementId: any): Remov
 	end
 
 	userPlacements[placementId] = nil
-	local occupied = occupiedFieldByUser[userId]
+	local occupiedByPlot = occupiedFieldByUser[userId]
+	local occupied = occupiedByPlot and occupiedByPlot[meta.PlotIndex]
 	if occupied and meta.FieldIndex >= 0 then
 		occupied[meta.FieldIndex] = nil
 	end
@@ -678,26 +711,34 @@ function PlacementService.RequestUpgrade(player: Player, placementId: any): Upgr
 	}
 end
 
---- Rekonstruiert das gespeicherte Habitat-Layout eines Spielers im
---- Workspace. Wird von PlacementServer.server.lua NACH erfolgreichem
---- PlotRegistry.AssignPlot UND PlayerDataService.WaitForData aufgerufen
---- (siehe dort) - setzt also voraus, dass beides bereits vorliegt.
-function PlacementService.RestorePlayerLayout(player: Player)
+--- Rekonstruiert die gespeicherten Platzierungen von Plot `plotIndex` im
+--- Workspace. Idempotent: bereits bekannte PlacementIds (placementsByUser)
+--- werden uebersprungen, so kann der Aufruf beim Gamepass-Kauf mitten in der
+--- Session gefahrlos wiederholt werden. Platzierungen eines Plots, der (noch)
+--- nicht existiert, bleiben unangetastet in den Daten (kein Datenverlust).
+local function restorePlot(player: Player, plotIndex: number)
 	local userId = player.UserId
-	placementsByUser[userId] = {}
-	occupiedFieldByUser[userId] = {}
+	placementsByUser[userId] = placementsByUser[userId] or {}
+	occupiedFieldByUser[userId] = occupiedFieldByUser[userId] or {}
+	occupiedFieldByUser[userId][plotIndex] = occupiedFieldByUser[userId][plotIndex] or {}
 
-	local buildingsFolder = PlotRegistry.GetBuildingsFolder(player)
-	local plot = PlotRegistry.GetPlot(player)
+	local buildingsFolder = PlotRegistry.GetBuildingsFolder(player, plotIndex)
+	local plot = PlotRegistry.GetPlot(player, plotIndex)
 	if not buildingsFolder or not plot or not plot.PrimaryPart then
-		warn(("[PlacementService] No plot for %s - layout restoration skipped."):format(player.Name))
+		if plotIndex == 1 then
+			warn(("[PlacementService] No plot for %s - layout restoration skipped."):format(player.Name))
+		end
 		return
 	end
 
-	local fields = PlotRegistry.GetBuildFields(player)
+	local fields = PlotRegistry.GetBuildFields(player, plotIndex)
 	local primaryCFrame = plot.PrimaryPart.CFrame
 
 	for _, placement in ipairs(PlayerDataService.GetHabitatLayout(player)) do
+		if (placement.PlotIndex or 1) ~= plotIndex or placementsByUser[userId][placement.PlacementId] then
+			continue
+		end
+
 		local definition = BuildingConfig.Get(placement.BuildingId)
 		if not definition then
 			warn(
@@ -757,7 +798,7 @@ function PlacementService.RestorePlayerLayout(player: Player)
 		end
 
 		if matchedField then
-			occupiedFieldByUser[userId][matchedField.Index] = placement.PlacementId
+			occupiedFieldByUser[userId][plotIndex][matchedField.Index] = placement.PlacementId
 		else
 			warn(
 				("[PlacementService] Placement %s by %s could not be matched to a build field (model still visible, field may incorrectly stay free for new purchases)."):format(
@@ -770,9 +811,71 @@ function PlacementService.RestorePlayerLayout(player: Player)
 		placementsByUser[userId][placement.PlacementId] = {
 			BuildingId = placement.BuildingId,
 			FieldIndex = resolvedFieldIndex,
+			PlotIndex = plotIndex,
 			Model = model,
 		}
 	end
+end
+
+--- Rekonstruiert das gespeicherte Habitat-Layout eines Spielers im
+--- Workspace (alle aktuell zugewiesenen Plots). Wird von
+--- PlacementServer.server.lua NACH erfolgreichem PlotRegistry.AssignPlot UND
+--- PlayerDataService.WaitForData aufgerufen (siehe dort) - setzt also voraus,
+--- dass beides bereits vorliegt.
+function PlacementService.RestorePlayerLayout(player: Player)
+	local userId = player.UserId
+	placementsByUser[userId] = {}
+	occupiedFieldByUser[userId] = {}
+
+	for plotIndex = 1, PlotRegistry.MAX_PLOTS do
+		restorePlot(player, plotIndex)
+	end
+end
+
+--- Gamepass-Kauf mitten in der Session: stellt (idempotent) die
+--- Platzierungen von Plot `plotIndex` her, nachdem PlacementServer ihn per
+--- PlotRegistry.AssignPlot angelegt hat. No-op, solange das Join-Restore
+--- noch nicht gelaufen ist (dann erledigt das RestorePlayerLayout selbst).
+function PlacementService.RestoreAdditionalPlot(player: Player, plotIndex: number)
+	if not placementsByUser[player.UserId] then
+		return
+	end
+	restorePlot(player, plotIndex)
+end
+
+--- Prestige/Resurface: entfernt ALLE platzierten Gebaeude-Modelle (beide
+--- Plots) und setzt die Laufzeit-Belegung zurueck. Die Daten
+--- (HabitatLayout/Incubations) hat PlayerDataService.ApplyAscend bereits
+--- geleert - das hier gleicht nur den Workspace + Runtime-Zustand an.
+--- Gibt die Zahl entfernter Modelle zurueck.
+function PlacementService.ClearPlayerBuildings(player: Player): number
+	local userId = player.UserId
+	local removed = 0
+
+	local tracked = placementsByUser[userId]
+	if tracked then
+		for _, meta in pairs(tracked) do
+			if meta.Model and meta.Model.Parent then
+				meta.Model:Destroy()
+				removed += 1
+			end
+		end
+	end
+
+	-- Sicherheitsnetz: ggf. noch verwaiste Modelle (z. B. gerade verkaufte,
+	-- deren verzoegertes Destroy noch aussteht) in den Buildings-Ordnern.
+	for plotIndex = 1, PlotRegistry.MAX_PLOTS do
+		local folder = PlotRegistry.GetBuildingsFolder(player, plotIndex)
+		if folder then
+			for _, child in ipairs(folder:GetChildren()) do
+				child:Destroy()
+			end
+		end
+	end
+
+	placementsByUser[userId] = {}
+	occupiedFieldByUser[userId] = {}
+	return removed
 end
 
 --- Räumt den rein transienten Laufzeit-Zustand eines Spielers auf

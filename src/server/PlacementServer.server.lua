@@ -34,10 +34,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local PlotRegistry = require(script.Parent:WaitForChild("PlotRegistry"))
 local PlacementService = require(script.Parent:WaitForChild("PlacementService"))
+local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local HabitatRemotes = require(ReplicatedStorage:WaitForChild("HabitatRemotes"))
 
-HabitatRemotes.RequestPlaceBuilding.OnServerEvent:Connect(function(player: Player, buildingId, fieldIndex, rotationY)
-	local result = PlacementService.RequestPlace(player, buildingId, fieldIndex, rotationY)
+HabitatRemotes.RequestPlaceBuilding.OnServerEvent:Connect(function(player: Player, buildingId, fieldIndex, rotationY, plotIndex)
+	local result = PlacementService.RequestPlace(player, buildingId, fieldIndex, rotationY, plotIndex)
 	HabitatRemotes.PlaceBuildingResult:FireClient(player, result)
 end)
 
@@ -72,8 +73,43 @@ local function onPlayerAdded(player: Player)
 		return
 	end
 
+	-- Extra Habitat Plot gamepass: Plot 2 VOR dem Layout-Restore anlegen, damit
+	-- gespeicherte Platzierungen mit PlotIndex 2 direkt mit wiederhergestellt
+	-- werden. PlayerOwnsGamepass laedt bei Cache-Miss synchron nach.
+	local ownsExtraPlot = MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot")
+	-- PlayerOwnsGamepass can yield (ownership lookup): the player may have
+	-- left meanwhile, and PlayerRemoving already released their plots.
+	if Players:GetPlayerByUserId(player.UserId) ~= player then
+		PlotRegistry.ReleasePlot(player)
+		return
+	end
+	if ownsExtraPlot then
+		PlotRegistry.AssignPlot(player, 2)
+	end
+
 	PlacementService.RestorePlayerLayout(player)
 end
+
+--- Gamepass-Besitz hat sich (ggf.) geaendert (Kauf mitten in der Session,
+--- Studio-Simulation, Join-Warmup): Plot 2 sofort anlegen. Idempotent.
+local function onGamepassOwned(player: Player, key: string)
+	if key ~= "ExtraPlot" then
+		return
+	end
+	if player.Parent ~= Players or not PlayerDataService.IsDataLoaded(player) then
+		return -- Join-Ablauf oben uebernimmt das, sobald die Daten da sind
+	end
+	if not MonetizationService.PlayerOwnsGamepass(player, "ExtraPlot") then
+		return
+	end
+	if not PlotRegistry.GetPlot(player, 1) then
+		return -- Join noch nicht fertig bzw. Spieler geht gerade
+	end
+	if PlotRegistry.AssignPlot(player, 2) then
+		PlacementService.RestoreAdditionalPlot(player, 2)
+	end
+end
+MonetizationService.GamepassOwned:Connect(onGamepassOwned)
 
 local function onPlayerRemoving(player: Player)
 	PlacementService.CleanupPlayer(player)

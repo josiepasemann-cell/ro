@@ -114,10 +114,16 @@ while not plotOrNil do
 	warn("[PlacementPreviewController] Own plot not replicated yet - still waiting.")
 	plotOrNil = playerPlotsFolder:WaitForChild(tostring(player.UserId), 60) :: Model?
 end
+-- Extra Habitat Plot gamepass: Plot 1 heisst "<UserId>", Plot 2 "<UserId>_2"
+-- (siehe PlotRegistry). `plot`/`plotPrimaryPart`/`buildingsFolder`/`fields`
+-- zeigen immer auf den GERADE AKTIVEN Plot (activePlotIndex) - switchPlot
+-- tauscht sie aus, alle Closures unten greifen darauf zu.
+local activePlotIndex = 1
 local plot = (plotOrNil :: any) :: Model
 
 local plotPrimaryPart = plot.PrimaryPart :: BasePart
 local buildingsFolder = plot:WaitForChild("Buildings") :: Folder
+local watchBuildingsFolder: (Folder) -> () -- siehe Upgrade-Panel-Abschnitt unten
 local assetTemplatesBuildings = ReplicatedStorage:WaitForChild("AssetTemplates"):WaitForChild("Buildings")
 
 -- // Baufelder einlesen (rein lesend, gleiches Attachment-Raster wie der
@@ -125,7 +131,8 @@ local assetTemplatesBuildings = ReplicatedStorage:WaitForChild("AssetTemplates")
 type FieldInfo = { Index: number, Attachment: Attachment }
 
 local fields: { FieldInfo } = {}
-do
+local function loadFields()
+	table.clear(fields)
 	local fieldCount = plot:GetAttribute("GridFieldCount")
 	if type(fieldCount) ~= "number" then
 		fieldCount = 6
@@ -137,6 +144,7 @@ do
 		end
 	end
 end
+loadFields()
 
 -- // Spielerlevel (nur für Lock-Anzeige auf den Baukarten, keine Autorität) ----
 local playerLevel = 1
@@ -428,6 +436,83 @@ for index, buildingId in ipairs(BuildingConfig.ORDER) do
 	end
 end
 
+-- // Plot-Wahl (Extra Habitat Plot gamepass) ---------------------------------------
+-- Eine zusaetzliche "Plot 1 / Plot 2"-Karte am Anfang der Kartenreihe, nur
+-- sichtbar, solange der Server 2 Plots zugewiesen hat (Player-Attribut
+-- "PlotCount"). Rein Komfort - der Server prueft Plot-Index und Besitz bei
+-- jeder Platzierung neu.
+
+local PLOT_SWITCH_FAR_STUDS = 90
+
+local plotPickerButton = Button.new({
+	Parent = cardScroller,
+	Text = "",
+	Variant = "Secondary",
+	Size = UDim2.fromOffset(124, CARD_ROW_HEIGHT),
+	LayoutOrder = 0,
+})
+styleCompactLabel(plotPickerButton)
+plotPickerButton.Instance.Visible = false
+
+local function refreshPlotPicker()
+	local count = player:GetAttribute("PlotCount")
+	plotPickerButton.Instance.Visible = type(count) == "number" and count >= 2
+	plotPickerButton:SetText(("🏝 Plot %d\n(tap: Plot %d)"):format(activePlotIndex, if activePlotIndex == 1 then 2 else 1))
+end
+
+local function switchPlot(index: number)
+	if index == activePlotIndex then
+		return
+	end
+	local count = player:GetAttribute("PlotCount")
+	if index > 1 and not (type(count) == "number" and count >= index) then
+		Toast.Show({ Text = "You don't have a second plot yet.", Type = "Warning", Duration = 3 })
+		return
+	end
+	local newPlot = playerPlotsFolder:FindFirstChild(if index == 1 then tostring(player.UserId) else ("%d_%d"):format(player.UserId, index))
+	local newFolder = newPlot and newPlot:FindFirstChild("Buildings")
+	if not newPlot or not newPlot:IsA("Model") or not newPlot.PrimaryPart or not newFolder or not newFolder:IsA("Folder") then
+		Toast.Show({ Text = "That plot is still loading. Try again in a moment.", Type = "Info", Duration = 3 })
+		return
+	end
+
+	plot = newPlot
+	plotPrimaryPart = newPlot.PrimaryPart :: BasePart
+	buildingsFolder = newFolder
+	activePlotIndex = index
+	loadFields()
+	watchBuildingsFolder(newFolder)
+
+	targetField = nil
+	for _, field in ipairs(fields) do
+		if not isFieldLocallyOccupied(field.Index) then
+			targetField = field
+			break
+		end
+	end
+	if not targetField then
+		targetField = fields[1]
+	end
+	refreshPlotPicker()
+
+	-- Auf den neuen Plot mitreisen, wenn der Spieler weit weg steht.
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if root and root:IsA("BasePart") and (root.Position - plotPrimaryPart.Position).Magnitude > PLOT_SWITCH_FAR_STUDS then
+		TravelRemotes.RequestTravelToPlot:FireServer(activePlotIndex)
+	end
+	infoLabel.Text = ("Building on Plot %d."):format(activePlotIndex)
+end
+
+local function togglePlot()
+	switchPlot(if activePlotIndex == 1 then 2 else 1)
+end
+
+plotPickerButton.Clicked:Connect(togglePlot)
+attachHint(plotPickerButton, "O", Enum.KeyCode.DPadUp)
+local plotCountConnection = player:GetAttributeChangedSignal("PlotCount"):Connect(refreshPlotPicker)
+refreshPlotPicker()
+
 -- // Aktions-Buttons (Drehen/Bauen/Upgrade/Verkaufen/Fertig) ----------------------------
 
 local actionRow = Instance.new("Frame")
@@ -449,7 +534,7 @@ local function confirmPlacement()
 		infoLabel.Text = "No build field targeted."
 		return
 	end
-	HabitatRemotes.RequestPlaceBuilding:FireServer(selectedBuildingId(), targetField.Index, rotationY)
+	HabitatRemotes.RequestPlaceBuilding:FireServer(selectedBuildingId(), targetField.Index, rotationY, activePlotIndex)
 	infoLabel.Text = "Placement requested ..."
 end
 
@@ -615,7 +700,7 @@ local function enterBuildMode()
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") and (root.Position - plotPrimaryPart.Position).Magnitude > FAR_FROM_PLOT_STUDS then
-		TravelRemotes.RequestTravelToPlot:FireServer()
+		TravelRemotes.RequestTravelToPlot:FireServer(activePlotIndex)
 		Toast.Show({ Text = "Taking you to your reef plot to build ...", Type = "Info", Duration = 3 })
 	end
 end
@@ -669,6 +754,8 @@ local inputBeganConnection = UserInputService.InputBegan:Connect(function(input,
 		refreshBuildingCards()
 	elseif keyCode == Enum.KeyCode.R then
 		rotatePreview()
+	elseif keyCode == Enum.KeyCode.O or keyCode == Enum.KeyCode.DPadUp then
+		togglePlot()
 	elseif keyCode == Enum.KeyCode.Return or keyCode == Enum.KeyCode.KeypadEnter then
 		confirmPlacement()
 	elseif keyCode == Enum.KeyCode.Backspace or keyCode == Enum.KeyCode.X then
@@ -988,17 +1075,44 @@ local function ensureBuildingUpgradeClickDetector(model: Model)
 	end)
 end
 
-for _, child in ipairs(buildingsFolder:GetChildren()) do
-	if child:IsA("Model") then
-		ensureBuildingUpgradeClickDetector(child)
-	end
-end
+-- Jeder Buildings-Ordner (Plot 1 und - falls vorhanden - Plot 2) wird
+-- genau einmal beobachtet.
+local watchedBuildingsFolders: { [Folder]: RBXScriptConnection } = {}
 
-local buildingsUpgradeChildAddedConnection = buildingsFolder.ChildAdded:Connect(function(child)
-	if child:IsA("Model") then
-		ensureBuildingUpgradeClickDetector(child)
+watchBuildingsFolder = function(folder: Folder)
+	if watchedBuildingsFolders[folder] then
+		return
 	end
-end)
+	for _, child in ipairs(folder:GetChildren()) do
+		if child:IsA("Model") then
+			ensureBuildingUpgradeClickDetector(child)
+		end
+	end
+	watchedBuildingsFolders[folder] = folder.ChildAdded:Connect(function(child)
+		if child:IsA("Model") then
+			ensureBuildingUpgradeClickDetector(child)
+		end
+	end)
+end
+watchBuildingsFolder(buildingsFolder)
+
+-- Plot 2 kann auch mitten in der Session entstehen (Gamepass-Kauf) und muss
+-- Upgrade-Klicks bekommen, auch wenn der Spieler nie in den Baumodus wechselt.
+local function watchPlot2WhenReady()
+	local count = player:GetAttribute("PlotCount")
+	if type(count) ~= "number" or count < 2 then
+		return
+	end
+	task.spawn(function()
+		local plot2 = playerPlotsFolder:WaitForChild(("%d_2"):format(player.UserId), 30)
+		local folder = plot2 and plot2:WaitForChild("Buildings", 30)
+		if folder and folder:IsA("Folder") then
+			watchBuildingsFolder(folder)
+		end
+	end)
+end
+local plot2WatchConnection = player:GetAttributeChangedSignal("PlotCount"):Connect(watchPlot2WhenReady)
+watchPlot2WhenReady()
 
 -- Server-Reason-Codes in kindgerechte Saetze uebersetzen (nie rohe Codes zeigen).
 local FAILURE_TEXT: { [string]: string } = {
@@ -1008,7 +1122,8 @@ local FAILURE_TEXT: { [string]: string } = {
 	LevelTooLow = "You need a higher level for that.",
 	BroodPoolLimitReached = "You can't build another Brood Pool yet - reach level 6 for a second one!",
 	TemplateMissing = "That building isn't ready yet. Try again in a moment.",
-	NoPlot = "Your plot isn't ready yet. Try again in a moment.",
+	NoPlot = "That plot isn't ready yet. Try again in a moment.",
+	InvalidPlot = "That plot isn't available.",
 	DataNotLoaded = "Still loading your reef ... try again in a moment.",
 	MaxStageReached = "This building is already at its maximum stage!",
 	IncubationActive = "Collect the egg from this Brood Pool first, then upgrade.",
@@ -1077,7 +1192,12 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	inputBeganConnection:Disconnect()
 	bridgeConnection:Disconnect()
 	buildBarDeviceConnection:Disconnect()
-	buildingsUpgradeChildAddedConnection:Disconnect()
+	for _, connection in watchedBuildingsFolders do
+		connection:Disconnect()
+	end
+	plotCountConnection:Disconnect()
+	plot2WatchConnection:Disconnect()
+	plotPickerButton:Destroy()
 	unbindScale()
 	unbindBuildActions()
 	for _, hint in cardActionButtons do
