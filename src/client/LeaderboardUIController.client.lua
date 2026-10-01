@@ -202,8 +202,8 @@ local function buildRow(parent: Instance, entry: LeaderboardEntry, categoryColor
 
 	local nameLabel = makeLabel({
 		Parent = row,
-		Text = entry.Name .. (isSelf and "  (Du)" or ""),
-		Size = UDim2.new(1, -240, 0, 24),
+		Text = entry.Name .. (isSelf and "  (You)" or ""),
+		Size = UDim2.new(1, -228, 0, 24),
 		Position = UDim2.fromOffset(102, 6),
 		Font = Theme.Font.BodyBold,
 		Color = if isSelf then categoryColor else Theme.Text.Primary,
@@ -215,8 +215,8 @@ local function buildRow(parent: Instance, entry: LeaderboardEntry, categoryColor
 	local scoreLabel = makeLabel({
 		Parent = row,
 		Text = CountUp.DefaultFormat(entry.Score),
-		Size = UDim2.new(0, 100, 0, 40),
-		Position = UDim2.new(1, -106, 0, 6),
+		Size = UDim2.new(0, 112, 0, 40),
+		Position = UDim2.new(1, -118, 0, 6),
 		Font = Theme.Font.Header,
 		Color = categoryColor,
 		MinSize = 13,
@@ -314,7 +314,7 @@ local function loadCategory(category: CategoryId, forceRefresh: boolean)
 				Text = "You are not in the Top 50 of this category yet - keep collecting!",
 				Size = UDim2.new(1, 0, 0, 28),
 				Color = Theme.Text.Muted,
-				MinSize = 10,
+				MinSize = 12,
 				MaxSize = 14,
 			})
 			hint.LayoutOrder = 999
@@ -363,7 +363,7 @@ local function buildPanel()
 			Text = "Loading leaderboard...",
 			Size = UDim2.new(1, 0, 0, 30),
 			Color = Theme.Text.Muted,
-			MinSize = 11,
+			MinSize = 12,
 			MaxSize = 15,
 		})
 		status.LayoutOrder = -1

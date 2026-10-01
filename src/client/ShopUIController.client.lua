@@ -267,7 +267,7 @@ local function makeBanner(parent: Instance, text: string, color: Color3)
 	label.ZIndex = 4
 	label.Parent = banner
 	local constraint = Instance.new("UITextSizeConstraint")
-	constraint.MinTextSize = 10
+	constraint.MinTextSize = 12
 	constraint.MaxTextSize = 14
 	constraint.Parent = label
 end
@@ -285,7 +285,7 @@ type GridWrapper = {
 	Destroy: (self: GridWrapper) -> (),
 }
 
-local CARD_HEIGHT = 258
+local CARD_HEIGHT = 282 -- Platz für 44-px-Touch-Buttons (Buy + View Odds)
 
 local function computeColumnCount(deviceClass: string, width: number): number
 	if deviceClass == "Phone" then
@@ -315,9 +315,11 @@ local function createGridWrapper(parent: Instance, layoutOrder: number): GridWra
 
 	local function applyColumns()
 		local state = Device.GetState()
-		local width = wrapper.AbsoluteSize.X
+		-- AbsoluteSize ist in echten Pixeln, CellSize in "virtuellen" (skalierten):
+		-- durch den Skalierungsfaktor teilen, sonst laufen Karten bei Scale > 1 über.
+		local width = wrapper.AbsoluteSize.X / state.Scale
 		if width <= 0 then
-			width = state.ViewportSize.X - 80
+			width = state.ViewportSize.X / state.Scale - 80
 		end
 		local columns = computeColumnCount(state.Class, width)
 		local padding = 14
@@ -508,7 +510,7 @@ local function buildGamepassCard(parent: Instance, layoutOrder: number, row: { [
 		Size = UDim2.new(1, -16, 0, 56),
 		Position = UDim2.fromOffset(8, 78),
 		Color = Theme.Text.Secondary,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 		Wrapped = true,
 	})
@@ -595,7 +597,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 		Size = UDim2.new(1, -16, 0, 48),
 		Position = UDim2.fromOffset(8, 78),
 		Color = Theme.Text.Secondary,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 		Wrapped = true,
 	})
@@ -633,7 +635,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 			Size = UDim2.new(1, -16, 0, 34),
 			Position = UDim2.fromOffset(8, 152),
 			Color = if row.DisabledReason then Theme.Semantic.Warning else Theme.Text.Muted,
-			MinSize = 9,
+			MinSize = 12,
 			MaxSize = 12,
 			Wrapped = true,
 		})
@@ -669,7 +671,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 			Parent = card,
 			Text = "View Odds",
 			Variant = "Secondary",
-			Size = UDim2.new(1, -16, 0, 30),
+			Size = UDim2.new(1, -16, 0, 44),
 			LayoutOrder = nextOrder,
 		})
 		oddsButton.Instance.Position = UDim2.fromOffset(8, nextY)
@@ -678,7 +680,7 @@ local function buildDevProductCard(parent: Instance, layoutOrder: number, row: {
 		end)
 		table.insert(extraButtons, oddsButton)
 		nextOrder += 1
-		nextY += 34
+		nextY += 48
 	end
 
 	if RunService:IsStudio() then
@@ -738,7 +740,7 @@ local function buildCosmeticCard(parent: Instance, layoutOrder: number, row: { [
 		Size = UDim2.new(1, -16, 0, 48),
 		Position = UDim2.fromOffset(8, 78),
 		Color = Theme.Text.Secondary,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 		Wrapped = true,
 	})
@@ -1113,6 +1115,8 @@ local function attachShopPrompt(model: Instance)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 12
 	prompt.RequiresLineOfSight = false
+	prompt.KeyboardKeyCode = Enum.KeyCode.E
+	prompt.GamepadKeyCode = Enum.KeyCode.ButtonX
 	prompt.Parent = anchor
 
 	attachedShopStands[model] = prompt

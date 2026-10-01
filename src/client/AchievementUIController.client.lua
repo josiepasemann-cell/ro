@@ -206,7 +206,7 @@ local function buildAchievementCard(parent: Instance, layoutOrder: number, row: 
 	local card = Instance.new("Frame")
 	card.Name = "AchievementCard_" .. row.Id
 	card.BackgroundColor3 = Theme.Background.PanelLight
-	card.Size = UDim2.new(1, 0, 0, 136)
+	card.Size = UDim2.new(1, 0, 0, 148)
 	card.LayoutOrder = layoutOrder
 	card.Parent = parent
 	Theme.ApplyCorner(card, UDim.new(0, 14))
@@ -245,7 +245,7 @@ local function buildAchievementCard(parent: Instance, layoutOrder: number, row: 
 		Size = UDim2.new(1, -60, 0, 34),
 		Position = UDim2.fromOffset(54, 28),
 		Color = Theme.Text.Secondary,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 		Wrapped = true,
 	})
@@ -269,7 +269,7 @@ local function buildAchievementCard(parent: Instance, layoutOrder: number, row: 
 		Size = UDim2.new(1, -20, 0, 14),
 		Position = UDim2.fromOffset(10, 84),
 		Color = Theme.Text.Secondary,
-		MinSize = 9,
+		MinSize = 12,
 		MaxSize = 12,
 		XAlign = Enum.TextXAlignment.Right,
 	})
@@ -280,7 +280,7 @@ local function buildAchievementCard(parent: Instance, layoutOrder: number, row: 
 		Size = UDim2.new(0.6, -10, 0, 22),
 		Position = UDim2.fromOffset(10, 100),
 		Color = Theme.Neon.Yellow,
-		MinSize = 9,
+		MinSize = 12,
 		MaxSize = 13,
 		Wrapped = true,
 	})
@@ -291,11 +291,11 @@ local function buildAchievementCard(parent: Instance, layoutOrder: number, row: 
 		Variant = "Success",
 		Important = true,
 		Disabled = true,
-		Size = UDim2.new(0.4, -10, 0, 30),
+		Size = UDim2.new(0.4, -10, 0, 44),
 		LayoutOrder = 1,
 	})
 	claimButton.Instance.AnchorPoint = Vector2.new(1, 0)
-	claimButton.Instance.Position = UDim2.new(1, -10, 0, 100)
+	claimButton.Instance.Position = UDim2.new(1, -10, 0, 98)
 	claimButton.Clicked:Connect(function()
 		AchievementRemotes.RequestClaimReward:FireServer(row.Id)
 		claimButton:SetDisabled(true)
@@ -403,14 +403,14 @@ local function rebuildTitlesTab()
 	local noneRow = Instance.new("Frame")
 	noneRow.Name = "TitleRow_None"
 	noneRow.BackgroundTransparency = 1
-	noneRow.Size = UDim2.new(1, 0, 0, 40)
+	noneRow.Size = UDim2.new(1, 0, 0, 44)
 	noneRow.LayoutOrder = 0
 	noneRow.Parent = host
 	local noneButton = Button.new({
 		Parent = noneRow,
 		Text = if equippedTitle == nil then "No Title (equipped)" else "No Title",
 		Variant = if equippedTitle == nil then "Success" else "Secondary",
-		Size = UDim2.new(1, 0, 0, 40),
+		Size = UDim2.new(1, 0, 0, 44),
 	})
 	noneButton.Clicked:Connect(function()
 		requestEquipTitle(nil)
@@ -424,7 +424,7 @@ local function rebuildTitlesTab()
 			Size = UDim2.new(1, 0, 0, 40),
 			Position = UDim2.fromOffset(0, 46),
 			Color = Theme.Text.Muted,
-			MinSize = 10,
+			MinSize = 12,
 			MaxSize = 14,
 			Wrapped = true,
 		})
@@ -435,7 +435,7 @@ local function rebuildTitlesTab()
 		local row = Instance.new("Frame")
 		row.Name = "TitleRow_" .. index
 		row.BackgroundTransparency = 1
-		row.Size = UDim2.new(1, 0, 0, 40)
+		row.Size = UDim2.new(1, 0, 0, 44)
 		row.LayoutOrder = index
 		row.Parent = host
 
@@ -444,7 +444,7 @@ local function rebuildTitlesTab()
 			Parent = row,
 			Text = if isEquipped then (title .. " (equipped)") else title,
 			Variant = if isEquipped then "Success" else "Secondary",
-			Size = UDim2.new(1, 0, 0, 40),
+			Size = UDim2.new(1, 0, 0, 44),
 		})
 		button.Clicked:Connect(function()
 			requestEquipTitle(title)

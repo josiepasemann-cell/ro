@@ -127,7 +127,7 @@ footerNote.TextScaled = true
 footerNote.Text = "Odds apply per individual egg opening. No purchase necessary."
 footerNote.Parent = panel.Content
 local footerConstraint = Instance.new("UITextSizeConstraint")
-footerConstraint.MinTextSize = 10
+footerConstraint.MinTextSize = 12
 footerConstraint.MaxTextSize = 13
 footerConstraint.Parent = footerNote
 

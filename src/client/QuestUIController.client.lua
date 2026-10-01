@@ -252,18 +252,26 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 		MaxSize = 18,
 	})
 
+	-- Auf schmalen Bildschirmen (Phone hochkant) 4 + 3 Tage in zwei Reihen statt
+	-- 7 winziger Kacheln (~43 px) in einer Reihe.
+	local narrow = Device.GetVirtualViewport().X < 560
+	local pillColumns = if narrow then 4 else 7
+	local pillRowHeight = if compact then 56 else 72
+	local pillRows = math.ceil(DailyRewardConfig.MAX_STREAK_DAY / pillColumns)
+	local pillAreaHeight = pillRows * pillRowHeight + (pillRows - 1) * 6
+
 	local pillHost = Instance.new("Frame")
 	pillHost.Name = "Pills"
 	pillHost.BackgroundTransparency = 1
-	pillHost.Size = UDim2.new(1, 0, 0, compact and 56 or 72)
+	pillHost.Size = UDim2.new(1, 0, 0, pillAreaHeight)
 	pillHost.Position = UDim2.fromOffset(0, 26)
 	pillHost.Parent = host
 
 	local pillGrid = Instance.new("UIGridLayout")
 	pillGrid.SortOrder = Enum.SortOrder.LayoutOrder
 	pillGrid.CellPadding = UDim2.fromOffset(6, 6)
-	pillGrid.CellSize = UDim2.new(1 / 7, -6, 1, 0)
-	pillGrid.FillDirectionMaxCells = 7
+	pillGrid.CellSize = UDim2.new(1 / pillColumns, -6, 0, pillRowHeight)
+	pillGrid.FillDirectionMaxCells = pillColumns
 	pillGrid.Parent = pillHost
 
 	local pills: { Frame } = {}
@@ -284,7 +292,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 			Size = UDim2.new(1, -6, 0, 16),
 			Position = UDim2.fromOffset(3, 4),
 			Font = Theme.Font.BodyBold,
-			MinSize = 8,
+			MinSize = 12,
 			MaxSize = 12,
 			XAlign = Enum.TextXAlignment.Center,
 		})
@@ -300,7 +308,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 			Size = UDim2.new(1, -6, 1, -22),
 			Position = UDim2.fromOffset(3, 20),
 			Color = Theme.Text.Secondary,
-			MinSize = 8,
+			MinSize = 12,
 			MaxSize = 12,
 			XAlign = Enum.TextXAlignment.Center,
 			Wrapped = true,
@@ -315,9 +323,9 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 		Parent = host,
 		Text = "",
 		Size = UDim2.new(1, 0, 0, 16),
-		Position = UDim2.fromOffset(0, 26 + (compact and 56 or 72) + 4),
+		Position = UDim2.fromOffset(0, 26 + pillAreaHeight + 4),
 		Color = Theme.Neon.Magenta,
-		MinSize = 9,
+		MinSize = 12,
 		MaxSize = 12,
 	})
 
@@ -329,7 +337,7 @@ local function buildStreakWidget(parent: Instance, compact: boolean): any
 		Size = UDim2.new(1, 0, 0, 40),
 		LayoutOrder = 10,
 	})
-	claimButton.Instance.Position = UDim2.fromOffset(0, 26 + (compact and 56 or 72) + 22)
+	claimButton.Instance.Position = UDim2.fromOffset(0, 26 + pillAreaHeight + 22)
 
 	local handle: any = {}
 	handle.Host = host
@@ -411,7 +419,7 @@ local function buildQuestCard(parent: Instance, layoutOrder: number, row: QuestR
 	local card = Instance.new("Frame")
 	card.Name = "QuestCard_" .. row.TemplateId
 	card.BackgroundColor3 = Theme.Background.PanelLight
-	card.Size = UDim2.new(1, 0, 0, 128)
+	card.Size = UDim2.new(1, 0, 0, 140)
 	card.LayoutOrder = layoutOrder
 	card.Parent = parent
 	Theme.ApplyCorner(card, UDim.new(0, 14))
@@ -461,7 +469,7 @@ local function buildQuestCard(parent: Instance, layoutOrder: number, row: QuestR
 		Size = UDim2.new(1, -20, 0, 16),
 		Position = UDim2.fromOffset(10, 74),
 		Color = Theme.Text.Secondary,
-		MinSize = 9,
+		MinSize = 12,
 		MaxSize = 13,
 		XAlign = Enum.TextXAlignment.Right,
 	})
@@ -477,7 +485,7 @@ local function buildQuestCard(parent: Instance, layoutOrder: number, row: QuestR
 		Size = UDim2.new(0.6, -10, 0, 22),
 		Position = UDim2.fromOffset(10, 92),
 		Color = Theme.Neon.Yellow,
-		MinSize = 10,
+		MinSize = 12,
 		MaxSize = 14,
 	})
 
@@ -487,11 +495,11 @@ local function buildQuestCard(parent: Instance, layoutOrder: number, row: QuestR
 		Variant = "Success",
 		Important = true,
 		Disabled = true,
-		Size = UDim2.new(0.4, -10, 0, 30),
+		Size = UDim2.new(0.4, -10, 0, 44),
 		LayoutOrder = 1,
 	})
 	claimButton.Instance.AnchorPoint = Vector2.new(1, 0)
-	claimButton.Instance.Position = UDim2.new(1, -10, 0, 92)
+	claimButton.Instance.Position = UDim2.new(1, -10, 0, 90)
 	claimButton.Clicked:Connect(function()
 		QuestRemotes.RequestClaimQuestReward:FireServer(row.TemplateId)
 		claimButton:SetDisabled(true)
@@ -623,7 +631,7 @@ local function buildMainPanel()
 		Size = UDim2.new(1, 0, 0, 22),
 		Font = Theme.Font.BodyBold,
 		Color = Theme.Neon.Cyan,
-		MinSize = 11,
+		MinSize = 12,
 		MaxSize = 16,
 		LayoutOrder = 3,
 	})

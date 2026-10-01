@@ -258,6 +258,10 @@ local function buildCard(
 	isBuddy2: boolean?,
 	onBuddyToggle2: (() -> ())?
 )
+	-- Touch: größere Icon-Fläche, damit Stern/"Set Buddy"-Knöpfe (min. 44 px)
+	-- nicht überlappen oder in den Namen ragen.
+	local touch = Device.IsTouch()
+	local iconHeight = if touch then 104 else 78
 	local card = Instance.new("Frame")
 	card.Name = entry.CreatureId
 	card.BackgroundColor3 = Theme.Background.PanelLight
@@ -273,7 +277,7 @@ local function buildCard(
 	iconArea.Name = "IconArea"
 	iconArea.BackgroundColor3 = owned and rarityColorFor(entry.Rarity) or Color3.fromRGB(25, 25, 30)
 	iconArea.BackgroundTransparency = owned and 0.72 or 0
-	iconArea.Size = UDim2.new(1, -12, 0, 78)
+	iconArea.Size = UDim2.new(1, -12, 0, iconHeight)
 	iconArea.Position = UDim2.fromOffset(6, 6)
 	iconArea.Parent = card
 	Theme.ApplyCorner(iconArea, UDim.new(0, 8))
@@ -292,7 +296,7 @@ local function buildCard(
 			Parent = iconArea,
 			Text = isFavorite and "★" or "☆",
 			Variant = isFavorite and "Success" or "Ghost",
-			Size = UDim2.fromOffset(30, 30),
+			Size = if touch then UDim2.fromOffset(44, 44) else UDim2.fromOffset(30, 30),
 		})
 		favoriteButton.Instance.AnchorPoint = Vector2.new(1, 0)
 		favoriteButton.Instance.Position = UDim2.new(1, -4, 0, 4)
@@ -308,7 +312,7 @@ local function buildCard(
 			Parent = iconArea,
 			Text = isBuddy and "✓ Buddy" or "Set Buddy",
 			Variant = isBuddy and "Success" or "Ghost",
-			Size = UDim2.fromOffset(isBuddy and 64 or 70, 26),
+			Size = UDim2.fromOffset(isBuddy and 64 or 70, if touch then 44 else 26),
 		})
 		buddyButton.Instance.AnchorPoint = Vector2.new(0, 0)
 		buddyButton.Instance.Position = UDim2.new(0, 4, 0, 4)
@@ -324,17 +328,17 @@ local function buildCard(
 			Parent = iconArea,
 			Text = isBuddy2 and "✓ Buddy 2" or "Set Buddy 2",
 			Variant = isBuddy2 and "Success" or "Ghost",
-			Size = UDim2.fromOffset(isBuddy2 and 72 or 78, 26),
+			Size = UDim2.fromOffset(isBuddy2 and 72 or 78, if touch then 44 else 26),
 		})
 		buddyButton2.Instance.AnchorPoint = Vector2.new(0, 0)
-		buddyButton2.Instance.Position = UDim2.new(0, 4, 0, 34)
+		buddyButton2.Instance.Position = UDim2.new(0, 4, 0, if touch then 52 else 34)
 		buddyButton2.Clicked:Connect(onBuddyToggle2)
 	end
 
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Size = UDim2.new(1, -12, 0, 20)
-	nameLabel.Position = UDim2.fromOffset(6, 88)
+	nameLabel.Position = UDim2.fromOffset(6, iconHeight + 10)
 	nameLabel.Font = Theme.Font.BodyBold
 	nameLabel.TextColor3 = owned and Theme.Text.Primary or Theme.Text.Muted
 	nameLabel.TextScaled = true
@@ -342,7 +346,7 @@ local function buildCard(
 	nameLabel.Text = owned and entry.DisplayName or "???"
 	nameLabel.Parent = card
 	local nameConstraint = Instance.new("UITextSizeConstraint")
-	nameConstraint.MinTextSize = 10
+	nameConstraint.MinTextSize = 12
 	nameConstraint.MaxTextSize = 16
 	nameConstraint.Parent = nameLabel
 
@@ -352,14 +356,14 @@ local function buildCard(
 			Parent = card,
 			Rarity = badgeRarity :: any,
 			Size = UDim2.fromOffset(84, 20),
-			Position = UDim2.fromOffset(6, 112),
+			Position = UDim2.fromOffset(6, iconHeight + 34),
 		})
 	end
 
 	local subLabel = Instance.new("TextLabel")
 	subLabel.BackgroundTransparency = 1
 	subLabel.Size = UDim2.new(1, -12, 0, 16)
-	subLabel.Position = UDim2.fromOffset(6, 136)
+	subLabel.Position = UDim2.fromOffset(6, iconHeight + 58)
 	subLabel.Font = Theme.Font.Body
 	subLabel.TextColor3 = Theme.Text.Muted
 	subLabel.TextScaled = true
@@ -367,12 +371,15 @@ local function buildCard(
 	subLabel.Text = entry.Event and ("Event: " .. humanizeId(entry.Event)) or humanizeId(entry.Zone)
 	subLabel.Parent = card
 	local subConstraint = Instance.new("UITextSizeConstraint")
-	subConstraint.MinTextSize = 8
+	subConstraint.MinTextSize = 12
 	subConstraint.MaxTextSize = 12
 	subConstraint.Parent = subLabel
 
 	return card
 end
+
+local CODEX_CELL_WIDTH = 150
+local CODEX_CELL_GAP = 10
 
 local function buildGridContainer(parent: Instance, layoutOrder: number): Frame
 	local container = Instance.new("Frame")
@@ -383,11 +390,27 @@ local function buildGridContainer(parent: Instance, layoutOrder: number): Frame
 	container.LayoutOrder = layoutOrder
 	container.Parent = parent
 
+	local cellHeight = if Device.IsTouch() then 184 else 158
 	local gridLayout = Instance.new("UIGridLayout")
-	gridLayout.CellSize = UDim2.fromOffset(150, 158)
-	gridLayout.CellPadding = UDim2.fromOffset(10, 10)
+	gridLayout.CellSize = UDim2.fromOffset(CODEX_CELL_WIDTH, cellHeight)
+	gridLayout.CellPadding = UDim2.fromOffset(CODEX_CELL_GAP, CODEX_CELL_GAP)
+	gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	gridLayout.Parent = container
+
+	-- Zellbreite füllt die Zeile restlos (2 Spalten auf einem 360-px-Handy,
+	-- mehr auf PC) statt links ausgerichtet mit Restlücke zu stehen.
+	local function fitColumns()
+		local width = container.AbsoluteSize.X / Device.GetScale()
+		if width <= 0 then
+			return
+		end
+		local columns = math.max(1, math.floor((width + CODEX_CELL_GAP) / (CODEX_CELL_WIDTH + CODEX_CELL_GAP)))
+		local cellWidth = math.floor((width - CODEX_CELL_GAP * (columns - 1)) / columns)
+		gridLayout.CellSize = UDim2.fromOffset(cellWidth, cellHeight)
+	end
+	container:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitColumns)
+	fitColumns()
 
 	return container
 end

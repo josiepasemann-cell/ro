@@ -41,6 +41,7 @@ local HUDRemotes = require(ReplicatedStorage:WaitForChild("HUDRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
+local Device = UIKit.Device
 local Panel = UIKit.Panel
 local Button = UIKit.Button
 local Toast = UIKit.Toast
@@ -136,10 +137,17 @@ local function makeLabel(props: {
 	label.Text = props.Text
 	label.Parent = props.Parent
 	local constraint = Instance.new("UITextSizeConstraint")
-	constraint.MinTextSize = props.MinSize or 10
+	constraint.MinTextSize = math.max(props.MinSize or 12, 12)
 	constraint.MaxTextSize = props.MaxSize or 16
 	constraint.Parent = label
 	return label
+end
+
+-- Schmale Bildschirme (Phone hochkant): kleinerer Travel-Button und weniger
+-- reservierter Platz rechts, damit Name/Beschreibung nicht auf ~120 px
+-- zusammenschrumpfen. Wird beim Aufbau des Panels ausgewertet.
+local function isNarrowLayout(): boolean
+	return Device.GetVirtualViewport().X < 560
 end
 
 -- // Bildschirm-Fade beim Teleport --------------------------------------------------
@@ -219,10 +227,12 @@ end)
 local panelHandle: any = nil
 
 local function buildDestinationCard(parent: Instance, layoutOrder: number, label: string, glyph: string, description: string, color: Color3, onTravel: () -> ()): Frame
+	local narrow = isNarrowLayout()
+	local reserve = if narrow then 116 else 220
 	local card = Instance.new("Frame")
 	card.Name = "Card_" .. label
 	card.BackgroundColor3 = Theme.Background.PanelLight
-	card.Size = UDim2.new(1, 0, 0, 88)
+	card.Size = UDim2.new(1, 0, 0, if narrow then 100 else 88)
 	card.LayoutOrder = layoutOrder
 	Theme.ApplyCorner(card, UDim.new(0, 14))
 	local stroke = Theme.ApplyStroke(card, color, 2)
@@ -244,7 +254,7 @@ local function buildDestinationCard(parent: Instance, layoutOrder: number, label
 	makeLabel({
 		Parent = card,
 		Text = label,
-		Size = UDim2.new(1, -220, 0, 26),
+		Size = UDim2.new(1, -reserve, 0, 26),
 		Position = UDim2.fromOffset(66, 10),
 		Font = Theme.Font.BodyBold,
 		MinSize = 14,
@@ -254,11 +264,11 @@ local function buildDestinationCard(parent: Instance, layoutOrder: number, label
 	makeLabel({
 		Parent = card,
 		Text = description,
-		Size = UDim2.new(1, -220, 0, 40),
+		Size = UDim2.new(1, -reserve, 0, if narrow then 56 else 40),
 		Position = UDim2.fromOffset(66, 36),
 		Color = Theme.Text.Secondary,
-		MinSize = 10,
-		MaxSize = 13,
+		MinSize = 12,
+		MaxSize = 14,
 		Wrapped = true,
 	})
 
@@ -267,7 +277,7 @@ local function buildDestinationCard(parent: Instance, layoutOrder: number, label
 		Text = "Travel",
 		Variant = "Primary",
 		Important = true,
-		Size = UDim2.fromOffset(140, 44),
+		Size = UDim2.fromOffset(if narrow then 96 else 140, 48),
 	})
 	travelButton.Instance.AnchorPoint = Vector2.new(1, 0.5)
 	travelButton.Instance.Position = UDim2.new(1, -12, 0.5, 0)
@@ -277,10 +287,12 @@ local function buildDestinationCard(parent: Instance, layoutOrder: number, label
 end
 
 local function buildZoneCard(parent: Instance, layoutOrder: number, zone: ZoneMeta): Frame
+	local narrow = isNarrowLayout()
+	local reserve = if narrow then 116 else 220
 	local card = Instance.new("Frame")
 	card.Name = "Zone_" .. zone.Id
 	card.BackgroundColor3 = Theme.Background.PanelLight
-	card.Size = UDim2.new(1, 0, 0, 96)
+	card.Size = UDim2.new(1, 0, 0, 104)
 	card.LayoutOrder = layoutOrder
 	Theme.ApplyCorner(card, UDim.new(0, 14))
 	local stroke = Theme.ApplyStroke(card, zone.Color, 2)
@@ -302,7 +314,7 @@ local function buildZoneCard(parent: Instance, layoutOrder: number, zone: ZoneMe
 	makeLabel({
 		Parent = card,
 		Text = zone.Label,
-		Size = UDim2.new(1, -220, 0, 24),
+		Size = UDim2.new(1, -reserve, 0, 24),
 		Position = UDim2.fromOffset(66, 8),
 		Font = Theme.Font.BodyBold,
 		MinSize = 13,
@@ -312,28 +324,28 @@ local function buildZoneCard(parent: Instance, layoutOrder: number, zone: ZoneMe
 	local statusLabel = makeLabel({
 		Parent = card,
 		Text = "",
-		Size = UDim2.new(1, -220, 0, 20),
-		Position = UDim2.fromOffset(66, 32),
+		Size = UDim2.new(1, -reserve, 0, 22),
+		Position = UDim2.fromOffset(66, 34),
 		Color = Theme.Semantic.Warning,
-		MinSize = 9,
-		MaxSize = 13,
+		MinSize = 12,
+		MaxSize = 14,
 	})
 
 	local requirementLabel = makeLabel({
 		Parent = card,
 		Text = "Requires Level " .. zone.RequiredLevel,
-		Size = UDim2.new(1, -220, 0, 20),
-		Position = UDim2.fromOffset(66, 54),
+		Size = UDim2.new(1, -reserve, 0, 22),
+		Position = UDim2.fromOffset(66, 60),
 		Color = Theme.Text.Secondary,
-		MinSize = 9,
-		MaxSize = 13,
+		MinSize = 12,
+		MaxSize = 14,
 	})
 
 	local travelButton = Button.new({
 		Parent = card,
 		Text = "Travel",
 		Variant = "Primary",
-		Size = UDim2.fromOffset(120, 44),
+		Size = UDim2.fromOffset(if narrow then 96 else 120, 48),
 	})
 	travelButton.Instance.AnchorPoint = Vector2.new(1, 0.5)
 	travelButton.Instance.Position = UDim2.new(1, -12, 0.5, 0)
