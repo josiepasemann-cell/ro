@@ -42,6 +42,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local ProgressionConfig = require(ReplicatedStorage:WaitForChild("ProgressionConfig"))
 local HUDRemotes = require(ReplicatedStorage:WaitForChild("HUDRemotes"))
+local ZoneProgressService = require(script.Parent:WaitForChild("ZoneProgressService"))
 
 type ProgressionEventSource = ProgressionConfig.ProgressionEventSource
 
@@ -110,6 +111,8 @@ function ProgressionService.AwardXP(player: Player, source: ProgressionEventSour
 	local newLevel = ProgressionConfig.GetLevelForTotalXP(totalXP)
 	if newLevel > oldLevel then
 		PlayerDataService.SetLevel(player, newLevel)
+		-- A new level may unlock a deeper zone (Deepest Zone leaderboard).
+		ZoneProgressService.SyncFromLevel(player)
 	end
 
 	local progress = ProgressionService.GetLevelProgress(player)

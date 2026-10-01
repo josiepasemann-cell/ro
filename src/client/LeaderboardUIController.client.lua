@@ -5,7 +5,7 @@
 	Zuständigkeit:
 		UI für das globale Ranglisten-System (`docs/server-features.md`
 		Abschnitt 3.3, `LeaderboardRemotes.GetLeaderboard`). Drei Kategorie-
-		Tabs (Level, Tide Coins, Seltenste Sammlung), Top-50 scrollbar, eigene
+		Tabs (Deepest Zone [id "Level"], Tide Coins, Seltenste Sammlung), Top-50 scrollbar, eigene
 		Position hervorgehoben, sofern in Top 50 vertreten. Avatar-Thumbnails
 		über `Players:GetUserThumbnailAsync` (immer in `pcall`, Ergebnis pro
 		UserId gecacht, damit ein erneuter Tab-Wechsel nicht dieselben Bilder
@@ -69,21 +69,23 @@ local openLeaderboardEvent = getOrCreateBridgeEvent("OpenLeaderboard")
 
 -- // Kategorien ---------------------------------------------------------------------
 
-type CategoryId = "Level" | "TideCoins" | "RarestCollection"
+type CategoryId = "Level" | "TideCoins" | "RarestCollection" | "ClusterWave"
 
 local CATEGORY_GLYPH: { [CategoryId]: string } = {
 	Level = "⭐",
 	TideCoins = "🪙",
 	RarestCollection = "🐚",
+	ClusterWave = "🤝",
 }
 
 local CATEGORY_COLOR: { [CategoryId]: Color3 } = {
 	Level = Theme.Neon.Cyan,
 	TideCoins = Theme.Neon.Yellow,
 	RarestCollection = Theme.Neon.Magenta,
+	ClusterWave = Theme.Neon.ToxicGreen,
 }
 
-local CATEGORY_ORDER: { CategoryId } = { "Level", "TideCoins", "RarestCollection" }
+local CATEGORY_ORDER: { CategoryId } = { "Level", "TideCoins", "RarestCollection", "ClusterWave" }
 
 -- // Avatar-Thumbnail-Cache (pro Session, pro UserId) --------------------------------
 
@@ -151,7 +153,7 @@ end
 
 type LeaderboardEntry = { Rank: number, UserId: number, Name: string, Score: number }
 
-local function buildRow(parent: Instance, entry: LeaderboardEntry, categoryColor: Color3, isSelf: boolean): Frame
+local function buildRow(parent: Instance, entry: LeaderboardEntry, categoryColor: Color3, isSelf: boolean, category: CategoryId): Frame
 	local row = Instance.new("Frame")
 	row.Name = "Row_" .. tostring(entry.Rank)
 	row.BackgroundColor3 = if isSelf then Theme.Background.PanelLight else Theme.Background.Panel
@@ -214,7 +216,10 @@ local function buildRow(parent: Instance, entry: LeaderboardEntry, categoryColor
 
 	local scoreLabel = makeLabel({
 		Parent = row,
-		Text = CountUp.DefaultFormat(entry.Score),
+		Text = if category == "Level"
+			then ("Z%d Lv %d"):format(math.floor(entry.Score / 1000), entry.Score % 1000) -- Deepest Zone: zone*1000 + level
+			elseif category == "ClusterWave" then ("Wave %d"):format(entry.Score)
+			else CountUp.DefaultFormat(entry.Score),
 		Size = UDim2.new(0, 112, 0, 40),
 		Position = UDim2.new(1, -118, 0, 6),
 		Font = Theme.Font.Header,
@@ -305,7 +310,7 @@ local function loadCategory(category: CategoryId, forceRefresh: boolean)
 			if isSelf then
 				foundSelf = true
 			end
-			buildRow(host, entry, color, isSelf)
+			buildRow(host, entry, color, isSelf, category)
 		end
 
 		if not foundSelf then
@@ -336,9 +341,10 @@ local function buildPanel()
 	tabsHandle = Tabs.new({
 		Parent = panelHandle.Content,
 		Tabs = {
-			{ Id = "Level", Label = CATEGORY_GLYPH.Level .. " Level" },
+			{ Id = "Level", Label = CATEGORY_GLYPH.Level .. " Deepest Zone" },
 			{ Id = "TideCoins", Label = CATEGORY_GLYPH.TideCoins .. " Tide Coins" },
 			{ Id = "RarestCollection", Label = CATEGORY_GLYPH.RarestCollection .. " Collection" },
+			{ Id = "ClusterWave", Label = CATEGORY_GLYPH.ClusterWave .. " Cluster" }, -- best Reef Cluster raid wave
 		},
 		DefaultTabId = "Level",
 	})

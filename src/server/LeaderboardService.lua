@@ -13,7 +13,15 @@
 		"LeaderboardBoard"/"DisplayPanel" (siehe assets/models/README.md,
 		Abschnitt "hub").
 
-		MVP-PROXY-ENTSCHEIDUNG "Level" statt "Tiefste Zone":
+		UPDATE: the "Level" category now is the real "Deepest Zone" board. Its
+			id stays "Level" (client tab id, remote payloads), but the score is
+			DeepestZoneEver * 1000 + level (zone first, level as tiebreaker; see
+			computeScores/formatScore) in a NEW store (the old store held plain
+			levels). The zone record comes from ZoneProgressService, and the
+			DataChanged "DeepestZone" kind marks the player dirty. The
+			paragraph below is the historical reasoning for the old stand-in.
+
+			MVP-PROXY-ENTSCHEIDUNG "Level" statt "Tiefste Zone":
 			Das GDD nennt "Tiefste erreichte Zone" als Leaderboard-Kategorie
 			(Abschnitt 7). Ein Zonen-/Tiefen-Fortschrittssystem existiert im
 			MVP laut ProgressionConfig-Kopfkommentar aber noch nicht (siehe
@@ -69,18 +77,19 @@ local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"
 local GameEvents = require(script.Parent:WaitForChild("GameEvents"))
 local GachaConfig = require(script.Parent:WaitForChild("GachaConfig"))
 
-export type Category = "Level" | "TideCoins" | "RarestCollection"
+export type Category = "Level" | "TideCoins" | "RarestCollection" | "ClusterWave"
 
 local LeaderboardService = {}
 
 -- // Konfiguration ------------------------------------------------------------
 
-local CATEGORIES: { Category } = { "Level", "TideCoins", "RarestCollection" }
+local CATEGORIES: { Category } = { "Level", "TideCoins", "RarestCollection", "ClusterWave" }
 
 local STORE_NAMES: { [Category]: string } = {
-	Level = "Abyssara_LB_Level_v1",
+	Level = "Abyssara_LB_DeepestZone_v2", -- score = zone * 1000 + level
 	TideCoins = "Abyssara_LB_TideCoins_v1",
 	RarestCollection = "Abyssara_LB_Rarest_v1",
+	ClusterWave = "Abyssara_LB_ClusterWave_v1", -- best Reef Cluster raid wave (CoopState.BestClusterWave)
 }
 
 local WRITE_INTERVAL_SECONDS = 90
@@ -104,8 +113,8 @@ local dirtyPlayers: { [number]: boolean } = {}
 local lastWrittenScore: { [number]: { [Category]: number } } = {}
 
 type LeaderboardEntry = { Rank: number, UserId: number, Name: string, Score: number }
-local cachedTop: { [Category]: { LeaderboardEntry } } = { Level = {}, TideCoins = {}, RarestCollection = {} }
-local cachedUpdatedAt: { [Category]: number } = { Level = 0, TideCoins = 0, RarestCollection = 0 }
+local cachedTop: { [Category]: { LeaderboardEntry } } = { Level = {}, TideCoins = {}, RarestCollection = {}, ClusterWave = {} }
+local cachedUpdatedAt: { [Category]: number } = { Level = 0, TideCoins = 0, RarestCollection = 0, ClusterWave = 0 }
 
 local nameCache: { [number]: string } = {}
 
@@ -140,11 +149,26 @@ local function computeRarestCollectionScore(player: Player): number
 	return score
 end
 
+local ZONE_SCORE_FACTOR = 1000 -- level stays below this, so it only breaks ties within a zone
+
+--- Splits a "Deepest Zone" score back into (zone, level) for display.
+local function formatScore(category: Category, score: number): string
+	if category == "Level" then
+		return ("Zone %d, Lv %d"):format(math.floor(score / ZONE_SCORE_FACTOR), score % ZONE_SCORE_FACTOR)
+	end
+	if category == "ClusterWave" then
+		return ("Wave %d"):format(score)
+	end
+	return tostring(score)
+end
+
 local function computeScores(player: Player): { [Category]: number }
 	return {
-		Level = PlayerDataService.GetLevel(player),
+		Level = PlayerDataService.GetDeepestZoneEver(player) * ZONE_SCORE_FACTOR
+			+ math.min(PlayerDataService.GetLevel(player), ZONE_SCORE_FACTOR - 1),
 		TideCoins = PlayerDataService.GetLifetimeTideCoinsEarned(player),
 		RarestCollection = computeRarestCollectionScore(player),
+		ClusterWave = (PlayerDataService.GetCoopState(player) or { BestClusterWave = 0 }).BestClusterWave,
 	}
 end
 
@@ -172,6 +196,14 @@ GameEvents.Connect(GameEvents.Events.EggOpened, function(player: Player) markDir
 GameEvents.Connect(GameEvents.Events.BreedingCompleted, function(player: Player) markDirty(player) end)
 GameEvents.Connect(GameEvents.Events.RaidWon, function(player: Player) markDirty(player) end)
 GameEvents.Connect(GameEvents.Events.BuildingPlaced, function(player: Player) markDirty(player) end)
+-- Creature trades change the Rarest Collection score; cluster raids the Cluster board.
+GameEvents.Connect("TradeCompleted", function(player: Player) markDirty(player) end)
+GameEvents.Connect("ClusterRaidFinished", function(player: Player) markDirty(player) end)
+PlayerDataService.DataChanged:Connect(function(player: Player, changeKind: string)
+	if changeKind == "DeepestZone" then
+		markDirty(player)
+	end
+end)
 
 -- // Write-Loop (gedrosselt, siehe Kopfkommentar) ------------------------------
 
@@ -184,6 +216,9 @@ GameEvents.Connect(GameEvents.Events.BuildingPlaced, function(player: Player) ma
 local function writeScoreIfChanged(player: Player, category: Category, score: number): boolean
 	local userId = player.UserId
 	lastWrittenScore[userId] = lastWrittenScore[userId] or {}
+	if category == "ClusterWave" and score <= 0 then
+		return true -- never been in a cluster raid: no entry (saves write budget)
+	end
 	if lastWrittenScore[userId][category] == score then
 		return true -- unverändert seit letztem erfolgreichen Write - Budget sparen
 	end
@@ -283,9 +318,10 @@ end
 -- // Hub-SurfaceGui-Befüllung (LeaderboardBoard/DisplayPanel) -----------------
 
 local CATEGORY_LABELS: { [Category]: string } = {
-	Level = "Highest Level",
+	Level = "Deepest Zone",
 	TideCoins = "Total Tide Coins Earned",
 	RarestCollection = "Rarest Collection",
+	ClusterWave = "Best Cluster Wave",
 }
 
 local function findLeaderboardDisplayPanel(): BasePart?
@@ -378,7 +414,7 @@ local function renderBoard(title: TextLabel, list: Frame, category: Category)
 		row.TextScaled = true
 		row.TextXAlignment = Enum.TextXAlignment.Left
 		row.TextColor3 = if i <= 3 then Color3.fromRGB(255, 225, 130) else Color3.fromRGB(220, 235, 240)
-		row.Text = ("#%d  %s  -  %s"):format(entry.Rank, entry.Name, tostring(entry.Score))
+		row.Text = ("#%d  %s  -  %s"):format(entry.Rank, entry.Name, formatScore(category, entry.Score))
 		row.Parent = list
 	end
 end
@@ -444,7 +480,7 @@ local function onPlayerRemoving(player: Player)
 		local lastScores = lastWrittenScore[userId] or {}
 		task.spawn(function()
 			for _, category in ipairs(CATEGORIES) do
-				if lastScores[category] ~= scores[category] then
+				if lastScores[category] ~= scores[category] and not (category == "ClusterWave" and scores[category] <= 0) then
 					withRetry(("Final write %s for UserId %d"):format(category, userId), function()
 						orderedStores[category]:SetAsync(tostring(userId), scores[category])
 						return true

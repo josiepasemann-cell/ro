@@ -11,10 +11,9 @@
 		src/shared/LeaderboardRemotes.lua -> ReplicatedStorage.LeaderboardRemotes
 
 	Kategorien (siehe LeaderboardService.Category):
-		"Level"            - GDD: "Tiefste erreichte Zone" (MVP-Proxy: Spieler-
-		                     Level, siehe LeaderboardService-Kopfkommentar zur
-		                     Begründung, solange das Zonen-System selbst noch
-		                     nicht existiert).
+		"Level"            - GDD: "Tiefste erreichte Zone" (the id is historic). Score =
+		                     DeepestZoneEver * 1000 + level, so the zone ranks first
+		                     and the level breaks ties (see LeaderboardService).
 		"TideCoins"        - GDD: "Gesamt verdiente Tide Coins" (Lifetime-Summe,
 		                     NICHT der aktuelle Kontostand - siehe
 		                     PlayerDataService.Stats.LifetimeTideCoinsEarned).

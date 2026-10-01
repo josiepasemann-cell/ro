@@ -110,6 +110,20 @@ function ZoneEconomyConfig.GetZoneForLevel(level: number?): ZoneId
 	return deepest
 end
 
+--- Zone index 1-4 (Sun Zone = 1 ... Hadal Depths = 4) for a ZoneId, or nil for an
+--- unknown id. This is the number PlayerDataService.RecordZoneReached expects.
+function ZoneEconomyConfig.GetZoneIndex(zoneId: string?): number?
+	if type(zoneId) ~= "string" then
+		return nil
+	end
+	for index, id in ipairs(ZoneEconomyConfig.ZONE_ORDER) do
+		if id == zoneId then
+			return index
+		end
+	end
+	return nil
+end
+
 --- Liefert den Tide-Coin-/Einkommens-Multiplikator für `zoneId`. Unbekannte/
 --- zukünftige Zonen-Ids fallen defensiv auf 1.0 (neutral) zurück statt einen
 --- Fehler zu werfen.
