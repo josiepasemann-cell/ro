@@ -12,6 +12,50 @@
       "StarterPlayerScripts": {
         "$path": "src/client"
       }
+    },
+    "ServerStorage": {
+      "AbyssaraBuild": {
+        "$className": "Folder",
+        "BuildWorld": {
+          "$path": "studio/BuildWorld.lua"
+        },
+        "ApplyMeshes": {
+          "$path": "assets/meshes/ApplyMeshes.lua"
+        },
+        "Models": {
+          "$className": "Folder",
+          "terrain": {
+            "$path": "assets/models/terrain"
+          },
+          "world": {
+            "$path": "assets/models/world"
+          },
+          "buildings": {
+            "$path": "assets/models/buildings"
+          },
+          "enemies": {
+            "$path": "assets/models/enemies"
+          },
+          "pickups": {
+            "$path": "assets/models/pickups"
+          },
+          "creatures": {
+            "$path": "assets/models/creatures"
+          },
+          "gacha": {
+            "$path": "assets/models/gacha"
+          },
+          "decorations": {
+            "$path": "assets/models/decorations"
+          },
+          "hub": {
+            "$path": "assets/models/hub"
+          },
+          "npcs": {
+            "$path": "assets/models/npcs"
+          }
+        }
+      }
     }
   }
 }

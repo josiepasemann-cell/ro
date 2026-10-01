@@ -12,10 +12,13 @@ buildscript as a ModuleScript under `ServerStorage.AbyssaraBuild`.
 
 1. Build it: `rojo build studio.project.json -o Abyssara.rbxlx` (or use the
    `Abyssara.rbxlx` you were sent) and open it in Roblox Studio.
-2. In **Edit mode** (not Play), View → Command Bar, run:
-   `require(game.ServerStorage.AbyssaraBuild.BuildWorld).Run()`
-   This runs all buildscripts in the order of §3 below and prints a report
-   (any failed script is listed in orange in the Output).
+2. Nothing else is required: when a server starts without a built world it
+   builds it itself (`src/server/WorldBuild.lua`, a few seconds on the first
+   start of each server). Just press Play or publish.
+   Optional, for faster server starts: build it once in Studio and save. In
+   **Edit mode** (not Play), View → Command Bar, run
+   `require(game.ServerStorage.AbyssaraBuild.BuildWorld).Run()`; it runs all
+   buildscripts in the order of §3 and lists failures in orange in the Output.
 3. Optional meshes (§3b): import the `.glb` files into `Workspace.MeshImports`,
    then run `require(game.ServerStorage.AbyssaraBuild.ApplyMeshes)`.
 4. Do §2 (API access, publish) and §5 (IDs), then test (§4).

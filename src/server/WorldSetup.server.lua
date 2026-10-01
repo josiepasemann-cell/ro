@@ -51,6 +51,8 @@
 		(Script, kein ModuleScript - läuft automatisch beim Serverstart.)
 ]]
 
+require(script.Parent:WaitForChild("WorldBuild")).Ensure() -- builds the world on first start if the place has none (see WorldBuild.lua)
+
 local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
 local CollectionService = game:GetService("CollectionService")

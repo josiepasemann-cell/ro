@@ -9,6 +9,8 @@
 		src/server/ClusterServer.server.lua -> ServerScriptService.ClusterServer
 ]]
 
+require(script.Parent:WaitForChild("WorldBuild")).Ensure() -- builds the world on first start if the place has none (see WorldBuild.lua)
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local ClusterService = require(script.Parent:WaitForChild("ClusterService"))

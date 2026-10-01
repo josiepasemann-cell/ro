@@ -11,6 +11,8 @@
 		src/server/QuestServer.server.lua -> ServerScriptService.QuestServer
 ]]
 
+require(script.Parent:WaitForChild("WorldBuild")).Ensure() -- builds the world on first start if the place has none (see WorldBuild.lua)
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local QuestService = require(script.Parent:WaitForChild("QuestService"))

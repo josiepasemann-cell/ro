@@ -25,6 +25,8 @@
 		(vom Client nicht fälschbar).
 ]]
 
+require(script.Parent:WaitForChild("WorldBuild")).Ensure() -- builds the world on first start if the place has none (see WorldBuild.lua)
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local BreedingService = require(script.Parent:WaitForChild("BreedingService"))

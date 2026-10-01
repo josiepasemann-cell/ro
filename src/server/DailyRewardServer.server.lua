@@ -11,6 +11,8 @@
 		src/server/DailyRewardServer.server.lua -> ServerScriptService.DailyRewardServer
 ]]
 
+require(script.Parent:WaitForChild("WorldBuild")).Ensure() -- builds the world on first start if the place has none (see WorldBuild.lua)
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DailyRewardService = require(script.Parent:WaitForChild("DailyRewardService"))

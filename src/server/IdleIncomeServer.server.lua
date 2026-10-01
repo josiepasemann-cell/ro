@@ -17,6 +17,8 @@
 		Server-`Script` zu machen statt eines `ModuleScript`)
 ]]
 
+require(script.Parent:WaitForChild("WorldBuild")).Ensure() -- builds the world on first start if the place has none (see WorldBuild.lua)
+
 local IdleIncomeService = require(script.Parent:WaitForChild("IdleIncomeService"))
 
 -- Referenz nur gehalten, damit ein künftiger Linter das require() nicht als

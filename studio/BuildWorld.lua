@@ -13,7 +13,10 @@
 	(ServerStorage.AbyssaraBuild.Models.<folder>.<Name>). Each one is run from
 	its source with loadstring, so a script that errors is reported and the
 	rest still runs. Running it again rebuilds everything (all buildscripts
-	replace their old model).
+	replace their old model). You normally don't need this at all: a game
+	server that starts without a built world builds it itself
+	(src/server/WorldBuild.lua). Running it in Studio and saving just makes
+	server start faster.
 
 	After it finishes: optionally import the meshes and run
 	require(game.ServerStorage.AbyssaraBuild.ApplyMeshes) (see the README in
@@ -62,13 +65,28 @@ local function runScript(module: ModuleScript): (boolean, string?)
 	return true, nil
 end
 
+-- At runtime on a game server loadstring is disabled, so each buildscript is
+-- required instead. Buildscripts return nothing, which makes require() raise
+-- "did not return exactly one value" AFTER the script has run - that error
+-- means success; anything else is a real failure.
+local function requireScript(module: ModuleScript): (boolean, string?)
+	local ok, err = pcall(require, module)
+	if ok or string.find(tostring(err), "exactly one value", 1, true) then
+		return true, nil
+	end
+	return false, tostring(err)
+end
+
+--- Runs every buildscript. Uses loadstring (Command Bar) when available,
+--- otherwise require() (game server, see WorldBuild.lua).
 function BuildWorld.Run()
 	local root = ServerStorage:FindFirstChild("AbyssaraBuild")
 	local models = root and root:FindFirstChild("Models")
-	assert(models, "ServerStorage.AbyssaraBuild.Models is missing - open the place built from studio.project.json")
-	if not loadstring then
-		error("loadstring is not available here - run this from the Studio Command Bar in Edit mode")
-	end
+	assert(models, "ServerStorage.AbyssaraBuild.Models is missing - sync ServerStorage.AbyssaraBuild with Rojo")
+	local canLoadstring = pcall(function()
+		return loadstring("return 1")
+	end) and loadstring("return 1") ~= nil
+	local runner = if canLoadstring then runScript else requireScript
 
 	local done, failed = 0, {}
 	local ran: { [ModuleScript]: boolean } = {}
@@ -92,7 +110,7 @@ function BuildWorld.Run()
 		for _, module in ipairs(targets) do
 			if not ran[module] then
 				ran[module] = true
-				local ok, err = runScript(module)
+				local ok, err = runner(module)
 				if ok then
 					done += 1
 				else
