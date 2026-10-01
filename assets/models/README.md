@@ -418,3 +418,24 @@ there):
   easy to find and can be addressed programmatically by the code agent.
   The `ui/` scripts differ from this and place their `ScreenGui`s under
   `game.StarterGui` instead, since these are UI, not Workspace geometry.
+
+### `world/` – Set dressing (map beautification)
+
+Pure scenery on top of the terrain and hub (coral gardens, kelp forests,
+mushrooms, lava rocks, trench ruins, wrecks, lanterns, signs, vents, light
+shafts, school markers). Run order and the animation system are described in
+`/home/user/ro/docs/world-ambience.md` and `/home/user/ro/docs/release-checklist.md` section 3.
+
+| File | Target | Parts (this script) |
+|---|---|---|
+| `SunZoneDressing.lua` | Sun Zone chunk | ~440 |
+| `TwilightZoneDressing.lua` | Twilight Zone chunk | ~490 |
+| `MidnightZoneDressing.lua` | Midnight Zone chunk | ~360 |
+| `HadalDepthsDressing.lua` | Hadal Depths plateau + abyss | ~400 |
+| `HubDressing.lua` | Tidal Market plaza, seabed apron, reef ring, lane lanterns | ~720 |
+| `PlotSurroundings.lua` | adds `PlotDecor` to the HabitatPlotBase template | ~130 per plot |
+
+All decor is `CanCollide = false`, `CanQuery = false`, `CastShadow = false`
+(only the hub seabed apron and the plot seabed/reef wall are solid). The
+files share one helper block that is copy-pasted on purpose (Command Bar
+scripts cannot require each other).

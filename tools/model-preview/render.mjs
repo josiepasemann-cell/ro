@@ -65,6 +65,7 @@ const decorations = find("Decorations");
 const npcs = find("Npcs");
 const hub = find("Hub");
 const terrain = find("Terrain");
+const have = (names) => names.filter((n) => models.some((m) => m.name === n)); // map-* sheets also render the pre-dressing state
 const ZONES = ["SunZoneTerrainChunk", "TwilightZoneTerrainChunk", "MidnightZoneTerrainChunk", "HadalDepthsTerrainChunk"];
 
 const sheets = {
@@ -102,6 +103,28 @@ const sheets = {
     cells: [
       { models: [...hub.map((m) => m.name), ...npcs.map((m) => m.name)], label: "TidalMarketHub + NPCs — full footprint", sub: `${hub.reduce((a, m) => a + m.parts.length, 0)} hub parts · ${npcs.length} NPCs`, view: { az: -30, el: 38, margin: 0.95 }, maxLights: 12 },
       { models: [...hub.map((m) => m.name), ...npcs.map((m) => m.name)], label: "Central plaza close-up", sub: "same scene, camera focused on the landmark and stands", view: { az: -30, el: 30, margin: 0.86, focus: { center: hub[0]?.primary ? hub[0].primary.slice(0, 3) : [0, 0, 0], radius: 55 } }, maxLights: 16 },
+    ],
+  },
+  // Map beautification previews: chunk/hub + its world/*Dressing model, overview and a close-up
+  ...Object.fromEntries([
+    ["map-sun", "SunZoneTerrainChunk", "SunZoneDressing", "Sun Zone", [120, 0, 0]],
+    ["map-twilight", "TwilightZoneTerrainChunk", "TwilightZoneDressing", "Twilight Zone", [-120, 0, 0]],
+    ["map-midnight", "MidnightZoneTerrainChunk", "MidnightZoneDressing", "Midnight Zone", [0, 0, 120]],
+    ["map-hadal", "HadalDepthsTerrainChunk", "HadalDepthsDressing", "Hadal Depths", [0, 0, -120]],
+  ].map(([key, chunk, dress, title, c]) => [key, {
+    title: `${title} with set dressing`, subtitle: `${chunk} + ${dress} (particles and animation not shown)`,
+    width: 1600, cols: 1, cellAspect: 0.62,
+    cells: [
+      { models: have([chunk, dress]), label: "Overview", sub: `${(models.find((m) => m.name === dress)?.parts.length ?? 0)} dressing parts`, view: { az: -30, el: 36, margin: 0.95 }, maxLights: 12 },
+      { models: have([chunk, dress]), label: "Close-up", sub: "camera near the zone centre", view: { az: 35, el: 22, margin: 0.8, focus: { center: c, radius: 42 } }, maxLights: 16 },
+    ],
+  }])),
+  "map-hub": {
+    title: "Tidal Market hub with set dressing", subtitle: "TidalMarketHub + NPCs + HubDressing (particles and animation not shown)",
+    width: 1600, cols: 1, cellAspect: 0.62,
+    cells: [
+      { models: have([...hub.map((m) => m.name), ...npcs.map((m) => m.name), "HubDressing"]), label: "Overview", sub: `${(models.find((m) => m.name === "HubDressing")?.parts.length ?? 0)} dressing parts`, view: { az: -30, el: 36, margin: 0.95 }, maxLights: 12 },
+      { models: have([...hub.map((m) => m.name), ...npcs.map((m) => m.name), "HubDressing"]), label: "Plaza edge close-up", sub: "camera at the plaza rim", view: { az: 20, el: 24, margin: 0.8, focus: { center: [-500, 0, -420], radius: 60 } }, maxLights: 16 },
     ],
   },
   terrain: {

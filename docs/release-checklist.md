@@ -25,7 +25,7 @@ The models are buildscripts, not finished files. Copy each file into the
 Command Bar in Studio **in Edit mode** (View → Command Bar) and run it. The
 scripts are repeatable — running one twice just replaces the old model.
 
-1. `assets/models/terrain/HabitatPlotBase.lua` (plot template)
+1. `assets/models/terrain/HabitatPlotBase.lua` (plot template), then `assets/models/world/PlotSurroundings.lua` right after it (adds the seabed floor, reef wall and decor to the plot template; must run before the server start that clones plots)
 2. `assets/models/buildings/` all 18 files (6 base-stage buildings + their Stage 2/3 upgrade files: BroodPool, GlowBuoyStation, FilterPlant, AnglerfishTower, CoralBarrier, ElectricEelTrap)
 3. `assets/models/enemies/` all 5 files (dedicated raid enemies SpineDrifter, ThornSwarmer, IronMawBrute, TrenchWardenBoss, plus the ShadowKraken fail-soft fallback template)
 4. `assets/models/pickups/` all 3 files (GlowSporePickup, SunkenChest, FrozenSpore)
@@ -35,6 +35,7 @@ scripts are repeatable — running one twice just replaces the old model.
 8. `assets/models/decorations/` all 6 files (event cosmetic decorations: VenomDrip, JackOCoral, CoralGardenSet, IceSpire, MagmaVent, TreasurePile)
 9. `assets/models/hub/TidalMarketHub.lua` (hub with spawn, shop stand, portals)
 10. `assets/models/npcs/` all 5 files (Shopkeeper, EggKeeper, QuestGiver, Trader, Guide — run after the hub, since each NPC looks up its stand in `Workspace.Assets.Hub.TidalMarketHub`)
+11. `assets/models/world/` the 5 set-dressing files (`SunZoneDressing`, `TwilightZoneDressing`, `MidnightZoneDressing`, `HadalDepthsDressing`, `HubDressing`). Run them after the 4 terrain chunks (step 7) and the hub (step 9); they only add scenery and never touch gameplay parts. `PlotSurroundings.lua` belongs to step 1 (see above). The animation is client-side (`src/client/WorldAmbience.client.lua`, see `docs/world-ambience.md`).
 
 ### 3b. Swap in the real meshes (recommended)
 
