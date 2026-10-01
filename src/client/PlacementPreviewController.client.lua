@@ -509,7 +509,7 @@ local function togglePlot()
 end
 
 plotPickerButton.Clicked:Connect(togglePlot)
-attachHint(plotPickerButton, "O", Enum.KeyCode.DPadUp)
+attachHint(plotPickerButton, "5", Enum.KeyCode.DPadUp)
 local plotCountConnection = player:GetAttributeChangedSignal("PlotCount"):Connect(refreshPlotPicker)
 refreshPlotPicker()
 
@@ -754,7 +754,7 @@ local inputBeganConnection = UserInputService.InputBegan:Connect(function(input,
 		refreshBuildingCards()
 	elseif keyCode == Enum.KeyCode.R then
 		rotatePreview()
-	elseif keyCode == Enum.KeyCode.O or keyCode == Enum.KeyCode.DPadUp then
+	elseif keyCode == Enum.KeyCode.Five or keyCode == Enum.KeyCode.DPadUp then -- not O/I: Roblox camera zoom
 		togglePlot()
 	elseif keyCode == Enum.KeyCode.Return or keyCode == Enum.KeyCode.KeypadEnter then
 		confirmPlacement()

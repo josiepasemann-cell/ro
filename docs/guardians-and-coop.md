@@ -6,7 +6,7 @@ Roblox Studio**. All numbers are in `src/shared/RaidConfig.lua` (sections
 
 ## 1. Guardian creatures
 
-Players pick creatures as raid allies in **More > Guardians** (key I) and the
+Players pick creatures as raid allies in **More > Guardians** (no hotkey: `I`/`O` are Roblox camera zoom) and the
 server deploys the saved loadout in the raid.
 
 - **Slots**: 1 from level 1, 2 from level 20, 3 from level 35

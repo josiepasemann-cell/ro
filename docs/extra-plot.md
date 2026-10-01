@@ -12,7 +12,7 @@ Habitat Plot right next to their first one. Not tested in Studio yet.
 | `src/server/PlacementService.lua` | `RequestPlace(player, buildingId, fieldIndex, rotationY, plotIndex)`: the plot index is validated (1 or 2, nil = 1, anything else `InvalidPlot`) and the plot must exist (`NoPlot` for non-owners). Field validation and occupancy are per plot. `HabitatPlacement.PlotIndex` is stored as nil for plot 1 (old saves unchanged) and 2 for plot 2. Restore is per plot and idempotent. |
 | `src/server/MonetizationService.lua` | New `GamepassOwned` signal `(player, key)`; Player attribute `OwnsExtraPlot`. The old "placeholder" attribute and `ShopConfig.EXTRA_PLOT_PLACEHOLDER` are gone. |
 | `src/server/TravelService.lua` / `TravelRemotes` | `RequestTravelToPlot(plotIndex?)`. The hub PlotGate still goes to plot 1. |
-| `src/client/PlacementPreviewController.client.lua` | A "Plot 1 / Plot 2" card at the start of the build bar (only shown with 2 plots; key `O`, gamepad D-pad up). Switching reloads the build fields and travels there if far away. The place request carries the plot index. |
+| `src/client/PlacementPreviewController.client.lua` | A "Plot 1 / Plot 2" card at the start of the build bar (only shown with 2 plots; key `5`, gamepad D-pad up). Switching reloads the build fields and travels there if far away. The place request carries the plot index. |
 | `src/client/TravelUIController.client.lua` | A "Reef Plot 2" destination card (only with 2 plots). |
 | `src/client/BreedingUIController.client.lua` | Watches the buildings folder of plot 2 as well, so Brood Pools there work. |
 | `src/server/PickupSpawner.lua` | Glow Buoy deposit prompts are attached on both plots. |

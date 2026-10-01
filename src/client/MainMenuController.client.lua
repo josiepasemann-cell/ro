@@ -30,7 +30,7 @@
 
 		Eingabe:
 			- Tastatur/Maus: Kürzel B Build · Z Shop · Q Quests · T Travel ·
-			  H More · U Brood Pool · M Mystery Egg · N Abducted · I Guardians · L Leaderboard
+			  H More · U Brood Pool · M Mystery Egg · N Abducted · L Leaderboard
 			  · C Codex · K Achievements · J Event · Y Settings. Das Kürzel
 			  erscheint als Tasten-Chip am Button, solange zuletzt Tastatur/Maus
 			  benutzt wurde. Dasselbe Kürzel nochmal schließt das Panel wieder.
@@ -108,10 +108,10 @@ local openTravelEvent = getOrCreateBridgeEvent("OpenTravel")
 local openCodexEvent = getOrCreateBridgeEvent("OpenCodex")
 local openEventEvent = getOrCreateBridgeEvent("OpenEvent")
 local openAchievementsEvent = getOrCreateBridgeEvent("OpenAchievements")
-local questBadgeCountEvent = getOrCreateBridgeEvent("QuestBadgeCountChanged")
 local openTradeEvent = getOrCreateBridgeEvent("OpenTrade")
 local openClusterEvent = getOrCreateBridgeEvent("OpenCluster")
 local openPrestigeEvent = getOrCreateBridgeEvent("OpenPrestige")
+local questBadgeCountEvent = getOrCreateBridgeEvent("QuestBadgeCountChanged")
 local achievementBadgeCountEvent = getOrCreateBridgeEvent("AchievementBadgeCountChanged")
 
 -- // Root-ScreenGui --------------------------------------------------------------
@@ -548,15 +548,15 @@ local drawerEntries: { MenuEntry } = {
 	{ Id = "BroodPool", Icon = "🥚", Text = "Brood Pool", IsPanel = true, Key = Enum.KeyCode.U, OnClick = function() openBreedingOverviewEvent:Fire() end },
 	{ Id = "MysteryEgg", Icon = "🎁", Text = "Mystery Egg", IsPanel = true, Key = Enum.KeyCode.M, OnClick = function() openMysteryEggEvent:Fire() end },
 	{ Id = "Abducted", Icon = "🆘", Text = "Abducted", IsPanel = true, Key = Enum.KeyCode.N, OnClick = function() openAbductedCreaturesEvent:Fire() end },
-	{ Id = "Guardians", Icon = "🛡️", Text = "Guardians", IsPanel = true, Key = Enum.KeyCode.I, OnClick = function() openGuardiansEvent:Fire() end },
+	{ Id = "Guardians", Icon = "🛡️", Text = "Guardians", IsPanel = true, OnClick = function() openGuardiansEvent:Fire() end },
 	{ Id = "Leaderboard", Icon = "🏆", Text = "Leaderboard", IsPanel = true, Key = Enum.KeyCode.L, OnClick = function() openLeaderboardEvent:Fire() end },
 	{ Id = "Codex", Icon = "📖", Text = "Codex", IsPanel = true, Key = Enum.KeyCode.C, OnClick = function() openCodexEvent:Fire() end },
 	{ Id = "Achievements", Icon = "🏅", Text = "Achievements", IsPanel = true, Key = Enum.KeyCode.K, BadgeKey = "Achievement", OnClick = function() openAchievementsEvent:Fire() end },
+	{ Id = "Prestige", Icon = "🌅", Text = "Resurface", IsPanel = true, OnClick = function() openPrestigeEvent:Fire() end }, -- no hotkey on purpose (destructive)
 	{ Id = "Event", Icon = "🌊", Text = "Event", IsPanel = true, Key = Enum.KeyCode.J, OnClick = function() openEventEvent:Fire() end },
-	{ Id = "Settings", Icon = "⚙️", Text = "Settings", IsPanel = true, Key = Enum.KeyCode.Y, OnClick = function()
 	{ Id = "Trade", Icon = "🤝", Text = "Trade", IsPanel = true, OnClick = function() openTradeEvent:Fire() end },
 	{ Id = "Cluster", Icon = "🪸", Text = "Cluster", IsPanel = true, OnClick = function() openClusterEvent:Fire() end },
-	{ Id = "Prestige", Icon = "🌅", Text = "Resurface", IsPanel = true, OnClick = function() openPrestigeEvent:Fire() end }, -- no hotkey on purpose (destructive)
+	{ Id = "Settings", Icon = "⚙️", Text = "Settings", IsPanel = true, Key = Enum.KeyCode.Y, OnClick = function()
 		buildSettingsPanel()
 		settingsPanel:Open()
 	end },
