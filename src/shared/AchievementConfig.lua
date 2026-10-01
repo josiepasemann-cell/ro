@@ -379,9 +379,6 @@ AchievementConfig.LIST = {
 		BadgeId = 0, -- Recommended: create a badge, see docs/achievements.md
 	},
 
-	-- // Live Events -----------------------------------------------------------
-	{
-		Id = "Events_TideRider",
 	{
 		Id = "Levels_Resurface",
 		Category = "Levels",
@@ -407,6 +404,9 @@ AchievementConfig.LIST = {
 		BadgeId = 0,
 	},
 
+	-- // Live Events -----------------------------------------------------------
+	{
+		Id = "Events_TideRider",
 		Category = "Events",
 		Icon = "🌊",
 		Name = "Tide Rider",

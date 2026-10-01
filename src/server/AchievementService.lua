@@ -410,10 +410,6 @@ GameEvents.Connect(GameEvents.Events.SporeDelivered, function(player: Player, pa
 	evaluateAll(player)
 end)
 
--- CoinsEarned fires on almost every rewarding action in the game (quests,
--- daily login, raids, spores, ...) - used here as a broad, cheap re-check
--- tick for Snapshot achievements (Level/Collection/Events) that have no
--- single dedicated GameEvents source of their own.
 -- Prestige ("Resurface", see PrestigeService): counts every resurface for the
 -- "Levels_Resurface*" achievements.
 GameEvents.Connect(GameEvents.Events.Resurfaced, function(player: Player, _payload: { [string]: any })
@@ -424,6 +420,10 @@ GameEvents.Connect(GameEvents.Events.Resurfaced, function(player: Player, _paylo
 	evaluateAll(player)
 end)
 
+-- CoinsEarned fires on almost every rewarding action in the game (quests,
+-- daily login, raids, spores, ...) - used here as a broad, cheap re-check
+-- tick for Snapshot achievements (Level/Collection/Events) that have no
+-- single dedicated GameEvents source of their own.
 GameEvents.Connect(GameEvents.Events.CoinsEarned, function(player: Player, _payload: { [string]: any })
 	if not PlayerDataService.IsDataLoaded(player) then
 		return
