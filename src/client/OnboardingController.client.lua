@@ -37,6 +37,15 @@
 		HARTE UIKit-REGEL (docs/ui-kit.md): jeder Button ausschließlich über
 		UIKit.Button.new(...).
 
+		GERÄTE-ANPASSUNG: Maske/Ring/Pfeil liegen UNSKALIERT direkt im
+		ScreenGui (IgnoreGuiInset = true, absolute Pixel passend zu den
+		AbsolutePosition-Werten der Ziele); nur das Erklär-Kärtchen hängt an
+		einem Device.CreateScaledRoot. Das Ziel wird nur gewählt, wenn es
+		wirklich sichtbar ist - Einträge in der "More"-Schublade fallen auf den
+		"More"-Button zurück. Gamepad: Fokus startet auf "Next" und bleibt im
+		Kärtchen. Der Ring fängt Klicks auf das Ziel ab, die Maske den Rest,
+		damit während des Tutorials nichts darunter bedient wird.
+
 	Rojo-Einhängepunkt:
 		src/client/OnboardingController.client.lua ->
 		StarterPlayer.StarterPlayerScripts.OnboardingController
@@ -45,12 +54,14 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local GuiService = game:GetService("GuiService")
 
 local HUDRemotes = require(ReplicatedStorage:WaitForChild("HUDRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
 local Device = UIKit.Device
+local InputMode = UIKit.InputMode
 local Button = UIKit.Button
 local Settings = UIKit.Settings
 local ScreenFX = UIKit.ScreenFX
@@ -99,11 +110,34 @@ end
 -- PlayerGui - keine Änderung an MainMenuController nötig, funktioniert
 -- unabhängig von der Button-Reihenfolge/Position in der Leiste.)
 
+-- Ein Ziel zählt nur, wenn es tatsächlich sichtbar ist (ScreenGui aktiv und
+-- alle Eltern-Frames sichtbar) - sonst würde z. B. der versteckte "Build"-
+-- Button der Baumodus-Leiste oder ein Eintrag in der geschlossenen
+-- "More"-Schublade angezeigt.
+local function isActuallyVisible(gui: GuiObject): boolean
+	local current: Instance? = gui
+	while current and current ~= playerGui do
+		if current:IsA("GuiObject") and not current.Visible then
+			return false
+		end
+		if current:IsA("ScreenGui") and not current.Enabled then
+			return false
+		end
+		current = current.Parent
+	end
+	return gui.AbsoluteSize.X > 0
+end
+
 local function findButtonByLabelText(keyword: string): GuiObject?
 	for _, descendant in ipairs(playerGui:GetDescendants()) do
 		if descendant.Name == "UIKitButton" and descendant:IsA("TextButton") then
 			local label = descendant:FindFirstChild("Label")
-			if label and label:IsA("TextLabel") and string.find(label.Text, keyword, 1, true) then
+			if
+				label
+				and label:IsA("TextLabel")
+				and string.find(label.Text, keyword, 1, true)
+				and isActuallyVisible(descendant)
+			then
 				return descendant
 			end
 		end
@@ -121,6 +155,9 @@ local maskRight: Frame? = nil
 local ring: Frame? = nil
 local ringStroke: UIStroke? = nil
 local arrow: TextLabel? = nil
+local cardRoot: Frame? = nil
+local unbindCardScale: (() -> ())? = nil
+local selectionGuard: RBXScriptConnection? = nil
 local card: Frame? = nil
 local cardTitle: TextLabel? = nil
 local cardBody: TextLabel? = nil
@@ -152,6 +189,7 @@ local function ensureOverlay()
 		mask.BackgroundTransparency = 0.5
 		mask.BorderSizePixel = 0
 		mask.ZIndex = 1
+		mask.Active = true -- schluckt Klicks auf alles außerhalb des Ziels
 		mask.Parent = gui
 		return mask
 	end
@@ -164,6 +202,7 @@ local function ensureOverlay()
 	ringFrame.Name = "Ring"
 	ringFrame.BackgroundTransparency = 1
 	ringFrame.ZIndex = 3
+	ringFrame.Active = true -- schluckt Klicks auf das Ziel selbst
 	ringFrame.Visible = false
 	Theme.ApplyCorner(ringFrame, UDim.new(0, 16))
 	local stroke = Theme.ApplyStroke(ringFrame, Theme.Neon.Yellow, 3)
@@ -192,6 +231,11 @@ local function ensureOverlay()
 	arrow = arrowLabel
 
 	-- // Erklär-Kärtchen ----------------------------------------------------------
+	local scaledCardRoot, unbindScale = Device.CreateScaledRoot(gui)
+	scaledCardRoot.ZIndex = 4
+	cardRoot = scaledCardRoot
+	unbindCardScale = unbindScale
+
 	local cardFrame = Instance.new("Frame")
 	cardFrame.Name = "Card"
 	cardFrame.BackgroundColor3 = Theme.Background.Panel
@@ -204,12 +248,8 @@ local function ensureOverlay()
 	local cardStroke = Theme.ApplyStroke(cardFrame, Theme.Neon.Cyan, 2)
 	cardStroke.Transparency = 0.15
 	Theme.ApplyGradient(cardFrame, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
-	cardFrame.Parent = gui
+	cardFrame.Parent = scaledCardRoot
 	card = cardFrame
-
-	local uiScale = Instance.new("UIScale")
-	uiScale.Parent = gui
-	Device.BindUIScale(uiScale)
 
 	local padding = Instance.new("UIPadding")
 	padding.PaddingTop = UDim.new(0, 18)
@@ -248,7 +288,7 @@ local function ensureOverlay()
 	body.ZIndex = 4
 	body.Parent = cardFrame
 	local bodyConstraint = Instance.new("UITextSizeConstraint")
-	bodyConstraint.MinTextSize = 13
+	bodyConstraint.MinTextSize = 14
 	bodyConstraint.MaxTextSize = 18
 	bodyConstraint.Parent = body
 	cardBody = body
@@ -427,7 +467,7 @@ local function positionCard(target: GuiObject?)
 	if not card then
 		return
 	end
-	local cardWidth = if Device.IsPhone() then 320 else 420
+	local cardWidth = math.min(420, Device.GetVirtualViewport().X - 32)
 	card.Size = UDim2.new(0, cardWidth, 0, 0)
 	if not target then
 		card.Position = UDim2.fromScale(0.5, 0.5)
@@ -473,13 +513,13 @@ local STEPS: { Step } = {
 	},
 	{
 		Title = "Collect Glow Spores! ✨",
-		Body = "Look around your plot: Glow Spores are glowing there! Walk up, press the Pick Up button, then carry the spore to your Glow Buoy Station and press Deposit to earn Tide Coins.",
+		Body = "Look around your plot: Glow Spores are glowing there! Walk up to a spore and use the Pick Up prompt (press E, press X on a controller, or tap it). Then carry it to your Glow Buoy Station and use Deposit to earn Tide Coins.",
 	},
 	{
 		Title = "Brood Pool & Mystery Eggs 🥚",
-		Body = "Here you can see your Brood Pool and hatch cute new creatures from Mystery Eggs!",
+		Body = "Open the More menu to find your Brood Pool and the Mystery Egg. Hatch cute new creatures there!",
 		FindTarget = function()
-			return findButtonByLabelText("Brood Pool")
+			return findButtonByLabelText("Brood Pool") or findButtonByLabelText("More")
 		end,
 	},
 	{
@@ -506,6 +546,18 @@ local function teardown()
 		connection:Disconnect()
 	end
 	table.clear(stepConnections)
+	if selectionGuard then
+		selectionGuard:Disconnect()
+		selectionGuard = nil
+	end
+	if unbindCardScale then
+		unbindCardScale()
+		unbindCardScale = nil
+	end
+	local selected = GuiService.SelectedObject
+	if overlayGui and selected and selected:IsDescendantOf(overlayGui) then
+		GuiService.SelectedObject = nil
+	end
 	if overlayGui then
 		overlayGui:Destroy()
 		overlayGui = nil
@@ -541,6 +593,9 @@ local function showStep(index: number)
 	cardBody.Text = step.Body
 	refreshDots()
 	nextButton:SetText(if index == #STEPS then "Let's go!" else "Next")
+	if InputMode.IsGamepad() and nextButton.Instance then
+		GuiService.SelectedObject = nextButton.Instance
+	end
 
 	stopTracking()
 	local target = step.FindTarget and step.FindTarget() or nil
@@ -590,6 +645,25 @@ local function runOnboarding()
 		stepConnections,
 		Device.Changed:Connect(function()
 			showStep(currentStepIndex)
+		end)
+	)
+	-- Gamepad: Fokus im Kärtchen halten (kein Wegnavigieren in die Menüleiste dahinter).
+	selectionGuard = GuiService:GetPropertyChangedSignal("SelectedObject"):Connect(function()
+		local selected = GuiService.SelectedObject
+		if overlayGui and card and selected and not selected:IsDescendantOf(card) and nextButton then
+			task.defer(function()
+				if overlayGui then
+					GuiService.SelectedObject = nextButton.Instance
+				end
+			end)
+		end
+	end)
+	table.insert(
+		stepConnections,
+		InputMode.Changed:Connect(function(mode)
+			if mode == "Gamepad" and nextButton and overlayGui then
+				GuiService.SelectedObject = nextButton.Instance
+			end
 		end)
 	)
 	showStep(1)

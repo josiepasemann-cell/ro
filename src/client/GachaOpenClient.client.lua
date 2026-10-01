@@ -149,9 +149,11 @@ local function ensureClickDetector(eggModel: Model)
 	prompt.Name = "OpenEggPrompt"
 	prompt.ActionText = "Open Egg"
 	prompt.ObjectText = "Mystery Egg"
-	prompt.HoldDuration = 0.3
+	prompt.HoldDuration = 0.3 -- kurz genug für Touch, lang genug gegen Versehen
 	prompt.MaxActivationDistance = 12
 	prompt.RequiresLineOfSight = false
+	prompt.KeyboardKeyCode = Enum.KeyCode.E
+	prompt.GamepadKeyCode = Enum.KeyCode.ButtonX
 	prompt.Parent = shell
 	prompt.Triggered:Connect(function(triggeringPlayer)
 		if triggeringPlayer ~= localPlayer then

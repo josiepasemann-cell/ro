@@ -15,8 +15,8 @@
 			  "ToggleBuildMode") statt permanent aktiv zu sein.
 			- Eine über UIKit.Button gebaute Gebäudeauswahl-Leiste
 			  (Karten: Name, Kosten, Level-Sperre sichtbar) plus große
-			  Drehen-/Bauen-/Abbrechen-/Verkaufen-Buttons, alle über
-			  UIKit.Layout.ResponsiveRow (Phone: Spalte, sonst Reihe).
+			  Drehen-/Bauen-/Upgrade-/Verkaufen-/Fertig-Buttons (siehe
+			  GERÄTE-LAYOUT unten).
 			- PC (echte Tastatur vorhanden): Tasten 1-4/R/Enter/Backspace/
 			  Escape funktionieren ZUSÄTZLICH weiter, plus kontinuierliche
 			  Maus-Zielhilfe (Vorschau folgt dem Mauszeiger).
@@ -25,10 +25,22 @@
 			  kontinuierliches "Hover" auf Touch-Geräten, siehe UIKit-Doku
 			  "Responsivität"-Regel 5) - Bestätigung weiterhin nur über die
 			  großen Buttons.
-			- Konsole/Gamepad: die Buttons sind über UIKit.Button nativ
-			  Gamepad-navigierbar; zusätzlich zyklen die Schultertasten
-			  (L1/R1) durch die Baufelder und die Steuerkreuz-Tasten
-			  links/rechts durch die Gebäudeauswahl.
+			- Konsole/Gamepad: OHNE UI-Fokus bedienbar (die Spielfigur bleibt
+			  steuerbar): L1/R1 wechseln das Baufeld (Feld-Cursor), D-Pad
+			  links/rechts das Gebäude, X baut, Y dreht, B beendet den
+			  Baumodus (ContextActionService, nur solange der Baumodus aktiv
+			  ist). Die Buttons bleiben zusätzlich per Fokus (Y-Menü) erreichbar.
+			  Die Maus-Zielhilfe läuft NUR im Tastatur/Maus-Modus, sonst würde
+			  sie den Gamepad-/Touch-Cursor jeden Frame überschreiben.
+
+			GERÄTE-LAYOUT der Baumodus-Leiste: eine Info-Zeile, eine horizontal
+			scrollbare Reihe Gebäudekarten, EINE Reihe mit 5 Aktions-Buttons
+			(Icon + kurzes Wort, 2 Zeilen). Desktop: 620 px breit, über der
+			Menüleiste. Touch hochkant: volle Breite, ÜBER der Daumenstick-/
+			Sprungknopf-Zone. Touch quer: zwischen den Zonen (schmaler).
+			Tasten-Chips (1-4, R, Enter, X, Esc bzw. Y/X/B) an den Buttons folgen
+			der zuletzt benutzten Eingabe. Touch-Tipps auf den Boden nutzen
+			ScreenPointToRay (berücksichtigt den Topbar-Inset).
 
 		WICHTIG: Dies ist AUSSCHLIESSLICH visuelles Feedback/Komfort. Die
 		Gültigkeitsprüfung hier ist bewusst grob (nur Baufeld-Belegung
@@ -50,6 +62,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
 local Workspace = game:GetService("Workspace")
 
 local BuildingConfig = require(ReplicatedStorage:WaitForChild("BuildingConfig"))
@@ -61,7 +74,7 @@ local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = UIKit.Theme
 local Device = UIKit.Device
-local Layout = UIKit.Layout
+local InputMode = UIKit.InputMode
 local Button = UIKit.Button
 local Toast = UIKit.Toast
 local Panel = UIKit.Panel
@@ -225,8 +238,13 @@ local function isFieldLocallyOccupied(fieldIndex: number): boolean
 	return false
 end
 
-local function nearestFieldToScreenPoint(screenPoint: Vector2): FieldInfo?
-	local viewportRay = camera:ViewportPointToRay(screenPoint.X, screenPoint.Y)
+-- `isInputPosition` = true für InputObject.Position (Touch): diese Koordinaten
+-- liegen UNTER der Topbar (ohne GuiInset) und brauchen ScreenPointToRay.
+-- UserInputService:GetMouseLocation() ist dagegen ein Viewport-Punkt.
+local function nearestFieldToScreenPoint(screenPoint: Vector2, isInputPosition: boolean?): FieldInfo?
+	local viewportRay = if isInputPosition
+		then camera:ScreenPointToRay(screenPoint.X, screenPoint.Y)
+		else camera:ViewportPointToRay(screenPoint.X, screenPoint.Y)
 
 	-- Schnittpunkt mit der (horizontalen) Plot-Ebene auf Höhe der
 	-- Baufelder berechnen, statt teuer gegen die gesamte Welt zu raycasten
@@ -266,9 +284,11 @@ Device.ApplySafeArea(screenGui)
 screenGui.Enabled = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local uiScale = Instance.new("UIScale")
-uiScale.Parent = screenGui
-local unbindScale = Device.BindUIScale(uiScale)
+local scaledRoot, unbindScale = Device.CreateScaledRoot(screenGui)
+
+local BAR_HEIGHT = 168
+local CARD_ROW_HEIGHT = 60
+local ACTION_ROW_HEIGHT = 56
 
 local buildBar = Instance.new("Frame")
 buildBar.Name = "BuildBar"
@@ -276,19 +296,29 @@ buildBar.AnchorPoint = Vector2.new(0.5, 1)
 buildBar.BackgroundColor3 = Theme.Background.Panel
 buildBar.BackgroundTransparency = 0.06
 buildBar.BorderSizePixel = 0
-buildBar.Parent = screenGui
+buildBar.Active = true -- Tippen auf die Leiste soll kein Baufeld im Boden wählen
+buildBar.Parent = scaledRoot
 Theme.ApplyCorner(buildBar, UDim.new(0, 18))
 local buildBarStroke = Theme.ApplyStroke(buildBar, Theme.Neon.ToxicGreen, 2)
 buildBarStroke.Transparency = 0.3
 Theme.ApplyGradient(buildBar, { Theme.Background.Panel, Theme.Background.Deepest }, 90)
 
+local cardActionButtons: { any } = {}
+local actionButtonList: { any } = {}
+
 local function applyBuildBarLayout()
-	if Device.ShouldUseFullscreenPanels() then
-		buildBar.Position = UDim2.new(0.5, 0, 1, -100) -- über der MainMenuBar (siehe MainMenuController)
-		buildBar.Size = UDim2.new(1, -16, 0, 300) -- +60px ggü. vorher: Platz für die 5. Aktions-Zeile (Upgrade-Button)
+	local viewport = Device.GetVirtualViewport()
+	if Device.IsTouchPrimary() then
+		local sideInset, bottomInset = Device.GetBottomDockInsets()
+		-- Hochformat: volle Breite ÜBER der Stick-/Sprungknopf-Zone.
+		-- Querformat: zwischen den Zonen (mind. 320 px, damit 5 Buttons passen).
+		local width = math.max(320, math.min(620, viewport.X - sideInset * 2 - 16))
+		buildBar.Size = UDim2.fromOffset(width, BAR_HEIGHT)
+		buildBar.Position = UDim2.new(0.5, 0, 1, -(bottomInset + 8))
 	else
-		buildBar.Position = UDim2.new(0.5, 0, 1, -100)
-		buildBar.Size = UDim2.fromOffset(620, 260) -- +60px ggü. vorher, siehe oben
+		-- Über der unten mittigen Menüleiste (76 px + 18 px Rand + Lücke).
+		buildBar.Size = UDim2.fromOffset(620, BAR_HEIGHT)
+		buildBar.Position = UDim2.new(0.5, 0, 1, -104)
 	end
 end
 applyBuildBarLayout()
@@ -297,8 +327,8 @@ local buildBarDeviceConnection = Device.Changed:Connect(applyBuildBarLayout)
 local infoLabel = Instance.new("TextLabel")
 infoLabel.Name = "InfoLabel"
 infoLabel.BackgroundTransparency = 1
-infoLabel.Position = UDim2.fromOffset(12, 8)
-infoLabel.Size = UDim2.new(1, -24, 0, 26)
+infoLabel.Position = UDim2.fromOffset(12, 6)
+infoLabel.Size = UDim2.new(1, -24, 0, 24)
 infoLabel.Font = Theme.Font.Body
 infoLabel.TextColor3 = Theme.Text.Secondary
 infoLabel.TextWrapped = true
@@ -307,25 +337,59 @@ infoLabel.TextXAlignment = Enum.TextXAlignment.Left
 infoLabel.Text = ""
 infoLabel.Parent = buildBar
 local infoConstraint = Instance.new("UITextSizeConstraint")
-infoConstraint.MinTextSize = 11
+infoConstraint.MinTextSize = 12
 infoConstraint.MaxTextSize = 15
 infoConstraint.Parent = infoLabel
 
--- // Gebäudeauswahl-Karten ------------------------------------------------------
+-- Kleiner Helfer: Tasten-Chip links oben an einem Button (nur im passenden Eingabemodus sichtbar).
+local function attachHint(handle: any, keyboard: string?, gamepad: Enum.KeyCode?)
+	local hint = InputMode.CreateHint({
+		Parent = handle.Instance,
+		Keyboard = keyboard,
+		Gamepad = gamepad,
+		Position = UDim2.fromOffset(-3, -10),
+		ZIndex = 20,
+	})
+	table.insert(cardActionButtons, hint)
+end
 
-local cardRowHost = Instance.new("Frame")
-cardRowHost.Name = "CardRowHost"
-cardRowHost.BackgroundTransparency = 1
-cardRowHost.Position = UDim2.fromOffset(0, 40)
-cardRowHost.Size = UDim2.new(1, 0, 0, 68)
-cardRowHost.Parent = buildBar
+-- Kleinere Beschriftung (Icon + Wort, 2 Zeilen), damit 5 Buttons in 320 px passen.
+local function styleCompactLabel(handle: any)
+	local label = handle.Instance:FindFirstChild("Label") :: TextLabel?
+	if not label then
+		return
+	end
+	label.TextWrapped = true
+	label.Position = UDim2.fromOffset(2, 2)
+	label.Size = UDim2.new(1, -4, 1, -4)
+	local constraint = label:FindFirstChildOfClass("UITextSizeConstraint")
+	if constraint then
+		constraint.MinTextSize = 12
+		constraint.MaxTextSize = 15
+	end
+end
 
-local cardRow = Layout.ResponsiveRow({
-	Parent = cardRowHost,
-	Padding = 8,
-	HorizontalAlignment = Enum.HorizontalAlignment.Center,
-})
-cardRow.Frame.Size = UDim2.fromScale(1, 1)
+-- // Gebäudeauswahl-Karten (horizontal scrollbar) ------------------------------------
+
+local cardScroller = Instance.new("ScrollingFrame")
+cardScroller.Name = "CardScroller"
+cardScroller.BackgroundTransparency = 1
+cardScroller.BorderSizePixel = 0
+cardScroller.Position = UDim2.fromOffset(10, 36)
+cardScroller.Size = UDim2.new(1, -20, 0, CARD_ROW_HEIGHT + 8)
+cardScroller.CanvasSize = UDim2.new()
+cardScroller.AutomaticCanvasSize = Enum.AutomaticSize.X
+cardScroller.ScrollingDirection = Enum.ScrollingDirection.X
+cardScroller.ScrollBarThickness = 0
+cardScroller.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
+cardScroller.Parent = buildBar
+
+local cardList = Instance.new("UIListLayout")
+cardList.FillDirection = Enum.FillDirection.Horizontal
+cardList.SortOrder = Enum.SortOrder.LayoutOrder
+cardList.Padding = UDim.new(0, 8)
+cardList.VerticalAlignment = Enum.VerticalAlignment.Bottom
+cardList.Parent = cardScroller
 
 local cardHandles: { any } = {}
 
@@ -346,35 +410,39 @@ end
 for index, buildingId in ipairs(BuildingConfig.ORDER) do
 	local definition = BuildingConfig.Get(buildingId)
 	local card = Button.new({
-		Parent = cardRow.Frame,
+		Parent = cardScroller,
 		Text = definition and definition.DisplayName or buildingId,
 		Variant = "Ghost",
-		Size = UDim2.fromOffset(120, 64),
+		Size = UDim2.fromOffset(124, CARD_ROW_HEIGHT),
 		LayoutOrder = index,
 	})
+	styleCompactLabel(card)
 	card.Clicked:Connect(function()
 		selectedOrderIndex = index
 		rotationY = 0
 		refreshBuildingCards()
 	end)
 	cardHandles[index] = card
+	if index <= 4 then
+		attachHint(card, tostring(index), nil)
+	end
 end
 
--- // Aktions-Buttons (Drehen/Bauen/Abbrechen/Verkaufen) --------------------------
+-- // Aktions-Buttons (Drehen/Bauen/Upgrade/Verkaufen/Fertig) ----------------------------
 
-local actionRowHost = Instance.new("Frame")
-actionRowHost.Name = "ActionRowHost"
-actionRowHost.BackgroundTransparency = 1
-actionRowHost.Position = UDim2.fromOffset(0, 116)
-actionRowHost.Size = UDim2.new(1, 0, 0, 172) -- +56px ggü. vorher: Platz für 5 statt 4 Aktions-Buttons (Upgrade ergänzt)
-actionRowHost.Parent = buildBar
+local actionRow = Instance.new("Frame")
+actionRow.Name = "ActionRow"
+actionRow.BackgroundTransparency = 1
+actionRow.Position = UDim2.new(0, 10, 1, -(ACTION_ROW_HEIGHT + 10))
+actionRow.Size = UDim2.new(1, -20, 0, ACTION_ROW_HEIGHT)
+actionRow.Parent = buildBar
 
-local actionRow = Layout.ResponsiveRow({
-	Parent = actionRowHost,
-	Padding = 8,
-	HorizontalAlignment = Enum.HorizontalAlignment.Center,
-})
-actionRow.Frame.Size = UDim2.fromScale(1, 1)
+local actionList = Instance.new("UIListLayout")
+actionList.FillDirection = Enum.FillDirection.Horizontal
+actionList.SortOrder = Enum.SortOrder.LayoutOrder
+actionList.Padding = UDim.new(0, 6)
+actionList.VerticalAlignment = Enum.VerticalAlignment.Center
+actionList.Parent = actionRow
 
 local function confirmPlacement()
 	if not targetField then
@@ -427,67 +495,105 @@ local function rotatePreview()
 	rotationY = (rotationY + 90) % 360
 end
 
+local unbindBuildActions: () -> ()
+
 local function exitBuildMode()
 	buildModeActive = false
 	screenGui.Enabled = false
 	destroyPreview()
+	unbindBuildActions()
 end
 
-local rotateButton = Button.new({
-	Parent = actionRow.Frame,
-	Text = "↻ Rotate",
-	Variant = "Secondary",
-	Size = UDim2.new(0.48, 0, 0, 52),
-	LayoutOrder = 1,
-})
+local function makeActionButton(text: string, variant: string, order: number, important: boolean?): any
+	local handle = Button.new({
+		Parent = actionRow,
+		Text = text,
+		Variant = variant :: any,
+		Important = important,
+		Size = UDim2.new(0.2, -5, 1, 0),
+		LayoutOrder = order,
+	})
+	styleCompactLabel(handle)
+	table.insert(actionButtonList, handle)
+	return handle
+end
+
+local rotateButton = makeActionButton("↻\nRotate", "Secondary", 1)
 rotateButton.Clicked:Connect(rotatePreview)
+attachHint(rotateButton, "R", Enum.KeyCode.ButtonY)
 
-local buildButton = Button.new({
-	Parent = actionRow.Frame,
-	Text = "✓ Build",
-	Variant = "Success",
-	Important = true,
-	Size = UDim2.new(0.48, 0, 0, 52),
-	LayoutOrder = 2,
-})
+local buildButton = makeActionButton("✓\nBuild", "Success", 2, true)
 buildButton.Clicked:Connect(confirmPlacement)
+attachHint(buildButton, "Enter", Enum.KeyCode.ButtonX)
 
-local sellButton = Button.new({
-	Parent = actionRow.Frame,
-	Text = "🗑 Sell",
-	Variant = "Danger",
-	Size = UDim2.new(0.48, 0, 0, 52),
-	LayoutOrder = 3,
-})
-sellButton.Clicked:Connect(confirmSell)
-
-local cancelButton = Button.new({
-	Parent = actionRow.Frame,
-	Text = "✕ Done",
-	Variant = "Ghost",
-	Size = UDim2.new(0.48, 0, 0, 52),
-	LayoutOrder = 4,
-})
-cancelButton.Clicked:Connect(exitBuildMode)
-
-local buildModeUpgradeButton = Button.new({
-	Parent = actionRow.Frame,
-	Text = "⬆ Upgrade",
-	Variant = "Primary",
-	Size = UDim2.new(0.48, 0, 0, 52),
-	LayoutOrder = 5,
-})
+local buildModeUpgradeButton = makeActionButton("⬆\nUpgrade", "Primary", 3)
 buildModeUpgradeButton.Clicked:Connect(confirmUpgrade)
+
+local sellButton = makeActionButton("🗑\nSell", "Danger", 4)
+sellButton.Clicked:Connect(confirmSell)
+attachHint(sellButton, "X", nil)
+
+local cancelButton = makeActionButton("✕\nDone", "Ghost", 5)
+cancelButton.Clicked:Connect(exitBuildMode)
+attachHint(cancelButton, "Esc", Enum.KeyCode.ButtonB)
 
 -- // Baumodus umschalten (über MainMenuController-Bridge) ------------------------
 
 local FAR_FROM_PLOT_STUDS = 90
+
+-- Gamepad-Aktionen NUR solange der Baumodus aktiv ist (Priorität knapp unter
+-- Panels/Menü-Zurück, damit B dort zuerst das offene Panel schließt):
+-- X = Bauen, Y = Drehen, B = Baumodus beenden.
+local BUILD_ACTION_NAME = "AbyssaraBuildMode"
+local buildActionsBound = false
+
+local function onBuildAction(_actionName: string, inputState: Enum.UserInputState, inputObject: InputObject): Enum.ContextActionResult
+	if inputState ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Sink
+	end
+	if not buildModeActive then
+		return Enum.ContextActionResult.Pass
+	end
+	if inputObject.KeyCode == Enum.KeyCode.ButtonX then
+		confirmPlacement()
+	elseif inputObject.KeyCode == Enum.KeyCode.ButtonY then
+		rotatePreview()
+	elseif inputObject.KeyCode == Enum.KeyCode.ButtonB then
+		exitBuildMode()
+	end
+	return Enum.ContextActionResult.Sink
+end
+
+local function bindBuildActions()
+	if buildActionsBound then
+		return
+	end
+	buildActionsBound = true
+	ContextActionService:BindActionAtPriority(
+		BUILD_ACTION_NAME,
+		onBuildAction,
+		false,
+		Enum.ContextActionPriority.High.Value - 2,
+		Enum.KeyCode.ButtonX,
+		Enum.KeyCode.ButtonY,
+		Enum.KeyCode.ButtonB
+	)
+end
+
+unbindBuildActions = function()
+	if not buildActionsBound then
+		return
+	end
+	buildActionsBound = false
+	ContextActionService:UnbindAction(BUILD_ACTION_NAME)
+end
 
 local function enterBuildMode()
 	buildModeActive = true
 	previewVisible = true
 	screenGui.Enabled = true
 	refreshBuildingCards()
+	bindBuildActions()
 
 	-- Touch/Gamepad haben keinen Mauszeiger: gleich das erste freie Baufeld
 	-- vorwaehlen, damit "Build" sofort etwas tut (statt "no build field
@@ -531,12 +637,15 @@ local inputBeganConnection = UserInputService.InputBegan:Connect(function(input,
 		return
 	end
 
-	-- Touch: Tippen auf den Boden setzt die Vorschau ans nächste Baufeld.
-	if input.UserInputType == Enum.UserInputType.Touch and not gameProcessed and Device.IsTouch() then
-		local point = Vector2.new(input.Position.X, input.Position.Y)
-		local field = nearestFieldToScreenPoint(point)
-		if field then
-			targetField = field
+	-- Touch: Tippen auf den Boden setzt die Vorschau ans nächste Baufeld
+	-- (nicht, wenn das Tippen von der UI geschluckt wurde).
+	if input.UserInputType == Enum.UserInputType.Touch then
+		if not gameProcessed then
+			local point = Vector2.new(input.Position.X, input.Position.Y)
+			local field = nearestFieldToScreenPoint(point, true)
+			if field then
+				targetField = field
+			end
 		end
 		return
 	end
@@ -603,7 +712,9 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 
 	if not previewVisible then
 		destroyPreview()
-		infoLabel.Text = "Preview hidden (press Esc again to leave build mode)."
+		infoLabel.Text = ("Preview hidden (press %s again to leave build mode)."):format(
+			InputMode.Pick("Esc", "B", "Done")
+		)
 		return
 	end
 
@@ -611,12 +722,15 @@ local renderConnection = RunService.RenderStepped:Connect(function()
 	local definition = BuildingConfig.Get(buildingId)
 	local preview = ensurePreview(buildingId)
 
-	-- Kontinuierliche Maus-Zielhilfe nur auf Geräten mit echter Maus (kein
-	-- Touch) - auf Touch-Geräten bestimmt ausschließlich ein expliziter Tap
-	-- das Zielfeld (siehe InputBegan oben), siehe UIKit-Doku "Gleiches
-	-- Feedback, unterschiedlicher Auslöser".
-	if not Device.IsTouch() then
-		targetField = nearestFieldToScreenPoint(UserInputService:GetMouseLocation())
+	-- Kontinuierliche Maus-Zielhilfe NUR im Tastatur/Maus-Modus. Bei Touch
+	-- bestimmt ein expliziter Tap das Zielfeld (siehe InputBegan oben), bei
+	-- Gamepad L1/R1 - die Maus-Position würde diesen Cursor sonst jeden Frame
+	-- überschreiben (Konsole!).
+	if InputMode.IsKeyboardMouse() then
+		local hovered = nearestFieldToScreenPoint(UserInputService:GetMouseLocation())
+		if hovered then
+			targetField = hovered
+		end
 	end
 
 	if not preview or not definition then
@@ -690,7 +804,7 @@ upgradeInfoLabel.TextScaled = true
 upgradeInfoLabel.Text = ""
 upgradeInfoLabel.Parent = upgradePanel.Content
 local upgradeInfoConstraint = Instance.new("UITextSizeConstraint")
-upgradeInfoConstraint.MinTextSize = 13
+upgradeInfoConstraint.MinTextSize = 14
 upgradeInfoConstraint.MaxTextSize = 18
 upgradeInfoConstraint.Parent = upgradeInfoLabel
 
@@ -817,6 +931,23 @@ upgradePanel.Closed:Connect(function()
 	activeUpgradeBuildingId = nil
 end)
 
+-- ProximityPrompts fürs Upgrade-Panel: ein ClickDetector funktioniert mit
+-- Maus/Touch, aber NICHT mit dem Gamepad. Der Prompt ist deshalb nur im
+-- Gamepad-Modus aktiv (sonst würde er bei jedem Gebäude Bildschirmplatz
+-- belegen).
+local upgradePrompts: { ProximityPrompt } = {}
+
+InputMode.Changed:Connect(function(mode)
+	for index = #upgradePrompts, 1, -1 do
+		local prompt = upgradePrompts[index]
+		if prompt.Parent then
+			prompt.Enabled = mode == "Gamepad"
+		else
+			table.remove(upgradePrompts, index)
+		end
+	end
+end)
+
 local function ensureBuildingUpgradeClickDetector(model: Model)
 	if model:GetAttribute("BuildingId") == "BroodPool" then
 		return
@@ -825,6 +956,25 @@ local function ensureBuildingUpgradeClickDetector(model: Model)
 	if not primaryPart or primaryPart:FindFirstChildOfClass("ClickDetector") then
 		return
 	end
+
+	local upgradePrompt = Instance.new("ProximityPrompt")
+	upgradePrompt.Name = "UpgradePrompt"
+	upgradePrompt.ActionText = "Upgrade"
+	local definition = BuildingConfig.Get(model:GetAttribute("BuildingId") :: any)
+	upgradePrompt.ObjectText = if definition then definition.DisplayName else "Building"
+	upgradePrompt.HoldDuration = 0
+	upgradePrompt.MaxActivationDistance = 10
+	upgradePrompt.RequiresLineOfSight = false
+	upgradePrompt.KeyboardKeyCode = Enum.KeyCode.E
+	upgradePrompt.GamepadKeyCode = Enum.KeyCode.ButtonX
+	upgradePrompt.Enabled = InputMode.IsGamepad()
+	upgradePrompt.Parent = primaryPart
+	table.insert(upgradePrompts, upgradePrompt)
+	upgradePrompt.Triggered:Connect(function(triggeringPlayer: Player)
+		if triggeringPlayer == player then
+			openUpgradePanelFor(model)
+		end
+	end)
 
 	local clickDetector = Instance.new("ClickDetector")
 	clickDetector.MaxActivationDistance = UPGRADE_CLICK_MAX_DISTANCE
@@ -929,16 +1079,16 @@ Players.PlayerRemoving:Connect(function(leavingPlayer)
 	buildBarDeviceConnection:Disconnect()
 	buildingsUpgradeChildAddedConnection:Disconnect()
 	unbindScale()
-	cardRow:Destroy()
-	actionRow:Destroy()
+	unbindBuildActions()
+	for _, hint in cardActionButtons do
+		hint:Destroy()
+	end
 	for _, handle in cardHandles do
 		handle:Destroy()
 	end
-	rotateButton:Destroy()
-	buildButton:Destroy()
-	sellButton:Destroy()
-	cancelButton:Destroy()
-	buildModeUpgradeButton:Destroy()
+	for _, handle in actionButtonList do
+		handle:Destroy()
+	end
 	panelUpgradeButton:Destroy()
 	upgradePanel:Destroy()
 	screenGui:Destroy()

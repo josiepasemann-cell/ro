@@ -43,6 +43,7 @@ local HabitatRemotes = require(ReplicatedStorage:WaitForChild("HabitatRemotes"))
 local UIKit = require(ReplicatedStorage:WaitForChild("UIKit"))
 
 local Theme = require(ReplicatedStorage:WaitForChild("UIKit"):WaitForChild("Theme"))
+local InputMode = UIKit.InputMode
 local Panel = UIKit.Panel
 local Button = UIKit.Button
 local ProgressBar = UIKit.ProgressBar
@@ -203,7 +204,7 @@ upgradeInfoLabel.TextScaled = true
 upgradeInfoLabel.Text = ""
 upgradeInfoLabel.Parent = detailPanel.Content
 local upgradeInfoConstraint = Instance.new("UITextSizeConstraint")
-upgradeInfoConstraint.MinTextSize = 11
+upgradeInfoConstraint.MinTextSize = 12
 upgradeInfoConstraint.MaxTextSize = 15
 upgradeInfoConstraint.Parent = upgradeInfoLabel
 
@@ -461,7 +462,7 @@ local function rebuildOverview()
 			Parent = row,
 			Text = "Open",
 			Variant = "Primary",
-			Size = UDim2.fromOffset(90, 40),
+			Size = UDim2.fromOffset(90, 44),
 		})
 		openButton.Instance.AnchorPoint = Vector2.new(1, 0.5)
 		openButton.Instance.Position = UDim2.new(1, -8, 0.5, 0)
@@ -526,6 +527,31 @@ local function ensureBroodPoolInteraction(model: Model)
 				return
 			end
 			openPanelFor(placementId)
+		end)
+
+		-- Gamepad: ein ClickDetector ist mit dem Controller nicht auslösbar. Der
+		-- Prompt ist nur im Gamepad-Modus aktiv (Maus/Touch nutzen den
+		-- ClickDetector), alternativ führt "More > Brood Pool" zur Übersicht.
+		local gamepadPrompt = Instance.new("ProximityPrompt")
+		gamepadPrompt.Name = "BroodPoolGamepadPrompt"
+		gamepadPrompt.ActionText = "Open"
+		gamepadPrompt.ObjectText = "Brood Pool"
+		gamepadPrompt.HoldDuration = 0
+		gamepadPrompt.MaxActivationDistance = 10
+		gamepadPrompt.RequiresLineOfSight = false
+		gamepadPrompt.KeyboardKeyCode = Enum.KeyCode.E
+		gamepadPrompt.GamepadKeyCode = Enum.KeyCode.ButtonX
+		gamepadPrompt.Enabled = InputMode.IsGamepad()
+		gamepadPrompt.Parent = primaryPart
+		gamepadPrompt.Triggered:Connect(function(triggeringPlayer: Player)
+			if triggeringPlayer == player then
+				openPanelFor(placementId)
+			end
+		end)
+		InputMode.Changed:Connect(function(mode)
+			if gamepadPrompt.Parent then
+				gamepadPrompt.Enabled = mode == "Gamepad"
+			end
 		end)
 
 		-- Gebäude-Upgrade-System: Ausbaustufe initial vom Modell-Attribut

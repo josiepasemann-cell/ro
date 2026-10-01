@@ -525,6 +525,7 @@ local function handleToggleNameplates(_actionName: string, inputState: Enum.User
 	return Enum.ContextActionResult.Pass
 end
 
-ContextActionService:BindAction("AbyssaraToggleBuddyNames", handleToggleNameplates, true, Enum.KeyCode.V)
+-- V auf der Tastatur, Touch-Knopf auf Handy/Tablet, Druck auf den rechten Stick (R3) am Gamepad.
+ContextActionService:BindAction("AbyssaraToggleBuddyNames", handleToggleNameplates, true, Enum.KeyCode.V, Enum.KeyCode.ButtonR3)
 ContextActionService:SetTitle("AbyssaraToggleBuddyNames", "Buddy Names")
 ContextActionService:SetPosition("AbyssaraToggleBuddyNames", UDim2.new(0.75, 0, 0.55, 0))
